@@ -234,7 +234,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		if (dag_iter.getPath(dag_path))
 		{
 			MFnDagNode dag_node = dag_path.node();
-
+			
 			// vill endast ha "icke-history"-föremål
 			if (!dag_node.isIntermediateObject())
 			{
@@ -301,6 +301,7 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	//variabler för att mellanlagra uvdata och tangenter/bitangenter
 	MStringArray uvSets;
 	mesh.getUVSetNames(uvSets);
+
 	uvSet tempUVSet;
 	// iterera över uvsets och ta ut koordinater, tangenter och bitangenter
 	for (int i = 0; i < uvSets.length(); i++)
@@ -312,7 +313,6 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 		mesh.getTangents(mesh_data.uvSets[i].tangents, world_space, &currentSet);
 		mesh.getBinormals(mesh_data.uvSets[i].binormals, world_space, &currentSet);
 	}
-
 
 	// lägg till mesh_data i scen-datan
 	scene_.meshes.push_back(mesh_data);
@@ -345,43 +345,67 @@ void Exporter::ExportMeshes()
 
 		export_stream_ << "\t\t\tvertices " << polygon_iter.count() * 3 << std::endl;
 
-		while (!polygon_iter.isDone())
+		int j = 0;
+		while (j != 2)
 		{
-			MIntArray index_array;
-			polygon_iter.getVertices(index_array);
-			if (index_array.length() == 3)
+			while (!polygon_iter.isDone())
 			{
-				for (int i = 0; i < 3; i++)
+				MIntArray index_array;
+				polygon_iter.getVertices(index_array);
+				if (index_array.length() == 3)
 				{
-					vertexIndex = polygon_iter.vertexIndex(2 - i);
-					export_stream_ << "\t\t\t\tp " <<
-						mesh_iter->points[vertexIndex].x << " " <<
-						mesh_iter->points[vertexIndex].y << " " <<
-						mesh_iter->points[vertexIndex].z << std::endl;
-					export_stream_ << "\t\t\t\tn " <<
-						mesh_iter->normals[vertexIndex].x << " " <<
-						mesh_iter->normals[vertexIndex].y << " " <<
-						mesh_iter->normals[vertexIndex].z << std::endl;
+					for (int i = 0; i < 3; i++)
+					{
+						if (j == 0)
+						{
+							vertexIndex = polygon_iter.vertexIndex(2 - i);
+							export_stream_ << "\t\t\t\tp " <<
+								mesh_iter->points[vertexIndex].x << " " <<
+								mesh_iter->points[vertexIndex].y << " " <<
+								mesh_iter->points[vertexIndex].z << std::endl;
+						}
+						else
+						{
+							export_stream_ << "\t\t\t\tn " <<
+								mesh_iter->normals[vertexIndex].x << " " <<
+								mesh_iter->normals[vertexIndex].y << " " <<
+								mesh_iter->normals[vertexIndex].z << std::endl;
+						}
+					}
 				}
+				else
+				{
+					std::cout << "Error: non-triangular polygon detected. Please only use triangles." << std::endl;
+					std::cout << "Attempts to continue export with missing polygon..." << std::endl;
+				}
+				polygon_iter.next();
 			}
-			else
-			{
-				std::cout << "Error: non-triangular polygon detected. Please only use triangles." << std::endl;
-				std::cout << "Attempts to continue export with missing polygon..." << std::endl;
-			}
-			polygon_iter.next();
+			//Reset Polygon iterationen för normalerna
+			polygon_iter.reset();
+			j++;
 		}
-		
-		for (int i = 0; i < mesh_iter->uvSets.size(); i++){
+
+
+		for (int i = 0; i < mesh_iter->uvSets.size(); i++)
+		{
 			export_stream_ << "\t\t\tUVSet " << i << std::endl;
+
 			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
 			{
-				export_stream_ << "\t\t\t\tc " << mesh_iter->uvSets[i].Us[x] << " " << mesh_iter->uvSets[i].Vs[x] << std::endl;
-			}
-			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
-			{
-				export_stream_ << "\t\t\t\tt " << mesh_iter->uvSets[i].tangents[x] << std::endl;
-				export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets[i].binormals[x] << std::endl;
+				for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+				{
+					export_stream_ << "\t\t\t\tuv " << mesh_iter->uvSets[i].Us[x] << " " << mesh_iter->uvSets[i].Vs[x] << std::endl;
+				}
+
+				for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+				{
+					export_stream_ << "\t\t\t\tt " << mesh_iter->uvSets[i].tangents[x] << std::endl;
+				}
+
+				for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+				{
+					export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets[i].binormals[x] << std::endl;
+				}
 			}
 		}
 	}
