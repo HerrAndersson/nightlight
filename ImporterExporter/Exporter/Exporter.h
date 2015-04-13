@@ -15,7 +15,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
 #include <maya\MLibrary.h>
 #include <maya\MFileIO.h>
 #include <maya\MGlobal.h>
@@ -25,9 +24,12 @@
 
 #include <maya\MFnMesh.h>
 #include <maya\MFnDependencyNode.h>
+#include <maya/MItDependencyNodes.h>
 
 #include <maya\MItDag.h>
 #include <maya\MItMeshPolygon.h>
+#include <maya\MPlug.h>
+
 
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
@@ -36,6 +38,8 @@
 //|																							|
 //|										GLOBAL STRUKT-DATA									|
 //|_________________________________________________________________________________________|
+
+enum matType{ LAMBERT, BLINN, PHONG };
 
 struct uvSet
 {
@@ -56,8 +60,16 @@ struct MeshData
 	std::vector<uvSet> uvSets;
 };
 
+struct material
+{
+	int type;
+	float r, g, b, a, sr, dr, ar, shine;
+	std::vector<std::string> texfiles;
+};
+
 struct SceneData
 {
+	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 };
 

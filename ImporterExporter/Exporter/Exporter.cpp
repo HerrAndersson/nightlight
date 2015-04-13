@@ -227,6 +227,28 @@ bool Exporter::IdentifyAndExtractMeshes()
 	UINT index = 0;
 	scene_.meshes.clear();
 
+	//itererar över DG:n och lagrar rgba värden i ett temporärt material
+	material tempmaterial;
+	MItDependencyNodes matIt(MFn::kLambert);
+	while (!matIt.isDone()){
+		if (matIt.thisNode().hasFn(MFn::kLambert))
+		{
+			MPlug p;
+			MFnDependencyNode materialFn(matIt.thisNode());
+			p = materialFn.findPlug("colorR");
+			p.getValue(tempmaterial.r);
+			p = materialFn.findPlug("colorG");
+			p.getValue(tempmaterial.g);
+			p = materialFn.findPlug("colorB");
+			p.getValue(tempmaterial.b);
+			p = materialFn.findPlug("colorA");
+			p.getValue(tempmaterial.a);
+
+		}
+		matIt.next();
+	}
+
+
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
 
@@ -239,6 +261,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 			// vill endast ha "icke-history"-föremål
 			if (!dag_node.isIntermediateObject())
 			{
+				// triangulera meshen innan man hämtar punkterna
 				MFnMesh mesh(dag_path);
 				ExtractMeshData(mesh, index);
 				index++;
@@ -261,8 +284,20 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+			auto test = dag_path.fullPathName();
+			export_stream_ << "light: " << test << std::endl;
+		}
+		dag_iter.next();
+	}
+
 	//general purpose iterator, sista argument är filtret
-	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLambert);
+/*
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
 	while (!dag_iter.isDone())
 	{
 		if (dag_iter.getPath(dag_path))
@@ -271,7 +306,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		}
 		dag_iter.next();
 	}
-
+*/
 	return true;
 }
 
