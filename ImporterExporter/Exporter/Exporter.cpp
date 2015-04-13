@@ -142,6 +142,7 @@ void Exporter::StartExporter(std::string directory_path)
 
 	if (!GetMayaFilenamesInDirectory((char*)directory_path.c_str(), file_list))
 	{
+		std::cout << ".mb file not found" << std::endl;
 		return;
 	}
 
@@ -246,14 +247,28 @@ bool Exporter::IdentifyAndExtractMeshes()
 
 		dag_iter.next();
 	}
-	
-	dag_iter.reset();
-	dag_iter = MItDag(MItDag::kBreadthFirst, MFn::kCamera);
 
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
 	while (!dag_iter.isDone())
 	{
-		printf("aye");
-		printf("aye");
+		if (dag_iter.getPath(dag_path))
+		{
+			auto test=dag_path.fullPathName();
+			export_stream_ << "cam: " << test << std::endl;
+			if (dag_path.fullPathName() == "|persp|perspShape")
+				printf("Huvudkamera hittad\n");
+		}
+		dag_iter.next();
+	}
+
+	//general purpose iterator, sista argument är filtret
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLambert);
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+
+		}
 		dag_iter.next();
 	}
 
@@ -392,20 +407,17 @@ void Exporter::ExportMeshes()
 
 			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
 			{
-				for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
-				{
-					export_stream_ << "\t\t\t\tuv " << mesh_iter->uvSets[i].Us[x] << " " << mesh_iter->uvSets[i].Vs[x] << std::endl;
-				}
+				export_stream_ << "\t\t\t\tuv " << mesh_iter->uvSets[i].Us[x] << " " << mesh_iter->uvSets[i].Vs[x] << std::endl;
+			}
 
-				for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
-				{
-					export_stream_ << "\t\t\t\tt " << mesh_iter->uvSets[i].tangents[x] << std::endl;
-				}
+			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+			{
+				export_stream_ << "\t\t\t\tt " << mesh_iter->uvSets[i].tangents[x] << std::endl;
+			}
 
-				for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
-				{
-					export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets[i].binormals[x] << std::endl;
-				}
+			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+			{
+				export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets[i].binormals[x] << std::endl;
 			}
 		}
 	}
