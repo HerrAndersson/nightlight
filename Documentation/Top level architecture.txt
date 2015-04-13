@@ -1,0 +1,9 @@
+RenderModule - Rendering
+GameLogic - Hanterar kollisioner, AI, Tid... alla updates
+InputManager - winAPIs RawInput
+AssetManager - Initialisering av all assetdata... modeller, ljus, kamera, texturer, animationer, material
+SoundManager - xAudio
+WindowManager - winAPI
+AiModule
+GameStateManager - Sköter skiftande mellan spelläge/menylägen osv.
+SaveLoadManager

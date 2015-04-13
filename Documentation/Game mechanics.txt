@@ -1,0 +1,27 @@
+Game mechanics:
+    Karaktären:
+        Ska ha startpunkt och målpunkt.
+        Ska kunna röra sig i x och z/y.
+        Ska kunna rotera mot musrörelser.
+        Ska kunna kollidera med miljö/objekt.
+        Ska kunna interagera med objekt med knapptryckningar.
+        Ska kunna dö.
+    
+    AI:
+        Ska ha startpunkt.
+        Enklare pathfinding mot karaktären.
+        Attackerar när den kommer nära karaktären.
+        Kunna knuffas av ljuset.
+        
+    Övriga dynamiska objekt:    
+        Dynamiska lådor:
+            Ska kunna knuffas av spelarinteraktion.    
+        
+        Knappar:
+            Ska kunna "tilfälligt" aktiveras av spelare/fiender/lådor.
+        
+        Spakar:
+            Ska kunna permanent aktiveras av spelarinteraktion.
+        
+        Dörrar:
+            Ska öppnas/stängas beroende på aktiverade knappar/spakar.
