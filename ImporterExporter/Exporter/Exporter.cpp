@@ -2,6 +2,11 @@
 // jnp@bth.se
 // 14-03-31
 
+//Länkar
+
+// http://nccastaff.bournemouth.ac.uk/jmacey/RobTheBloke/www/research/maya/mfnmaterial.htm
+// http://help.autodesk.com/view/MAYAUL/2015/ENU/
+
 #include "Exporter.h"
 
 // konstuktor
@@ -220,6 +225,10 @@ bool Exporter::IdentifyAndExtractScene()
 	return status;
 }
 
+void Exporter::extractColor(MFnDependencyNode& fn, std::string name)
+{
+			MPlug p;
+}
 
 // identifierar alla mesharna i scenen och extraherar data från dem
 bool Exporter::IdentifyAndExtractMeshes()
@@ -231,20 +240,35 @@ bool Exporter::IdentifyAndExtractMeshes()
 	material tempmaterial;
 	MItDependencyNodes matIt(MFn::kLambert);
 	while (!matIt.isDone()){
-		if (matIt.thisNode().hasFn(MFn::kLambert))
+		if (matIt.item().hasFn(MFn::kPhong))
 		{
-			MPlug p;
-			MFnDependencyNode materialFn(matIt.thisNode());
-			p = materialFn.findPlug("colorR");
-			p.getValue(tempmaterial.r);
-			p = materialFn.findPlug("colorG");
-			p.getValue(tempmaterial.g);
-			p = materialFn.findPlug("colorB");
-			p.getValue(tempmaterial.b);
-			p = materialFn.findPlug("colorA");
-			p.getValue(tempmaterial.a);
-
+			MFnPhongShader tempphong(matIt.item());
+			extractColor(tempphong, "ambientColor");
+			extractColor(tempphong, "color");
+			extractColor(tempphong, "specularColor");
+			extractColor(tempphong, "incandescence");
+			extractColor(tempphong, "transparency");
 		}
+		else if (matIt.thisNode().hasFn(MFn::kBlinn))
+		{
+			MFnBlinnShader tempblinn(matIt.item());
+			extractColor(tempblinn, "ambientColor");
+			extractColor(tempblinn, "color");
+			extractColor(tempblinn, "specularColor");
+			extractColor(tempblinn, "incandescence");
+			extractColor(tempblinn, "transparency");
+		}
+		else if (matIt.item().hasFn(MFn::kLambert))
+		{
+			MFnLambertShader templamb(matIt.item());
+			extractColor(templamb, "ambientColor");
+			extractColor(templamb, "color");
+			extractColor(templamb, "specularColor");
+			extractColor(templamb, "incandescence");
+			extractColor(templamb, "transparency");
+		}
+		else
+			printf("No material found\n");
 		matIt.next();
 	}
 
@@ -307,6 +331,8 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 */
+
+
 	return true;
 }
 

@@ -30,6 +30,10 @@
 #include <maya\MItMeshPolygon.h>
 #include <maya\MPlug.h>
 
+#include<maya/MFnLambertShader.h>
+#include<maya/MFnBlinnShader.h>
+#include<maya/MFnPhongShader.h>
+
 
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
@@ -60,11 +64,17 @@ struct MeshData
 	std::vector<uvSet> uvSets;
 };
 
+struct Color
+{
+	float r, g, b, a;
+	std::string texfile;
+};
+
 struct material
 {
+	// 0 = lambert, 1 = blinn, 2 = phong
 	int type;
-	float r, g, b, a, sr, dr, ar, shine;
-	std::vector<std::string> texfiles;
+	Color ambient, diffuse, specular, transparency, glow;
 };
 
 struct SceneData
@@ -85,7 +95,7 @@ class Exporter
 		~Exporter();
 
 		void StartExporter(std::string directory_path);
-
+		
 	private:
 		std::fstream export_stream_;
 		SceneData scene_;
@@ -93,7 +103,7 @@ class Exporter
 	private:
 		bool InitializeMaya();
 		void CleanUpMaya();
-
+		void extractColor(MFnDependencyNode& fn, std::string name);
 		bool CreateExportFiles(std::string file_path);
 		void CloseExportFiles();
 
