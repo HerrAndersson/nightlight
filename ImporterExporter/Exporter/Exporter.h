@@ -24,6 +24,8 @@
 
 #include <maya\MFnMesh.h>
 #include <maya\MFnDependencyNode.h>
+#include <maya\MFnAttribute.h>
+
 #include <maya/MItDependencyNodes.h>
 
 #include <maya\MItDag.h>
@@ -67,7 +69,7 @@ struct MeshData
 struct Color
 {
 	float r, g, b, a;
-	std::string texfile;
+	std::string texfileInternal,texfileExternal;
 };
 
 struct material
@@ -103,7 +105,7 @@ class Exporter
 	private:
 		bool InitializeMaya();
 		void CleanUpMaya();
-		void extractColor(MFnDependencyNode& fn, std::string name);
+		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 		bool CreateExportFiles(std::string file_path);
 		void CloseExportFiles();
 

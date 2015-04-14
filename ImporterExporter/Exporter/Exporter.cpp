@@ -225,9 +225,60 @@ bool Exporter::IdentifyAndExtractScene()
 	return status;
 }
 
-void Exporter::extractColor(MFnDependencyNode& fn, std::string name)
+void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name)
 {
 			MPlug p;
+
+			MString r = name;
+			r += "R";
+			MString g = name;
+			g += "G";
+			MString b = name;
+			b += "B";
+			MString a = name;
+			a += "A";
+
+			p = fn.findPlug(r.asChar());
+			p.getValue(tempcolor.r);
+			p = fn.findPlug(g.asChar());
+			p.getValue(tempcolor.g);
+			p = fn.findPlug(b.asChar());
+			p.getValue(tempcolor.b);
+			p = fn.findPlug(a.asChar());
+			p.getValue(tempcolor.a);
+			p = fn.findPlug(name.asChar());
+
+
+			MPlugArray connections;
+			p.connectedTo(connections, true, false);
+
+			int debug = connections.length();
+
+			for (int i = 0; i!=connections.length(); ++i)
+			{
+				// if file texture found
+				if (connections[i].node().apiType() == MFn::kFileTexture)
+				{
+					// bind a function set to it ....
+					MFnDependencyNode fnDep(connections[i].node());
+
+					// to get the node name
+					tempcolor.texfileInternal = fnDep.name().asChar();
+					MPlug filename = fnDep.findPlug("ftn");
+
+					//sparar hela sökvägen till texturen
+					tempcolor.texfileExternal = filename.asString().asChar();
+
+
+
+					// stop looping
+					break;
+
+				}
+
+			}
+
+
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -239,36 +290,38 @@ bool Exporter::IdentifyAndExtractMeshes()
 	//itererar över DG:n och lagrar rgba värden i ett temporärt material
 	material tempmaterial;
 	MItDependencyNodes matIt(MFn::kLambert);
+	MString aC("ambientColor"), dC("color"), sC("specularColor"), gC("incandescence"), tC("transparency");
 	while (!matIt.isDone()){
 		if (matIt.item().hasFn(MFn::kPhong))
 		{
 			MFnPhongShader tempphong(matIt.item());
-			extractColor(tempphong, "ambientColor");
-			extractColor(tempphong, "color");
-			extractColor(tempphong, "specularColor");
-			extractColor(tempphong, "incandescence");
-			extractColor(tempphong, "transparency");
+			extractColor(tempmaterial.ambient, tempphong, aC);
+			extractColor(tempmaterial.diffuse, tempphong, dC);
+			extractColor(tempmaterial.specular, tempphong, sC);
+			extractColor(tempmaterial.glow, tempphong, gC);
+			extractColor(tempmaterial.transparency, tempphong, tC);
 		}
 		else if (matIt.thisNode().hasFn(MFn::kBlinn))
 		{
 			MFnBlinnShader tempblinn(matIt.item());
-			extractColor(tempblinn, "ambientColor");
-			extractColor(tempblinn, "color");
-			extractColor(tempblinn, "specularColor");
-			extractColor(tempblinn, "incandescence");
-			extractColor(tempblinn, "transparency");
+			extractColor(tempmaterial.ambient, tempblinn, aC);
+			extractColor(tempmaterial.diffuse, tempblinn, dC);
+			extractColor(tempmaterial.specular, tempblinn, sC);
+			extractColor(tempmaterial.glow, tempblinn, gC);
+			extractColor(tempmaterial.transparency, tempblinn, tC);
 		}
 		else if (matIt.item().hasFn(MFn::kLambert))
 		{
 			MFnLambertShader templamb(matIt.item());
-			extractColor(templamb, "ambientColor");
-			extractColor(templamb, "color");
-			extractColor(templamb, "specularColor");
-			extractColor(templamb, "incandescence");
-			extractColor(templamb, "transparency");
+			extractColor(tempmaterial.ambient, templamb, aC);
+			extractColor(tempmaterial.diffuse, templamb, dC);
+			extractColor(tempmaterial.specular, templamb, sC);
+			extractColor(tempmaterial.glow, templamb, gC);
+			extractColor(tempmaterial.transparency, templamb, tC);
 		}
 		else
 			printf("No material found\n");
+		scene_.materials.push_back(tempmaterial);
 		matIt.next();
 	}
 
