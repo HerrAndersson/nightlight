@@ -12,7 +12,7 @@
 // konstuktor
 Exporter::Exporter()
 {
-
+	SceneData DataStorage;
 }
 
 // destruktor
@@ -225,9 +225,12 @@ bool Exporter::IdentifyAndExtractScene()
 	return status;
 }
 
-
+//CURRENTLY ONLY SAVING THE MOST RELEVANT DATA
 void Exporter::extractCamera(MObject& cam)
 {	
+	//Temp storage for camera
+	cameraData TempCameraStorage;
+
 	//Create a fucntion set for the camera
 	MFnCamera fn(cam);
 
@@ -239,23 +242,24 @@ void Exporter::extractCamera(MObject& cam)
 	MFnDependencyNode fnParent(fn.parent(0));
 
 	//Output some camera info
-
 	std::cout << "Camera: " << fn.name().asChar()
 		<< "\n\tparent "
 		<< fnParent.name().asChar()
 		<< std::endl;
 
-	
 
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio()
 			<< std::endl;
+	
 	//near clipping plane
 	std::cout << "\nNear: : " << fn.nearClippingPlane()
 				<< std::endl;
+	
 	//far clipping plane
 	std::cout << "\nFar: " << fn.farClippingPlane()
 		<< std::endl;
+	
 	//horizontal field of view
 	std::cout << "\nHorizontal fov: " << fn.horizontalFieldOfView()
 		<< std::endl;
@@ -267,18 +271,21 @@ void Exporter::extractCamera(MObject& cam)
 	//badly formated Projection matrix
 	std::cout << "\nProjectionMatrix: " << fn.projectionMatrix()
 		<< std::endl;
+	TempCameraStorage.projectionMatrix = fn.projectionMatrix();
+
 
 	//Up direction
 	std::cout << "\nUp Vector: " << fn.upDirection()
 		<< std::endl;
+	TempCameraStorage.upVector = fn.upDirection();
 
 	//view direction
 	std::cout << "\nView Direction: " << fn.viewDirection()
 		<< std::endl;
-
-
-
+	TempCameraStorage.viewDirection = fn.viewDirection();
 	
+	//pushback to store everything
+	scene_.cameras.push_back(TempCameraStorage);
 
 }
 
@@ -338,7 +345,7 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 
 }
 
-void Exporter::lightOutput(MObject& mObj)
+void Exporter::extractLight(MObject& mObj)
 {
 	//binder en ljusfunktion till objektet
 	MFnLight func (mObj);
@@ -354,8 +361,9 @@ void Exporter::lightOutput(MObject& mObj)
 	//output light
 	std::cout << "parent " << functionParent.name().asChar()
 		<< "\ntype " << mObj.apiTypeStr()
-		<< "\nColor " << col.r << " " << col.g << " " << col.b
-		<< "\nintensity " << func.intensity() << std::endl;
+		<< "\nLight color " << col.r << " " << col.g << " " << col.b
+		<< "\nLight intensity " << func.intensity()
+		<< "\nLight direction " << func.lightDirection (0, MSpace::kWorld, 0) << "\n" << std::endl;
 
 	//för specifika attribut till specifika ljustyper:
 	switch (mObj.apiType ())
@@ -370,12 +378,18 @@ void Exporter::lightOutput(MObject& mObj)
 		case MFn::kAmbientLight:
 		{
 			MFnAmbientLight fnAmbientLight(mObj);
+			
 		}
 			break;
 			//spotlight-only
 		case MFn::kSpotLight:
 		{
 			MFnSpotLight fnSpotLight(mObj);
+			//cone angle represents the angle that the spotlight cone makes with the spotlight direction vector
+			//penumbra angle is the outer edge of the light 
+			//dropoff represents the degree to which the light intensity decreases with the angular distance from the light direction vector.
+			std::cout << "Cone angle " << fnSpotLight.coneAngle() << "\nPenumbra angle " << fnSpotLight.penumbraAngle()
+				<< "\nDropoff " << fnSpotLight.dropOff() << "\n" << std::endl;
 		}
 			break;
 			//directional light-only
@@ -468,27 +482,17 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
-
-
+	//Hitta kamera data
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
 	while (!dag_iter.isDone())
 	{
-
+		
 		extractCamera(dag_iter.item());
-
-		//if (dag_iter.getPath(dag_path))
-		//{
-		//
-		//	auto test=dag_path.fullPathName();
-		//	export_stream_ << "cam: " << test << std::endl;
-		//	if (dag_path.fullPathName() == "|persp|perspShape")
-		//		printf("Huvudkamera hittad\n");
-		//				
-		//}
 		dag_iter.next();
 	}
 
-	//itererar dag och söker namn för tillgängliga ljus
+	//itererar dag och söker data för tillgängliga ljus
+	//om ej ljus finns i scenen ignoreras denna iteration för sagda scen.
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
 	while (!dag_iter.isDone())
 	{
@@ -498,8 +502,8 @@ bool Exporter::IdentifyAndExtractMeshes()
 		//namn:
 		export_stream_ << "Light: " << func.name ().asChar () << std::endl;
 
-		//kalla på lightOutput function
-		lightOutput(dag_iter.item());
+		//kalla på extractLight function
+		extractLight(dag_iter.item ());
 
 		//vidare till nästa ljus i dag'en
 		dag_iter.next();
@@ -514,10 +518,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 		*/
 	}
-
-
-
-
 
 	//general purpose iterator, sista argument är filtret
 /*

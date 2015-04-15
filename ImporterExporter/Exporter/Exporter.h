@@ -23,6 +23,8 @@
 #include <maya\MFloatPointArray.h>
 
 #include <maya/MFloatMatrix.h>
+#include <maya/MMatrix.h>
+#include<maya/MFnTransform.h>
 
 #include <maya\MFnMesh.h>
 #include<maya/MFnCamera.h>
@@ -109,10 +111,19 @@ struct material
 	Color ambient, diffuse, specular, transparency, glow;
 };
 
+struct cameraData
+{
+	MFloatMatrix projectionMatrix;
+	MFloatVector upVector;
+	MFloatVector viewDirection;
+
+};
+
 struct SceneData
 {
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
+	std::vector<cameraData> cameras;
 };
 
 //___________________________________________________________________________________________
@@ -135,7 +146,7 @@ class Exporter
 	private:
 		bool InitializeMaya();
 		void CleanUpMaya();
-		void lightOutput (MObject& mObj);
+		void extractLight (MObject& mObj);
 		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 		void extractCamera(MObject& obj);
 
