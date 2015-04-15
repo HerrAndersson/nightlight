@@ -321,6 +321,66 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 
 }
 
+void Exporter::lightOutput(MObject& mObj)
+{
+	//binder en ljusfunktion till objektet
+	MFnLight func (mObj);
+
+	//dess parent
+	MFnDagNode functionParent (func.parent(0));
+
+	//ljusets färg
+	MColor col(0.0f, 0.0f, 0.0f);
+	//possible fault: func maybe fnlight????
+	col = func.color();
+
+	//output light
+	std::cout << "parent " << functionParent.name().asChar()
+		<< "\ntype " << mObj.apiTypeStr()
+		<< "\nColor " << col.r << " " << col.g << " " << col.b
+		<< "\nintensity " << func.intensity() << std::endl;
+
+	//för specifika attribut till specifika ljustyper:
+	switch (mObj.apiType ())
+	{
+			//pointlight-only attributes:
+		case MFn::kPointLight:
+		{
+			MFnPointLight fnPointLight(mObj);
+		}
+			break;
+			//ambientlight-only
+		case MFn::kAmbientLight:
+		{
+			MFnAmbientLight fnAmbientLight(mObj);
+		}
+			break;
+			//spotlight-only
+		case MFn::kSpotLight:
+		{
+			MFnSpotLight fnSpotLight(mObj);
+		}
+			break;
+			//directional light-only
+		case MFn::kDirectionalLight:
+		{
+			MFnDirectionalLight fnDirLight(mObj);
+		}
+			break;
+			//arealight-only
+		case MFn::kAreaLight:
+		{
+			MFnAreaLight fnAreaLight (mObj);
+		}
+			break;
+
+		default:
+			break;
+
+	}
+
+}
+
 // identifierar alla mesharna i scenen och extraherar data från dem
 bool Exporter::IdentifyAndExtractMeshes()
 {
@@ -408,15 +468,31 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
+	//itererar dag och söker namn för tillgängliga ljus
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
 	while (!dag_iter.isDone())
 	{
+		//funktion till vår iterator
+		MFnLight func (dag_iter.item());
+
+		//namn:
+		export_stream_ << "Light: " << func.name ().asChar () << std::endl;
+
+		//kalla på lightOutput function
+		lightOutput(dag_iter.item());
+
+		//vidare till nästa ljus i dag'en
+		dag_iter.next();
+
+
+		/*
 		if (dag_iter.getPath(dag_path))
 		{
 			auto test = dag_path.fullPathName();
 			export_stream_ << "light: " << test << std::endl;
 		}
 		dag_iter.next();
+		*/
 	}
 
 

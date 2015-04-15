@@ -38,6 +38,18 @@
 #include<maya/MFnPhongShader.h>
 
 
+#include <maya/MFnLight.h>
+
+#include <maya/MFnDagNode.h>
+#include <maya/MColor.h>
+
+#include <maya/MFnPointLight.h>
+#include <maya/MFnAmbientLight.h>
+#include <maya/MFnDirectionalLight.h>
+#include <maya/MFnSpotLight.h>
+#include <maya/MFnAreaLight.h>
+
+
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
 
@@ -106,6 +118,7 @@ class Exporter
 	private:
 		bool InitializeMaya();
 		void CleanUpMaya();
+		void lightOutput (MObject& mObj);
 		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 		void extractCamera(MObject& obj);
 
