@@ -358,6 +358,11 @@ void Exporter::extractLight(MObject& mObj)
 {
 	//temp storage for light
 	lightData TempLightStorage;
+	pointLightStruct tempPointLights;
+	ambientLightStruct tempAmbiLights;
+	spotLightStruct tempSpotLights;
+	directionalLightStruct tempDirLights;
+	areaLightStruct tempAreaLights;
 
 	//binder en ljusfunktion till objektet
 	MFnLight func (mObj);
@@ -384,12 +389,27 @@ void Exporter::extractLight(MObject& mObj)
 		case MFn::kPointLight:
 		{
 			MFnPointLight fnPointLight(mObj);
+			tempPointLights.color.x = col.r;
+			tempPointLights.color.y = col.g;
+			tempPointLights.color.z = col.b;
+			tempPointLights.intensity = func.intensity();
+
+			//push back in the light temp storage
+			TempLightStorage.pointLights.push_back(tempPointLights);
+			
 		}
 			break;
 			//ambientlight-only
 		case MFn::kAmbientLight:
 		{
 			MFnAmbientLight fnAmbientLight(mObj);
+			tempAmbiLights.color.x = col.r;
+			tempAmbiLights.color.y = col.g;
+			tempAmbiLights.color.z = col.b;
+			tempAmbiLights.intensity = func.intensity();
+
+			//push back in the light temp storage
+			TempLightStorage.ambientLights.push_back(tempAmbiLights);
 			
 		}
 			break;
@@ -402,23 +422,57 @@ void Exporter::extractLight(MObject& mObj)
 			//dropoff represents the degree to which the light intensity decreases with the angular distance from the light direction vector.
 			std::cout << "Cone angle " << fnSpotLight.coneAngle() << "\nPenumbra angle " << fnSpotLight.penumbraAngle()
 				<< "\nDropoff " << fnSpotLight.dropOff() << "\n" << std::endl;
+
+			tempSpotLights.color.x = col.r;
+			tempSpotLights.color.y = col.g;
+			tempSpotLights.color.z = col.b;
+			tempSpotLights.intensity = func.intensity();
+			tempSpotLights.coneAngle = fnSpotLight.coneAngle();
+			tempSpotLights.penumbraAngle = fnSpotLight.penumbraAngle();
+			tempSpotLights.dropoff = fnSpotLight.dropOff();
+			tempSpotLights.dir = func.lightDirection(0, MSpace::kWorld, 0);
+
+			//push back in the light temp storage
+			TempLightStorage.spotLights.push_back(tempSpotLights);
+
 		}
 			break;
 			//directional light-only
 		case MFn::kDirectionalLight:
 		{
 			MFnDirectionalLight fnDirLight(mObj);
+
+			tempDirLights.color.x = col.r;
+			tempDirLights.color.y = col.g;
+			tempDirLights.color.z = col.b;
+			tempDirLights.intensity = func.intensity();
+			tempDirLights.dir = func.lightDirection(0, MSpace::kWorld, 0);
+
+			//push back in the light temp storage
+			TempLightStorage.dirLights.push_back(tempDirLights);
+
 		}
 			break;
 			//arealight-only
 		case MFn::kAreaLight:
 		{
 			MFnAreaLight fnAreaLight (mObj);
+
+			tempAreaLights.color.x = col.r;
+			tempAreaLights.color.y = col.g;
+			tempAreaLights.color.z = col.b;
+			tempAreaLights.intensity = func.intensity();
+
+			//push back in the light temp storage
+			TempLightStorage.areaLights.push_back(tempAreaLights);
+
 		}
 			break;
 
 		default:
 			break;
+
+		scene_.lights.push_back(TempLightStorage);
 
 	}
 

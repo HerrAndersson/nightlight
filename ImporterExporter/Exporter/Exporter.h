@@ -118,17 +118,55 @@ struct cameraData
 	MFloatVector upVector;
 	MFloatVector viewDirection;
 	MMatrix transformMatrix;
-
 };
+
+
+
+struct ambientLightStruct
+{
+	double intensity;
+	MFloatVector color;
+};
+
+struct areaLightStruct
+{
+	double intensity;
+	MFloatVector color;
+};
+
+struct directionalLightStruct
+{
+	double intensity;
+	MFloatVector color;
+	MFloatVector dir;
+};
+
+struct pointLightStruct
+{
+	double intensity;
+	MFloatVector color;
+};
+
+struct spotLightStruct
+{
+	double intensity;
+	MFloatVector color;
+	double coneAngle;
+	double penumbraAngle;
+	double dropoff;
+	MFloatVector dir;
+};
+
 
 struct lightData
 {
-	MFloatVector ambientLight;
-	MFloatVector areaLight;
-	MFloatVector directionalLight;
-	MFloatVector pointLight;
-	MFloatVector spotLight;
+	std::vector<pointLightStruct> pointLights;
+	std::vector<ambientLightStruct> ambientLights;
+	std::vector<areaLightStruct> areaLights;
+	std::vector<directionalLightStruct> dirLights;
+	std::vector<spotLightStruct> spotLights;
 };
+
 
 struct SceneData
 {
