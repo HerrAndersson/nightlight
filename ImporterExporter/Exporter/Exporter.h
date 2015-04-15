@@ -22,8 +22,11 @@
 #include <maya\MDagPath.h>
 #include <maya\MFloatPointArray.h>
 
+#include <maya/MFloatMatrix.h>
+
 #include <maya\MFnMesh.h>
 #include<maya/MFnCamera.h>
+
 #include <maya\MFnDependencyNode.h>
 #include <maya\MFnAttribute.h>
 

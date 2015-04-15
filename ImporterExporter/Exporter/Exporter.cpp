@@ -245,6 +245,8 @@ void Exporter::extractCamera(MObject& cam)
 		<< fnParent.name().asChar()
 		<< std::endl;
 
+	
+
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio()
 			<< std::endl;
@@ -262,6 +264,21 @@ void Exporter::extractCamera(MObject& cam)
 	std::cout << "\nVertical fov: " << fn.verticalFieldOfView()
 		<< std::endl;
 
+	//badly formated Projection matrix
+	std::cout << "\nProjectionMatrix: " << fn.projectionMatrix()
+		<< std::endl;
+
+	//Up direction
+	std::cout << "\nUp Vector: " << fn.upDirection()
+		<< std::endl;
+
+	//view direction
+	std::cout << "\nView Direction: " << fn.viewDirection()
+		<< std::endl;
+
+
+
+	
 
 }
 
