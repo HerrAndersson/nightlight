@@ -225,6 +225,10 @@ bool Exporter::IdentifyAndExtractScene()
 	return status;
 }
 
+
+void Exporter::extractCamera(MObject& cam)
+{}
+
 void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name)
 {
 			MPlug p;
@@ -348,6 +352,8 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
+
+
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
 	while (!dag_iter.isDone())
 	{
@@ -357,6 +363,12 @@ bool Exporter::IdentifyAndExtractMeshes()
 			export_stream_ << "cam: " << test << std::endl;
 			if (dag_path.fullPathName() == "|persp|perspShape")
 				printf("Huvudkamera hittad\n");
+
+
+			
+
+
+
 		}
 		dag_iter.next();
 	}
@@ -371,6 +383,10 @@ bool Exporter::IdentifyAndExtractMeshes()
 		}
 		dag_iter.next();
 	}
+
+
+
+
 
 	//general purpose iterator, sista argument är filtret
 /*
@@ -475,7 +491,7 @@ void Exporter::ExportMeshes()
 		export_stream_ << "\t\t\tvertices " << polygon_iter.count() * 3 << std::endl;
 
 		int j = 0;
-		while (j != polygon_iter.count())
+		while (j != 2)
 		{
 			while (!polygon_iter.isDone())
 			{
