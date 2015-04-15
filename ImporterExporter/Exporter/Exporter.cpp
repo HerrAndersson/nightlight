@@ -247,11 +247,6 @@ void Exporter::extractCamera(MObject& cam)
 		<< fnParent.name().asChar()
 		<< std::endl;
 
-	//Get Transform experimentation
-	MFnTransform fs(cam);
-	MMatrix matrix = fs.transformation().asMatrix();
-	std::cout << matrix << std::endl;
-
 
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio()
@@ -383,12 +378,18 @@ void Exporter::extractLight(MObject& mObj)
 		case MFn::kAmbientLight:
 		{
 			MFnAmbientLight fnAmbientLight(mObj);
+			
 		}
 			break;
 			//spotlight-only
 		case MFn::kSpotLight:
 		{
 			MFnSpotLight fnSpotLight(mObj);
+			//cone angle represents the angle that the spotlight cone makes with the spotlight direction vector
+			//penumbra angle is the outer edge of the light 
+			//dropoff represents the degree to which the light intensity decreases with the angular distance from the light direction vector.
+			std::cout << "Cone angle " << fnSpotLight.coneAngle() << "\nPenumbra angle " << fnSpotLight.penumbraAngle()
+				<< "\nDropoff " << fnSpotLight.dropOff() << "\n" << std::endl;
 		}
 			break;
 			//directional light-only
@@ -487,7 +488,8 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
-	//itererar dag och söker namn för tillgängliga ljus
+	//itererar dag och söker data för tillgängliga ljus
+	//om ej ljus finns i scenen ignoreras denna iteration för sagda scen.
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
 	while (!dag_iter.isDone())
 	{
@@ -497,7 +499,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		//namn:
 		export_stream_ << "Light: " << func.name ().asChar () << std::endl;
 
-		//kalla på lightOutput function
+		//kalla på extractLight function
 		extractLight(dag_iter.item ());
 
 		//vidare till nästa ljus i dag'en
