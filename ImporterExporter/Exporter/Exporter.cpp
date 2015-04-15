@@ -12,7 +12,7 @@
 // konstuktor
 Exporter::Exporter()
 {
-
+	SceneData DataStorage;
 }
 
 // destruktor
@@ -225,9 +225,12 @@ bool Exporter::IdentifyAndExtractScene()
 	return status;
 }
 
-
+//CURRENTLY ONLY SAVING THE MOST RELEVANT DATA
 void Exporter::extractCamera(MObject& cam)
 {	
+	//Temp storage for camera
+	cameraData TempCameraStorage;
+
 	//Create a fucntion set for the camera
 	MFnCamera fn(cam);
 
@@ -239,23 +242,24 @@ void Exporter::extractCamera(MObject& cam)
 	MFnDependencyNode fnParent(fn.parent(0));
 
 	//Output some camera info
-
 	std::cout << "Camera: " << fn.name().asChar()
 		<< "\n\tparent "
 		<< fnParent.name().asChar()
 		<< std::endl;
 
-	
 
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio()
 			<< std::endl;
+	
 	//near clipping plane
 	std::cout << "\nNear: : " << fn.nearClippingPlane()
 				<< std::endl;
+	
 	//far clipping plane
 	std::cout << "\nFar: " << fn.farClippingPlane()
 		<< std::endl;
+	
 	//horizontal field of view
 	std::cout << "\nHorizontal fov: " << fn.horizontalFieldOfView()
 		<< std::endl;
@@ -267,18 +271,21 @@ void Exporter::extractCamera(MObject& cam)
 	//badly formated Projection matrix
 	std::cout << "\nProjectionMatrix: " << fn.projectionMatrix()
 		<< std::endl;
+	TempCameraStorage.projectionMatrix = fn.projectionMatrix();
+
 
 	//Up direction
 	std::cout << "\nUp Vector: " << fn.upDirection()
 		<< std::endl;
+	TempCameraStorage.upVector = fn.upDirection();
 
 	//view direction
 	std::cout << "\nView Direction: " << fn.viewDirection()
 		<< std::endl;
-
-
-
+	TempCameraStorage.viewDirection = fn.viewDirection();
 	
+	//pushback to store everything
+	scene_.cameras.push_back(TempCameraStorage);
 
 }
 
@@ -465,23 +472,12 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
-
-
+	//Hitta kamera data
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
 	while (!dag_iter.isDone())
 	{
-
+		
 		extractCamera(dag_iter.item());
-
-		//if (dag_iter.getPath(dag_path))
-		//{
-		//
-		//	auto test=dag_path.fullPathName();
-		//	export_stream_ << "cam: " << test << std::endl;
-		//	if (dag_path.fullPathName() == "|persp|perspShape")
-		//		printf("Huvudkamera hittad\n");
-		//				
-		//}
 		dag_iter.next();
 	}
 
@@ -511,10 +507,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 		*/
 	}
-
-
-
-
 
 	//general purpose iterator, sista argument är filtret
 /*
