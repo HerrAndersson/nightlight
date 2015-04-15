@@ -95,10 +95,19 @@ struct material
 	Color ambient, diffuse, specular, transparency, glow;
 };
 
+struct cameraData
+{
+	MFloatMatrix projectionMatrix;
+	MFloatVector upVector;
+	MFloatVector viewDirection;
+
+};
+
 struct SceneData
 {
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
+	std::vector<cameraData> cameras;
 };
 
 //___________________________________________________________________________________________
