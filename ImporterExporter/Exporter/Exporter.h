@@ -130,7 +130,7 @@ class Exporter
 	private:
 		bool InitializeMaya();
 		void CleanUpMaya();
-		void lightOutput (MObject& mObj);
+		void extractLight (MObject& mObj);
 		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 		void extractCamera(MObject& obj);
 

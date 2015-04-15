@@ -345,7 +345,7 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 
 }
 
-void Exporter::lightOutput(MObject& mObj)
+void Exporter::extractLight(MObject& mObj)
 {
 	//binder en ljusfunktion till objektet
 	MFnLight func (mObj);
@@ -361,8 +361,9 @@ void Exporter::lightOutput(MObject& mObj)
 	//output light
 	std::cout << "parent " << functionParent.name().asChar()
 		<< "\ntype " << mObj.apiTypeStr()
-		<< "\nColor " << col.r << " " << col.g << " " << col.b
-		<< "\nintensity " << func.intensity() << std::endl;
+		<< "\nLight color " << col.r << " " << col.g << " " << col.b
+		<< "\nLight intensity " << func.intensity()
+		<< "\nLight direction " << func.lightDirection (0, MSpace::kWorld, 0) << "\n" << std::endl;
 
 	//för specifika attribut till specifika ljustyper:
 	switch (mObj.apiType ())
@@ -492,7 +493,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		export_stream_ << "Light: " << func.name ().asChar () << std::endl;
 
 		//kalla på lightOutput function
-		lightOutput(dag_iter.item());
+		extractLight(dag_iter.item ());
 
 		//vidare till nästa ljus i dag'en
 		dag_iter.next();
