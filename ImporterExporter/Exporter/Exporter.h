@@ -105,11 +105,21 @@ struct cameraData
 
 };
 
+struct lightData
+{
+	MFloatVector ambientLight;
+	MFloatVector areaLight;
+	MFloatVector directionalLight;
+	MFloatVector pointLight;
+	MFloatVector spotLight;
+};
+
 struct SceneData
 {
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 	std::vector<cameraData> cameras;
+	std::vector<lightData> lights;
 };
 
 //___________________________________________________________________________________________

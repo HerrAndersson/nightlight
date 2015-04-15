@@ -353,6 +353,9 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 
 void Exporter::extractLight(MObject& mObj)
 {
+	//temp storage for light
+	lightData TempLightStorage;
+
 	//binder en ljusfunktion till objektet
 	MFnLight func (mObj);
 
