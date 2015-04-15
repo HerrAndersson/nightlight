@@ -247,6 +247,12 @@ void Exporter::extractCamera(MObject& cam)
 		<< fnParent.name().asChar()
 		<< std::endl;
 
+	//Get Transform experimentation
+	MFnTransform fs(fn.parent(0));
+	MMatrix matrix = fs.transformation().asMatrix();
+	std::cout << "\nTransform Matrix: " << matrix << std::endl;
+
+	TempCameraStorage.transformMatrix = matrix;
 
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio()
@@ -347,6 +353,9 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 
 void Exporter::extractLight(MObject& mObj)
 {
+	//temp storage for light
+	lightData TempLightStorage;
+
 	//binder en ljusfunktion till objektet
 	MFnLight func (mObj);
 
