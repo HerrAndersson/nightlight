@@ -106,6 +106,8 @@ class Exporter
 		bool InitializeMaya();
 		void CleanUpMaya();
 		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
+		void extractCamera(MObject& obj);
+
 		bool CreateExportFiles(std::string file_path);
 		void CloseExportFiles();
 

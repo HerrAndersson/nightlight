@@ -475,7 +475,7 @@ void Exporter::ExportMeshes()
 		export_stream_ << "\t\t\tvertices " << polygon_iter.count() * 3 << std::endl;
 
 		int j = 0;
-		while (j != 2)
+		while (j != polygon_iter.count())
 		{
 			while (!polygon_iter.isDone())
 			{
