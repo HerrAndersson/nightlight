@@ -54,9 +54,12 @@
 #include <maya/MFnSpotLight.h>
 #include <maya/MFnAreaLight.h>
 
+#include <maya/MTime.h>
+#include <maya/MFnAnimCurve.h>
 
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
+#pragma comment(lib, "OpenMayaAnim.lib")
 
 //___________________________________________________________________________________________
 //|																							|
@@ -195,9 +198,11 @@ class Exporter
 	private:
 		bool InitializeMaya();
 		void CleanUpMaya();
+
 		void extractLight (MObject& mObj);
 		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 		void extractCamera(MObject& obj);
+		void extractKeyData(MObject& key);
 
 		bool CreateExportFiles(std::string file_path);
 		void CloseExportFiles();
