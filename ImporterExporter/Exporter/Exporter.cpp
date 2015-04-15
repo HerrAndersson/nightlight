@@ -339,7 +339,10 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 					//sparar hela sökvägen till texturen
 					tempcolor.texfileExternal = filename.asString().asChar();
 
+					//kopierar texturfiler
+					std::string base_filename = tempcolor.texfileExternal.substr(tempcolor.texfileExternal.find_last_of("/\\") + 1);
 
+					CopyFile(tempcolor.texfileExternal.c_str(), base_filename.c_str(), false);
 
 					// stop looping
 					break;

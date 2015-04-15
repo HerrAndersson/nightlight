@@ -19,6 +19,7 @@
 #include <maya\MFileIO.h>
 #include <maya\MGlobal.h>
 
+
 #include <maya\MDagPath.h>
 #include <maya\MFloatPointArray.h>
 
@@ -116,6 +117,7 @@ struct cameraData
 	MFloatMatrix projectionMatrix;
 	MFloatVector upVector;
 	MFloatVector viewDirection;
+	MMatrix transformMatrix;
 
 };
 
