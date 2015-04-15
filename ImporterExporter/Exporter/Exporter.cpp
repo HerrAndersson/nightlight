@@ -247,6 +247,11 @@ void Exporter::extractCamera(MObject& cam)
 		<< fnParent.name().asChar()
 		<< std::endl;
 
+	//Get Transform experimentation
+	MFnTransform fs(cam);
+	MMatrix matrix = fs.transformation().asMatrix();
+	std::cout << matrix << std::endl;
+
 
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio()

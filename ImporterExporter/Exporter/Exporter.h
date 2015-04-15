@@ -23,6 +23,8 @@
 #include <maya\MFloatPointArray.h>
 
 #include <maya/MFloatMatrix.h>
+#include <maya/MMatrix.h>
+#include<maya/MFnTransform.h>
 
 #include <maya\MFnMesh.h>
 #include<maya/MFnCamera.h>
