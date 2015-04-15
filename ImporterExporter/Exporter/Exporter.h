@@ -170,6 +170,39 @@ struct lightData
 	std::vector<spotLightStruct> spotLights;
 };
 
+struct KeyData
+{
+	int numKeys;
+	//Current Key	//Not sure if needed in a struct nor for this assignment
+	//Next Key		//Not sure if needed in a struct nor for this assignment
+	//InTangent		//Not sure if needed in a struct nor for this assignment
+	//OutTangent	//Not sure if needed in a struct nor for this assignment
+	//FrameID
+};
+
+struct AnimData
+{
+	//Stuff for later:
+	//Joints, position, orientations data
+	//SkeletonHierachy
+	//Weights (start and count)
+	//String Name
+	//ParentID
+	//Flags
+	//Start Index
+
+	//For morph animation:
+	//Vertex data in need of change
+	//Position of model
+	//Position to be interpolated into (as well as maybe: Second normal to be interpolated into)
+	//Frame Rate (How many Frame rates for each animation)
+	//Frame time (Uses to to figure out how many seconds for each frame rate)
+	//Total Animation Time
+	//Current Animation Time
+	//Num animated components
+
+	std::vector<KeyData> KeyFrames;
+};
 
 struct SceneData
 {
@@ -177,7 +210,9 @@ struct SceneData
 	std::vector<MeshData> meshes;
 	std::vector<cameraData> cameras;
 	std::vector<lightData> lights;
+	std::vector<AnimData> AnimationData;
 };
+
 
 //___________________________________________________________________________________________
 //|																							|

@@ -10,27 +10,27 @@
 #include "Exporter.h"
 
 // konstuktor
-Exporter::Exporter()
+Exporter::Exporter ()
 {
 	SceneData DataStorage;
 }
 
 // destruktor
-Exporter::~Exporter()
+Exporter::~Exporter ()
 {
-	CloseExportFiles();
-	CleanUpMaya();
+	CloseExportFiles ();
+	CleanUpMaya ();
 }
 
 // initiera exportern
-bool Exporter::InitializeMaya()
+bool Exporter::InitializeMaya ()
 {
 	// [Ur Maya-dokumentationen]
 	// Initialize the Maya library.
 	// This method must be called before any Maya functions sets are used.
 	// It is acceptable to instantiate Maya fundamental types before calling this, but attempts to do anything else cause unpredictable results.
 	// When writing a Maya library mode application, a call to this method should be the first line of main.
-	if (!MLibrary::initialize("Exporter", true))
+	if (!MLibrary::initialize ("Exporter", true))
 	{
 		std::cout << "<Error> MLibrary::initialize()" << std::endl;
 		return false;
@@ -39,9 +39,9 @@ bool Exporter::InitializeMaya()
 }
 
 // förstör dynamiskt allokerade objekt etc...
-void Exporter::CleanUpMaya()
+void Exporter::CleanUpMaya ()
 {
-	
+
 	// [Ur Maya-dokumentationen]
 	// Undo the initialization performed by the initialize method, cleanup allocated Maya structures in an orderly fashion and terminate the application.
 	// Note: It is important that when a Library mode process terminates it calls this method before doing so. Failure to do so could result in the leaking of licenses and errors from Maya's static destructors.
@@ -49,21 +49,21 @@ void Exporter::CleanUpMaya()
 	// If the Library app was launched from another process as a separate thread or a child process, this can result in the parent process terminating as well.
 	// To avoid that, set exitWhenDone to false, which will prevent the current process from being terminated and will return control to the caller.
 	// However, in that case, Library mode must not be re-entered within the same process as Maya will be in an undetermined state and its behavour would be unpredictable.
-	MLibrary::cleanup(0, false);
+	MLibrary::cleanup (0, false);
 }
 
-bool Exporter::CreateExportFiles(std::string file_path)
+bool Exporter::CreateExportFiles (std::string file_path)
 {
 	// hitta index för punkten innan filtypen.
-	int sub_string_length = (int)file_path.find_last_of(".", file_path.size() - 1);
+	int sub_string_length = (int) file_path.find_last_of (".", file_path.size () - 1);
 
 	// spargenväg för den exporterade filen.
-	std::string save_path = file_path.substr(0, sub_string_length) + ".txt";
+	std::string save_path = file_path.substr (0, sub_string_length) + ".txt";
 
-	std::cout << "Exporting file to " << save_path.c_str() << std::endl << std::endl;
+	std::cout << "Exporting file to " << save_path.c_str () << std::endl << std::endl;
 
-	export_stream_.open(save_path.c_str(), std::ios_base::out | std::ios_base::trunc);
-	if (!export_stream_.is_open())
+	export_stream_.open (save_path.c_str (), std::ios_base::out | std::ios_base::trunc);
+	if (!export_stream_.is_open ())
 	{
 		std::cout << "<Error> fstream::open()" << std::endl;
 		return false;
@@ -72,24 +72,24 @@ bool Exporter::CreateExportFiles(std::string file_path)
 	return true;
 }
 
-void Exporter::CloseExportFiles()
+void Exporter::CloseExportFiles ()
 {
-	if (export_stream_.is_open())
+	if (export_stream_.is_open ())
 	{
-		export_stream_.close();
+		export_stream_.close ();
 	}
 }
 
-bool Exporter::GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill)
+bool Exporter::GetMayaFilenamesInDirectory (char *folder_path, std::vector<std::string> &list_to_fill)
 {
 	WIN32_FIND_DATA fdata;
 	HANDLE dhandle;
 
 	// måste lägga till \* till genvägen
 	{
-		char buf[MAX_PATH];
-		sprintf_s(buf, sizeof(buf), "%s\\*", folder_path);
-		if ((dhandle = FindFirstFile(buf, &fdata)) == INVALID_HANDLE_VALUE) {
+		char buf [MAX_PATH];
+		sprintf_s (buf, sizeof(buf), "%s\\*", folder_path);
+		if ((dhandle = FindFirstFile (buf, &fdata)) == INVALID_HANDLE_VALUE) {
 			return false;
 		}
 	}
@@ -100,32 +100,32 @@ bool Exporter::GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::s
 
 	while (true)
 	{
-		if (FindNextFile(dhandle, &fdata))
+		if (FindNextFile (dhandle, &fdata))
 		{
 			// vi vill endast ha ".mb"-filer
-			if (strlen(fdata.cFileName) > 4)
+			if (strlen (fdata.cFileName) > 4)
 			{
-				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName)-3], ".mb") == 0)
+				if (strcmp (&fdata.cFileName [strlen (fdata.cFileName) - 3], ".mb") == 0)
 				{
-					list_to_fill.push_back(fdata.cFileName);
+					list_to_fill.push_back (fdata.cFileName);
 				}
 			}
 		}
 		else
 		{
-			if (GetLastError() == ERROR_NO_MORE_FILES)
+			if (GetLastError () == ERROR_NO_MORE_FILES)
 			{
 				break;
 			}
 			else
 			{
-				FindClose(dhandle);
+				FindClose (dhandle);
 				return false;
 			}
 		}
 	}
 
-	if (!FindClose(dhandle))
+	if (!FindClose (dhandle))
 	{
 		return false;
 	}
@@ -134,10 +134,10 @@ bool Exporter::GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::s
 }
 
 // funktionen som startar allting - initierar Maya, hämtar Mayafilernas namn, går igenom scenen, etc...
-void Exporter::StartExporter(std::string directory_path)
+void Exporter::StartExporter (std::string directory_path)
 {
 	std::cout << "Initializing exporter" << std::endl << std::endl;
-	if (!InitializeMaya())
+	if (!InitializeMaya ())
 	{
 		std::cout << "Failed to initialize exporter" << std::endl;
 		return;
@@ -145,34 +145,34 @@ void Exporter::StartExporter(std::string directory_path)
 
 	std::vector<std::string> file_list;
 
-	if (!GetMayaFilenamesInDirectory((char*)directory_path.c_str(), file_list))
+	if (!GetMayaFilenamesInDirectory ((char*) directory_path.c_str (), file_list))
 	{
 		std::cout << ".mb file not found" << std::endl;
 		return;
 	}
 
-	char tmp_str[MAX_PATH];
+	char tmp_str [MAX_PATH];
 
-	for (auto file = file_list.begin(); file != file_list.end(); file++)
+	for (auto file = file_list.begin (); file != file_list.end (); file++)
 	{
 		// Formaterar och lagrar tecken och värden i en buffer
-		sprintf_s(tmp_str, sizeof(tmp_str), "%s%s", directory_path.c_str(), file->c_str());
+		sprintf_s (tmp_str, sizeof(tmp_str), "%s%s", directory_path.c_str (), file->c_str ());
 
-		ProcessScene(tmp_str);
+		ProcessScene (tmp_str);
 
-		CloseExportFiles();
+		CloseExportFiles ();
 	}
 
 	return;
 }
 
-void Exporter::ProcessScene(const char *file_path)
+void Exporter::ProcessScene (const char *file_path)
 {
 	MStatus status = MS::kSuccess;
 
 	// [Ur Maya-dokumentationen]
 	// Set everything back to a new file state.
-	status = MFileIO::newFile(true);
+	status = MFileIO::newFile (true);
 	if (!status)
 	{
 		std::cout << "<Error> MFileIO::newFile()" << std::endl;
@@ -181,7 +181,7 @@ void Exporter::ProcessScene(const char *file_path)
 
 	// [Ur Maya-dokumentationen]
 	// Open the given file, and set the current active file to this file. If there are unsaved changes in the current scene, this operation will fail unless the force flag is set to true.
-	status = MFileIO::open(file_path, NULL, true);
+	status = MFileIO::open (file_path, NULL, true);
 	if (!status)
 	{
 		std::cout << "<Error> MFileIO::open()" << std::endl;
@@ -189,7 +189,7 @@ void Exporter::ProcessScene(const char *file_path)
 	}
 
 	// skapar exportfilerna
-	if (!CreateExportFiles(file_path))
+	if (!CreateExportFiles (file_path))
 	{
 		std::cout << "<Error> CreateExportFiles()" << std::endl;
 		return;
@@ -197,7 +197,7 @@ void Exporter::ProcessScene(const char *file_path)
 
 	// identifiera och extrahera data från scenen
 	std::cout << "Identifying scene information" << std::endl << std::endl;
-	if (!IdentifyAndExtractScene())
+	if (!IdentifyAndExtractScene ())
 	{
 		std::cout << "<Error> IdentifyAndExtractScene()" << std::endl;
 		return;
@@ -206,7 +206,7 @@ void Exporter::ProcessScene(const char *file_path)
 	{
 		// exportera data till fil
 		std::cout << "Exporting scene information" << std::endl << std::endl;
-		ExportScene();
+		ExportScene ();
 	}
 }
 
@@ -216,145 +216,145 @@ void Exporter::ProcessScene(const char *file_path)
 //|_________________________________________________________________________________________|
 
 // identifiera och extrahera data från scenen
-bool Exporter::IdentifyAndExtractScene()
+bool Exporter::IdentifyAndExtractScene ()
 {
 	bool status = true;
-	
-	status = IdentifyAndExtractMeshes();
+
+	status = IdentifyAndExtractMeshes ();
 
 	return status;
 }
 
 //CURRENTLY ONLY SAVING THE MOST RELEVANT DATA
-void Exporter::extractCamera(MObject& cam)
-{	
+void Exporter::extractCamera (MObject& cam)
+{
 	//Temp storage for camera
 	cameraData TempCameraStorage;
 
 	//Create a fucntion set for the camera
-	MFnCamera fn(cam);
+	MFnCamera fn (cam);
 
 	//Ignore orthographic cameras. Top, right, left....
-	if (fn.isOrtho())
+	if (fn.isOrtho ())
 		return;
 
 	//attach a function set to the parent transform
-	MFnDependencyNode fnParent(fn.parent(0));
+	MFnDependencyNode fnParent (fn.parent (0));
 
 	//Output some camera info
-	std::cout << "Camera: " << fn.name().asChar()
+	std::cout << "Camera: " << fn.name ().asChar ()
 		<< "\n\tparent "
-		<< fnParent.name().asChar()
+		<< fnParent.name ().asChar ()
 		<< std::endl;
 
 	//Get Transform experimentation
-	MFnTransform fs(fn.parent(0));
-	MMatrix matrix = fs.transformation().asMatrix();
+	MFnTransform fs (fn.parent (0));
+	MMatrix matrix = fs.transformation ().asMatrix ();
 	std::cout << "\nTransform Matrix: " << matrix << std::endl;
 
 	TempCameraStorage.transformMatrix = matrix;
 
 	//aspect ratio
-	std::cout << "\nAspect ratio: " << fn.aspectRatio()
-			<< std::endl;
-	
-	//near clipping plane
-	std::cout << "\nNear: : " << fn.nearClippingPlane()
-				<< std::endl;
-	
-	//far clipping plane
-	std::cout << "\nFar: " << fn.farClippingPlane()
+	std::cout << "\nAspect ratio: " << fn.aspectRatio ()
 		<< std::endl;
-	
+
+	//near clipping plane
+	std::cout << "\nNear: : " << fn.nearClippingPlane ()
+		<< std::endl;
+
+	//far clipping plane
+	std::cout << "\nFar: " << fn.farClippingPlane ()
+		<< std::endl;
+
 	//horizontal field of view
-	std::cout << "\nHorizontal fov: " << fn.horizontalFieldOfView()
+	std::cout << "\nHorizontal fov: " << fn.horizontalFieldOfView ()
 		<< std::endl;
 
 	//vertical field of view
-	std::cout << "\nVertical fov: " << fn.verticalFieldOfView()
+	std::cout << "\nVertical fov: " << fn.verticalFieldOfView ()
 		<< std::endl;
 
 	//badly formated Projection matrix
-	std::cout << "\nProjectionMatrix: " << fn.projectionMatrix()
+	std::cout << "\nProjectionMatrix: " << fn.projectionMatrix ()
 		<< std::endl;
-	TempCameraStorage.projectionMatrix = fn.projectionMatrix();
+	TempCameraStorage.projectionMatrix = fn.projectionMatrix ();
 
 
 	//Up direction
-	std::cout << "\nUp Vector: " << fn.upDirection()
+	std::cout << "\nUp Vector: " << fn.upDirection ()
 		<< std::endl;
-	TempCameraStorage.upVector = fn.upDirection();
+	TempCameraStorage.upVector = fn.upDirection ();
 
 	//view direction
-	std::cout << "\nView Direction: " << fn.viewDirection()
+	std::cout << "\nView Direction: " << fn.viewDirection ()
 		<< std::endl;
-	TempCameraStorage.viewDirection = fn.viewDirection();
-	
+	TempCameraStorage.viewDirection = fn.viewDirection ();
+
 	//pushback to store everything
-	scene_.cameras.push_back(TempCameraStorage);
+	scene_.cameras.push_back (TempCameraStorage);
 
 }
 
-void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name)
+void Exporter::extractColor (Color& tempcolor, MFnDependencyNode& fn, MString name)
 {
-			MPlug p;
+	MPlug p;
 
-			MString r = name;
-			r += "R";
-			MString g = name;
-			g += "G";
-			MString b = name;
-			b += "B";
-			MString a = name;
-			a += "A";
+	MString r = name;
+	r += "R";
+	MString g = name;
+	g += "G";
+	MString b = name;
+	b += "B";
+	MString a = name;
+	a += "A";
 
-			p = fn.findPlug(r.asChar());
-			p.getValue(tempcolor.r);
-			p = fn.findPlug(g.asChar());
-			p.getValue(tempcolor.g);
-			p = fn.findPlug(b.asChar());
-			p.getValue(tempcolor.b);
-			p = fn.findPlug(a.asChar());
-			p.getValue(tempcolor.a);
-			p = fn.findPlug(name.asChar());
+	p = fn.findPlug (r.asChar ());
+	p.getValue (tempcolor.r);
+	p = fn.findPlug (g.asChar ());
+	p.getValue (tempcolor.g);
+	p = fn.findPlug (b.asChar ());
+	p.getValue (tempcolor.b);
+	p = fn.findPlug (a.asChar ());
+	p.getValue (tempcolor.a);
+	p = fn.findPlug (name.asChar ());
 
 
-			MPlugArray connections;
-			p.connectedTo(connections, true, false);
+	MPlugArray connections;
+	p.connectedTo (connections, true, false);
 
-			int debug = connections.length();
+	int debug = connections.length ();
 
-			for (int i = 0; i!=connections.length(); ++i)
-			{
-				// if file texture found
-				if (connections[i].node().apiType() == MFn::kFileTexture)
-				{
-					// bind a function set to it ....
-					MFnDependencyNode fnDep(connections[i].node());
+	for (int i = 0; i != connections.length (); ++i)
+	{
+		// if file texture found
+		if (connections [i].node ().apiType () == MFn::kFileTexture)
+		{
+			// bind a function set to it ....
+			MFnDependencyNode fnDep (connections [i].node ());
 
-					// to get the node name
-					tempcolor.texfileInternal = fnDep.name().asChar();
-					MPlug filename = fnDep.findPlug("ftn");
+			// to get the node name
+			tempcolor.texfileInternal = fnDep.name ().asChar ();
+			MPlug filename = fnDep.findPlug ("ftn");
 
-					//sparar hela sökvägen till texturen
-					tempcolor.texfileExternal = filename.asString().asChar();
+			//sparar hela sökvägen till texturen
+			tempcolor.texfileExternal = filename.asString ().asChar ();
 
-					//kopierar texturfiler
-					std::string base_filename = tempcolor.texfileExternal.substr(tempcolor.texfileExternal.find_last_of("/\\") + 1);
+			//kopierar texturfiler
+			std::string base_filename = tempcolor.texfileExternal.substr (tempcolor.texfileExternal.find_last_of ("/\\") + 1);
 
-					CopyFile(tempcolor.texfileExternal.c_str(), base_filename.c_str(), false);
+			CopyFile (tempcolor.texfileExternal.c_str (), base_filename.c_str (), false);
 
-					// stop looping
-					break;
+			// stop looping
+			break;
 
-				}
+		}
 
-			}
+	}
 
 
 }
 
-void Exporter::extractLight(MObject& mObj)
+void Exporter::extractLight (MObject& mObj)
 {
 	//temp storage for light
 	lightData TempLightStorage;
@@ -368,142 +368,143 @@ void Exporter::extractLight(MObject& mObj)
 	MFnLight func (mObj);
 
 	//dess parent
-	MFnDagNode functionParent (func.parent(0));
+	MFnDagNode functionParent (func.parent (0));
 
 	//ljusets färg
-	MColor col(0.0f, 0.0f, 0.0f);
+	MColor col (0.0f, 0.0f, 0.0f);
 	//possible fault: func maybe fnlight????
-	col = func.color();
+	col = func.color ();
 
 	//output light
-	std::cout << "parent " << functionParent.name().asChar()
-		<< "\ntype " << mObj.apiTypeStr()
+	std::cout << "parent " << functionParent.name ().asChar ()
+		<< "\ntype " << mObj.apiTypeStr ()
 		<< "\nLight color " << col.r << " " << col.g << " " << col.b
-		<< "\nLight intensity " << func.intensity()
+		<< "\nLight intensity " << func.intensity ()
 		<< "\nLight direction " << func.lightDirection (0, MSpace::kWorld, 0) << "\n" << std::endl;
 
 	//för specifika attribut till specifika ljustyper:
 	switch (mObj.apiType ())
 	{
-			//pointlight-only attributes:
-		case MFn::kPointLight:
-		{
-			MFnPointLight fnPointLight(mObj);
-			tempPointLights.color.x = col.r;
-			tempPointLights.color.y = col.g;
-			tempPointLights.color.z = col.b;
-			tempPointLights.intensity = func.intensity();
+		//pointlight-only attributes:
+	case MFn::kPointLight:
+	{
+							 MFnPointLight fnPointLight (mObj);
+							 tempPointLights.color.x = col.r;
+							 tempPointLights.color.y = col.g;
+							 tempPointLights.color.z = col.b;
+							 tempPointLights.intensity = func.intensity ();
 
-			//push back in the light temp storage
-			TempLightStorage.pointLights.push_back(tempPointLights);
-			
-		}
-			break;
-			//ambientlight-only
-		case MFn::kAmbientLight:
-		{
-			MFnAmbientLight fnAmbientLight(mObj);
-			tempAmbiLights.color.x = col.r;
-			tempAmbiLights.color.y = col.g;
-			tempAmbiLights.color.z = col.b;
-			tempAmbiLights.intensity = func.intensity();
+							 //push back in the light temp storage
+							 TempLightStorage.pointLights.push_back (tempPointLights);
 
-			//push back in the light temp storage
-			TempLightStorage.ambientLights.push_back(tempAmbiLights);
-			
-		}
-			break;
-			//spotlight-only
-		case MFn::kSpotLight:
-		{
-			MFnSpotLight fnSpotLight(mObj);
-			//cone angle represents the angle that the spotlight cone makes with the spotlight direction vector
-			//penumbra angle is the outer edge of the light 
-			//dropoff represents the degree to which the light intensity decreases with the angular distance from the light direction vector.
-			std::cout << "Cone angle " << fnSpotLight.coneAngle() << "\nPenumbra angle " << fnSpotLight.penumbraAngle()
-				<< "\nDropoff " << fnSpotLight.dropOff() << "\n" << std::endl;
+	}
+		break;
+		//ambientlight-only
+	case MFn::kAmbientLight:
+	{
+							   MFnAmbientLight fnAmbientLight (mObj);
+							   tempAmbiLights.color.x = col.r;
+							   tempAmbiLights.color.y = col.g;
+							   tempAmbiLights.color.z = col.b;
+							   tempAmbiLights.intensity = func.intensity ();
 
-			tempSpotLights.color.x = col.r;
-			tempSpotLights.color.y = col.g;
-			tempSpotLights.color.z = col.b;
-			tempSpotLights.intensity = func.intensity();
-			tempSpotLights.coneAngle = fnSpotLight.coneAngle();
-			tempSpotLights.penumbraAngle = fnSpotLight.penumbraAngle();
-			tempSpotLights.dropoff = fnSpotLight.dropOff();
-			tempSpotLights.dir = func.lightDirection(0, MSpace::kWorld, 0);
+							   //push back in the light temp storage
+							   TempLightStorage.ambientLights.push_back (tempAmbiLights);
 
-			//push back in the light temp storage
-			TempLightStorage.spotLights.push_back(tempSpotLights);
+	}
+		break;
+		//spotlight-only
+	case MFn::kSpotLight:
+	{
+							MFnSpotLight fnSpotLight (mObj);
+							//cone angle represents the angle that the spotlight cone makes with the spotlight direction vector
+							//penumbra angle is the outer edge of the light 
+							//dropoff represents the degree to which the light intensity decreases with the angular distance from the light direction vector.
+							std::cout << "Cone angle " << fnSpotLight.coneAngle () << "\nPenumbra angle " << fnSpotLight.penumbraAngle ()
+								<< "\nDropoff " << fnSpotLight.dropOff () << "\n" << std::endl;
 
-		}
-			break;
-			//directional light-only
-		case MFn::kDirectionalLight:
-		{
-			MFnDirectionalLight fnDirLight(mObj);
+							tempSpotLights.color.x = col.r;
+							tempSpotLights.color.y = col.g;
+							tempSpotLights.color.z = col.b;
+							tempSpotLights.intensity = func.intensity ();
+							tempSpotLights.coneAngle = fnSpotLight.coneAngle ();
+							tempSpotLights.penumbraAngle = fnSpotLight.penumbraAngle ();
+							tempSpotLights.dropoff = fnSpotLight.dropOff ();
+							tempSpotLights.dir = func.lightDirection (0, MSpace::kWorld, 0);
 
-			tempDirLights.color.x = col.r;
-			tempDirLights.color.y = col.g;
-			tempDirLights.color.z = col.b;
-			tempDirLights.intensity = func.intensity();
-			tempDirLights.dir = func.lightDirection(0, MSpace::kWorld, 0);
+							//push back in the light temp storage
+							TempLightStorage.spotLights.push_back (tempSpotLights);
 
-			//push back in the light temp storage
-			TempLightStorage.dirLights.push_back(tempDirLights);
+	}
+		break;
+		//directional light-only
+	case MFn::kDirectionalLight:
+	{
+								   MFnDirectionalLight fnDirLight (mObj);
 
-		}
-			break;
-			//arealight-only
-		case MFn::kAreaLight:
-		{
-			MFnAreaLight fnAreaLight (mObj);
+								   tempDirLights.color.x = col.r;
+								   tempDirLights.color.y = col.g;
+								   tempDirLights.color.z = col.b;
+								   tempDirLights.intensity = func.intensity ();
+								   tempDirLights.dir = func.lightDirection (0, MSpace::kWorld, 0);
 
-			tempAreaLights.color.x = col.r;
-			tempAreaLights.color.y = col.g;
-			tempAreaLights.color.z = col.b;
-			tempAreaLights.intensity = func.intensity();
+								   //push back in the light temp storage
+								   TempLightStorage.dirLights.push_back (tempDirLights);
 
-			//push back in the light temp storage
-			TempLightStorage.areaLights.push_back(tempAreaLights);
+	}
+		break;
+		//arealight-only
+	case MFn::kAreaLight:
+	{
+							MFnAreaLight fnAreaLight (mObj);
 
-		}
-			break;
+							tempAreaLights.color.x = col.r;
+							tempAreaLights.color.y = col.g;
+							tempAreaLights.color.z = col.b;
+							tempAreaLights.intensity = func.intensity ();
 
-		default:
-			break;
+							//push back in the light temp storage
+							TempLightStorage.areaLights.push_back (tempAreaLights);
 
-		scene_.lights.push_back(TempLightStorage);
+	}
+		break;
+
+	default:
+		break;
+
+		scene_.lights.push_back (TempLightStorage);
 
 	}
 
 }
 
-void Exporter::extractKeyData(MObject& key)
+void Exporter::extractKeyData (MObject& key)
 {
 
-	MFnAnimCurve fn(key);
+	MFnAnimCurve fn (key);
 
-	unsigned int iKeyCount = fn.numKeys();
+	KeyData iKeyCount;
+	iKeyCount.numKeys = fn.numKeys ();
 
 	// Make sure not to do anything if there are no keyframes
-	if (iKeyCount == 0) return;
+	if (iKeyCount.numKeys == 0) return;
 
-	std::cout << "AnimCurve " << fn.name().asChar() << std::endl;
-	std::cout << "NumKeys " << iKeyCount << std::endl;
+	std::cout << "AnimCurve " << fn.name ().asChar () << std::endl;	
+	std::cout << "NumKeys " << iKeyCount.numKeys << std::endl;
 
 	// get all keyframe times & values
-	for (unsigned int i = 0; i < iKeyCount; i++)
+	for (unsigned int i = 0; i < iKeyCount.numKeys; i++)
 	{
-		MTime Time = fn.time(i).value();
-		float Value = fn.value(i);
+		MTime Time = fn.time (i).value ();
+		float Value = fn.value (i);
 
 		//Getting hte tangents for the animation curves
 		float ix, iy, ox, oy;
-		fn.getTangent(i, ix, iy, true);
-		fn.getTangent(i, ox, oy, false);
+		fn.getTangent (i, ix, iy, true);
+		fn.getTangent (i, ox, oy, false);
 
 		// write keyframe info
-		std::cout << " time " << Time.as(MTime::kSeconds);
+		std::cout << " time " << Time.as (MTime::kSeconds);
 		std::cout << " value " << Value;
 		std::cout << " InTangent " << iy;
 		std::cout << " OutTangent " << oy << std::endl;
@@ -512,134 +513,134 @@ void Exporter::extractKeyData(MObject& key)
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
-bool Exporter::IdentifyAndExtractMeshes()
+bool Exporter::IdentifyAndExtractMeshes ()
 {
 	UINT index = 0;
-	scene_.meshes.clear();
+	scene_.meshes.clear ();
 
 	//itererar över DG:n och lagrar rgba-värden och texturnamn i ett temporärt material
 	material tempmaterial;
-	MItDependencyNodes matIt(MFn::kLambert);
-	MString aC("ambientColor"), dC("color"), sC("specularColor"), gC("incandescence"), tC("transparency");
-	while (!matIt.isDone()){
-		if (matIt.item().hasFn(MFn::kPhong))
+	MItDependencyNodes matIt (MFn::kLambert);
+	MString aC ("ambientColor"), dC ("color"), sC ("specularColor"), gC ("incandescence"), tC ("transparency");
+	while (!matIt.isDone ()){
+		if (matIt.item ().hasFn (MFn::kPhong))
 		{
-			MFnPhongShader tempphong(matIt.item());
+			MFnPhongShader tempphong (matIt.item ());
 			tempmaterial.type = PHONG;
-			extractColor(tempmaterial.ambient, tempphong, aC);
-			extractColor(tempmaterial.diffuse, tempphong, dC);
-			extractColor(tempmaterial.specular, tempphong, sC);
-			extractColor(tempmaterial.glow, tempphong, gC);
-			extractColor(tempmaterial.transparency, tempphong, tC);
+			extractColor (tempmaterial.ambient, tempphong, aC);
+			extractColor (tempmaterial.diffuse, tempphong, dC);
+			extractColor (tempmaterial.specular, tempphong, sC);
+			extractColor (tempmaterial.glow, tempphong, gC);
+			extractColor (tempmaterial.transparency, tempphong, tC);
 		}
-		else if (matIt.thisNode().hasFn(MFn::kBlinn))
+		else if (matIt.thisNode ().hasFn (MFn::kBlinn))
 		{
-			MFnBlinnShader tempblinn(matIt.item());
+			MFnBlinnShader tempblinn (matIt.item ());
 			tempmaterial.type = BLINN;
-			extractColor(tempmaterial.ambient, tempblinn, aC);
-			extractColor(tempmaterial.diffuse, tempblinn, dC);
-			extractColor(tempmaterial.specular, tempblinn, sC);
-			extractColor(tempmaterial.glow, tempblinn, gC);
-			extractColor(tempmaterial.transparency, tempblinn, tC);
+			extractColor (tempmaterial.ambient, tempblinn, aC);
+			extractColor (tempmaterial.diffuse, tempblinn, dC);
+			extractColor (tempmaterial.specular, tempblinn, sC);
+			extractColor (tempmaterial.glow, tempblinn, gC);
+			extractColor (tempmaterial.transparency, tempblinn, tC);
 		}
-		else if (matIt.item().hasFn(MFn::kLambert))
+		else if (matIt.item ().hasFn (MFn::kLambert))
 		{
-			MFnLambertShader templamb(matIt.item());
+			MFnLambertShader templamb (matIt.item ());
 			tempmaterial.type = LAMBERT;
-			extractColor(tempmaterial.ambient, templamb, aC);
-			extractColor(tempmaterial.diffuse, templamb, dC);
-			extractColor(tempmaterial.specular, templamb, sC);
-			extractColor(tempmaterial.glow, templamb, gC);
-			extractColor(tempmaterial.transparency, templamb, tC);
+			extractColor (tempmaterial.ambient, templamb, aC);
+			extractColor (tempmaterial.diffuse, templamb, dC);
+			extractColor (tempmaterial.specular, templamb, sC);
+			extractColor (tempmaterial.glow, templamb, gC);
+			extractColor (tempmaterial.transparency, templamb, tC);
 		}
 		else
-			printf("No material found\n");
-		scene_.materials.push_back(tempmaterial);
-		matIt.next();
+			printf ("No material found\n");
+		scene_.materials.push_back (tempmaterial);
+		matIt.next ();
 	}
 
-	matIt.reset(MFn::kAnimCurve);
+	matIt.reset (MFn::kAnimCurve);
 
-	while(!matIt.isDone())
+	while (!matIt.isDone ())
 	{
 		//Output each curve we find
-		extractKeyData(matIt.item());
+		extractKeyData (matIt.item ());
 
 		//get next mesh
-		matIt.next();
+		matIt.next ();
 	}
 
 	MDagPath dag_path;
-	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+	MItDag dag_iter (MItDag::kBreadthFirst, MFn::kMesh);
 
-	while (!dag_iter.isDone())
+	while (!dag_iter.isDone ())
 	{
-		if (dag_iter.getPath(dag_path))
+		if (dag_iter.getPath (dag_path))
 		{
-			MFnDagNode dag_node = dag_path.node();
-			
+			MFnDagNode dag_node = dag_path.node ();
+
 			// vill endast ha "icke-history"-föremål
-			if (!dag_node.isIntermediateObject())
+			if (!dag_node.isIntermediateObject ())
 			{
 				// triangulera meshen innan man hämtar punkterna
-				MFnMesh mesh(dag_path);
-				ExtractMeshData(mesh, index);
+				MFnMesh mesh (dag_path);
+				ExtractMeshData (mesh, index);
 				index++;
 			}
 		}
 
-		dag_iter.next();
+		dag_iter.next ();
 	}
 
 	//Hitta kamera data
-	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
-	while (!dag_iter.isDone())
+	dag_iter.reset (dag_iter.root (), MItDag::kBreadthFirst, MFn::kCamera);
+	while (!dag_iter.isDone ())
 	{
-		
-		extractCamera(dag_iter.item());
-		dag_iter.next();
+
+		extractCamera (dag_iter.item ());
+		dag_iter.next ();
 	}
 
 	//itererar dag och söker data för tillgängliga ljus
 	//om ej ljus finns i scenen ignoreras denna iteration för sagda scen.
-	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
-	while (!dag_iter.isDone())
+	dag_iter.reset (dag_iter.root (), MItDag::kBreadthFirst, MFn::kLight);
+	while (!dag_iter.isDone ())
 	{
 		//funktion till vår iterator
-		MFnLight func (dag_iter.item());
+		MFnLight func (dag_iter.item ());
 
 		//namn:
 		export_stream_ << "Light: " << func.name ().asChar () << std::endl;
 
 		//kalla på extractLight function
-		extractLight(dag_iter.item ());
+		extractLight (dag_iter.item ());
 
 		//vidare till nästa ljus i dag'en
-		dag_iter.next();
+		dag_iter.next ();
 
 
 		/*
 		if (dag_iter.getPath(dag_path))
 		{
-			auto test = dag_path.fullPathName();
-			export_stream_ << "light: " << test << std::endl;
+		auto test = dag_path.fullPathName();
+		export_stream_ << "light: " << test << std::endl;
 		}
 		dag_iter.next();
 		*/
 	}
 
 	//general purpose iterator, sista argument är filtret
-/*
-	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
-	while (!dag_iter.isDone())
-	{
+	/*
+		dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
+		while (!dag_iter.isDone())
+		{
 		if (dag_iter.getPath(dag_path))
 		{
 
 		}
 		dag_iter.next();
-	}
-*/
+		}
+		*/
 
 
 	return true;
@@ -652,82 +653,82 @@ bool Exporter::IdentifyAndExtractMeshes()
 
 
 // hämta all nödvändig data och lägger det i ett MeshData-objekt, som senare används vid exportering.
-bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
+bool Exporter::ExtractMeshData (MFnMesh &mesh, UINT index)
 {
 	MeshData mesh_data;
 
 	MSpace::Space world_space = MSpace::kWorld;
 
 	// DAG-path
-	mesh_data.mesh_path = mesh.dagPath();
+	mesh_data.mesh_path = mesh.dagPath ();
 
 	// namn och id
-	mesh_data.name = mesh.name();
+	mesh_data.name = mesh.name ();
 	mesh_data.id = index;
 
 	// triangulera meshen innan man hämtar punkterna
 	MString command = "polyTriangulate -ch 1 " + mesh_data.name;
-	if (!MGlobal::executeCommand(command))
+	if (!MGlobal::executeCommand (command))
 	{
 		return false;
 	}
 
 	// hämta icke-indexerade vertexpunkter
-	if (!mesh.getPoints(mesh_data.points, world_space))
+	if (!mesh.getPoints (mesh_data.points, world_space))
 	{
 		return false;
 	}
 
 	// hämta icke-indexerade normaler
-	if (!mesh.getNormals(mesh_data.normals, world_space))
+	if (!mesh.getNormals (mesh_data.normals, world_space))
 	{
 		return false;
 	}
 
 	//variabler för att mellanlagra uvdata och tangenter/bitangenter
 	MStringArray uvSets;
-	mesh.getUVSetNames(uvSets);
+	mesh.getUVSetNames (uvSets);
 
 	uvSet tempUVSet;
 	// iterera över uvsets och ta ut koordinater, tangenter och bitangenter
-	for (int i = 0; i < uvSets.length(); i++)
+	for (int i = 0; i < uvSets.length (); i++)
 	{
-		MString currentSet = uvSets[i];
-		mesh.getUVs(tempUVSet.Us, tempUVSet.Vs, &currentSet);
-		mesh_data.uvSets.push_back(tempUVSet);
+		MString currentSet = uvSets [i];
+		mesh.getUVs (tempUVSet.Us, tempUVSet.Vs, &currentSet);
+		mesh_data.uvSets.push_back (tempUVSet);
 
-		mesh.getTangents(mesh_data.uvSets[i].tangents, world_space, &currentSet);
-		mesh.getBinormals(mesh_data.uvSets[i].binormals, world_space, &currentSet);
+		mesh.getTangents (mesh_data.uvSets [i].tangents, world_space, &currentSet);
+		mesh.getBinormals (mesh_data.uvSets [i].binormals, world_space, &currentSet);
 	}
 
 	//itererar över trianglar och returnerar ID:n för associerade vertiser, normaler och uvset
-	MItMeshPolygon itFaces(mesh.dagPath());
-	while (!itFaces.isDone()) {
+	MItMeshPolygon itFaces (mesh.dagPath ());
+	while (!itFaces.isDone ()) {
 		face tempface;
 
-//		printf("%d", itFaces.vertexIndex(0));
-//		printf(" %d", itFaces.vertexIndex(1));
-//		printf(" %d\n", itFaces.vertexIndex(2));
+		//		printf("%d", itFaces.vertexIndex(0));
+		//		printf(" %d", itFaces.vertexIndex(1));
+		//		printf(" %d\n", itFaces.vertexIndex(2));
 
-		int vc = itFaces.polygonVertexCount();
-		for (int i = 0; i<vc; ++i) {
-			tempface.verts[i].pointID = itFaces.vertexIndex(i);
-			tempface.verts[i].normalID = itFaces.normalIndex(i);
+		int vc = itFaces.polygonVertexCount ();
+		for (int i = 0; i < vc; ++i) {
+			tempface.verts [i].pointID = itFaces.vertexIndex (i);
+			tempface.verts [i].normalID = itFaces.normalIndex (i);
 
-			for (int k = 0; k<uvSets.length(); ++k) {
+			for (int k = 0; k < uvSets.length (); ++k) {
 				int temptexCoordsID;
-				itFaces.getUVIndex(i, temptexCoordsID, &uvSets[k]);
+				itFaces.getUVIndex (i, temptexCoordsID, &uvSets [k]);
 
-				tempface.verts[i].texCoordsID.push_back(temptexCoordsID);
+				tempface.verts [i].texCoordsID.push_back (temptexCoordsID);
 			}
 		}
 
-		mesh_data.faces.push_back(tempface);
-		itFaces.next();
+		mesh_data.faces.push_back (tempface);
+		itFaces.next ();
 	}
 
 	// lägg till mesh_data i scen-datan
-	scene_.meshes.push_back(mesh_data);
+	scene_.meshes.push_back (mesh_data);
 
 	return true;
 }
@@ -739,49 +740,49 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 //|_________________________________________________________________________________________|
 #include<maya/MFnCamera.h>
 // exporterar scenen
-void Exporter::ExportScene()
+void Exporter::ExportScene ()
 {
-	ExportMeshes();
+	ExportMeshes ();
 }
 
 // exporterar alla meshar (antal meshar, namn per mesh, antal vertexpunkter per mesh och vertexpositioner per mesh)
-void Exporter::ExportMeshes()
+void Exporter::ExportMeshes ()
 {
-	export_stream_ << "\tmeshes " << scene_.meshes.size() << std::endl;
-	for (auto mesh_iter = scene_.meshes.begin(); mesh_iter != scene_.meshes.end(); mesh_iter++)
+	export_stream_ << "\tmeshes " << scene_.meshes.size () << std::endl;
+	for (auto mesh_iter = scene_.meshes.begin (); mesh_iter != scene_.meshes.end (); mesh_iter++)
 	{
-		export_stream_ << "\t\tname " << mesh_iter->name.asChar() << std::endl;
+		export_stream_ << "\t\tname " << mesh_iter->name.asChar () << std::endl;
 
-		MItMeshPolygon polygon_iter(mesh_iter->mesh_path);
+		MItMeshPolygon polygon_iter (mesh_iter->mesh_path);
 		int vertexIndex = 0;
 
-		export_stream_ << "\t\t\tvertices " << polygon_iter.count() * 3 << std::endl;
+		export_stream_ << "\t\t\tvertices " << polygon_iter.count () * 3 << std::endl;
 
 		int j = 0;
 		while (j != 2)
 		{
-			while (!polygon_iter.isDone())
+			while (!polygon_iter.isDone ())
 			{
 				MIntArray index_array;
-				polygon_iter.getVertices(index_array);
-				if (index_array.length() == 3)
+				polygon_iter.getVertices (index_array);
+				if (index_array.length () == 3)
 				{
 					for (int i = 0; i < 3; i++)
 					{
 						if (j == 0)
 						{
-							vertexIndex = polygon_iter.vertexIndex(2 - i);
+							vertexIndex = polygon_iter.vertexIndex (2 - i);
 							export_stream_ << "\t\t\t\tp " <<
-								mesh_iter->points[vertexIndex].x << " " <<
-								mesh_iter->points[vertexIndex].y << " " <<
-								mesh_iter->points[vertexIndex].z << std::endl;
+								mesh_iter->points [vertexIndex].x << " " <<
+								mesh_iter->points [vertexIndex].y << " " <<
+								mesh_iter->points [vertexIndex].z << std::endl;
 						}
 						else
 						{
 							export_stream_ << "\t\t\t\tn " <<
-								mesh_iter->normals[vertexIndex].x << " " <<
-								mesh_iter->normals[vertexIndex].y << " " <<
-								mesh_iter->normals[vertexIndex].z << std::endl;
+								mesh_iter->normals [vertexIndex].x << " " <<
+								mesh_iter->normals [vertexIndex].y << " " <<
+								mesh_iter->normals [vertexIndex].z << std::endl;
 						}
 					}
 				}
@@ -790,31 +791,31 @@ void Exporter::ExportMeshes()
 					std::cout << "Error: non-triangular polygon detected. Please only use triangles." << std::endl;
 					std::cout << "Attempts to continue export with missing polygon..." << std::endl;
 				}
-				polygon_iter.next();
+				polygon_iter.next ();
 			}
 			//Reset Polygon iterationen för normalerna
-			polygon_iter.reset();
+			polygon_iter.reset ();
 			j++;
 		}
 
 
-		for (int i = 0; i < mesh_iter->uvSets.size(); i++)
+		for (int i = 0; i < mesh_iter->uvSets.size (); i++)
 		{
 			export_stream_ << "\t\t\tUVSet " << i << std::endl;
 
-			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+			for (int x = 0; x < mesh_iter->uvSets [i].Us.length (); x++)
 			{
-				export_stream_ << "\t\t\t\tuv " << mesh_iter->uvSets[i].Us[x] << " " << mesh_iter->uvSets[i].Vs[x] << std::endl;
+				export_stream_ << "\t\t\t\tuv " << mesh_iter->uvSets [i].Us [x] << " " << mesh_iter->uvSets [i].Vs [x] << std::endl;
 			}
 
-			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+			for (int x = 0; x < mesh_iter->uvSets [i].Us.length (); x++)
 			{
-				export_stream_ << "\t\t\t\tt " << mesh_iter->uvSets[i].tangents[x] << std::endl;
+				export_stream_ << "\t\t\t\tt " << mesh_iter->uvSets [i].tangents [x] << std::endl;
 			}
 
-			for (int x = 0; x < mesh_iter->uvSets[i].Us.length(); x++)
+			for (int x = 0; x < mesh_iter->uvSets [i].Us.length (); x++)
 			{
-				export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets[i].binormals[x] << std::endl;
+				export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets [i].binormals [x] << std::endl;
 			}
 		}
 	}
