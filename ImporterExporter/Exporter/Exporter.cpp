@@ -404,7 +404,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 	UINT index = 0;
 	scene_.meshes.clear();
 
-	//itererar över DG:n och lagrar rgba värden i ett temporärt material
+	//itererar över DG:n och lagrar rgba-värden och texturnamn i ett temporärt material
 	material tempmaterial;
 	MItDependencyNodes matIt(MFn::kLambert);
 	MString aC("ambientColor"), dC("color"), sC("specularColor"), gC("incandescence"), tC("transparency");
@@ -412,6 +412,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		if (matIt.item().hasFn(MFn::kPhong))
 		{
 			MFnPhongShader tempphong(matIt.item());
+			tempmaterial.type = PHONG;
 			extractColor(tempmaterial.ambient, tempphong, aC);
 			extractColor(tempmaterial.diffuse, tempphong, dC);
 			extractColor(tempmaterial.specular, tempphong, sC);
@@ -421,6 +422,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		else if (matIt.thisNode().hasFn(MFn::kBlinn))
 		{
 			MFnBlinnShader tempblinn(matIt.item());
+			tempmaterial.type = BLINN;
 			extractColor(tempmaterial.ambient, tempblinn, aC);
 			extractColor(tempmaterial.diffuse, tempblinn, dC);
 			extractColor(tempmaterial.specular, tempblinn, sC);
@@ -430,6 +432,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		else if (matIt.item().hasFn(MFn::kLambert))
 		{
 			MFnLambertShader templamb(matIt.item());
+			tempmaterial.type = LAMBERT;
 			extractColor(tempmaterial.ambient, templamb, aC);
 			extractColor(tempmaterial.diffuse, templamb, dC);
 			extractColor(tempmaterial.specular, templamb, sC);
@@ -538,6 +541,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 //|								FUNKTIONER FÖR ATT EXTRAHERA DATA							|
 //|_________________________________________________________________________________________|
 
+
 // hämta all nödvändig data och lägger det i ett MeshData-objekt, som senare används vid exportering.
 bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 {
@@ -585,6 +589,32 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 
 		mesh.getTangents(mesh_data.uvSets[i].tangents, world_space, &currentSet);
 		mesh.getBinormals(mesh_data.uvSets[i].binormals, world_space, &currentSet);
+	}
+
+	//itererar över trianglar och returnerar ID:n för associerade vertiser, normaler och uvset
+	MItMeshPolygon itFaces(mesh.dagPath());
+	while (!itFaces.isDone()) {
+		face tempface;
+
+//		printf("%d", itFaces.vertexIndex(0));
+//		printf(" %d", itFaces.vertexIndex(1));
+//		printf(" %d\n", itFaces.vertexIndex(2));
+
+		int vc = itFaces.polygonVertexCount();
+		for (int i = 0; i<vc; ++i) {
+			tempface.verts[i].pointID = itFaces.vertexIndex(i);
+			tempface.verts[i].normalID = itFaces.normalIndex(i);
+
+			for (int k = 0; k<uvSets.length(); ++k) {
+				int temptexCoordsID;
+				itFaces.getUVIndex(i, temptexCoordsID, &uvSets[k]);
+
+				tempface.verts[i].texCoordsID.push_back(temptexCoordsID);
+			}
+		}
+
+		mesh_data.faces.push_back(tempface);
+		itFaces.next();
 	}
 
 	// lägg till mesh_data i scen-datan

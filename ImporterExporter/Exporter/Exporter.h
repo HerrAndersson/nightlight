@@ -71,6 +71,18 @@ struct uvSet
 	MFloatVectorArray binormals;
 };
 
+
+struct faceIndices
+{
+	int pointID, normalID;
+	std::vector<int> texCoordsID;
+};
+
+struct face
+{
+	faceIndices verts[3];
+};
+
 struct MeshData
 {
 	MDagPath mesh_path;
@@ -80,6 +92,8 @@ struct MeshData
 	MFloatPointArray points;
 	MFloatVectorArray normals;
 	std::vector<uvSet> uvSets;
+
+	std::vector<face> faces;
 };
 
 struct Color
