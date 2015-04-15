@@ -23,6 +23,7 @@
 #include <maya\MFloatPointArray.h>
 
 #include <maya\MFnMesh.h>
+#include<maya/MFnCamera.h>
 #include <maya\MFnDependencyNode.h>
 #include <maya\MFnAttribute.h>
 

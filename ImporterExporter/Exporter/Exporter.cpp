@@ -227,7 +227,43 @@ bool Exporter::IdentifyAndExtractScene()
 
 
 void Exporter::extractCamera(MObject& cam)
-{}
+{	
+	//Create a fucntion set for the camera
+	MFnCamera fn(cam);
+
+	//Ignore orthographic cameras. Top, right, left....
+	if (fn.isOrtho())
+		return;
+
+	//attach a function set to the parent transform
+	MFnDependencyNode fnParent(fn.parent(0));
+
+	//Output some camera info
+
+	std::cout << "Camera: " << fn.name().asChar()
+		<< "\n\tparent "
+		<< fnParent.name().asChar()
+		<< std::endl;
+
+	//aspect ratio
+	std::cout << "\nAspect ratio: " << fn.aspectRatio()
+			<< std::endl;
+	//near clipping plane
+	std::cout << "\nNear: : " << fn.nearClippingPlane()
+				<< std::endl;
+	//far clipping plane
+	std::cout << "\nFar: " << fn.farClippingPlane()
+		<< std::endl;
+	//horizontal field of view
+	std::cout << "\nHorizontal fov: " << fn.horizontalFieldOfView()
+		<< std::endl;
+
+	//vertical field of view
+	std::cout << "\nVertical fov: " << fn.verticalFieldOfView()
+		<< std::endl;
+
+
+}
 
 void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name)
 {
@@ -357,19 +393,18 @@ bool Exporter::IdentifyAndExtractMeshes()
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
 	while (!dag_iter.isDone())
 	{
-		if (dag_iter.getPath(dag_path))
-		{
-			auto test=dag_path.fullPathName();
-			export_stream_ << "cam: " << test << std::endl;
-			if (dag_path.fullPathName() == "|persp|perspShape")
-				printf("Huvudkamera hittad\n");
 
+		extractCamera(dag_iter.item());
 
-			
-
-
-
-		}
+		//if (dag_iter.getPath(dag_path))
+		//{
+		//
+		//	auto test=dag_path.fullPathName();
+		//	export_stream_ << "cam: " << test << std::endl;
+		//	if (dag_path.fullPathName() == "|persp|perspShape")
+		//		printf("Huvudkamera hittad\n");
+		//				
+		//}
 		dag_iter.next();
 	}
 
