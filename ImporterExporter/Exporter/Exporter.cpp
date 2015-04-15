@@ -712,19 +712,19 @@ bool Exporter::ExtractMeshData (MFnMesh &mesh, UINT index)
 
 		int vc = itFaces.polygonVertexCount ();
 		for (int i = 0; i < vc; ++i) {
-			tempface.verts [i].pointID = itFaces.vertexIndex (i);
-			tempface.verts [i].normalID = itFaces.normalIndex (i);
+			tempface.verts[i].pointID = itFaces.vertexIndex(i) + 1;
+			tempface.verts[i].normalID = itFaces.normalIndex(i) + 1;
 
 			for (int k = 0; k < uvSets.length (); ++k) {
 				int temptexCoordsID;
 				itFaces.getUVIndex (i, temptexCoordsID, &uvSets [k]);
 
-				tempface.verts [i].texCoordsID.push_back (temptexCoordsID);
+				tempface.verts[i].texCoordsID.push_back(temptexCoordsID + 1);
 			}
 		}
 
-		mesh_data.faces.push_back (tempface);
-		itFaces.next ();
+		mesh_data.faces.push_back(tempface);
+		itFaces.next();
 	}
 
 	// lägg till mesh_data i scen-datan
@@ -758,6 +758,23 @@ void Exporter::ExportMeshes ()
 
 		export_stream_ << "\t\t\tvertices " << polygon_iter.count () * 3 << std::endl;
 
+		for (int i = 0; i < mesh_iter->points.length(); i++){
+			export_stream_ << "v " << mesh_iter->points[i].x << " " << mesh_iter->points[i].y << " " << mesh_iter->points[i].z << std::endl;
+		}
+		for (int i = 0; i < mesh_iter->uvSets[0].Us.length(); i++){
+			export_stream_ << "vt " << mesh_iter->uvSets[0].Us[i] << " " << mesh_iter->uvSets[0].Vs[i] << std::endl;
+		}
+		for (int i = 0; i < mesh_iter->normals.length(); i++){
+			export_stream_ << "vn " << mesh_iter->normals[i].x << " " << mesh_iter->normals[i].y << " " << mesh_iter->normals[i].z << std::endl;
+		}
+		for (int i = 0; i < mesh_iter->faces.size(); i++){
+			export_stream_ << "f " << mesh_iter->faces[i].verts[0].pointID << "/" << mesh_iter->faces[i].verts[0].normalID << "/" << mesh_iter->faces[i].verts[0].texCoordsID[0] <<
+				" " << mesh_iter->faces[i].verts[1].pointID << "/" << mesh_iter->faces[i].verts[1].normalID << "/" << mesh_iter->faces[i].verts[1].texCoordsID[0] <<
+				" " << mesh_iter->faces[i].verts[2].pointID << "/" << mesh_iter->faces[i].verts[2].normalID << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0]
+				<< std::endl;
+		}
+		export_stream_.close();
+/*
 		int j = 0;
 		while (j != 2)
 		{
@@ -818,5 +835,6 @@ void Exporter::ExportMeshes ()
 				export_stream_ << "\t\t\t\tb " << mesh_iter->uvSets [i].binormals [x] << std::endl;
 			}
 		}
+*/
 	}
 }
