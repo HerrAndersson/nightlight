@@ -69,10 +69,17 @@
 
 enum matType{ LAMBERT, BLINN, PHONG };
 
+struct vec3{
+	double x, y, z;
+};
+
+struct vec2{
+	double u, v;
+};
+
 struct uvSet
 {
-	MFloatArray Us;
-	MFloatArray Vs;
+	std::vector<vec2> UVs;
 	MFloatVectorArray tangents;
 	MFloatVectorArray binormals;
 };
@@ -95,8 +102,9 @@ struct MeshData
 	MString name;
 	UINT id;
 
-	MFloatPointArray points;
-	MFloatVectorArray normals;
+	std::vector<vec3> points;
+	std::vector<vec3> normals;
+
 	std::vector<uvSet> uvSets;
 
 	std::vector<face> faces;
@@ -211,6 +219,14 @@ struct SceneData
 	std::vector<cameraData> cameras;
 	std::vector<lightData> lights;
 	std::vector<AnimData> AnimationData;
+};
+
+struct MainHeader{
+	int meshCount;
+};
+
+struct MeshHeader{
+	int nameLength, numberVerts, numberFaces;
 };
 
 
