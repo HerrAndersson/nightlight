@@ -58,7 +58,7 @@ bool Exporter::CreateExportFiles (std::string file_path)
 	int sub_string_length = (int) file_path.find_last_of (".", file_path.size () - 1);
 
 	// spargenväg för den exporterade filen.
-	std::string save_path = file_path.substr (0, sub_string_length) + ".txt";
+	std::string save_path = file_path.substr (0, sub_string_length) + ".obj";
 
 	std::cout << "Exporting file to " << save_path.c_str () << std::endl << std::endl;
 
@@ -794,7 +794,7 @@ void Exporter::ExportMeshes ()
 				" " << mesh_iter->faces[i].verts[2].pointID << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[2].normalID
 				<< std::endl;
 		}
-		export_stream_.close();
+		
 
 
 		MainHeader mainHeader;
