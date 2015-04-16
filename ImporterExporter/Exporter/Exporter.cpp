@@ -9,6 +9,8 @@
 
 #include "Exporter.h"
 
+int debug=0;
+
 // konstuktor
 Exporter::Exporter ()
 {
@@ -800,7 +802,11 @@ void Exporter::ExportMeshes ()
 		MainHeader mainHeader;
 		mainHeader.meshCount = scene_.meshes.size();
 
-		std::ofstream outfile("testBin.bin", std::ofstream::binary);
+		std::string name = mesh_iter->name.asChar();
+
+		std::string bin_path = name + ".bin";
+
+		std::ofstream outfile(bin_path, std::ofstream::binary);
 		// write header
 		outfile.write((const char*)&mainHeader, sizeof(MainHeader));
 
@@ -808,24 +814,24 @@ void Exporter::ExportMeshes ()
 			MeshHeader meshHeader;
 			meshHeader.nameLength = scene_.meshes[i].name.length();
 			meshHeader.numberFaces = scene_.meshes[i].faces.size();
-			meshHeader.numberVerts = scene_.meshes[i].points.size();
+			meshHeader.numberPoints = scene_.meshes[i].points.size();
+			meshHeader.numberNormals = scene_.meshes[i].normals.size();
 			meshHeader.numberCoords = scene_.meshes[i].uvSets[0].UVs.size();
 
 			outfile.write((const char*)&meshHeader, sizeof(MeshHeader));
 			outfile.write((const char*)&scene_.meshes[i].name, meshHeader.nameLength);
-			outfile.write((const char*)&scene_.meshes[i].points, meshHeader.numberVerts*sizeof(vec3));
-			outfile.write((const char*)&scene_.meshes[i].normals, meshHeader.numberVerts*sizeof(vec3));
+			outfile.write((const char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
+			outfile.write((const char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
 			outfile.write((const char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
 		}
 		outfile.close();
-		export_stream_.close();
-		export_stream_.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
-		if (!export_stream_.is_open())
+		outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
+		if (!outfile.is_open())
 		{
 			std::cout << "<Error> fstream::open()" << std::endl;
 		}
 		// How to read
-		std::ifstream infile("testBin.bin", std::ifstream::binary);
+		std::ifstream infile(bin_path, std::ifstream::binary);
 		// first read the header
 		MainHeader readMainHeader;
 		infile.read((char*)&readMainHeader, sizeof(MainHeader));
@@ -835,27 +841,27 @@ void Exporter::ExportMeshes ()
 			infile.read((char*)&meshHeader, sizeof(MeshHeader));
 
 			infile.read((char*)&scene_.meshes[i].name, meshHeader.nameLength);
-			export_stream_ << scene_.meshes[i].name << std::endl;
+			outfile << scene_.meshes[i].name << std::endl;
 
-			infile.read((char*)&scene_.meshes[i].points, meshHeader.numberVerts*sizeof(vec3));
-			for (int a = 0; a < meshHeader.numberVerts; a++){
-				export_stream_ << scene_.meshes[i].points[a].x << " " << scene_.meshes[i].points[a].y << " " << scene_.meshes[i].points[a].z << std::endl;
+			infile.read((char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
+			for (int a = 0; a < meshHeader.numberPoints; a++){
+				outfile << scene_.meshes[i].points[a].x << " " << scene_.meshes[i].points[a].y << " " << scene_.meshes[i].points[a].z << std::endl;
 			}
 
-			infile.read((char*)&scene_.meshes[i].normals, meshHeader.numberVerts*sizeof(vec3));
-			for (int a = 0; a < meshHeader.numberVerts; a++){
-				export_stream_ << scene_.meshes[i].normals[a].x << " " << scene_.meshes[i].normals[a].y << " " << scene_.meshes[i].normals[a].z << std::endl;
+			infile.read((char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
+			for (int a = 0; a < meshHeader.numberNormals; a++){
+				outfile << scene_.meshes[i].normals[a].x << " " << scene_.meshes[i].normals[a].y << " " << scene_.meshes[i].normals[a].z << std::endl;
 			}
 
 			infile.read((char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
 			for (int a = 0; a < meshHeader.numberCoords; a++){
-				export_stream_ << scene_.meshes[i].uvSets[0].UVs[a].u << " " << scene_.meshes[i].uvSets[0].UVs[a].v << std::endl;
+				outfile << scene_.meshes[i].uvSets[0].UVs[a].u << " " << scene_.meshes[i].uvSets[0].UVs[a].v << std::endl;
 			}
 
 		}
+		outfile.close();
 		infile.close();
-		export_stream_.close();
-
+		debug++;
 		
 /*
 		int j = 0;

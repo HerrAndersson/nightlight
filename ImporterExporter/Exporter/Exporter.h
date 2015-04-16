@@ -226,7 +226,7 @@ struct MainHeader{
 };
 
 struct MeshHeader{
-	int nameLength, numberVerts, numberCoords, numberFaces;
+	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
 };
 
 
