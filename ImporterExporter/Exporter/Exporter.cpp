@@ -823,6 +823,7 @@ void Exporter::ExportMeshes ()
 			outfile.write((const char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
 			outfile.write((const char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
 			outfile.write((const char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
+			outfile.write((const char*)&scene_.meshes[i].faces, meshHeader.numberFaces*sizeof(face));
 		}
 		outfile.close();
 		outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
@@ -858,6 +859,13 @@ void Exporter::ExportMeshes ()
 				outfile << scene_.meshes[i].uvSets[0].UVs[a].u << " " << scene_.meshes[i].uvSets[0].UVs[a].v << std::endl;
 			}
 
+			infile.read((char*)&scene_.meshes[i].faces, meshHeader.numberFaces*sizeof(face));
+			for (int a = 0; a < meshHeader.numberFaces; a++){
+				outfile << scene_.meshes[i].faces[a].verts[0].pointID << "/" << scene_.meshes[i].faces[a].verts[0].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[0].normalID << " "
+					<< scene_.meshes[i].faces[a].verts[1].pointID << "/" << scene_.meshes[i].faces[a].verts[1].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[1].normalID << " "
+					<< scene_.meshes[i].faces[a].verts[2].pointID << "/" << scene_.meshes[i].faces[a].verts[2].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[2].normalID << " "
+					<< std::endl;
+			}
 		}
 		outfile.close();
 		infile.close();
