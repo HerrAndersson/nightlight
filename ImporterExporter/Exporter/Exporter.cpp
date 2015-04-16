@@ -9,6 +9,8 @@
 
 #include "Exporter.h"
 
+int debug=0;
+
 // konstuktor
 Exporter::Exporter ()
 {
@@ -68,7 +70,6 @@ bool Exporter::CreateExportFiles (std::string file_path)
 		std::cout << "<Error> fstream::open()" << std::endl;
 		return false;
 	}
-
 	return true;
 }
 
@@ -657,6 +658,10 @@ bool Exporter::ExtractMeshData (MFnMesh &mesh, UINT index)
 {
 	MeshData mesh_data;
 
+	MFloatPointArray points;
+
+	MFloatVectorArray normals;
+
 	MSpace::Space world_space = MSpace::kWorld;
 
 	// DAG-path
@@ -674,15 +679,25 @@ bool Exporter::ExtractMeshData (MFnMesh &mesh, UINT index)
 	}
 
 	// hämta icke-indexerade vertexpunkter
-	if (!mesh.getPoints (mesh_data.points, world_space))
+	if (!mesh.getPoints(points, world_space))
 	{
 		return false;
 	}
 
+	for (int i = 0; i < points.length(); i++){
+		vec3 temppoints = { points[i].x, points[i].y, points[i].z };
+		mesh_data.points.push_back(temppoints);
+	}
+
 	// hämta icke-indexerade normaler
-	if (!mesh.getNormals (mesh_data.normals, world_space))
+	if (!mesh.getNormals(normals, world_space))
 	{
 		return false;
+	}
+
+	for (int i = 0; i < normals.length(); i++){
+		vec3 tempnormals = { normals[i].x, normals[i].y, normals[i].z };
+		mesh_data.normals.push_back(tempnormals);
 	}
 
 	//variabler för att mellanlagra uvdata och tangenter/bitangenter
@@ -690,15 +705,23 @@ bool Exporter::ExtractMeshData (MFnMesh &mesh, UINT index)
 	mesh.getUVSetNames (uvSets);
 
 	uvSet tempUVSet;
+	MFloatArray Us;
+	MFloatArray Vs;
+	vec2 UVs;
+
 	// iterera över uvsets och ta ut koordinater, tangenter och bitangenter
 	for (int i = 0; i < uvSets.length (); i++)
 	{
 		MString currentSet = uvSets [i];
-		mesh.getUVs (tempUVSet.Us, tempUVSet.Vs, &currentSet);
-		mesh_data.uvSets.push_back (tempUVSet);
-
-		mesh.getTangents (mesh_data.uvSets [i].tangents, world_space, &currentSet);
-		mesh.getBinormals (mesh_data.uvSets [i].binormals, world_space, &currentSet);
+		mesh.getUVs (Us, Vs, &currentSet);
+		for (int a = 0; a < Us.length(); a++){
+			UVs.u = Us[a];
+			UVs.v = Vs[a];
+			tempUVSet.UVs.push_back(UVs);
+		}
+		mesh.getTangents(tempUVSet.tangents, world_space, &currentSet);
+		mesh.getBinormals(tempUVSet.binormals, world_space, &currentSet);
+		mesh_data.uvSets.push_back(tempUVSet);
 	}
 
 	//itererar över trianglar och returnerar ID:n för associerade vertiser, normaler och uvset
@@ -758,13 +781,13 @@ void Exporter::ExportMeshes ()
 
 		export_stream_ << "\t\t\tvertices " << polygon_iter.count () * 3 << std::endl;
 
-		for (int i = 0; i < mesh_iter->points.length(); i++){
+		for (int i = 0; i < mesh_iter->points.size(); i++){
 			export_stream_ << "v " << mesh_iter->points[i].x << " " << mesh_iter->points[i].y << " " << mesh_iter->points[i].z << std::endl;
 		}
-		for (int i = 0; i < mesh_iter->uvSets[0].Us.length(); i++){
-			export_stream_ << "vt " << mesh_iter->uvSets[0].Us[i] << " " << mesh_iter->uvSets[0].Vs[i] << std::endl;
+		for (int i = 0; i < mesh_iter->uvSets[0].UVs.size(); i++){
+			export_stream_ << "vt " << mesh_iter->uvSets[0].UVs[i].u << " " << mesh_iter->uvSets[0].UVs[i].v << std::endl;
 		}
-		for (int i = 0; i < mesh_iter->normals.length(); i++){
+		for (int i = 0; i < mesh_iter->normals.size(); i++){
 			export_stream_ << "vn " << mesh_iter->normals[i].x << " " << mesh_iter->normals[i].y << " " << mesh_iter->normals[i].z << std::endl;
 		}
 		for (int i = 0; i < mesh_iter->faces.size(); i++){
@@ -773,6 +796,80 @@ void Exporter::ExportMeshes ()
 				" " << mesh_iter->faces[i].verts[2].pointID << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[2].normalID
 				<< std::endl;
 		}
+		
+
+
+		MainHeader mainHeader;
+		mainHeader.meshCount = scene_.meshes.size();
+
+		std::string name = mesh_iter->name.asChar();
+
+		std::string bin_path = name + ".bin";
+
+		std::ofstream outfile(bin_path, std::ofstream::binary);
+		// write header
+		outfile.write((const char*)&mainHeader, sizeof(MainHeader));
+
+		for (int i = 0; i < mainHeader.meshCount; i++){
+			MeshHeader meshHeader;
+			meshHeader.nameLength = scene_.meshes[i].name.length();
+			meshHeader.numberFaces = scene_.meshes[i].faces.size();
+			meshHeader.numberPoints = scene_.meshes[i].points.size();
+			meshHeader.numberNormals = scene_.meshes[i].normals.size();
+			meshHeader.numberCoords = scene_.meshes[i].uvSets[0].UVs.size();
+
+			outfile.write((const char*)&meshHeader, sizeof(MeshHeader));
+			outfile.write((const char*)&scene_.meshes[i].name, meshHeader.nameLength);
+			outfile.write((const char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
+			outfile.write((const char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
+			outfile.write((const char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
+			outfile.write((const char*)&scene_.meshes[i].faces, meshHeader.numberFaces*sizeof(face));
+		}
+		outfile.close();
+		outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
+		if (!outfile.is_open())
+		{
+			std::cout << "<Error> fstream::open()" << std::endl;
+		}
+		// How to read
+		std::ifstream infile(bin_path, std::ifstream::binary);
+		// first read the header
+		MainHeader readMainHeader;
+		infile.read((char*)&readMainHeader, sizeof(MainHeader));
+		
+		for (int i = 0; i < readMainHeader.meshCount; i++){
+			MeshHeader meshHeader;
+			infile.read((char*)&meshHeader, sizeof(MeshHeader));
+
+			infile.read((char*)&scene_.meshes[i].name, meshHeader.nameLength);
+			outfile << scene_.meshes[i].name << std::endl;
+
+			infile.read((char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
+			for (int a = 0; a < meshHeader.numberPoints; a++){
+				outfile << scene_.meshes[i].points[a].x << " " << scene_.meshes[i].points[a].y << " " << scene_.meshes[i].points[a].z << std::endl;
+			}
+
+			infile.read((char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
+			for (int a = 0; a < meshHeader.numberNormals; a++){
+				outfile << scene_.meshes[i].normals[a].x << " " << scene_.meshes[i].normals[a].y << " " << scene_.meshes[i].normals[a].z << std::endl;
+			}
+
+			infile.read((char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
+			for (int a = 0; a < meshHeader.numberCoords; a++){
+				outfile << scene_.meshes[i].uvSets[0].UVs[a].u << " " << scene_.meshes[i].uvSets[0].UVs[a].v << std::endl;
+			}
+
+			infile.read((char*)&scene_.meshes[i].faces, meshHeader.numberFaces*sizeof(face));
+			for (int a = 0; a < meshHeader.numberFaces; a++){
+				outfile << scene_.meshes[i].faces[a].verts[0].pointID << "/" << scene_.meshes[i].faces[a].verts[0].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[0].normalID << " "
+					<< scene_.meshes[i].faces[a].verts[1].pointID << "/" << scene_.meshes[i].faces[a].verts[1].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[1].normalID << " "
+					<< scene_.meshes[i].faces[a].verts[2].pointID << "/" << scene_.meshes[i].faces[a].verts[2].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[2].normalID << " "
+					<< std::endl;
+			}
+		}
+		outfile.close();
+		infile.close();
+		debug++;
 		
 /*
 		int j = 0;
