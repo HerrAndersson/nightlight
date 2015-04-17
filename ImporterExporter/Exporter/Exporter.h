@@ -57,6 +57,7 @@
 
 #include <maya/MTime.h>
 #include <maya/MFnAnimCurve.h>
+#include<maya/MAnimControl.h>
 
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
@@ -104,9 +105,7 @@ struct MeshData
 
 	std::vector<vec3> points;
 	std::vector<vec3> normals;
-
 	std::vector<uvSet> uvSets;
-
 	std::vector<face> faces;
 };
 
@@ -180,7 +179,12 @@ struct lightData
 
 struct KeyData
 {
-	int numKeys;
+	
+	MTime keyFrameTime;	//Keyframe position on timeline 
+	std::vector<vec3> points;		//Keyframes value
+	std::vector<vec3> normals;		//Keyframes value
+	std::vector<uvSet> uvSets;		//Keyframes value
+
 	//Current Key	//Not sure if needed in a struct nor for this assignment
 	//Next Key		//Not sure if needed in a struct nor for this assignment
 	//InTangent		//Not sure if needed in a struct nor for this assignment
@@ -190,6 +194,13 @@ struct KeyData
 
 struct AnimData
 {
+	MTime animationStart;
+	MTime animationEnd;
+	int numKeys;
+	
+	std::vector<KeyData> KeyFrames;
+	
+
 	//Stuff for later:
 	//Joints, position, orientations data
 	//SkeletonHierachy
@@ -208,8 +219,6 @@ struct AnimData
 	//Total Animation Time
 	//Current Animation Time
 	//Num animated components
-
-	std::vector<KeyData> KeyFrames;
 };
 
 struct SceneData
@@ -221,11 +230,13 @@ struct SceneData
 	std::vector<AnimData> AnimationData;
 };
 
-struct MainHeader{
+struct MainHeader
+{
 	int meshCount;
 };
 
-struct MeshHeader{
+struct MeshHeader
+{
 	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
 };
 

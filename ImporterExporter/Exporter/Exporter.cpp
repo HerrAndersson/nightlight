@@ -482,35 +482,47 @@ void Exporter::extractLight (MObject& mObj)
 void Exporter::extractKeyData (MObject& key)
 {
 
-	MFnAnimCurve fn (key);
+	AnimData animTemp;
 
-	KeyData iKeyCount;
-	iKeyCount.numKeys = fn.numKeys ();
+	animTemp.animationStart = MAnimControl::animationStartTime();
+	animTemp.animationEnd = MAnimControl::animationEndTime();
 
-	// Make sure not to do anything if there are no keyframes
-	if (iKeyCount.numKeys == 0) return;
+	scene_.AnimationData.push_back(animTemp);
 
-	std::cout << "AnimCurve " << fn.name ().asChar () << std::endl;	
-	std::cout << "NumKeys " << iKeyCount.numKeys << std::endl;
+	//get Keyframe values
 
-	// get all keyframe times & values
-	for (unsigned int i = 0; i < iKeyCount.numKeys; i++)
-	{
-		MTime Time = fn.time (i).value ();
-		float Value = fn.value (i);
 
-		//Getting hte tangents for the animation curves
-		float ix, iy, ox, oy;
-		fn.getTangent (i, ix, iy, true);
-		fn.getTangent (i, ox, oy, false);
 
-		// write keyframe info
-		std::cout << " time " << Time.as (MTime::kSeconds);
-		std::cout << " value " << Value;
-		std::cout << " InTangent " << iy;
-		std::cout << " OutTangent " << oy << std::endl;
-	}
-	std::cout << std::endl;
+
+//	MFnAnimCurve fn (key);
+//
+//	KeyData iKeyCount;
+//	iKeyCount.numKeys = fn.numKeys ();
+//
+//	// Make sure not to do anything if there are no keyframes
+//	if (iKeyCount.numKeys == 0) return;
+//
+//	std::cout << "AnimCurve " << fn.name ().asChar () << std::endl;	
+//	std::cout << "NumKeys " << iKeyCount.numKeys << std::endl;
+//
+//	// get all keyframe times & values
+//	for (unsigned int i = 0; i < iKeyCount.numKeys; i++)
+//	{
+//		MTime Time = fn.time (i).value ();
+//		float Value = fn.value (i);
+//
+//		//Getting hte tangents for the animation curves
+//		float ix, iy, ox, oy;
+//		fn.getTangent (i, ix, iy, true);
+//		fn.getTangent (i, ox, oy, false);
+//
+//		// write keyframe info
+//		std::cout << " time " << Time.as (MTime::kSeconds);
+//		std::cout << " value " << Value;
+//		std::cout << " InTangent " << iy;
+//		std::cout << " OutTangent " << oy << std::endl;
+//	}
+//	std::cout << std::endl;
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
