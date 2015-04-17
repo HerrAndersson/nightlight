@@ -13,17 +13,19 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
+//	OutputDebugString("test\n");
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
 	D3D = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
+	Assets = new AssetManager(D3D->GetDevice());
 }
 
 void Game::LoadAssets()
 {
-
+	Assets->LoadRenderObject("Assets/Models/simple_cube.bin");
 }
 
 Game::~Game()

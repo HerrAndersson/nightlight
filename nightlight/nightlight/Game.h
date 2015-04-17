@@ -7,6 +7,7 @@
 
 #include "D3DManager.h"
 #include "InputManager.h"
+#include "AssetManager.h"
 
 using namespace DirectX;
 
@@ -37,6 +38,7 @@ private:
 
 	D3DManager*             D3D;
 	InputManager*           Input;
+	AssetManager *			Assets;
 
 
 	/*

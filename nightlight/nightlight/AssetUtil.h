@@ -6,6 +6,19 @@
 
 using namespace DirectX;
 
+struct MainHeader{
+	int meshCount, matCount, camCount, lightCount;
+};
+
+struct MeshHeader
+{
+	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
+};
+
+struct MatHeader{
+	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
+};
+
 struct Texture
 {
 	std::string textureName = "";

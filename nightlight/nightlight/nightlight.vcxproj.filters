@@ -37,20 +37,17 @@
     <ClCompile Include="GameLogic.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
-    <ClCompile Include="D3DManager.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Console.cpp">
       <Filter>Core\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>AssetManager</Filter>
-    </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DManager.cpp">
+      <Filter>Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,23 +63,20 @@
     <ClInclude Include="GameLogic.h">
       <Filter>Logic</Filter>
     </ClInclude>
-    <ClInclude Include="D3DManager.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Core\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>AssetManager</Filter>
-    </ClInclude>
     <ClInclude Include="AssetManager.h">
       <Filter>AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="AssetUtil.h">
       <Filter>AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DManager.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

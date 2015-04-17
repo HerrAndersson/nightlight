@@ -25,7 +25,7 @@
 
 #include <maya/MFloatMatrix.h>
 #include <maya/MMatrix.h>
-#include<maya/MFnTransform.h>
+#include <maya/MFnTransform.h>
 
 #include <maya\MFnMesh.h>
 #include<maya/MFnCamera.h>
@@ -71,11 +71,11 @@
 enum matType{ LAMBERT, BLINN, PHONG };
 
 struct vec3{
-	double x, y, z;
+	float x, y, z;
 };
 
 struct vec2{
-	double u, v;
+	float u, v;
 };
 
 struct uvSet
