@@ -60,11 +60,15 @@ bool Exporter::CreateExportFiles (std::string file_path)
 	int sub_string_length = (int) file_path.find_last_of (".", file_path.size () - 1);
 
 	// spargenväg för den exporterade filen.
-	std::string save_path = file_path.substr (0, sub_string_length) + ".obj";
+	std::string save_path = file_path.substr(0, sub_string_length) + ".obj";
+	std::string binsave_path = file_path.substr(0, sub_string_length) + ".bin";
 
 	std::cout << "Exporting file to " << save_path.c_str () << std::endl << std::endl;
 
-	export_stream_.open (save_path.c_str (), std::ios_base::out | std::ios_base::trunc);
+	export_stream_.open(save_path.c_str(), std::ios_base::out | std::ios_base::trunc);
+	outfile.open(binsave_path.c_str(), std::ofstream::binary);
+	infile.open(binsave_path.c_str(), std::ifstream::binary);
+
 	if (!export_stream_.is_open ())
 	{
 		std::cout << "<Error> fstream::open()" << std::endl;
@@ -796,18 +800,14 @@ void Exporter::ExportMeshes ()
 				" " << mesh_iter->faces[i].verts[2].pointID << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[2].normalID
 				<< std::endl;
 		}
-		
-
+	}
 
 		MainHeader mainHeader;
 		mainHeader.meshCount = scene_.meshes.size();
+		mainHeader.matCount = scene_.materials.size();
+		mainHeader.lightCount = scene_.lights.size();
+		mainHeader.camCount = scene_.cameras.size();
 
-		std::string name = mesh_iter->name.asChar();
-
-		std::string bin_path = name + ".bin";
-
-		std::ofstream outfile(bin_path, std::ofstream::binary);
-		// write header
 		outfile.write((const char*)&mainHeader, sizeof(MainHeader));
 
 		for (int i = 0; i < mainHeader.meshCount; i++){
@@ -823,7 +823,42 @@ void Exporter::ExportMeshes ()
 			outfile.write((const char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
 			outfile.write((const char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
 			outfile.write((const char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
-			outfile.write((const char*)&scene_.meshes[i].faces, meshHeader.numberFaces*sizeof(face));
+			for (int a = 0; a < meshHeader.numberFaces; a++){
+				for (int b = 0; b < 3; b++){
+					outfile.write((const char*)&scene_.meshes[i].faces[a].verts[b].pointID, 4);
+					outfile.write((const char*)&scene_.meshes[i].faces[a].verts[b].normalID, 4);
+					outfile.write((const char*)&scene_.meshes[i].faces[a].verts[b].texCoordsID[0], 4);
+				}
+			}
+		}
+
+		for (int i = 0; i < mainHeader.matCount; i++){
+			MatHeader matHeader;
+			matHeader.ambientNameLength = scene_.materials[i].ambient.texfileInternal.length();
+
+			matHeader.diffuseNameLength = scene_.materials[i].diffuse.texfileInternal.length();
+
+			matHeader.specularNameLength = scene_.materials[i].specular.texfileInternal.length();
+
+			matHeader.transparencyNameLength = scene_.materials[i].transparency.texfileInternal.length();
+
+			matHeader.glowNameLength = scene_.materials[i].glow.texfileInternal.length();
+
+			outfile.write((const char*)&matHeader, sizeof(MatHeader));
+			outfile.write((const char*)&scene_.materials[i].ambient, 16);
+			outfile.write((const char*)scene_.materials[i].ambient.texfileInternal.data(), matHeader.ambientNameLength);
+
+			outfile.write((const char*)&scene_.materials[i].diffuse, 16);
+			outfile.write((const char*)scene_.materials[i].diffuse.texfileInternal.data(), matHeader.diffuseNameLength);
+
+			outfile.write((const char*)&scene_.materials[i].specular, 16);
+			outfile.write((const char*)scene_.materials[i].specular.texfileInternal.data(), matHeader.specularNameLength);
+
+			outfile.write((const char*)&scene_.materials[i].transparency, 16);
+			outfile.write((const char*)scene_.materials[i].transparency.texfileInternal.data(), matHeader.transparencyNameLength);
+
+			outfile.write((const char*)&scene_.materials[i].glow, 16);
+			outfile.write((const char*)scene_.materials[i].glow.texfileInternal.data(), matHeader.glowNameLength);
 		}
 		outfile.close();
 		outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
@@ -832,7 +867,6 @@ void Exporter::ExportMeshes ()
 			std::cout << "<Error> fstream::open()" << std::endl;
 		}
 		// How to read
-		std::ifstream infile(bin_path, std::ifstream::binary);
 		// first read the header
 		MainHeader readMainHeader;
 		infile.read((char*)&readMainHeader, sizeof(MainHeader));
@@ -859,7 +893,13 @@ void Exporter::ExportMeshes ()
 				outfile << scene_.meshes[i].uvSets[0].UVs[a].u << " " << scene_.meshes[i].uvSets[0].UVs[a].v << std::endl;
 			}
 
-			infile.read((char*)&scene_.meshes[i].faces, meshHeader.numberFaces*sizeof(face));
+			for (int a = 0; a < meshHeader.numberFaces; a++){
+				for (int b = 0; b < 3; b++){
+					infile.read((char*)&scene_.meshes[i].faces[a].verts[b].pointID, 4);
+					infile.read((char*)&scene_.meshes[i].faces[a].verts[b].normalID, 4);
+					infile.read((char*)&scene_.meshes[i].faces[a].verts[b].texCoordsID[0], 4);
+				}
+			}
 			for (int a = 0; a < meshHeader.numberFaces; a++){
 				outfile << scene_.meshes[i].faces[a].verts[0].pointID << "/" << scene_.meshes[i].faces[a].verts[0].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[0].normalID << " "
 					<< scene_.meshes[i].faces[a].verts[1].pointID << "/" << scene_.meshes[i].faces[a].verts[1].texCoordsID[0] << "/" << scene_.meshes[i].faces[a].verts[1].normalID << " "
@@ -933,5 +973,5 @@ void Exporter::ExportMeshes ()
 			}
 		}
 */
-	}
+
 }

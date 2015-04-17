@@ -222,13 +222,16 @@ struct SceneData
 };
 
 struct MainHeader{
-	int meshCount;
+	int meshCount, matCount, camCount, lightCount;
 };
 
 struct MeshHeader{
 	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
 };
 
+struct MatHeader{
+	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
+};
 
 //___________________________________________________________________________________________
 //|																							|
@@ -245,6 +248,8 @@ class Exporter
 		
 	private:
 		std::fstream export_stream_;
+		std::ofstream outfile;
+		std::ifstream infile;
 		SceneData scene_;
 
 	private:
