@@ -11,8 +11,6 @@ private:
 
 	XMFLOAT2 pos;
 
-	bool Key(int vKey);
-
 public:
 
 	InputManager(HWND hwnd, int screenWidth, int screenHeight);

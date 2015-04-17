@@ -16,11 +16,11 @@
     <Filter Include="AI">
       <UniqueIdentifier>{ba03b9a5-a6e6-418b-8fbd-16e8b8b595ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObjects">
-      <UniqueIdentifier>{44be2f30-a44c-4358-a80a-1f5ecc8b56f7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Debug">
       <UniqueIdentifier>{bf0da3f9-5a75-4d15-87a9-eaabd653e88c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AssetManager">
+      <UniqueIdentifier>{44be2f30-a44c-4358-a80a-1f5ecc8b56f7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +46,12 @@
     <ClCompile Include="Console.cpp">
       <Filter>Core\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>AssetManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -68,6 +74,15 @@
     </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Core\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetUtil.h">
+      <Filter>AssetManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,18 +13,6 @@ InputManager::~InputManager()
 
 }
 
-bool InputManager::Key(int vKey)
-{
-	bool result = false;
-
-	if (GetAsyncKeyState(vKey))
-		result = true;
-
-	//std::cout << "Key: " << vKey << " " << result << std::endl;
-
-	return result;
-}
-
 void InputManager::HandleMouse()
 {
 	LPPOINT point = new POINT();
@@ -76,21 +64,21 @@ bool InputManager::KeyDown(char key)
 	}
 
 	if (keyToCheck != -1)
-		return Key(keyToCheck);
+		return GetAsyncKeyState(keyToCheck);
 	else
 		return false;
 }
 bool InputManager::Esc()
 {
-	return Key(VK_ESCAPE);
+	return GetAsyncKeyState(VK_ESCAPE);
 }
 bool InputManager::LeftMouse()
 {
-	return Key(VK_LBUTTON);
+	return GetAsyncKeyState(VK_LBUTTON);
 }
 bool InputManager::RightMouse()
 {
-	return Key(VK_RBUTTON);
+	return GetAsyncKeyState(VK_RBUTTON);
 }
 
 //bool InputManager::W()
