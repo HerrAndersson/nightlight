@@ -64,21 +64,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3DManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="AssetUtil.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="System.h" />
   </ItemGroup>
