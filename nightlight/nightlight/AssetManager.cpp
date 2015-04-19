@@ -1,5 +1,6 @@
 #include "AssetManager.h"
 
+
 RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	std::ifstream infile;
 	infile.open(file_path.c_str(), std::ifstream::binary);
@@ -38,7 +39,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	infile.read((char*)&vertexIndices, sizeof(XMINT3));
 	infile.close();
 
-	RenderObject asset;
+	//RenderObject asset;
 	asset.vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
 
 
@@ -69,6 +70,36 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 
 	OutputDebugString("Success");
 	return nullptr;
+}
+
+
+void AssetManager::setUpBuffers(ID3D11DeviceContext* deviceContext)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+	// Set vertex buffer stride and offset.
+	stride = sizeof(Vertex);
+	offset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	
+	deviceContext->IASetVertexBuffers(0, 1, &asset.vertexBuffer, &stride, &offset);
+
+	//Set the index buffer to active in the input assembler so it can be rendered.
+	//deviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0); No index buffer for the moment
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return;
+}
+
+ID3D11Buffer* AssetManager::getVertexBuffer()
+{
+
+	return asset.vertexBuffer;
+
 }
 
 AssetManager::AssetManager(ID3D11Device* device)

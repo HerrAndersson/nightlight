@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	this->screenHeight = screenHeight;
 
 	Logic = new GameLogic();
-	Renderer = new RenderModule();
+	Renderer = new RenderModule(hwnd);
 
 	//activeGameState = MENU;
 
@@ -19,6 +19,9 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
 	D3D = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
+	
+	Renderer = new RenderModule(hwnd);
+	
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	Assets = new AssetManager(D3D->GetDevice());
 }
@@ -86,6 +89,12 @@ bool Game::Render()
 	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
 	D3D->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f);
 
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	worldMatrix = DirectX::XMMatrixIdentity();
+	
+	Renderer->Initialize(D3D->GetDevice());
+	Renderer->Render(D3D->GetDeviceContext(), worldMatrix, worldMatrix, worldMatrix);
+	
 	//example 
 	//D3D->SetCullingState(2);
 	//render shadowmap
@@ -100,18 +109,6 @@ bool Game::Render()
 
 	return result;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
