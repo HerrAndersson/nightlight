@@ -73,18 +73,18 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 		//if shader failed to compile
 		if (errorMessage)
 		{
-			OutputDebugString("Vertexshader failed to compile");
+			OutputDebugString("\nVertexshader failed to compile");
 		}
 		// if it couldn't find the shaderfile
 		else
 		{
-			OutputDebugString("Vertexshader not found");;
+			OutputDebugString("\nVertexshader not found");;
 		}
 
 		return false;
 	}
 	if (SUCCEEDED(result))
-		OutputDebugString("Vertexshader created");
+		OutputDebugString("\nVertexshader created");
 
 	//pixel shader
 	result = D3DCompileFromFile(psFilename, NULL, NULL, "pixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, &errorMessage);
@@ -94,20 +94,22 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 		
 		if (errorMessage)
 		{
-			OutputDebugString("Pixelshader failed to compile");
+			OutputDebugString("\nPixelshader failed to compile");
 		}
 		
 		//if it couldn't find the shaderfile
 		else
 		{
-			OutputDebugString("Pixelshader not found");;
+			OutputDebugString("\nPixelshader not found");;
 		}
 	
-		if (SUCCEEDED(result))
-			OutputDebugString("Pixelshader created");
+		
 
 		return false;
 	}
+	
+	if (SUCCEEDED(result))
+			OutputDebugString("\nPixelshader created");
 
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if (FAILED(result))
