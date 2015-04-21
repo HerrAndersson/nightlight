@@ -6,6 +6,7 @@
 
 int main()
 {	
+	printf("%d %d %d", sizeof(MFloatMatrix), sizeof(MFloatArray), sizeof(MMatrix));
 	Exporter exporter;
 
 	// destinationskatalog för den exporterade filen som parameter.

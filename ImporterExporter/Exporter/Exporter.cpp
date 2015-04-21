@@ -233,6 +233,10 @@ bool Exporter::IdentifyAndExtractScene ()
 //CURRENTLY ONLY SAVING THE MOST RELEVANT DATA
 void Exporter::extractCamera (MObject& cam)
 {
+	MSpace::Space world_space = MSpace::kPostTransform;
+	MSpace::Space object_space = MSpace::kLast;
+	MSpace::Space transform_space = MSpace::kPreTransform;
+
 	//Temp storage for camera
 	cameraData TempCameraStorage;
 
@@ -262,14 +266,17 @@ void Exporter::extractCamera (MObject& cam)
 	//aspect ratio
 	std::cout << "\nAspect ratio: " << fn.aspectRatio ()
 		<< std::endl;
+	TempCameraStorage.aspectRatio = fn.aspectRatio();
 
 	//near clipping plane
 	std::cout << "\nNear: : " << fn.nearClippingPlane ()
 		<< std::endl;
+	TempCameraStorage.nearClippingPlane = fn.nearClippingPlane();
 
 	//far clipping plane
 	std::cout << "\nFar: " << fn.farClippingPlane ()
 		<< std::endl;
+	TempCameraStorage.farClippingPlane = fn.farClippingPlane();
 
 	//horizontal field of view
 	std::cout << "\nHorizontal fov: " << fn.horizontalFieldOfView ()
@@ -278,6 +285,7 @@ void Exporter::extractCamera (MObject& cam)
 	//vertical field of view
 	std::cout << "\nVertical fov: " << fn.verticalFieldOfView ()
 		<< std::endl;
+	TempCameraStorage.verticalFieldOfView = fn.verticalFieldOfView();
 
 	//badly formated Projection matrix
 	std::cout << "\nProjectionMatrix: " << fn.projectionMatrix ()
@@ -288,12 +296,21 @@ void Exporter::extractCamera (MObject& cam)
 	//Up direction
 	std::cout << "\nUp Vector: " << fn.upDirection ()
 		<< std::endl;
-	TempCameraStorage.upVector = fn.upDirection ();
+	TempCameraStorage.upVector = fn.upDirection();
 
 	//view direction
 	std::cout << "\nView Direction: " << fn.viewDirection ()
 		<< std::endl;
-	TempCameraStorage.viewDirection = fn.viewDirection ();
+	TempCameraStorage.viewDirection = fn.viewDirection();
+
+	double debug[3];
+	MFloatMatrix modelMatrix = fs.transformation().asMatrix().matrix;
+
+	MFloatVector direction = modelMatrix * TempCameraStorage.viewDirection;
+	
+
+	MVector translation = fs.translation(transform_space);
+
 
 	//pushback to store everything
 	scene_.cameras.push_back (TempCameraStorage);
@@ -857,7 +874,7 @@ void Exporter::ExportMeshes ()
 			matHeader.glowNameLength = scene_.materials[i].glow.texfileInternal.length();
 
 			outfile.write((const char*)&matHeader, sizeof(MatHeader));
-			outfile.write((const char*)&scene_.materials[i].ambient, 16);
+			outfile.write((const char*)&scene_.materials[i].ambient, 16);  
 			outfile.write((const char*)scene_.materials[i].ambient.texfileInternal.data(), matHeader.ambientNameLength);
 
 			outfile.write((const char*)&scene_.materials[i].diffuse, 16);
@@ -872,6 +889,11 @@ void Exporter::ExportMeshes ()
 			outfile.write((const char*)&scene_.materials[i].glow, 16);
 			outfile.write((const char*)scene_.materials[i].glow.texfileInternal.data(), matHeader.glowNameLength);
 		}
+/*
+		for (int i = 0; i < mainHeader.camCount; i++){
+			outfile.write((const char*)&scene_.cameras[i].projectionMatrix, )
+		}
+*/
 		outfile.close();
 		outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
 		if (!outfile.is_open())

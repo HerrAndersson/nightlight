@@ -125,9 +125,9 @@ struct material
 
 struct cameraData
 {
+	float verticalFieldOfView, aspectRatio, nearClippingPlane, farClippingPlane;
+	MFloatVector position, viewDirection, upVector;
 	MFloatMatrix projectionMatrix;
-	MFloatVector upVector;
-	MFloatVector viewDirection;
 	MMatrix transformMatrix;
 };
 
@@ -243,6 +243,13 @@ struct MeshHeader
 struct MatHeader{
 	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
 };
+
+/* överflödig
+struct camHeader
+{
+	
+};
+*/
 
 //___________________________________________________________________________________________
 //|																							|
