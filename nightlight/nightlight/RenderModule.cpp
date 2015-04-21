@@ -178,37 +178,33 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	return true;
 }
 
-bool RenderModule::SetShaderParameters(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNr;
-	MatrixBuffer* dataPtr;
+	MatrixBufferPerObject* dataPtr;
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	
-	XMMATRIX worldMatrixC, viewMatrixC, projectionMatrixC;
+	XMMATRIX worldMatrixC;
 
 	//transposing the matrices
 	worldMatrixC = XMMatrixTranspose(worldMatrix);
-	viewMatrixC = XMMatrixTranspose(viewMatrix);
-	projectionMatrixC = XMMatrixTranspose(projectionMatrix);
 	
 	//lock the constant buffer for writing
-	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
-	dataPtr = (MatrixBuffer*)mappedResource.pData;
+	dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
 	dataPtr->world = worldMatrixC;
-	dataPtr->view = viewMatrixC;
-	dataPtr->projection = projectionMatrixC;
 	
-	deviceContext->Unmap(matrixBuffer, 0);
+	deviceContext->Unmap(matrixBufferPerObject, 0);
 
 	bufferNr = 0;
 
 	//setting matrix constant buffer in the VS with its new and updated values
-	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBuffer);
+	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
 
 
 	//setting the sent in shader texture resource in the pixel shader //No textures for the moment
@@ -217,6 +213,39 @@ bool RenderModule::SetShaderParameters(XMMATRIX& worldMatrix, XMMATRIX& viewMatr
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
 	deviceContext->PSSetShaderResources(0, 1, &texture);
+
+	return true;
+}
+
+bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+{
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	unsigned int bufferNr;
+	MatrixBufferPerFrame* dataPtr;
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+
+	XMMATRIX viewMatrixC, projectionMatrixC;
+
+	//transposing the matrices
+	viewMatrixC = XMMatrixTranspose(viewMatrix);
+	projectionMatrixC = XMMatrixTranspose(projectionMatrix);
+
+	//lock the constant buffer for writing
+	result = deviceContext->Map(matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) { return false; }
+
+	dataPtr = (MatrixBufferPerFrame*)mappedResource.pData;
+
+	dataPtr->viewMatrix = viewMatrixC;
+	dataPtr->projectionMatrix = projectionMatrixC;
+
+	deviceContext->Unmap(matrixBufferPerFrame, 0);
+
+	bufferNr = 1;
+
+	//setting matrix constant buffer in the VS with its new and updated values
+	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerFrame);
 
 	return true;
 }
@@ -236,12 +265,12 @@ void RenderModule::UseDefaultShader()
 }
 
 
-bool RenderModule::Render(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
+bool RenderModule::Render(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
 {
 	bool result = true;
 
 	//Set shader parameters, preparing them for render.
-	result = SetShaderParameters(worldMatrix, viewMatrix, projectionMatrix, texture, vertexBuffer, vertexCount);
+	result = SetDataPerObject(worldMatrix, texture, vertexBuffer, vertexCount)
 	if (!result)
 		return false;
 
@@ -251,8 +280,10 @@ bool RenderModule::Render(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX&
 	return result;
 }
 
-void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
+	
+	bool result = SetDataPerFrame(viewMatrix, projectionMatrix);
 	d3d->BeginScene(red, green, blue, alpha);
 }
 void RenderModule::EndScene()

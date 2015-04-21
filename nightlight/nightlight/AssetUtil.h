@@ -39,3 +39,11 @@ struct Vertex
 	XMFLOAT2 uv;
 	XMFLOAT3 normal;
 };
+
+struct RenderObject
+{
+	ID3D11Buffer* vertexBuffer;
+	Material* material;
+	Texture* diffuseTexture;
+	Texture* specularTexture;
+};

@@ -16,11 +16,15 @@ class RenderModule
 
 private:
 
-	struct MatrixBuffer
+	struct MatrixBufferPerObject
 	{
 		XMMATRIX world;
-		XMMATRIX view;
-		XMMATRIX projection;
+	};
+
+	struct MatrixBufferPerFrame
+	{
+		XMMATRIX viewMatrix;
+		XMMATRIX projectionMatrix;
 	};
 
 	D3DManager*				d3d;
@@ -37,9 +41,12 @@ private:
 
 	//Other
 	ID3D11InputLayout*		layoutPosUvNorm;
-	ID3D11Buffer*			matrixBuffer;
+	ID3D11Buffer*			matrixBufferPerObject;
+	ID3D11Buffer*			matrixBufferPerFrame;
 
 	HWND hwnd;
+
+	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 
 public:
 
@@ -48,14 +55,19 @@ public:
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 
-	bool SetShaderParameters(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount);
+	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount);
 
 	void UseDefaultShader();
 	//void UseShadowShader();
 	//void Usesomeothershader() etc.
 
-	void BeginScene(float red, float green, float blue, float alpha);
-	bool Render(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount);
+	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
+
+
+	//SKA TA EMOT EN GAMEOBJECT-VECTOR ISTÄLLET!!! inte texture, buffer, vertexcount
+	bool Render(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount);
+
+
 	void EndScene();
 
 	ID3D11Device* GetDevice();

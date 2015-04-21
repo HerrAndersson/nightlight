@@ -69,6 +69,7 @@
     <ClCompile Include="D3DManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderModule.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="System.h" />

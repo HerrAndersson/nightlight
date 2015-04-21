@@ -4,13 +4,6 @@
 
 using std::vector;
 
-struct RenderObject{
-	ID3D11Buffer* vertexBuffer;
-	Material* material;
-	Texture* diffuseTexture;
-	Texture* specularTexture;
-};
-
 class AssetManager
 {
 public:

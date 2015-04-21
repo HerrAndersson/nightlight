@@ -8,12 +8,19 @@
 #include "D3DManager.h"
 #include "InputManager.h"
 #include "AssetManager.h"
+#include "AssetUtil.h"
 
 using namespace DirectX;
 
 class Game
 {
 private:
+
+	enum ObjectIDs
+	{
+		PLAYER = 1,
+
+	};
 
 	enum GameStates
 	{
