@@ -751,14 +751,14 @@ bool Exporter::ExtractMeshData (MFnMesh &mesh, UINT index)
 
 		int vc = itFaces.polygonVertexCount ();
 		for (int i = 0; i < vc; ++i) {
-			tempface.verts[i].pointID = itFaces.vertexIndex(i) + 1;
-			tempface.verts[i].normalID = itFaces.normalIndex(i) + 1;
+			tempface.verts[i].pointID = itFaces.vertexIndex(i);
+			tempface.verts[i].normalID = itFaces.normalIndex(i);
 
 			for (int k = 0; k < uvSets.length (); ++k) {
 				int temptexCoordsID;
 				itFaces.getUVIndex (i, temptexCoordsID, &uvSets [k]);
 
-				tempface.verts[i].texCoordsID.push_back(temptexCoordsID + 1);
+				tempface.verts[i].texCoordsID.push_back(temptexCoordsID);
 			}
 		}
 
@@ -807,9 +807,9 @@ void Exporter::ExportMeshes ()
 			export_stream_ << "vn " << mesh_iter->normals[i].x << " " << mesh_iter->normals[i].y << " " << mesh_iter->normals[i].z << std::endl;
 		}
 		for (int i = 0; i < mesh_iter->faces.size(); i++){
-			export_stream_ << "f " << mesh_iter->faces[i].verts[0].pointID << "/" << mesh_iter->faces[i].verts[0].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[0].normalID <<
-				" " << mesh_iter->faces[i].verts[1].pointID << "/" << mesh_iter->faces[i].verts[1].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[1].normalID <<
-				" " << mesh_iter->faces[i].verts[2].pointID << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[2].normalID
+			export_stream_ << "f " << mesh_iter->faces[i].verts[0].pointID + 1 << "/" << mesh_iter->faces[i].verts[0].texCoordsID[0] + 1 << "/" << mesh_iter->faces[i].verts[0].normalID + 1 <<
+				" " << mesh_iter->faces[i].verts[1].pointID+1 << "/" << mesh_iter->faces[i].verts[1].texCoordsID[0]+1 << "/" << mesh_iter->faces[i].verts[1].normalID+1 <<
+				" " << mesh_iter->faces[i].verts[2].pointID+1 << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0]+1 << "/" << mesh_iter->faces[i].verts[2].normalID+1
 				<< std::endl;
 		}
 	}
@@ -831,10 +831,10 @@ void Exporter::ExportMeshes ()
 			meshHeader.numberCoords = scene_.meshes[i].uvSets[0].UVs.size();
 
 			outfile.write((const char*)&meshHeader, sizeof(MeshHeader));
-			outfile.write((const char*)&scene_.meshes[i].name, meshHeader.nameLength);
-			outfile.write((const char*)&scene_.meshes[i].points, meshHeader.numberPoints*sizeof(vec3));
-			outfile.write((const char*)&scene_.meshes[i].normals, meshHeader.numberNormals*sizeof(vec3));
-			outfile.write((const char*)&scene_.meshes[i].uvSets[0].UVs, meshHeader.numberCoords*sizeof(vec2));
+			outfile.write((const char*)scene_.meshes[i].name.asChar(), meshHeader.nameLength);
+			outfile.write((const char*)scene_.meshes[i].points.data(), meshHeader.numberPoints*sizeof(vec3));
+			outfile.write((const char*)scene_.meshes[i].normals.data(), meshHeader.numberNormals*sizeof(vec3));
+			outfile.write((const char*)scene_.meshes[i].uvSets[0].UVs.data(), meshHeader.numberCoords*sizeof(vec2));
 			for (int a = 0; a < meshHeader.numberFaces; a++){
 				for (int b = 0; b < 3; b++){
 					outfile.write((const char*)&scene_.meshes[i].faces[a].verts[b].pointID, 4);
@@ -878,6 +878,7 @@ void Exporter::ExportMeshes ()
 		{
 			std::cout << "<Error> fstream::open()" << std::endl;
 		}
+/*
 		// How to read
 		// first read the header
 		MainHeader readMainHeader;
@@ -919,8 +920,9 @@ void Exporter::ExportMeshes ()
 					<< std::endl;
 			}
 		}
-		outfile.close();
 		infile.close();
+*/
+		outfile.close();
 		debug++;
 		
 /*

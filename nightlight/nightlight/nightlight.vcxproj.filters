@@ -42,8 +42,8 @@
     <ClCompile Include="D3DManager.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Game</Filter>
+    <ClCompile Include="cameraObject.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="GameLogic.cpp">
       <Filter>Game</Filter>
@@ -74,8 +74,8 @@
     <ClInclude Include="D3DManager.h">
       <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Game</Filter>
+    <ClInclude Include="cameraObject.h">
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="GameLogic.h">
       <Filter>Game</Filter>
