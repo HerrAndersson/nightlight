@@ -25,22 +25,23 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	std::vector<XMFLOAT2> UVs;
 	std::vector<XMINT3> vertexIndices;
 
-	name.reserve(meshHeader.nameLength);
-	points.reserve(meshHeader.numberPoints);
-	normals.reserve(meshHeader.numberNormals);
-	UVs.reserve(meshHeader.numberCoords);
-	vertexIndices.reserve(meshHeader.numberFaces);
+	name.resize(meshHeader.nameLength);
+	points.resize(meshHeader.numberPoints);
+	normals.resize(meshHeader.numberNormals);
+	UVs.resize(meshHeader.numberCoords);
+	vertexIndices.resize(meshHeader.numberFaces*3);
 
-	infile.read((char*)&meshHeader, sizeof(MeshHeader));
-	infile.read((char*)&name, meshHeader.nameLength);
-	infile.read((char*)&points, meshHeader.numberPoints*sizeof(XMFLOAT3));
-	infile.read((char*)&normals, meshHeader.numberNormals*sizeof(XMFLOAT3));
-	infile.read((char*)&UVs, meshHeader.numberCoords*sizeof(XMFLOAT2));
-	infile.read((char*)&vertexIndices, sizeof(XMINT3));
-	infile.close();
+	infile.read((char*)name.data(), meshHeader.nameLength);
+	infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(XMFLOAT3));
+	infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
+	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
+	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3)*3);
+
 
 	//RenderObject asset;
 	asset.vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
+	infile.close();
+
 
 
 	return nullptr;
@@ -49,14 +50,15 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices){
 
 	std::vector<Vertex> vertices;
+
+
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	vbDESC.ByteWidth = sizeof(Vertex)* 3 * vertexIndices->size();
+	vbDESC.ByteWidth = sizeof(Vertex)* vertexIndices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
-	
 	
 	for (int i = 0; i < vertexIndices->size(); i+=3){
 		for (int a = 0; a < 3; a++){
@@ -65,6 +67,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 			tempVertex.normal = normals->at(vertexIndices->at(i+a).y);
 			tempVertex.uv = UVs->at(vertexIndices->at(i+a).z);
 			vertices.push_back(tempVertex);
+
 		}
 	}
 
