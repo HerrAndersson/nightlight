@@ -19,6 +19,7 @@ public:
 
 	void updateCamera();
 	void getViewMatrix(XMMATRIX&);
+	void getProjectionMatrix(XMMATRIX&);
 
 private:
 
@@ -26,6 +27,7 @@ private:
 	float rotationX, rotationY, rotationZ;
 
 	XMMATRIX viewMatrix;
+	XMMATRIX projectionMatrix;
 	XMVECTOR camUp;
 
 

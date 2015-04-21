@@ -71,8 +71,20 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 		}
 	}
 
-	OutputDebugString("Success");
-	return nullptr;
+	D3D11_SUBRESOURCE_DATA vertexData;
+
+	vertexData.pSysMem = vertices.data();
+	vertexData.SysMemPitch = 0;
+	vertexData.SysMemSlicePitch = 0;
+
+	ID3D11Buffer* vertexBuffer;
+
+	HRESULT result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);
+	if (!result){
+		OutputDebugString("Failed to create vertexBuffer");
+		return nullptr;
+	}
+	return vertexBuffer;
 }
 
 
@@ -105,9 +117,9 @@ ID3D11Buffer* AssetManager::getVertexBuffer()
 
 }
 
-AssetManager::AssetManager(ID3D11Device* device)
+AssetManager::AssetManager(ID3D11Device* device_)
 {
-
+	device = device_;
 
 }
 
