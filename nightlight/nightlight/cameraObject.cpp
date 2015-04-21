@@ -112,3 +112,13 @@ void CameraObject::getViewMatrix(XMMATRIX& viewMatrixIn)
 	viewMatrixIn = viewMatrix;
 
 }
+
+void* CameraObject::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void CameraObject::operator delete(void* p)
+{
+	_mm_free(p);
+}
