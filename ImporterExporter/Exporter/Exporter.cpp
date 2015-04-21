@@ -807,9 +807,9 @@ void Exporter::ExportMeshes ()
 			export_stream_ << "vn " << mesh_iter->normals[i].x << " " << mesh_iter->normals[i].y << " " << mesh_iter->normals[i].z << std::endl;
 		}
 		for (int i = 0; i < mesh_iter->faces.size(); i++){
-			export_stream_ << "f " << mesh_iter->faces[i].verts[0].pointID << "/" << mesh_iter->faces[i].verts[0].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[0].normalID <<
-				" " << mesh_iter->faces[i].verts[1].pointID << "/" << mesh_iter->faces[i].verts[1].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[1].normalID <<
-				" " << mesh_iter->faces[i].verts[2].pointID << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0] << "/" << mesh_iter->faces[i].verts[2].normalID
+			export_stream_ << "f " << mesh_iter->faces[i].verts[0].pointID + 1 << "/" << mesh_iter->faces[i].verts[0].texCoordsID[0] + 1 << "/" << mesh_iter->faces[i].verts[0].normalID + 1 <<
+				" " << mesh_iter->faces[i].verts[1].pointID+1 << "/" << mesh_iter->faces[i].verts[1].texCoordsID[0]+1 << "/" << mesh_iter->faces[i].verts[1].normalID+1 <<
+				" " << mesh_iter->faces[i].verts[2].pointID+1 << "/" << mesh_iter->faces[i].verts[2].texCoordsID[0]+1 << "/" << mesh_iter->faces[i].verts[2].normalID+1
 				<< std::endl;
 		}
 	}
