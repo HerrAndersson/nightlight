@@ -49,6 +49,9 @@
     <ClCompile Include="D3DManager.cpp">
       <Filter>Render</Filter>
     </ClCompile>
+    <ClCompile Include="cameraObject.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -77,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="D3DManager.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="cameraObject.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
