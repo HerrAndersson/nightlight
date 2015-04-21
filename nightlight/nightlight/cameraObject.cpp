@@ -49,22 +49,27 @@ void CameraObject::updateCamera()
 	XMMATRIX rotationMatrix;
 
 	//Set the default up vector.
-	up.m128_f32[0] = 0.0f;
-	up.m128_f32[1] = 1.0f;
-	up.m128_f32[2] = 0.0f;
-	up.m128_f32[3] = 1.0f;
+
+	up = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+
+	//up.m128_f32[0] = 0.0f;
+	//up.m128_f32[1] = 1.0f;
+	//up.m128_f32[2] = 0.0f;
+	//up.m128_f32[3] = 1.0f;
 
 	//Set the default world position.
-	position.m128_f32[0] = positionX;
-	position.m128_f32[1] = positionY;
-	position.m128_f32[2] = positionZ;
-	position.m128_f32[3] = 1.0f;
+	position = XMVectorSet(positionX, positionY, positionZ, 1.0f);
+	//position.m128_f32[0] = positionX;
+	//position.m128_f32[1] = positionY;
+	//position.m128_f32[2] = positionZ;
+	//position.m128_f32[3] = 1.0f;
 
 	//Set where the camera is looking by default.
-	lookAt.m128_f32[0] = 0.0f;
-	lookAt.m128_f32[1] = 0.0f;
-	lookAt.m128_f32[2] = 1.0f;
-	lookAt.m128_f32[3] = 1.0f;
+	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+	//lookAt.m128_f32[0] = 0.0f;
+	//lookAt.m128_f32[1] = 0.0f;
+	//lookAt.m128_f32[2] = 1.0f;
+	//lookAt.m128_f32[3] = 1.0f;
 
 	//Set the yaw, pitch, and roll in radians´.
 	pitch = rotationX * 0.0174532925f;
