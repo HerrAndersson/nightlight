@@ -1,6 +1,9 @@
 #pragma once
 #include "AssetUtil.h"
 #include <fstream>
+
+using std::vector;
+
 struct RenderObject{
 	ID3D11Buffer* vertexBuffer;
 	Material* material;
@@ -18,10 +21,13 @@ public:
 	ID3D11Buffer* getVertexBuffer();
 
 	~AssetManager();
+
+	RenderObject* GetRenderObject(); 
+
 private:
-	ID3D11Buffer* CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *faceIndices);
+	ID3D11Buffer* CreateVertexBuffer(vector<XMFLOAT3> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *faceIndices);
 	void setUpBuffers(ID3D11DeviceContext*);
 	
-	std::vector<RenderObject> renderObjects;
+	vector<RenderObject> renderObjects;
 };
 

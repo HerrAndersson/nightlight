@@ -36,7 +36,6 @@ private:
 	GameLogic*              Logic;
 	RenderModule*           Renderer;
 
-	D3DManager*             D3D;
 	InputManager*           Input;
 	AssetManager *			Assets;
 
@@ -45,7 +44,6 @@ private:
 	To be implemented:
 
 	SoundManager
-	AssetManager
 	SaveLoadManager
 	Timer
 	Camera? Or should we have Player object containing a camera?

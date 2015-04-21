@@ -1,57 +1,38 @@
 #include "RenderModule.h"
 
 
-RenderModule::RenderModule(HWND hwnd)
+RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
 {
-	m_vertexShader = NULL;
-	m_pixelShader = NULL;
-	m_sampleStateWrap = NULL;
-	m_sampleStateClamp = NULL;
-	m_matrixBuffer = NULL;
-	m_hwnd = hwnd;
+	vertexShader = NULL;
+	pixelShader = NULL;
+	sampleStateWrap = NULL;
+	sampleStateClamp = NULL;
+	matrixBuffer = NULL;
+	hwnd = hwnd;
+
+	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
+
+	bool result;
+
+	//initializing shader files
+	result = InitializeShader(L"vertexShader.vs", L"pixelShader.ps");
 }
 
 
 RenderModule::~RenderModule()
 {
+	delete d3d;
+
+	layoutPosUvNorm->Release();
+	matrixBuffer->Release();
+	pixelShader->Release();
+	sampleStateClamp->Release();
+	sampleStateWrap->Release();
+	vertexShader->Release();
+
 }
 
-
-bool RenderModule::Initialize(ID3D11Device* device)
-{
-	bool result;
-
-		//initializing shader files
-	result = InitializeShader(device, L"vertexShader.vs", L"pixelShader.ps");
-	if (!result)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool RenderModule::Render(ID3D11DeviceContext* deviceContext, 
-	XMMATRIX& worldMatrix,
-	XMMATRIX& viewMatrix,
-	XMMATRIX& projectionMatrix)
-{
-	bool result;
-
-	//Set shader parameters, preparing them for render.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
-	if (!result)
-	{
-		return false;
-	}
-
-	//Now render the prepared buffers with the shader.
-	RenderShader(deviceContext);
-
-	return true;
-}
-
-bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename)
+bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
@@ -66,20 +47,18 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
 
+	ID3D11Device* device = d3d->GetDevice();
+
+/////////////////////////////////////////////////////////////////////////// Shaders ///////////////////////////////////////////////////////////////////////////
+
 	//vertex shader
 	result = D3DCompileFromFile(vsFilename, NULL, NULL, "vertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
-		//if shader failed to compile
 		if (errorMessage)
-		{
 			OutputDebugString("\nVertexshader failed to compile");
-		}
-		// if it couldn't find the shaderfile
 		else
-		{
 			OutputDebugString("\nVertexshader not found");;
-		}
 
 		return false;
 	}
@@ -90,20 +69,10 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	result = D3DCompileFromFile(psFilename, NULL, NULL, "pixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
-		//if shader failed to compile
-		
 		if (errorMessage)
-		{
 			OutputDebugString("\nPixelshader failed to compile");
-		}
-		
-		//if it couldn't find the shaderfile
 		else
-		{
-			OutputDebugString("\nPixelshader not found");;
-		}
-	
-		
+			OutputDebugString("\nPixelshader not found");
 
 		return false;
 	}
@@ -111,20 +80,15 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	if (SUCCEEDED(result))
 			OutputDebugString("\nPixelshader created");
 
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader);
 	if (FAILED(result))
-	{
 		return false;
-	}
 
-
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader);
 	if (FAILED(result))
-	{
 		return false;
-	}
 
-	//INPUT LAYOUT:
+	/////////////////////////////////////////////////////////////////////// Input layout /////////////////////////////////////////////////////////////////////////
 	// Create the layout description for input into the vertex shader.
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
@@ -153,7 +117,7 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	//count of elements in the layout
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &m_layout);
+	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layoutPosUvNorm);
 	if (FAILED(result)){ return false; }
 
 	//we no longer need the shader buffers, so release them
@@ -163,7 +127,7 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	pixelShaderBuffer->Release();
 	pixelShaderBuffer = 0;
 
-	
+	/////////////////////////////////////////////////////////////////////// Samplers /////////////////////////////////////////////////////////////////////////
 	//Create a WRAP texture sampler state description
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -180,7 +144,7 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	//Create the texture sampler state
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleStateWrap);
+	result = device->CreateSamplerState(&samplerDesc, &sampleStateWrap);
 	if (FAILED(result))
 	{
 		return false;
@@ -192,12 +156,11 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 
 	//Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleStateClamp);
+	result = device->CreateSamplerState(&samplerDesc, &sampleStateClamp);
 	if (FAILED(result))
-	{
 		return false;
-	}
 
+	/////////////////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////////////////
 	//CONSTANT BUFFER DESCRIPTIONS:
 	//this is the dynamic matrix constant buffer that is in the VERTEX SHADER
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -208,67 +171,21 @@ bool RenderModule::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, WCH
 	matrixBufferDesc.StructureByteStride = 0;
 
 	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
-	if (FAILED(result)) { return false; }
-
-	
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
+	if (FAILED(result))
+		return false;
 
 	return true;
-
 }
 
-void RenderModule::ShutdownShader()
-{
-	if (m_layout)
-	{
-		m_layout->Release();
-		m_layout = 0;
-	}
-
-	
-	if (m_matrixBuffer)
-	{
-		m_matrixBuffer->Release();
-		m_matrixBuffer = 0;
-	}
-
-	if (m_pixelShader)
-	{
-		m_pixelShader->Release();
-		m_pixelShader = 0;
-	}
-
-
-	if (m_sampleStateClamp)
-	{
-		m_sampleStateClamp->Release();
-		m_sampleStateClamp = 0;
-	}
-
-	if (m_sampleStateWrap)
-	{
-		m_sampleStateWrap->Release();
-		m_sampleStateWrap = 0;
-	}
-
-	if (m_vertexShader)
-	{
-		m_vertexShader->Release();
-		m_vertexShader = 0;
-	}
-
-	
-	return;
-}
-
-bool RenderModule::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+bool RenderModule::SetShaderParameters(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNr;
-	matrixBuffer* dataPtr;
+	MatrixBuffer* dataPtr;
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	
-
 	XMMATRIX worldMatrixC, viewMatrixC, projectionMatrixC;
 
 	//transposing the matrices
@@ -277,51 +194,77 @@ bool RenderModule::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMAT
 	projectionMatrixC = XMMatrixTranspose(projectionMatrix);
 	
 	//lock the constant buffer for writing
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
 
-	//find pointer to data in the matrix constant buffer
-	dataPtr = (matrixBuffer*)mappedResource.pData;
+	dataPtr = (MatrixBuffer*)mappedResource.pData;
 
-	//fill in the matrix buffer with the information from the transposed WVP etc matrices
 	dataPtr->world = worldMatrixC;
 	dataPtr->view = viewMatrixC;
 	dataPtr->projection = projectionMatrixC;
 	
-	//unlock the constant buffer again
-	deviceContext->Unmap(m_matrixBuffer, 0);
+	deviceContext->Unmap(matrixBuffer, 0);
 
-	//set the position of the constant buffer in the vertexshader
 	bufferNr = 0;
 
 	//setting matrix constant buffer in the VS with its new and updated values
-	deviceContext->VSSetConstantBuffers(bufferNr, 1, &m_matrixBuffer);
+	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBuffer);
 
-	
+
 	//setting the sent in shader texture resource in the pixel shader //No textures for the moment
-	//deviceContext->PSSetShaderResources(0, 3, texture);
+	UINT32 vertexSize = sizeof(Vertex);
+	UINT32 offset = 0;
 
-	
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->PSSetShaderResources(0, 1, &texture);
+
 	return true;
-
 }
 
-void RenderModule::RenderShader(ID3D11DeviceContext* deviceContext)
+void RenderModule::UseDefaultShader()
 {
-	deviceContext->IASetInputLayout(m_layout);
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 
-	//set which vertex pixel geometry shaders that will be used for this triangle
+	deviceContext->IASetInputLayout(layoutPosUvNorm);
 
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
+	//Set shaders
+	deviceContext->VSSetShader(vertexShader, NULL, 0);
+	deviceContext->PSSetShader(pixelShader, NULL, 0);
 
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
+	deviceContext->PSSetSamplers(0, 1, &sampleStateClamp);
+	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
+}
 
-	//set the clamp and wrap sampler states and which register they belong to
-	deviceContext->PSSetSamplers(0, 1, &m_sampleStateClamp);
-	deviceContext->PSSetSamplers(1, 1, &m_sampleStateWrap);
 
-	//and render!
-	deviceContext->DrawIndexed(NULL, 0, 0);
+bool RenderModule::Render(XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
+{
+	bool result = true;
 
-	return;
+	//Set shader parameters, preparing them for render.
+	result = SetShaderParameters(worldMatrix, viewMatrix, projectionMatrix, texture, vertexBuffer, vertexCount);
+	if (!result)
+		return false;
+
+	//Now render the prepared buffers with the shader.
+	d3d->GetDeviceContext()->Draw(vertexCount, 0);
+
+	return result;
+}
+
+void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+{
+	d3d->BeginScene(red, green, blue, alpha);
+}
+void RenderModule::EndScene()
+{
+	d3d->EndScene();
+}
+
+ID3D11Device* RenderModule::GetDevice()
+{
+	return d3d->GetDevice();
+}
+ID3D11DeviceContext* RenderModule::GetDeviceContext()
+{
+	return d3d->GetDeviceContext();
 }
