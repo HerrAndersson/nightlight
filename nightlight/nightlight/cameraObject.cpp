@@ -4,11 +4,14 @@ CameraObject::CameraObject()
 {
 	positionX = 0.0f;
 	positionY = 0.0f;
-	positionZ = 0.0f;
+	positionZ = -1.0f;
 
 	rotationX = 0.0f;
 	rotationY = 0.0f;
 	rotationZ = 0.0f;
+
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 2, 1440 / 900, 0.1f, 1000);
+	updateCamera();
 }
 
 CameraObject::~CameraObject()
@@ -96,4 +99,16 @@ XMVECTOR CameraObject::getCamUp()
 {
 
 	return camUp;
+}
+
+void CameraObject::getProjectionMatrix(XMMATRIX& projectionMatrixIn)
+{
+	projectionMatrixIn = projectionMatrix;
+
+}
+
+void CameraObject::getViewMatrix(XMMATRIX& viewMatrixIn)
+{
+	viewMatrixIn = viewMatrix;
+
 }

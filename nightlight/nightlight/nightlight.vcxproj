@@ -89,6 +89,10 @@
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="System.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\pixelShader.hlsl" />
+    <None Include="Assets\Shaders\vertexShader.hlsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

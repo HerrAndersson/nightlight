@@ -8,6 +8,8 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	//activeGameState = MENU;
 
+	camera = new CameraObject();
+
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
 //	OutputDebugString("test\n");
@@ -81,9 +83,11 @@ bool Game::Render()
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
+	camera->getProjectionMatrix(projectionMatrix);
+	camera->getViewMatrix(viewMatrix);
 
 	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
-	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, worldMatrix, worldMatrix);
+	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
 
 	
 	Renderer->Render(gameObject);

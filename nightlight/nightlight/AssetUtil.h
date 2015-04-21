@@ -34,11 +34,11 @@ struct Vertex
 
 struct RenderObject
 {
-	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* vertexBuffer = nullptr;
 	int vertexBufferSize;
 	XMFLOAT3 diffuse;
 	XMFLOAT3 specular;
 	float shine = 0;
-	Texture* diffuseTexture;
-	Texture* specularTexture;
+	Texture* diffuseTexture = nullptr;
+	Texture* specularTexture = nullptr;
 };

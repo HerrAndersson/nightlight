@@ -21,6 +21,9 @@
     <Filter Include="Game\AI">
       <UniqueIdentifier>{ba03b9a5-a6e6-418b-8fbd-16e8b8b595ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Shaders">
+      <UniqueIdentifier>{b2697dec-6260-4df1-8af4-a7f43c6791af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -89,5 +92,13 @@
     <ClInclude Include="Game.h">
       <Filter>Game</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\pixelShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\vertexShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

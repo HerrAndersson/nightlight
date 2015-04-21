@@ -1,4 +1,7 @@
 #include "RenderModule.h"
+#include <fstream>
+#include <string>
+using namespace std;
 
 
 RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
@@ -16,7 +19,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	bool result;
 
 	//initializing shader files
-	result = InitializeShader(L"vertexShader.vs", L"pixelShader.ps");
+	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 }
 
 
@@ -58,7 +61,8 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	if (FAILED(result))
 	{
 		if (errorMessage)
-			OutputDebugString("\nVertexshader failed to compile");
+			/*OutputDebugString(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize());*/
+			throw runtime_error(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
 		else
 			OutputDebugString("\nVertexshader not found");;
 
@@ -280,7 +284,8 @@ bool RenderModule::Render(GameObject* gameObject)
 
 	//Set shader parameters, preparing them for render.
 	RenderObject* renderObject = gameObject->GetRenderObject();
-	result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
+	//result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
+	result = SetDataPerObject(*gameObject->GetWorldMatrix(), nullptr, renderObject->vertexBuffer);
 	if (!result)
 		return false;
 
