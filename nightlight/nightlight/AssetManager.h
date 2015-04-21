@@ -22,7 +22,6 @@ private:
 	ID3D11Buffer* CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *faceIndices);
 	void setUpBuffers(ID3D11DeviceContext*);
 	
-	ID3D11Device* device;
 	std::vector<RenderObject> renderObjects;
 };
 

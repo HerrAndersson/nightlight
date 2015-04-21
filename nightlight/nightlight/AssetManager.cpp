@@ -104,7 +104,8 @@ ID3D11Buffer* AssetManager::getVertexBuffer()
 
 AssetManager::AssetManager(ID3D11Device* device)
 {
-	device = this->device;
+
+
 }
 
 
