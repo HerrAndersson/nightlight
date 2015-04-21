@@ -1,13 +1,24 @@
 #include "GameObject.h"
 
 
-GameObject::GameObject()
+GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject)
 {
+	this->worldMatrix = worldMatrix;
+	this->renderObject = renderObject;
 }
 
 
 GameObject::~GameObject()
 {
+}
+
+void GameObject::GetWorldMatrix(XMMATRIX& worldMatrix)
+{
+	worldMatrix = this->worldMatrix;
+}
+RenderObject* GameObject::GetRenderObject()
+{
+	return renderObject;
 }
 
 void* GameObject::operator new(size_t i)

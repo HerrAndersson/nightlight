@@ -14,9 +14,11 @@ private:
 
 public:
 
-	GameObject();
+	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject);
 	virtual ~GameObject();
 
+	void GetWorldMatrix(XMMATRIX& worldMatrix);
+	RenderObject* GetRenderObject();
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
