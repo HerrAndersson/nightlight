@@ -6,7 +6,6 @@ LightClass::LightClass()
 }
 
 
-
 LightClass::~LightClass()
 {
 }

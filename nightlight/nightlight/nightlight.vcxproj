@@ -72,6 +72,7 @@
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="lightObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="System.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="lightObject.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="System.h" />
   </ItemGroup>
