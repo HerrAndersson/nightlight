@@ -11,6 +11,7 @@
 //|										INKLUDERA											|
 //|_________________________________________________________________________________________|
 
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -28,7 +29,7 @@
 #include <maya/MFnTransform.h>
 
 #include <maya\MFnMesh.h>
-#include<maya/MFnCamera.h>
+#include <maya/MFnCamera.h>
 
 #include <maya\MFnDependencyNode.h>
 #include <maya\MFnAttribute.h>
@@ -39,9 +40,9 @@
 #include <maya\MItMeshPolygon.h>
 #include <maya\MPlug.h>
 
-#include<maya/MFnLambertShader.h>
-#include<maya/MFnBlinnShader.h>
-#include<maya/MFnPhongShader.h>
+#include <maya/MFnLambertShader.h>
+#include <maya/MFnBlinnShader.h>
+#include <maya/MFnPhongShader.h>
 
 
 #include <maya/MFnLight.h>
@@ -57,7 +58,7 @@
 
 #include <maya/MTime.h>
 #include <maya/MFnAnimCurve.h>
-#include<maya/MAnimControl.h>
+#include <maya/MAnimControl.h>
 
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
