@@ -25,14 +25,6 @@ struct Texture
 	ID3D11ShaderResourceView* texturePointer = nullptr;
 };
 
-struct Material
-{
-	std::string materialName = "";
-	XMFLOAT3	diffuse;
-	XMFLOAT3	specular;
-	float		shine;
-};
-
 struct Vertex
 {
 	XMFLOAT3 position;
@@ -44,7 +36,9 @@ struct RenderObject
 {
 	ID3D11Buffer* vertexBuffer;
 	int vertexBufferSize;
-	Material* material;
+	XMFLOAT3 diffuse;
+	XMFLOAT3 specular;
+	float shine = 0;
 	Texture* diffuseTexture;
 	Texture* specularTexture;
 };
