@@ -12,7 +12,7 @@ public:
 	RenderObject* LoadRenderObject(std::string file_path);
 	
 	ID3D11Buffer* getVertexBuffer();
-
+	 
 	~AssetManager();
 
 	RenderObject* GetRenderObject(); 

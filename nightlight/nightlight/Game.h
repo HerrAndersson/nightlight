@@ -16,6 +16,8 @@ class Game
 {
 private:
 
+	RenderObject* asset;//single test asset
+
 	enum ObjectIDs
 	{
 		PLAYER = 1,

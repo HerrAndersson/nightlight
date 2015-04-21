@@ -23,7 +23,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	Assets->LoadRenderObject("Assets/Models/simple_cube.bin");
+	asset = Assets->LoadRenderObject("Assets/Models/simple_cube.bin");
 
 }
 

@@ -15,10 +15,6 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
 	infile.read((char*)&meshHeader, sizeof(MeshHeader));
 
-	std::vector<Vertex> vertices;
-	vertices.reserve(meshHeader.numberPoints);
-
-
 	std::string name;
 	std::vector<XMFLOAT3> points;
 	std::vector<XMFLOAT3> normals;
@@ -37,14 +33,32 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3)*3);
 
+	if (mainHeader.matCount>0){
+			MatHeader matHeader;
+			infile.read((char*)&matHeader, sizeof(MatHeader));
 
+			infile.seekg(16+matHeader.ambientNameLength, std::ios::cur);
+
+			infile.read((char*)&asset.diffuse, 16);
+			infile.read((char*)&asset.diffuseTexture->textureName, matHeader.diffuseNameLength);
+
+			infile.read((char*)&asset.specular, 16);
+			infile.read((char*)&asset.specularTexture->textureName, matHeader.specularNameLength);
+
+			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
+
+			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
+	}
+
+	std::vector<Vertex> vertices;
+	vertices.reserve(meshHeader.numberPoints);
 	//RenderObject asset;
 	asset.vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
 	infile.close();
 
-
-
-	return nullptr;
+	//RenderObject* object; return object;
+	
+	return &asset;
 }
 
 ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices){
@@ -84,6 +98,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 		OutputDebugString("Failed to create vertexBuffer");
 		return nullptr;
 	}
+
 	return vertexBuffer;
 }
 
@@ -120,6 +135,8 @@ ID3D11Buffer* AssetManager::getVertexBuffer()
 AssetManager::AssetManager(ID3D11Device* device_)
 {
 	device = device_;
+
+	//loop för att läsa alla assets
 
 }
 
