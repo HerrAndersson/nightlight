@@ -23,7 +23,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	Assets->LoadRenderObject("Assets/Models/simple_cube.bin");
+	gameObject = new GameObject(XMMatrixIdentity(), Assets->LoadRenderObject("Assets/Models/simple_cube.bin"));
 
 }
 
@@ -71,8 +71,6 @@ bool Game::Update()
 	//Input->KeyDown(VK_LBUTTON);
 	//Input->W();
 
-	Render();
-
 	result = !Input->Esc();
 	return result;
 }
@@ -81,13 +79,14 @@ bool Game::Render()
 {
 	bool result = true;
 
-	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
-	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f);
-
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
+
+	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
+	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, worldMatrix, worldMatrix);
+
 	
-	Renderer->Render(worldMatrix, worldMatrix, worldMatrix, );
+	Renderer->Render(gameObject);
 	
 	//example 
 	//D3D->SetCullingState(2);

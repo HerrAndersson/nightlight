@@ -44,7 +44,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 
 
 
-	return nullptr;
+	return &asset;
 }
 
 ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices){

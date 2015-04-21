@@ -34,6 +34,8 @@ private:
 
 	int screenWidth, screenHeight;
 
+	GameObject* gameObject;
+
 	XMMATRIX world; //needed?
 
 	//Object** objects; use vector?.

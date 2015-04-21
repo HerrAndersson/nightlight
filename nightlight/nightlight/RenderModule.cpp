@@ -7,7 +7,8 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	pixelShader = NULL;
 	sampleStateWrap = NULL;
 	sampleStateClamp = NULL;
-	matrixBuffer = NULL;
+	matrixBufferPerObject = NULL;
+	matrixBufferPerFrame = NULL;
 	hwnd = hwnd;
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
@@ -24,7 +25,8 @@ RenderModule::~RenderModule()
 	delete d3d;
 
 	layoutPosUvNorm->Release();
-	matrixBuffer->Release();
+	matrixBufferPerObject->Release();
+	matrixBufferPerFrame->Release();
 	pixelShader->Release();
 	sampleStateClamp->Release();
 	sampleStateWrap->Release();
@@ -164,21 +166,28 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	//CONSTANT BUFFER DESCRIPTIONS:
 	//this is the dynamic matrix constant buffer that is in the VERTEX SHADER
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(matrixBuffer);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
 
 	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerObject);
+
 	if (FAILED(result))
-		return false;
+		OutputDebugString("Failed to create matrix buffer");
+
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerFrame);
+
+	if (FAILED(result))
+		OutputDebugString("Failed to create matrix buffer");
 
 	return true;
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -265,17 +274,18 @@ void RenderModule::UseDefaultShader()
 }
 
 
-bool RenderModule::Render(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount)
+bool RenderModule::Render(GameObject* gameObject)
 {
 	bool result = true;
 
 	//Set shader parameters, preparing them for render.
-	result = SetDataPerObject(worldMatrix, texture, vertexBuffer, vertexCount)
+	RenderObject* renderObject = gameObject->GetRenderObject();
+	result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
 	if (!result)
 		return false;
 
 	//Now render the prepared buffers with the shader.
-	d3d->GetDeviceContext()->Draw(vertexCount, 0);
+	d3d->GetDeviceContext()->Draw(renderObject->vertexBufferSize, 0);
 
 	return result;
 }

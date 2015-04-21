@@ -43,6 +43,7 @@ struct Vertex
 struct RenderObject
 {
 	ID3D11Buffer* vertexBuffer;
+	int vertexBufferSize;
 	Material* material;
 	Texture* diffuseTexture;
 	Texture* specularTexture;

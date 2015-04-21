@@ -12,9 +12,9 @@ GameObject::~GameObject()
 {
 }
 
-void GameObject::GetWorldMatrix(XMMATRIX& worldMatrix)
+XMMATRIX* GameObject::GetWorldMatrix()
 {
-	worldMatrix = this->worldMatrix;
+	return &worldMatrix;
 }
 RenderObject* GameObject::GetRenderObject()
 {
