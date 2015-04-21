@@ -6,9 +6,6 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	Logic = new GameLogic();
-	Renderer = new RenderModule(hwnd);
-
 	//activeGameState = MENU;
 
 	InitManagers(hwnd, fullscreen);
@@ -18,12 +15,10 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	D3D = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
-	
-	Renderer = new RenderModule(hwnd);
-	
+	Logic = new GameLogic();
+	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
-	Assets = new AssetManager(D3D->GetDevice());
+	Assets = new AssetManager(Renderer->GetDevice());
 }
 
 void Game::LoadAssets()
@@ -35,7 +30,6 @@ Game::~Game()
 {
 	delete Logic;
 	delete Renderer;
-	delete D3D;
 	delete Input;
 }
 
@@ -87,13 +81,12 @@ bool Game::Render()
 	bool result = true;
 
 	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
-	D3D->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f);
+	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f);
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
 	
-	Renderer->Initialize(D3D->GetDevice());
-	Renderer->Render(D3D->GetDeviceContext(), worldMatrix, worldMatrix, worldMatrix);
+	Renderer->Render(worldMatrix, worldMatrix, worldMatrix, );
 	
 	//example 
 	//D3D->SetCullingState(2);
@@ -105,7 +98,7 @@ bool Game::Render()
 	//D3D->DisableDepth();
 	//Renderer->Render(2d stuff)
 
-	D3D->EndScene();
+	Renderer->EndScene();
 
 	return result;
 }
