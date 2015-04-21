@@ -1,10 +1,13 @@
-cbuffer matrixBuffer
+cbuffer matrixBufferPerObject : register(cb0)
 {
 	matrix worldMatrix;
+};
+
+cbuffer matrixBufferPerFrame : register(cb1)
+{
 	matrix viewMatrix;
 	matrix projectionMatrix;
 };
-
 
 struct vertexInputType
 {
@@ -13,15 +16,12 @@ struct vertexInputType
 	float3 normal : NORMAL;
 };
 
-
 struct vertexOutput
 {
 	float4 position : POSITION0;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
 };
-
-
 
 vertexOutput vertexShader(vertexInputType input)
 {

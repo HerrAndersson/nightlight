@@ -251,6 +251,10 @@ struct camHeader
 };
 */
 
+struct LightHeader{
+	int ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize; 
+};
+
 //___________________________________________________________________________________________
 //|																							|
 //|										EXPORTERKLASS										|

@@ -59,6 +59,7 @@ bool System::Update()
 	//SetCursorPos(screenWidth / 2, screenHeight / 2);
 
 	result = game->Update();
+	game->Render();
 
 	if (!result)
 		return false;

@@ -9,7 +9,7 @@ class GameObject
 private:
 
 	int id;
-	XMMATRIX& worldMatrix;
+	XMMATRIX worldMatrix;
 	RenderObject* renderObject;
 
 public:
@@ -17,7 +17,7 @@ public:
 	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject);
 	virtual ~GameObject();
 
-	void GetWorldMatrix(XMMATRIX& worldMatrix);
+	XMMATRIX* GetWorldMatrix();
 	RenderObject* GetRenderObject();
 
 	//Overloading these guarantees 16B alignment of XMMATRIX

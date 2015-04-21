@@ -26,6 +26,7 @@ public:
 
 	//Different types of view matrices; a regular perspective and an orthographic one.
 	//These could in a later case be applied to create shadow maps.
+
 	void GenerateViewMatrix();
 	void GetViewMatrix(XMMATRIX&);
 

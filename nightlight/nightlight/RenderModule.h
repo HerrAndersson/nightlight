@@ -6,6 +6,7 @@
 #include <fstream>
 #include "D3DManager.h"
 #include "AssetUtil.h"
+#include "GameObject.h"
 
 using DirectX::XMMATRIX;
 using DirectX::XMFLOAT3;
@@ -55,7 +56,7 @@ public:
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 
-	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount);
+	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer);
 
 	void UseDefaultShader();
 	//void UseShadowShader();
@@ -63,10 +64,7 @@ public:
 
 	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 
-
-	//SKA TA EMOT EN GAMEOBJECT-VECTOR ISTÄLLET!!! inte texture, buffer, vertexcount
-	bool Render(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, int vertexCount);
-
+	bool Render(GameObject* gameObject);
 
 	void EndScene();
 

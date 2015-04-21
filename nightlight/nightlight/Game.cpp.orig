@@ -8,8 +8,6 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	//activeGameState = MENU;
 
-	camera = new CameraObject();
-
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
 //	OutputDebugString("test\n");
@@ -25,7 +23,11 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
+<<<<<<< HEAD
 	gameObject = new GameObject(XMMatrixIdentity(), Assets->LoadRenderObject("Assets/Models/simple_cube.bin"));
+=======
+	asset = Assets->LoadRenderObject("Assets/Models/simple_cube.bin");
+>>>>>>> df8605cd9e005cb49c16d05714ce2b949ba33895
 
 }
 
@@ -83,11 +85,9 @@ bool Game::Render()
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
-	camera->getProjectionMatrix(projectionMatrix);
-	camera->getViewMatrix(viewMatrix);
 
 	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
-	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
+	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, worldMatrix, worldMatrix);
 
 	
 	Renderer->Render(gameObject);

@@ -9,6 +9,7 @@
 #include "InputManager.h"
 #include "AssetManager.h"
 #include "AssetUtil.h"
+#include "cameraObject.h"
 
 using namespace DirectX;
 
@@ -35,6 +36,9 @@ private:
 	int activeGameState;
 
 	int screenWidth, screenHeight;
+
+	GameObject* gameObject;
+	CameraObject* camera;
 
 	XMMATRIX world; //needed?
 

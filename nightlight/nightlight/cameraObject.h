@@ -21,6 +21,10 @@ public:
 	void getViewMatrix(XMMATRIX&);
 	void getProjectionMatrix(XMMATRIX&);
 
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
+
 private:
 
 	float positionX, positionY, positionZ;

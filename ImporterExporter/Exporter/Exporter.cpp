@@ -418,6 +418,7 @@ void Exporter::extractLight (MObject& mObj)
 
 							 //push back in the light temp storage
 							 TempLightStorage.pointLights.push_back (tempPointLights);
+							 scene_.lights.push_back(TempLightStorage);
 
 	}
 		break;
@@ -432,6 +433,7 @@ void Exporter::extractLight (MObject& mObj)
 
 							   //push back in the light temp storage
 							   TempLightStorage.ambientLights.push_back (tempAmbiLights);
+							   scene_.lights.push_back(TempLightStorage);
 
 	}
 		break;
@@ -456,6 +458,7 @@ void Exporter::extractLight (MObject& mObj)
 
 							//push back in the light temp storage
 							TempLightStorage.spotLights.push_back (tempSpotLights);
+							scene_.lights.push_back(TempLightStorage);
 
 	}
 		break;
@@ -472,6 +475,7 @@ void Exporter::extractLight (MObject& mObj)
 
 								   //push back in the light temp storage
 								   TempLightStorage.dirLights.push_back (tempDirLights);
+								   scene_.lights.push_back(TempLightStorage);
 
 	}
 		break;
@@ -486,7 +490,8 @@ void Exporter::extractLight (MObject& mObj)
 							tempAreaLights.intensity = func.intensity ();
 
 							//push back in the light temp storage
-							TempLightStorage.areaLights.push_back (tempAreaLights);
+							TempLightStorage.areaLights.push_back(tempAreaLights);
+							scene_.lights.push_back(TempLightStorage);
 
 	}
 		break;
@@ -494,7 +499,7 @@ void Exporter::extractLight (MObject& mObj)
 	default:
 		break;
 
-		scene_.lights.push_back (TempLightStorage);
+		//scene_.lights.push_back(TempLightStorage);
 
 	}
 
@@ -889,17 +894,69 @@ void Exporter::ExportMeshes ()
 			outfile.write((const char*)&scene_.materials[i].glow, 16);
 			outfile.write((const char*)scene_.materials[i].glow.texfileInternal.data(), matHeader.glowNameLength);
 		}
-/*
-		for (int i = 0; i < mainHeader.camCount; i++){
-			outfile.write((const char*)&scene_.cameras[i].projectionMatrix, )
+
+		for (int i = 0; i < mainHeader.lightCount; i++)
+		{
+			LightHeader lightHeader;
+			//saving sizes of things
+			lightHeader.ambientLightSize = scene_.lights[i].ambientLights.size();
+			lightHeader.areaLightSize = scene_.lights[i].areaLights.size();
+			lightHeader.dirLightSize = scene_.lights[i].dirLights.size();
+			lightHeader.pointLightSize = scene_.lights[i].pointLights.size();
+			lightHeader.spotLightSize = scene_.lights[i].spotLights.size();
+
+			outfile.write((const char*)&lightHeader, sizeof(LightHeader));
+
+			//outfile.write((const char*)&scene_.lights[i].ambientLights, lightHeader.ambientLightSize);
+			for (int a = 0; a < lightHeader.ambientLightSize; a++)
+			{
+				outfile.write((const char*)&scene_.lights[i].ambientLights[a].color, 16);
+				outfile.write((const char*)&scene_.lights[i].ambientLights[a].intensity, 8);
+			}
+
+			//outfile.write((const char*)&scene_.lights[i].areaLights, lightHeader.areaLightSize);
+			for (int a = 0; a < lightHeader.areaLightSize; a++)
+			{
+				outfile.write((const char*)&scene_.lights[i].areaLights[a].color, 16);
+				outfile.write((const char*)&scene_.lights[i].areaLights[a].intensity, 8);
+			}
+
+			//outfile.write((const char*)&scene_.lights[i].dirLights, lightHeader.dirLightSize);
+			for (int a = 0; a < lightHeader.dirLightSize; a++)
+			{
+				outfile.write((const char*)&scene_.lights[i].dirLights[a].color, 16);
+				outfile.write((const char*)&scene_.lights[i].dirLights[a].dir, 16);
+				outfile.write((const char*)&scene_.lights[i].dirLights[a].intensity, 8);
+			}
+			//outfile.write((const char*)&scene_.lights[i].pointLights, lightHeader.pointLightSize);
+			for (int a = 0; a < lightHeader.pointLightSize; a++){
+				outfile.write((const char*)&scene_.lights[i].pointLights[a].color, 16);
+				outfile.write((const char*)&scene_.lights[i].pointLights[a].intensity, 8);
+			}
+
+			//outfile.write((const char*)&scene_.lights[i].spotLights, lightHeader.spotLightSize);
+			for (int a = 0; a < lightHeader.spotLightSize; a++)
+			{
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].color, 16);
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].dir, 16);
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].intensity, 8);
+
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].coneAngle, 8);
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].dropoff, 8);
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].penumbraAngle, 8);
+			}
+
 		}
-*/
 		outfile.close();
+
 		outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
 		if (!outfile.is_open())
 		{
 			std::cout << "<Error> fstream::open()" << std::endl;
 		}
+
+		outfile.close();
+		debug++;
 /*
 		// How to read
 		// first read the header
@@ -944,8 +1001,7 @@ void Exporter::ExportMeshes ()
 		}
 		infile.close();
 */
-		outfile.close();
-		debug++;
+
 		
 /*
 		int j = 0;
