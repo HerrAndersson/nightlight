@@ -1146,58 +1146,65 @@ void Exporter::ExportMeshes()
 		lightHeader.spotLightSize = scene_.lights[i].spotLights.size();
 
 		outfile.write((const char*)&lightHeader, sizeof(LightHeader));
-		outfile.write((const char*)&lightHeader.ambientLightSize, sizeof(lightHeader.ambientLightSize));
-		outfile.write((const char*)&lightHeader.areaLightSize, sizeof(lightHeader.areaLightSize));
-		outfile.write((const char*)&lightHeader.dirLightSize, sizeof(lightHeader.dirLightSize));
-		outfile.write((const char*)&lightHeader.pointLightSize, sizeof(lightHeader.pointLightSize));
-		outfile.write((const char*)&lightHeader.spotLightSize, sizeof(lightHeader.spotLightSize));
+		//outfile.write((const char*)&lightHeader.ambientLightSize, sizeof(lightHeader.ambientLightSize));
+		//outfile.write((const char*)&lightHeader.areaLightSize, sizeof(lightHeader.areaLightSize));
+		//outfile.write((const char*)&lightHeader.dirLightSize, sizeof(lightHeader.dirLightSize));
+		//outfile.write((const char*)&lightHeader.pointLightSize, sizeof(lightHeader.pointLightSize));
+		//outfile.write((const char*)&lightHeader.spotLightSize, sizeof(lightHeader.spotLightSize));
 
 
 		//outfile.write((const char*)&scene_.lights[i].ambientLights, lightHeader.ambientLightSize);
 		for (int a = 0; a < lightHeader.ambientLightSize; a++)
 		{
-			outfile.write((const char*)&scene_.lights[i].ambientLights[a].color, 16);
-			outfile.write((const char*)&scene_.lights[i].ambientLights[a].intensity, 8);
-			outfile.write((const char*)&scene_.lights[i].ambientLights[a].pos, 16);
+			outfile.write((const char*)scene_.lights[i].ambientLights.data(), lightHeader.ambientLightSize);
+			//outfile.write((const char*)&scene_.lights[i].ambientLights[a].color, 16);
+			//outfile.write((const char*)&scene_.lights[i].ambientLights[a].intensity, 8);
+			//outfile.write((const char*)&scene_.lights[i].ambientLights[a].pos, 16);
 		}
 
 		//outfile.write((const char*)&scene_.lights[i].areaLights, lightHeader.areaLightSize);
 		for (int a = 0; a < lightHeader.areaLightSize; a++)
 		{
-			outfile.write((const char*)&scene_.lights[i].areaLights[a].color, 16);
-			outfile.write((const char*)&scene_.lights[i].areaLights[a].intensity, 8);
-			outfile.write((const char*)&scene_.lights[i].areaLights[a].pos, 16);
+			outfile.write((const char*)scene_.lights[i].areaLights.data(), lightHeader.areaLightSize);
+			//outfile.write((const char*)&scene_.lights[i].areaLights[a].color, 16);
+			//outfile.write((const char*)&scene_.lights[i].areaLights[a].intensity, 8);
+			//outfile.write((const char*)&scene_.lights[i].areaLights[a].pos, 16);
 
 		}
 
 		//outfile.write((const char*)&scene_.lights[i].dirLights, lightHeader.dirLightSize);
 		for (int a = 0; a < lightHeader.dirLightSize; a++)
 		{
-			outfile.write((const char*)&scene_.lights[i].dirLights[a].color, 16);
-			outfile.write((const char*)&scene_.lights[i].dirLights[a].dir, 16);
-			outfile.write((const char*)&scene_.lights[i].dirLights[a].intensity, 8);
-			outfile.write((const char*)&scene_.lights[i].dirLights[a].pos, 16);
+			outfile.write((const char*)scene_.lights[i].dirLights.data(), lightHeader.dirLightSize);
+			//outfile.write((const char*)&scene_.lights[i].dirLights[a].color, 16);
+			//outfile.write((const char*)&scene_.lights[i].dirLights[a].dir, 16);
+			//outfile.write((const char*)&scene_.lights[i].dirLights[a].intensity, 8);
+			//outfile.write((const char*)&scene_.lights[i].dirLights[a].pos, 16);
 
 		}
 		//outfile.write((const char*)&scene_.lights[i].pointLights, lightHeader.pointLightSize);
-		for (int a = 0; a < lightHeader.pointLightSize; a++){
-			outfile.write((const char*)&scene_.lights[i].pointLights[a].color, 16);
-			outfile.write((const char*)&scene_.lights[i].pointLights[a].intensity, 8);
-			outfile.write((const char*)&scene_.lights[i].pointLights[a].pos, 16);
+		for (int a = 0; a < lightHeader.pointLightSize; a++)
+		{
+			outfile.write((const char*)scene_.lights[i].ambientLights.data(), lightHeader.ambientLightSize);
+
+			//outfile.write((const char*)&scene_.lights[i].pointLights[a].color, 16);
+			//outfile.write((const char*)&scene_.lights[i].pointLights[a].intensity, 8);
+			//outfile.write((const char*)&scene_.lights[i].pointLights[a].pos, 16);
 
 		}
 
 		//outfile.write((const char*)&scene_.lights[i].spotLights, lightHeader.spotLightSize);
 		for (int a = 0; a < lightHeader.spotLightSize; a++)
 		{
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].color, 16);
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].dir, 16);
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].intensity, 8);
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].pos, 16);
-
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].coneAngle, 8);
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].dropoff, 8);
-			outfile.write((const char*)&scene_.lights[i].spotLights[a].penumbraAngle, 8);
+			outfile.write((const char*)scene_.lights[i].spotLights.data(), lightHeader.spotLightSize);
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].color, 16);
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].dir, 16);
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].intensity, 8);
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].pos, 16);
+			//
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].coneAngle, 8);
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].dropoff, 8);
+			//outfile.write((const char*)&scene_.lights[i].spotLights[a].penumbraAngle, 8);
 		}
 
 	}

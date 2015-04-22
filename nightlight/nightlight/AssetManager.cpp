@@ -71,7 +71,8 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	}
 
 
-	for (int i = 0; i < mainHeader.lightCount; i++){
+	for (int i = 0; i < mainHeader.lightCount; i++)
+	{
 
 		//light header file read
 		LightHeader lightHeader;
