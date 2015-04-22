@@ -34,6 +34,9 @@ Game::~Game()
 	delete Logic;
 	delete Renderer;
 	delete Input;
+	delete camera;
+	delete Assets;
+	delete gameObject;
 }
 
 bool Game::Update()
