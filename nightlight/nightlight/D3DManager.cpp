@@ -121,7 +121,7 @@ D3DManager::D3DManager(HWND hwnd, int screenWidth, int screenHeight, bool fullsc
 
 	///////////////////////////////////////////////////////////////////////// Raster states ///////////////////////////////////////////////////////////////////////
 	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
