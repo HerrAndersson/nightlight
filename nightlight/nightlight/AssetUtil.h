@@ -51,43 +51,43 @@ struct RenderObject
 
 struct ambientLightStruct
 {
-	std::vector<double> intensity;
-	std::vector<XMFLOAT3> color;
-	std::vector<XMFLOAT3> pos;
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 pos;
 };
 
 struct areaLightStruct
 {
-	std::vector<double> intensity;
-	std::vector<XMFLOAT3> color;
-	std::vector<XMFLOAT3> pos;
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 pos;
 };
 
 struct directionalLightStruct
 {
-	std::vector<double> intensity;
-	std::vector<XMFLOAT3> color;
-	std::vector<XMFLOAT3> dir;
-	std::vector<XMFLOAT3> pos;
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 dir;
+	XMFLOAT3 pos;
 };
 
 struct pointLightStruct
 {
-	std::vector<double> intensity;
-	std::vector<XMFLOAT3> color;
-	std::vector<XMFLOAT3> pos;
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 pos;
 };
 
 struct spotLightStruct
 {
-	std::vector<double> intensity;
-	std::vector<XMFLOAT3> color;
-	std::vector<XMFLOAT3> dir;
-	std::vector<XMFLOAT3> pos;
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 dir;
+	XMFLOAT3 pos;
 
-	std::vector<double> coneAngle;
-	std::vector<double> penumbraAngle;
-	std::vector<double> dropoff;
+	double coneAngle;
+	double penumbraAngle;
+	double dropoff;
 };
 
 
