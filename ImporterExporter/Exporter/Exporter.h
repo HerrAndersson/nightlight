@@ -181,7 +181,7 @@ struct lightData
 struct KeyData
 {
 	
-	MTime keyFrameTime;	//Keyframe position on timeline 
+	//MTime keyFrame;	//Keyframe position on timeline 
 	std::vector<vec3> points;		//Keyframes value
 	std::vector<vec3> normals;		//Keyframes value
 	std::vector<uvSet> uvSets;		//Keyframes value
@@ -198,6 +198,7 @@ struct AnimData
 	MTime animationStart;
 	MTime animationEnd;
 	int numKeys;
+	MTime keyFrame;					//Keyframe position on timeline 
 	
 	std::vector<KeyData> KeyFrames;
 	

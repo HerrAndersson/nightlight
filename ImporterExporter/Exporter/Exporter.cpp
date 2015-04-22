@@ -516,39 +516,38 @@ void Exporter::extractKeyData (MObject& key)
 	scene_.AnimationData.push_back(animTemp);
 
 	//get Keyframe values
+	MFnAnimCurve fn (key);
 
+	animTemp.numKeys = fn.numKeys ();
 
+	// Make sure not to do anything if there are no keyframes
+	if (animTemp.numKeys == 0) return;
 
+	std::cout << "AnimCurve " << fn.name ().asChar () << std::endl;	
+	std::cout << "NumKeys " << animTemp.numKeys << std::endl;
 
-//	MFnAnimCurve fn (key);
-//
-//	KeyData iKeyCount;
-//	iKeyCount.numKeys = fn.numKeys ();
-//
-//	// Make sure not to do anything if there are no keyframes
-//	if (iKeyCount.numKeys == 0) return;
-//
-//	std::cout << "AnimCurve " << fn.name ().asChar () << std::endl;	
-//	std::cout << "NumKeys " << iKeyCount.numKeys << std::endl;
-//
-//	// get all keyframe times & values
-//	for (unsigned int i = 0; i < iKeyCount.numKeys; i++)
-//	{
-//		MTime Time = fn.time (i).value ();
-//		float Value = fn.value (i);
-//
-//		//Getting hte tangents for the animation curves
-//		float ix, iy, ox, oy;
-//		fn.getTangent (i, ix, iy, true);
-//		fn.getTangent (i, ox, oy, false);
-//
-//		// write keyframe info
-//		std::cout << " time " << Time.as (MTime::kSeconds);
-//		std::cout << " value " << Value;
-//		std::cout << " InTangent " << iy;
-//		std::cout << " OutTangent " << oy << std::endl;
-//	}
-//	std::cout << std::endl;
+	// get all keyframe times & values
+	for (unsigned int i = 0; i < animTemp.numKeys; i++)
+	{
+		MTime Time = fn.time (i).value ();
+		float Value = fn.value (i);
+
+		//Getting hte tangents for the animation curves
+		float ix, iy, ox, oy;
+		fn.getTangent (i, ix, iy, true);
+		fn.getTangent (i, ox, oy, false);
+
+		// write keyframe info
+		std::cout << " time " << Time.as (MTime::kSeconds);
+		std::cout << " frame " << fn.time(i);
+		std::cout << " value " << Value;
+		std::cout << " InTangent " << iy;
+		std::cout << " OutTangent " << oy << std::endl;
+
+		if (animTemp.keyFrame < fn.time(i))
+			animTemp.keyFrame = fn.time(i);
+	}
+	std::cout << std::endl;
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
