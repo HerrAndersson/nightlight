@@ -701,7 +701,7 @@ void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base)
 	cout << "\tBase " << fnDep.name().asChar() << endl;
 
 	//attach the function set to the object
-	unsigned int nWeights = fn.numWeights;
+	unsigned int nWeights = fn.numWeights();
 
 	cout << "\t\tNumWeights " << nWeights << endl;
 
