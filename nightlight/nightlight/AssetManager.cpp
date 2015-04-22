@@ -57,19 +57,15 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
 		}
 		else{
-
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
-
-			infile.seekg(16 + matHeader.ambientNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.diffuseNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.specularNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
+			infile.seekg(80
+				+ matHeader.ambientNameLength
+				+ matHeader.diffuseNameLength
+				+ matHeader.specularNameLength
+				+ matHeader.transparencyNameLength
+				+ matHeader.glowNameLength, 
+				std::ios::cur);
 		}
 
 	}
