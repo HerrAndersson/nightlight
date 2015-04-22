@@ -6,8 +6,9 @@
 
 using namespace DirectX;
 
+
 struct MainHeader{
-	int meshCount, matCount, camCount, lightCount;
+	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
 };
 
 struct MeshHeader
@@ -17,10 +18,6 @@ struct MeshHeader
 
 struct MatHeader{
 	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
-};
-
-struct LightHeader{
-	int ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
 };
 
 struct Texture

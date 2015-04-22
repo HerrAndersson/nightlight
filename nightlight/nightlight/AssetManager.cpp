@@ -71,51 +71,18 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	}
 
 
-	for (int i = 0; i < mainHeader.lightCount; i++)
-	{
+	lightData tempLightStorage;
+	tempLightStorage.ambientLights.resize(mainHeader.ambientLightSize);
+	tempLightStorage.areaLights.resize(mainHeader.areaLightSize);
+	tempLightStorage.spotLights.resize(mainHeader.spotLightSize);
+	tempLightStorage.dirLights.resize(mainHeader.dirLightSize);
+	tempLightStorage.pointLights.resize(mainHeader.pointLightSize);
 
-		//light header file read
-		LightHeader lightHeader;
-		infile.read((char*)&lightHeader, sizeof(LightHeader));
-
-		lightData tempLightStorage;
-
-		tempLightStorage.ambientLights.resize(lightHeader.ambientLightSize);
-		tempLightStorage.areaLights.resize(lightHeader.areaLightSize);
-		tempLightStorage.dirLights.resize(lightHeader.dirLightSize);
-		tempLightStorage.pointLights.resize(lightHeader.pointLightSize);
-		tempLightStorage.spotLights.resize(lightHeader.spotLightSize);
-
-		for (int a = 0; a < lightHeader.ambientLightSize; a++)
-		{
-			infile.read((char*)tempLightStorage.ambientLights.data(), sizeof(ambientLightStruct));
-
-		}
-		for (int a = 0; a < lightHeader.areaLightSize; a++)
-		{
-			infile.read((char*)tempLightStorage.areaLights.data(), sizeof(areaLightStruct));
-
-		}
-		for (int a = 0; a < lightHeader.dirLightSize; a++)
-		{
-			infile.read((char*)tempLightStorage.dirLights.data(), sizeof(directionalLightStruct));
-
-		}
-		for (int a = 0; a < lightHeader.pointLightSize; a++)
-		{
-			infile.read((char*)tempLightStorage.pointLights.data(), sizeof(pointLightStruct));
-
-		}
-		for (int a = 0; a < lightHeader.spotLightSize; a++)
-		{
-			infile.read((char*)tempLightStorage.spotLights.data(), sizeof(spotLightStruct));
-
-		}
-	}
-	
-
-
-
+	infile.read((char*)tempLightStorage.ambientLights.data(), mainHeader.ambientLightSize*sizeof(ambientLightStruct));
+	infile.read((char*)tempLightStorage.areaLights.data(), mainHeader.areaLightSize*sizeof(areaLightStruct));
+	infile.read((char*)tempLightStorage.dirLights.data(), mainHeader.dirLightSize* sizeof(directionalLightStruct));
+	infile.read((char*)tempLightStorage.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
+	infile.read((char*)tempLightStorage.spotLights.data(), mainHeader.spotLightSize* sizeof(spotLightStruct));
 
 	std::vector<Vertex> vertices;
 	vertices.reserve(meshHeader.numberPoints);
