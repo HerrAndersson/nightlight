@@ -285,18 +285,15 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	//lock the constant buffer for writing
 	result = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) { return false; }
+	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 
-
 	//CHANGES THE CUBES ORIENTATION, something is horribly wrong.
-	lightPtr->diffuseColor = XMFLOAT4(0.7f, 1.0f, 0.7f, 1.0f);
+	lightPtr->diffuseColor = XMFLOAT4(0.0f, 0.7f, 0.7f, 1.0f);
 	
-	
-
-
 	deviceContext->Unmap(lightBuffer, 0);
 
-	bufferNr = 2;
+	bufferNr = 0;
 
 	//setting matrix constant buffer in the VS with its new and updated values
 	deviceContext->PSSetConstantBuffers(bufferNr, 1, &lightBuffer);
