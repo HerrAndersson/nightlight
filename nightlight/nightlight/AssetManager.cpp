@@ -57,128 +57,60 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
 		}
 		else{
-
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
-
-			infile.seekg(16 + matHeader.ambientNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.diffuseNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.specularNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
-
-			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
+			infile.seekg(80
+				+ matHeader.ambientNameLength
+				+ matHeader.diffuseNameLength
+				+ matHeader.specularNameLength
+				+ matHeader.transparencyNameLength
+				+ matHeader.glowNameLength, 
+				std::ios::cur);
 		}
 
 	}
 
 
-	//light header file read
-	LightHeader lightHeader;
-	infile.read((char*)&lightHeader, sizeof(LightHeader));
-
-	lightData tempLightStorage;
-
-	std::vector<XMFLOAT3> colors;
-	std::vector<XMFLOAT3> positions;
-	std::vector<XMFLOAT3> directions;
-	std::vector<double> intensity;
-
-	std::vector<double> coneAngle;
-	std::vector<double> dropoff;
-	std::vector<double> penumbraAngle;
-
-	colors.resize(16);
-	intensity.resize(8);
-	positions.resize(16);
-	directions.resize(16);
-	coneAngle.resize(8);
-	dropoff.resize(8);
-	penumbraAngle.resize(8);
-
-	for (int a = 0; a < lightHeader.ambientLightSize; a++)
+	for (int i = 0; i < mainHeader.lightCount; i++)
 	{
-		ambientLightStruct ambiLights;
 
-		infile.read((char*)colors.data(), 16);
-		infile.read((char*)intensity.data(), 8);
-		infile.read((char*)positions.data(), 16);
-		ambiLights.color = colors;
-		ambiLights.intensity = intensity;
-		ambiLights.pos = positions;
+		//light header file read
+		LightHeader lightHeader;
+		infile.read((char*)&lightHeader, sizeof(LightHeader));
 
-		tempLightStorage.ambientLights.push_back(ambiLights);
+		lightData tempLightStorage;
 
-	}
-	for (int a = 0; a < lightHeader.areaLightSize; a++)
-	{
-		areaLightStruct areaLights;
-		
-		infile.read((char*)colors.data(), 16);
-		infile.read((char*)intensity.data(), 8);
-		infile.read((char*)positions.data(), 16);
-		areaLights.color = colors;
-		areaLights.intensity = intensity;
-		areaLights.pos = positions;
+		tempLightStorage.ambientLights.resize(lightHeader.ambientLightSize);
+		tempLightStorage.areaLights.resize(lightHeader.areaLightSize);
+		tempLightStorage.dirLights.resize(lightHeader.dirLightSize);
+		tempLightStorage.pointLights.resize(lightHeader.pointLightSize);
+		tempLightStorage.spotLights.resize(lightHeader.spotLightSize);
 
-		tempLightStorage.areaLights.push_back(areaLights);
-	}
-	for (int a = 0; a < lightHeader.dirLightSize; a++)
-	{
-		directionalLightStruct dirLights;
+		for (int a = 0; a < lightHeader.ambientLightSize; a++)
+		{
+			infile.read((char*)tempLightStorage.ambientLights.data(), sizeof(ambientLightStruct));
 
-		infile.read((char*)colors.data(), 16);
-		infile.read((char*)directions.data(), 16);
-		infile.read((char*)intensity.data(), 8);
-		infile.read((char*)positions.data(), 16);
-		dirLights.color = colors;
-		dirLights.intensity = intensity;
-		dirLights.pos = positions;
-		dirLights.dir = directions;
+		}
+		for (int a = 0; a < lightHeader.areaLightSize; a++)
+		{
+			infile.read((char*)tempLightStorage.areaLights.data(), sizeof(areaLightStruct));
 
-		tempLightStorage.dirLights.push_back(dirLights);
+		}
+		for (int a = 0; a < lightHeader.dirLightSize; a++)
+		{
+			infile.read((char*)tempLightStorage.dirLights.data(), sizeof(directionalLightStruct));
 
-	}
-	for (int a = 0; a < lightHeader.pointLightSize; a++)
-	{
-		pointLightStruct pointLights;
+		}
+		for (int a = 0; a < lightHeader.pointLightSize; a++)
+		{
+			infile.read((char*)tempLightStorage.pointLights.data(), sizeof(pointLightStruct));
 
-		infile.read((char*)colors.data(), 16);
-		infile.read((char*)intensity.data(), 8);
-		infile.read((char*)positions.data(), 16);
-		pointLights.color = colors;
-		pointLights.intensity = intensity;
-		pointLights.pos = positions;
+		}
+		for (int a = 0; a < lightHeader.spotLightSize; a++)
+		{
+			infile.read((char*)tempLightStorage.spotLights.data(), sizeof(spotLightStruct));
 
-		tempLightStorage.pointLights.push_back(pointLights);
-
-	}
-	for (int a = 0; a < lightHeader.spotLightSize; a++)
-	{
-		spotLightStruct spotLights;
-
-		infile.read((char*)colors.data(), 16);
-		infile.read((char*)directions.data(), 16);
-		infile.read((char*)intensity.data(), 8);
-		infile.read((char*)positions.data(), 16);
-
-		infile.read((char*)coneAngle.data(), 8);
-		infile.read((char*)dropoff.data(), 8);
-		infile.read((char*)penumbraAngle.data(), 8);
-
-		spotLights.color = colors;
-		spotLights.dir = directions;
-		spotLights.intensity = intensity;
-		spotLights.pos = positions;
-
-		spotLights.coneAngle = coneAngle;
-		spotLights.dropoff = dropoff;
-		spotLights.penumbraAngle = penumbraAngle;
-
-		tempLightStorage.spotLights.push_back(spotLights);
-
+		}
 	}
 	
 

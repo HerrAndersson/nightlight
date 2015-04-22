@@ -16,6 +16,14 @@ class RenderModule
 {
 
 private:
+	
+	struct LightBuffer
+	{
+		XMFLOAT4 ambientColor;
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 lightDirection;
+		float padding;
+	};
 
 	struct MatrixBufferPerObject
 	{
@@ -44,7 +52,7 @@ private:
 	ID3D11InputLayout*		layoutPosUvNorm;
 	ID3D11Buffer*			matrixBufferPerObject;
 	ID3D11Buffer*			matrixBufferPerFrame;
-
+	ID3D11Buffer*			lightBuffer;
 	HWND hwnd;
 
 	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);

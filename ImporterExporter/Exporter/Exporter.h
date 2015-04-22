@@ -241,12 +241,12 @@ struct SceneData
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 	std::vector<cameraData> cameras;
-	std::vector<lightData> lights;
+	lightData lights;
 	std::vector<AnimData> AnimationData;
 };
 
 struct MainHeader{
-	int meshCount, matCount, camCount, lightCount;
+	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
 };
 
 struct MeshHeader
@@ -264,10 +264,6 @@ struct camHeader
 
 };
 */
-
-struct LightHeader{
-	int ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
-};
 
 //___________________________________________________________________________________________
 //|																							|
