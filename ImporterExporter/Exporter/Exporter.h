@@ -137,12 +137,14 @@ struct ambientLightStruct
 {
 	double intensity;
 	MFloatVector color;
+	MFloatVector pos;
 };
 
 struct areaLightStruct
 {
 	double intensity;
 	MFloatVector color;
+	MFloatVector pos;
 };
 
 struct directionalLightStruct
@@ -150,12 +152,14 @@ struct directionalLightStruct
 	double intensity;
 	MFloatVector color;
 	MFloatVector dir;
+	MFloatVector pos;
 };
 
 struct pointLightStruct
 {
 	double intensity;
 	MFloatVector color;
+	MFloatVector pos;
 };
 
 struct spotLightStruct
@@ -166,6 +170,7 @@ struct spotLightStruct
 	double penumbraAngle;
 	double dropoff;
 	MFloatVector dir;
+	MFloatVector pos;
 };
 
 

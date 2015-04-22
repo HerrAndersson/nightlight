@@ -378,6 +378,11 @@ void Exporter::extractColor (Color& tempcolor, MFnDependencyNode& fn, MString na
 
 void Exporter::extractLight (MObject& mObj)
 {
+	//different space variables
+	MSpace::Space world_space = MSpace::kPostTransform;
+	MSpace::Space object_space = MSpace::kLast;
+	MSpace::Space transform_space = MSpace::kPreTransform;
+
 	//temp storage for light
 	lightData TempLightStorage;
 	pointLightStruct tempPointLights;
@@ -397,12 +402,23 @@ void Exporter::extractLight (MObject& mObj)
 	//possible fault: func maybe fnlight????
 	col = func.color ();
 
+
+	//Get Transform experimentation
+	MFnTransform fs(func.parent(0));
+	//MMatrix matrix = fs.transformation().asMatrix();
+	//std::cout << "\nTransform Matrix: " << matrix << std::endl;
+
+	MVector lightTranslation = fs.translation(transform_space);
+
+
 	//output light
 	std::cout << "parent " << functionParent.name ().asChar ()
 		<< "\ntype " << mObj.apiTypeStr ()
 		<< "\nLight color " << col.r << " " << col.g << " " << col.b
 		<< "\nLight intensity " << func.intensity ()
-		<< "\nLight direction " << func.lightDirection (0, MSpace::kWorld, 0) << "\n" << std::endl;
+		<< "\nLight direction " << func.lightDirection (0, world_space, 0) << "\n" << std::endl;
+
+	std::cout << "translation: " << lightTranslation << "\n" << std::endl;
 
 	//för specifika attribut till specifika ljustyper:
 	switch (mObj.apiType ())
@@ -415,6 +431,7 @@ void Exporter::extractLight (MObject& mObj)
 							 tempPointLights.color.y = col.g;
 							 tempPointLights.color.z = col.b;
 							 tempPointLights.intensity = func.intensity ();
+							 tempPointLights.pos = lightTranslation;
 
 							 //push back in the light temp storage
 							 TempLightStorage.pointLights.push_back (tempPointLights);
@@ -430,6 +447,7 @@ void Exporter::extractLight (MObject& mObj)
 							   tempAmbiLights.color.y = col.g;
 							   tempAmbiLights.color.z = col.b;
 							   tempAmbiLights.intensity = func.intensity ();
+							   tempAmbiLights.pos = lightTranslation;
 
 							   //push back in the light temp storage
 							   TempLightStorage.ambientLights.push_back (tempAmbiLights);
@@ -455,6 +473,7 @@ void Exporter::extractLight (MObject& mObj)
 							tempSpotLights.penumbraAngle = fnSpotLight.penumbraAngle ();
 							tempSpotLights.dropoff = fnSpotLight.dropOff ();
 							tempSpotLights.dir = func.lightDirection (0, MSpace::kWorld, 0);
+							tempSpotLights.pos = lightTranslation;
 
 							//push back in the light temp storage
 							TempLightStorage.spotLights.push_back (tempSpotLights);
@@ -472,6 +491,7 @@ void Exporter::extractLight (MObject& mObj)
 								   tempDirLights.color.z = col.b;
 								   tempDirLights.intensity = func.intensity ();
 								   tempDirLights.dir = func.lightDirection (0, MSpace::kWorld, 0);
+								   tempDirLights.pos = lightTranslation;
 
 								   //push back in the light temp storage
 								   TempLightStorage.dirLights.push_back (tempDirLights);
@@ -488,6 +508,7 @@ void Exporter::extractLight (MObject& mObj)
 							tempAreaLights.color.y = col.g;
 							tempAreaLights.color.z = col.b;
 							tempAreaLights.intensity = func.intensity ();
+							tempAreaLights.pos = lightTranslation;
 
 							//push back in the light temp storage
 							TempLightStorage.areaLights.push_back(tempAreaLights);
@@ -911,6 +932,7 @@ void Exporter::ExportMeshes ()
 			{
 				outfile.write((const char*)&scene_.lights[i].ambientLights[a].color, 16);
 				outfile.write((const char*)&scene_.lights[i].ambientLights[a].intensity, 8);
+				outfile.write((const char*)&scene_.lights[i].ambientLights[a].pos, 16);
 			}
 
 			//outfile.write((const char*)&scene_.lights[i].areaLights, lightHeader.areaLightSize);
@@ -918,6 +940,8 @@ void Exporter::ExportMeshes ()
 			{
 				outfile.write((const char*)&scene_.lights[i].areaLights[a].color, 16);
 				outfile.write((const char*)&scene_.lights[i].areaLights[a].intensity, 8);
+				outfile.write((const char*)&scene_.lights[i].areaLights[a].pos, 16);
+
 			}
 
 			//outfile.write((const char*)&scene_.lights[i].dirLights, lightHeader.dirLightSize);
@@ -926,11 +950,15 @@ void Exporter::ExportMeshes ()
 				outfile.write((const char*)&scene_.lights[i].dirLights[a].color, 16);
 				outfile.write((const char*)&scene_.lights[i].dirLights[a].dir, 16);
 				outfile.write((const char*)&scene_.lights[i].dirLights[a].intensity, 8);
+				outfile.write((const char*)&scene_.lights[i].dirLights[a].pos, 16);
+
 			}
 			//outfile.write((const char*)&scene_.lights[i].pointLights, lightHeader.pointLightSize);
 			for (int a = 0; a < lightHeader.pointLightSize; a++){
 				outfile.write((const char*)&scene_.lights[i].pointLights[a].color, 16);
 				outfile.write((const char*)&scene_.lights[i].pointLights[a].intensity, 8);
+				outfile.write((const char*)&scene_.lights[i].pointLights[a].pos, 16);
+
 			}
 
 			//outfile.write((const char*)&scene_.lights[i].spotLights, lightHeader.spotLightSize);
@@ -939,6 +967,7 @@ void Exporter::ExportMeshes ()
 				outfile.write((const char*)&scene_.lights[i].spotLights[a].color, 16);
 				outfile.write((const char*)&scene_.lights[i].spotLights[a].dir, 16);
 				outfile.write((const char*)&scene_.lights[i].spotLights[a].intensity, 8);
+				outfile.write((const char*)&scene_.lights[i].spotLights[a].pos, 16);
 
 				outfile.write((const char*)&scene_.lights[i].spotLights[a].coneAngle, 8);
 				outfile.write((const char*)&scene_.lights[i].spotLights[a].dropoff, 8);
