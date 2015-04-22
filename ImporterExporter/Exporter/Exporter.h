@@ -28,6 +28,10 @@
 #include <maya/MMatrix.h>
 #include <maya/MFnTransform.h>
 
+#include<maya/MFnIkJoint.h>
+#include<maya/MQuaternion.h>
+#include<maya/MEulerRotation.h>
+
 #include <maya\MFnMesh.h>
 #include <maya/MFnCamera.h>
 
@@ -115,7 +119,7 @@ struct MeshData
 struct Color
 {
 	float r, g, b, a;
-	std::string texfileInternal,texfileExternal;
+	std::string texfileInternal, texfileExternal;
 };
 
 struct material
@@ -139,12 +143,14 @@ struct ambientLightStruct
 {
 	double intensity;
 	MFloatVector color;
+	MFloatVector pos;
 };
 
 struct areaLightStruct
 {
 	double intensity;
 	MFloatVector color;
+	MFloatVector pos;
 };
 
 struct directionalLightStruct
@@ -152,12 +158,14 @@ struct directionalLightStruct
 	double intensity;
 	MFloatVector color;
 	MFloatVector dir;
+	MFloatVector pos;
 };
 
 struct pointLightStruct
 {
 	double intensity;
 	MFloatVector color;
+	MFloatVector pos;
 };
 
 struct spotLightStruct
@@ -168,6 +176,7 @@ struct spotLightStruct
 	double penumbraAngle;
 	double dropoff;
 	MFloatVector dir;
+	MFloatVector pos;
 };
 
 
@@ -182,8 +191,8 @@ struct lightData
 
 struct KeyData
 {
-	
-	MTime keyFrameTime;	//Keyframe position on timeline 
+
+	//MTime keyFrame;	//Keyframe position on timeline 
 	std::vector<vec3> points;		//Keyframes value
 	std::vector<vec3> normals;		//Keyframes value
 	std::vector<uvSet> uvSets;		//Keyframes value
@@ -200,9 +209,10 @@ struct AnimData
 	MTime animationStart;
 	MTime animationEnd;
 	int numKeys;
-	
+	MTime keyFrame;					//Keyframe position on timeline 
+
 	std::vector<KeyData> KeyFrames;
-	
+
 
 	//Stuff for later:
 	//Joints, position, orientations data
@@ -249,12 +259,12 @@ struct MatHeader{
 /* överflödig
 struct camHeader
 {
-	
+
 };
 */
 
 struct LightHeader{
-	int ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize; 
+	int ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
 };
 
 //___________________________________________________________________________________________
@@ -264,39 +274,42 @@ struct LightHeader{
 
 class Exporter
 {
-	public:
-		Exporter();
-		~Exporter();
+public:
+	Exporter();
+	~Exporter();
 
-		void StartExporter(std::string directory_path);
-		
-	private:
-		std::fstream export_stream_;
-		std::ofstream outfile;
-		std::ifstream infile;
-		SceneData scene_;
+	void StartExporter(std::string directory_path);
 
-	private:
-		bool InitializeMaya();
-		void CleanUpMaya();
+private:
+	std::fstream export_stream_;
+	std::ofstream outfile;
+	std::ifstream infile;
+	SceneData scene_;
 
-		void extractLight (MObject& mObj);
-		void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
-		void extractCamera(MObject& obj);
-		void extractKeyData(MObject& key);
+private:
+	bool InitializeMaya();
+	void CleanUpMaya();
 
-		bool CreateExportFiles(std::string file_path);
-		void CloseExportFiles();
+	void extractLight(MObject& mObj);
+	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
+	void extractCamera(MObject& obj);
+	void extractKeyData(MObject& key);
 
-		bool GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill);
+	void outputTransformData(MObject& obj);
+	void outputParentInfo(MObject& obj);
 
-		void ProcessScene(const char *file_path);
+	bool CreateExportFiles(std::string file_path);
+	void CloseExportFiles();
 
-		bool IdentifyAndExtractScene();
-		bool IdentifyAndExtractMeshes();
+	bool GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill);
 
-		bool ExtractMeshData(MFnMesh &mesh, UINT index);
+	void ProcessScene(const char *file_path);
 
-		void ExportScene();
-		void ExportMeshes();
+	bool IdentifyAndExtractScene();
+	bool IdentifyAndExtractMeshes();
+
+	bool ExtractMeshData(MFnMesh &mesh, UINT index);
+
+	void ExportScene();
+	void ExportMeshes();
 };
