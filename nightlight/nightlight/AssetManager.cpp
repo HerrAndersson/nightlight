@@ -33,9 +33,11 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3)*3);
 
-
+	//light header file read
 	LightHeader lightHeader;
 	infile.read((char*)&lightHeader, sizeof(LightHeader));
+
+	lightData tempLightStorage;
 
 	std::vector<XMFLOAT3> colors;
 	std::vector<XMFLOAT3> positions;
@@ -64,6 +66,9 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 		ambiLights.color = colors;
 		ambiLights.intensity = intensity;
 		ambiLights.pos = positions;
+
+		tempLightStorage.ambientLights.push_back(ambiLights);
+
 	}
 	for (int a = 0; a < lightHeader.areaLightSize; a++)
 	{
@@ -75,22 +80,43 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 		areaLights.color = colors;
 		areaLights.intensity = intensity;
 		areaLights.pos = positions;
+
+		tempLightStorage.areaLights.push_back(areaLights);
 	}
 	for (int a = 0; a < lightHeader.dirLightSize; a++)
 	{
+		directionalLightStruct dirLights;
+
 		infile.read((char*)colors.data(), 16);
 		infile.read((char*)directions.data(), 16);
 		infile.read((char*)intensity.data(), 8);
 		infile.read((char*)positions.data(), 16);
+		dirLights.color = colors;
+		dirLights.intensity = intensity;
+		dirLights.pos = positions;
+		dirLights.dir = directions;
+
+		tempLightStorage.dirLights.push_back(dirLights);
+
 	}
 	for (int a = 0; a < lightHeader.pointLightSize; a++)
 	{
+		pointLightStruct pointLights;
+
 		infile.read((char*)colors.data(), 16);
 		infile.read((char*)intensity.data(), 8);
 		infile.read((char*)positions.data(), 16);
+		pointLights.color = colors;
+		pointLights.intensity = intensity;
+		pointLights.pos = positions;
+
+		tempLightStorage.pointLights.push_back(pointLights);
+
 	}
 	for (int a = 0; a < lightHeader.spotLightSize; a++)
 	{
+		spotLightStruct spotLights;
+
 		infile.read((char*)colors.data(), 16);
 		infile.read((char*)directions.data(), 16);
 		infile.read((char*)intensity.data(), 8);
@@ -99,6 +125,17 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 		infile.read((char*)coneAngle.data(), 8);
 		infile.read((char*)dropoff.data(), 8);
 		infile.read((char*)penumbraAngle.data(), 8);
+
+		spotLights.color = colors;
+		spotLights.dir = directions;
+		spotLights.intensity = intensity;
+		spotLights.pos = positions;
+
+		spotLights.coneAngle = coneAngle;
+		spotLights.dropoff = dropoff;
+		spotLights.penumbraAngle = penumbraAngle;
+
+		tempLightStorage.spotLights.push_back(spotLights);
 
 	}
 	
