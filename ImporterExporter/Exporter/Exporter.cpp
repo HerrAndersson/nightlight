@@ -1146,6 +1146,12 @@ void Exporter::ExportMeshes()
 		lightHeader.spotLightSize = scene_.lights[i].spotLights.size();
 
 		outfile.write((const char*)&lightHeader, sizeof(LightHeader));
+		outfile.write((const char*)&lightHeader.ambientLightSize, sizeof(lightHeader.ambientLightSize));
+		outfile.write((const char*)&lightHeader.areaLightSize, sizeof(lightHeader.areaLightSize));
+		outfile.write((const char*)&lightHeader.dirLightSize, sizeof(lightHeader.dirLightSize));
+		outfile.write((const char*)&lightHeader.pointLightSize, sizeof(lightHeader.pointLightSize));
+		outfile.write((const char*)&lightHeader.spotLightSize, sizeof(lightHeader.spotLightSize));
+
 
 		//outfile.write((const char*)&scene_.lights[i].ambientLights, lightHeader.ambientLightSize);
 		for (int a = 0; a < lightHeader.ambientLightSize; a++)

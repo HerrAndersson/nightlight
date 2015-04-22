@@ -25,7 +25,7 @@ struct LightHeader{
 
 struct Texture
 {
-	std::string textureName = "";
+	std::string textureName;
 	ID3D11ShaderResourceView* texturePointer = nullptr;
 };
 

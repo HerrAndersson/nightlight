@@ -1,6 +1,5 @@
 #include "AssetManager.h"
 
-
 RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	std::ifstream infile;
 	infile.open(file_path.c_str(), std::ifstream::binary);
@@ -32,6 +31,49 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3)*3);
+
+	for (int i = 0; i < mainHeader.matCount;i++)
+	{
+		if (i == 0){
+			MatHeader matHeader;
+			infile.read((char*)&matHeader, sizeof(MatHeader));
+
+			infile.seekg(16+matHeader.ambientNameLength, std::ios::cur);
+
+			Texture *diffuseTexture = new Texture();
+			infile.read((char*)&asset.diffuse, 16);
+			diffuseTexture->textureName.resize(matHeader.diffuseNameLength);
+			infile.read((char*)diffuseTexture->textureName.data(), matHeader.diffuseNameLength);
+			asset.diffuseTexture = diffuseTexture;
+
+			Texture *specularTexture = new Texture();
+			infile.read((char*)&asset.specular, 16);
+			specularTexture->textureName.resize(matHeader.specularNameLength);
+			infile.read((char*)specularTexture->textureName.data(), matHeader.specularNameLength);
+			asset.specularTexture = specularTexture;
+
+			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
+
+			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
+		}
+		else{
+
+			MatHeader matHeader;
+			infile.read((char*)&matHeader, sizeof(MatHeader));
+
+			infile.seekg(16 + matHeader.ambientNameLength, std::ios::cur);
+
+			infile.seekg(16 + matHeader.diffuseNameLength, std::ios::cur);
+
+			infile.seekg(16 + matHeader.specularNameLength, std::ios::cur);
+
+			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
+
+			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
+		}
+
+	}
+
 
 	//light header file read
 	LightHeader lightHeader;
@@ -142,22 +184,6 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 
 
 
-	//if (mainHeader.matCount>0){
-	//		MatHeader matHeader;
-	//		infile.read((char*)&matHeader, sizeof(MatHeader));
-
-	//		infile.seekg(16+matHeader.ambientNameLength, std::ios::cur);
-
-	//		infile.read((char*)&asset.diffuse, 16);
-	//		infile.read((char*)&asset.diffuseTexture->textureName, matHeader.diffuseNameLength);
-
-	//		infile.read((char*)&asset.specular, 16);
-	//		infile.read((char*)&asset.specularTexture->textureName, matHeader.specularNameLength);
-
-	//		infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
-
-	//		infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
-	//}
 
 	std::vector<Vertex> vertices;
 	vertices.reserve(meshHeader.numberPoints);
