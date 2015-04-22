@@ -297,6 +297,7 @@ private:
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
+	bool outputParentInfo(MDagPath& bone, int sf, int ef);
 
 	bool CreateExportFiles(std::string file_path);
 	void CloseExportFiles();

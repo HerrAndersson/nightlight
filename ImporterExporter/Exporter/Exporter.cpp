@@ -539,6 +539,20 @@ void Exporter::extractLight(MObject& mObj)
 //---------------------------------- || ----------------------------------\\
 \\---------------------------------- || ----------------------------------//
  \\--------------------------------- || ---------------------------------//
+  \\-------------------------------- || --------------------------------//
+   \\------------------------------- || -------------------------------//
+    \\------------------------------ || ------------------------------//
+     \\----------------------------- || -----------------------------//
+      \\---------------------------- || ----------------------------//
+	   \\--------------------------( || )--------------------------//
+	    \\-------------------------- || --------------------------//
+	     \\------------------------- || -------------------------//
+	      \\------------------------ || ------------------------//
+	       \\----------------------- || -----------------------//
+		    \\---------------------- || ----------------------//
+		     \\--------------------- || ---------------------//
+			  \\-------------------- || --------------------//
+			   \\------------------- || -------------------//
  */
 void Exporter::outputTransformData(MObject& Trans)
 {
@@ -585,7 +599,7 @@ void Exporter::outputTransformData(MObject& Trans)
 		<< JointOrient.x << " "
 		<< JointOrient.y << " "
 		<< JointOrient.z << " "
-		<< JointOrient.w << endl;
+		<< JointOrient.w << endl << endl;
 }
 
 void Exporter::outputParentInfo(MObject& par)
@@ -609,7 +623,7 @@ void Exporter::outputParentInfo(MObject& par)
 	}
 
 	//Output child count
-	cout << "numChildren " << dn.childCount() << endl;
+	cout << "numChildren " << dn.childCount() << endl << endl;
 
 	// list each child name
 	for (int i = 0; i != dn.childCount(); ++i)
@@ -623,6 +637,7 @@ void Exporter::outputParentInfo(MObject& par)
 
 		cout << dnChild.name().asChar() << endl;
 	}
+	cout << endl;
 }
 
 void Exporter::extractKeyData(MObject& key)
@@ -646,6 +661,9 @@ void Exporter::extractKeyData(MObject& key)
 	std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
 	std::cout << "NumKeys " << animTemp.numKeys << std::endl;
 
+	//cout << "StartFrame: " << animTemp.animationStart.as(MTime::kPALFrame) << endl;
+	//cout << "EndFrame: " << animTemp.animationEnd.as(MTime::kPALFrame) << endl << endl;
+
 	// get all keyframe times & values
 	for (unsigned int i = 0; i < animTemp.numKeys; i++)
 	{
@@ -668,6 +686,11 @@ void Exporter::extractKeyData(MObject& key)
 			animTemp.keyFrame = AnimCurve.time(i);
 	}
 	std::cout << std::endl;
+}
+
+bool Exporter::outputParentInfo(MDagPath& bone, int sf, int ef)
+{
+	//Loop through all frames in this animation cycle
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -801,7 +824,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 
 			//Described in the sections below
 			outputTransformData(dag_iter.item());
-			//outputParentInfo(dag_iter.item());
+			outputParentInfo(dag_iter.item());
 		}
 
 		//Get next transform
