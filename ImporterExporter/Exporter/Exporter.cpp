@@ -526,10 +526,11 @@ void Exporter::extractLight(MObject& mObj)
 
 }
 
-//Down here lies the pithole of animation, beware thy who dare travels here!
+/*Down here lies the pithole of animation, beware thy who dare travels here!
 //---------------------------------- || ----------------------------------\\
 \\---------------------------------- || ----------------------------------//
-
+ \\--------------------------------- || ---------------------------------//
+ */
 void Exporter::outputTransformData(MObject& Trans)
 {
 	//attach the function set to the object
@@ -578,6 +579,42 @@ void Exporter::outputTransformData(MObject& Trans)
 		<< JointOrient.w << endl;
 }
 
+void Exporter::outputParentInfo(MObject& par)
+{
+	//attach the function set to the object
+	MFnDagNode dn(par);
+
+	//Output the parent names
+	cout << "numparents " << dn.parentCount() << endl;
+
+	//list each parent
+	for (int i = 0; i != dn.parentCount(); ++i)
+	{
+		//Get a handle to the parent
+		MObject parent = dn.parent(i);
+
+		//Attach a function set to the parent object
+		MFnDagNode dnParent(parent);
+
+		cout << dnParent.name().asChar() << endl;
+	}
+
+	//Output child count
+	cout << "numChildren " << dn.childCount() << endl;
+
+	// list each child name
+	for (int i = 0; i != dn.childCount(); ++i)
+	{
+
+		//Get the handle to the child
+		MObject child = dn.child(i);
+
+		//attach a function set to the child object
+		MFnDagNode dnChild(child);
+
+		cout << dnChild.name().asChar() << endl;
+	}
+}
 
 void Exporter::extractKeyData(MObject& key)
 {
