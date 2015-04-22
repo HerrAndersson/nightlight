@@ -1144,6 +1144,10 @@ void Exporter::ExportMeshes()
 	outfile.write((const char*)scene_.lights.dirLights.data(), mainHeader.dirLightSize*sizeof(directionalLightStruct));
 	outfile.write((const char*)scene_.lights.pointLights.data(), mainHeader.pointLightSize*sizeof(pointLightStruct));
 	outfile.write((const char*)scene_.lights.spotLights.data(), mainHeader.spotLightSize*sizeof(spotLightStruct));
+
+	for (int i = 0; i < mainHeader.camCount; i++){
+		outfile.write((const char*)&scene_.cameras[i], 52);
+	}
 	outfile.close();
 
 	outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
