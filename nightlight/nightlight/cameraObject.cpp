@@ -4,7 +4,7 @@ CameraObject::CameraObject()
 {
 	positionX = 0.0f;
 	positionY = 0.0f;
-	positionZ = -1.0f;
+	positionZ = -10.0f;
 
 	rotationX = 0.0f;
 	rotationY = 0.0f;
