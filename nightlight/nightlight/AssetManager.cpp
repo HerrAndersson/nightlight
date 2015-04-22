@@ -56,15 +56,25 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 
 	for (int a = 0; a < lightHeader.ambientLightSize; a++)
 	{
+		ambientLightStruct ambiLights;
+
 		infile.read((char*)colors.data(), 16);
 		infile.read((char*)intensity.data(), 8);
 		infile.read((char*)positions.data(), 16);
+		ambiLights.color = colors;
+		ambiLights.intensity = intensity;
+		ambiLights.pos = positions;
 	}
 	for (int a = 0; a < lightHeader.areaLightSize; a++)
 	{
+		areaLightStruct areaLights;
+		
 		infile.read((char*)colors.data(), 16);
 		infile.read((char*)intensity.data(), 8);
 		infile.read((char*)positions.data(), 16);
+		areaLights.color = colors;
+		areaLights.intensity = intensity;
+		areaLights.pos = positions;
 	}
 	for (int a = 0; a < lightHeader.dirLightSize; a++)
 	{

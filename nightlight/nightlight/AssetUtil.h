@@ -51,9 +51,9 @@ struct RenderObject
 
 struct ambientLightStruct
 {
-	double intensity;
-	XMFLOAT3 color;
-	XMFLOAT3 pos;
+	std::vector<double> intensity;
+	std::vector<XMFLOAT3> color;
+	std::vector<XMFLOAT3> pos;
 };
 
 struct areaLightStruct
