@@ -535,10 +535,25 @@ void Exporter::extractLight(MObject& mObj)
 
 }
 
-//Down here lies the pithole of animation, beware thy who dare travels here!
+/*Down here lies the pithole of animation, beware thy who dare travels here!
 //---------------------------------- || ----------------------------------\\
 \\---------------------------------- || ----------------------------------//
-
+ \\--------------------------------- || ---------------------------------//
+  \\-------------------------------- || --------------------------------//
+   \\------------------------------- || -------------------------------//
+    \\------------------------------ || ------------------------------//
+     \\----------------------------- || -----------------------------//
+      \\---------------------------- || ----------------------------//
+	   \\--------------------------( || )--------------------------//
+	    \\-------------------------- || --------------------------//
+	     \\------------------------- || -------------------------//
+	      \\------------------------ || ------------------------//
+	       \\----------------------- || -----------------------//
+		    \\---------------------- || ----------------------//
+		     \\--------------------- || ---------------------//
+			  \\-------------------- || --------------------//
+			   \\------------------- || -------------------//
+ */
 void Exporter::outputTransformData(MObject& Trans)
 {
 	//attach the function set to the object
@@ -584,9 +599,46 @@ void Exporter::outputTransformData(MObject& Trans)
 		<< JointOrient.x << " "
 		<< JointOrient.y << " "
 		<< JointOrient.z << " "
-		<< JointOrient.w << endl;
+		<< JointOrient.w << endl << endl;
 }
 
+void Exporter::outputParentInfo(MObject& par)
+{
+	//attach the function set to the object
+	MFnDagNode dn(par);
+
+	//Output the parent names
+	cout << "numparents " << dn.parentCount() << endl;
+
+	//list each parent
+	for (int i = 0; i != dn.parentCount(); ++i)
+	{
+		//Get a handle to the parent
+		MObject parent = dn.parent(i);
+
+		//Attach a function set to the parent object
+		MFnDagNode dnParent(parent);
+
+		cout << dnParent.name().asChar() << endl;
+	}
+
+	//Output child count
+	cout << "numChildren " << dn.childCount() << endl << endl;
+
+	// list each child name
+	for (int i = 0; i != dn.childCount(); ++i)
+	{
+
+		//Get the handle to the child
+		MObject child = dn.child(i);
+
+		//attach a function set to the child object
+		MFnDagNode dnChild(child);
+
+		cout << dnChild.name().asChar() << endl;
+	}
+	cout << endl;
+}
 
 void Exporter::extractKeyData(MObject& key)
 {
@@ -608,6 +660,9 @@ void Exporter::extractKeyData(MObject& key)
 
 	std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
 	std::cout << "NumKeys " << animTemp.numKeys << std::endl;
+
+	//cout << "StartFrame: " << animTemp.animationStart.as(MTime::kPALFrame) << endl;
+	//cout << "EndFrame: " << animTemp.animationEnd.as(MTime::kPALFrame) << endl << endl;
 
 	// get all keyframe times & values
 	for (unsigned int i = 0; i < animTemp.numKeys; i++)
@@ -631,6 +686,11 @@ void Exporter::extractKeyData(MObject& key)
 			animTemp.keyFrame = AnimCurve.time(i);
 	}
 	std::cout << std::endl;
+}
+
+bool Exporter::outputParentInfo(MDagPath& bone, int sf, int ef)
+{
+	//Loop through all frames in this animation cycle
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -764,7 +824,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 
 			//Described in the sections below
 			outputTransformData(dag_iter.item());
-			//outputParentInfo(dag_iter.item());
+			outputParentInfo(dag_iter.item());
 		}
 
 		//Get next transform
@@ -1009,6 +1069,12 @@ void Exporter::ExportMeshes()
 		lightHeader.spotLightSize = scene_.lights[i].spotLights.size();
 
 		outfile.write((const char*)&lightHeader, sizeof(LightHeader));
+		outfile.write((const char*)&lightHeader.ambientLightSize, sizeof(lightHeader.ambientLightSize));
+		outfile.write((const char*)&lightHeader.areaLightSize, sizeof(lightHeader.areaLightSize));
+		outfile.write((const char*)&lightHeader.dirLightSize, sizeof(lightHeader.dirLightSize));
+		outfile.write((const char*)&lightHeader.pointLightSize, sizeof(lightHeader.pointLightSize));
+		outfile.write((const char*)&lightHeader.spotLightSize, sizeof(lightHeader.spotLightSize));
+
 
 		//outfile.write((const char*)&scene_.lights[i].ambientLights, lightHeader.ambientLightSize);
 		for (int a = 0; a < lightHeader.ambientLightSize; a++)
