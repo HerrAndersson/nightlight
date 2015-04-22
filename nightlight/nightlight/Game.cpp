@@ -89,7 +89,7 @@ bool Game::Render()
 	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
 	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
 
-	
+	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject);
 	
 	//example 

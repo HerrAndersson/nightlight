@@ -33,6 +33,68 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3)*3);
 
+
+	LightHeader lightHeader;
+	infile.read((char*)&lightHeader, sizeof(LightHeader));
+
+	std::vector<XMFLOAT3> colors;
+	std::vector<XMFLOAT3> positions;
+	std::vector<XMFLOAT3> directions;
+	std::vector<double> intensity;
+
+	std::vector<double> coneAngle;
+	std::vector<double> dropoff;
+	std::vector<double> penumbraAngle;
+
+	colors.resize(16);
+	intensity.resize(8);
+	positions.resize(16);
+	directions.resize(16);
+	coneAngle.resize(8);
+	dropoff.resize(8);
+	penumbraAngle.resize(8);
+
+	for (int a = 0; a < lightHeader.ambientLightSize; a++)
+	{
+		infile.read((char*)colors.data(), 16);
+		infile.read((char*)intensity.data(), 8);
+		infile.read((char*)positions.data(), 16);
+	}
+	for (int a = 0; a < lightHeader.areaLightSize; a++)
+	{
+		infile.read((char*)colors.data(), 16);
+		infile.read((char*)intensity.data(), 8);
+		infile.read((char*)positions.data(), 16);
+	}
+	for (int a = 0; a < lightHeader.dirLightSize; a++)
+	{
+		infile.read((char*)colors.data(), 16);
+		infile.read((char*)directions.data(), 16);
+		infile.read((char*)intensity.data(), 8);
+		infile.read((char*)positions.data(), 16);
+	}
+	for (int a = 0; a < lightHeader.pointLightSize; a++)
+	{
+		infile.read((char*)colors.data(), 16);
+		infile.read((char*)intensity.data(), 8);
+		infile.read((char*)positions.data(), 16);
+	}
+	for (int a = 0; a < lightHeader.spotLightSize; a++)
+	{
+		infile.read((char*)colors.data(), 16);
+		infile.read((char*)directions.data(), 16);
+		infile.read((char*)intensity.data(), 8);
+		infile.read((char*)positions.data(), 16);
+
+		infile.read((char*)coneAngle.data(), 8);
+		infile.read((char*)dropoff.data(), 8);
+		infile.read((char*)penumbraAngle.data(), 8);
+
+	}
+	
+
+
+
 	//if (mainHeader.matCount>0){
 	//		MatHeader matHeader;
 	//		infile.read((char*)&matHeader, sizeof(MatHeader));
