@@ -10,7 +10,8 @@ CameraObject::CameraObject()
 	rotationY = 0.0f;
 	rotationZ = 0.0f;
 
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 2, 1440 / 900, 0.1f, 1000);
+	//Ugly aspect ratio fix (2/1.33333)
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 2, 2 / 1.333333, 0.1f, 1000);
 	updateCamera();
 }
 
