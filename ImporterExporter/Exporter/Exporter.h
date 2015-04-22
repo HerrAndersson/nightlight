@@ -64,6 +64,8 @@
 #include <maya/MFnAnimCurve.h>
 #include <maya/MAnimControl.h>
 
+#include <maya/MQuaternion.h>
+#include <maya/MEulerRotation.h>
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
 #pragma comment(lib, "OpenMayaAnim.lib")
