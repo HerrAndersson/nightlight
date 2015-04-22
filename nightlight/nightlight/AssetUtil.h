@@ -19,6 +19,10 @@ struct MatHeader{
 	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
 };
 
+struct LightHeader{
+	int ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
+};
+
 struct Texture
 {
 	std::string textureName = "";
