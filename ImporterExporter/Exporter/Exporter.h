@@ -31,6 +31,7 @@
 #include<maya/MFnIkJoint.h>
 #include<maya/MQuaternion.h>
 #include<maya/MEulerRotation.h>
+#include<maya/MFnBlendShapeDeformer.h>
 
 #include <maya\MFnMesh.h>
 #include <maya/MFnCamera.h>
@@ -297,7 +298,7 @@ private:
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
-	bool outputParentInfo(MDagPath& bone, int sf, int ef);
+	void OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base);
 
 	bool CreateExportFiles(std::string file_path);
 	void CloseExportFiles();

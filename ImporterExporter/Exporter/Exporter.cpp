@@ -536,23 +536,27 @@ void Exporter::extractLight(MObject& mObj)
 }
 
 /*Down here lies the pithole of animation, beware thy who dare travels here!
-//---------------------------------- || ----------------------------------\\
-\\---------------------------------- || ----------------------------------//
- \\--------------------------------- || ---------------------------------//
+//--------------    ---------------- || --------------    ----------------\\
+\\--------------    ---------------- || --------------    ----------------//
+ \\-------------    ---------------- || --------------    ---------------//
   \\-------------------------------- || --------------------------------//
-   \\------------------------------- || -------------------------------//
-    \\------------------------------ || ------------------------------//
-     \\----------------------------- || -----------------------------//
-      \\---------------------------- || ----------------------------//
-	   \\--------------------------( || )--------------------------//
-	    \\-------------------------- || --------------------------//
-	     \\------------------------- || -------------------------//
-	      \\------------------------ || ------------------------//
-	       \\----------------------- || -----------------------//
-		    \\---------------------- || ----------------------//
-		     \\--------------------- || ---------------------//
-			  \\-------------------- || --------------------//
+   \\-------------------------------/||\-------------------------------//
+    \\-----------------------------/ || \-----------------------------//
+     \\---------------------------/- || -\---------------------------//
+      \\-------------------------/  /  \  \-------------------------//
+	   \\-----------------------(  ( "" )  )-----------------------//
+	    \\-----------------------\  \  /  /-----------------------//
+	     \\-----------------------\- || -/-----------------------//
+	      \\-----------------------\-||-/-----------------------//
+	       \\-----------------------\||/-----------------------//
+		    \\---------------------- \/ ----------------------//
+		     \\--------------------- /\ ---------------------//
+			  \\--------------------/||\--------------------//
 			   \\------------------- || -------------------//
+				\\------------------ || ------------------//
+				 \\----------------- || -----------------//
+				  \\---------------- || ----------------//
+				   
  */
 void Exporter::outputTransformData(MObject& Trans)
 {
@@ -688,9 +692,36 @@ void Exporter::extractKeyData(MObject& key)
 	std::cout << std::endl;
 }
 
-bool Exporter::outputParentInfo(MDagPath& bone, int sf, int ef)
+void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base)
 {
-	//Loop through all frames in this animation cycle
+	//Output info about hte base shape
+	MFnDependencyNode fnDep(Base);
+
+	//Write base name
+	cout << "\tBase " << fnDep.name().asChar() << endl;
+
+	//attach the function set to the object
+	unsigned int nWeights = fn.numWeights;
+
+	cout << "\t\tNumWeights " << nWeights << endl;
+
+	//Only want non-history items
+	for (unsigned int i = 0; i != nWeights; ++i)
+	{
+		MObjectArray targets;
+
+		//Get an array of target shapes
+		fn.getTargets(Base, i, targets);
+
+		cout << "\tnumTargets " << targets.length();
+		cout << endl;
+
+		//output each target shape
+		for (unsigned int j = 0; j < targets.length(); ++j)
+		{
+			//OutputTarget(targets[j]);
+		}
+	}
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -750,6 +781,52 @@ bool Exporter::IdentifyAndExtractMeshes()
 		//get next mesh
 		matIt.next();
 	}
+
+	//Turn off or on Blendshapes
+	matIt.reset(MFn::kBlendShape);
+	while (!matIt.isDone())
+	{
+		MFnBlendShapeDeformer bs(matIt.item());
+
+		//Get the envelope attribute plug
+		MPlug pl = bs.findPlug("en");
+
+		//Set the 0 to disable FFD effect, enable by setting it to 1:
+		pl.setValue(1.0f);
+
+		matIt.next();
+	}
+
+	//Get Actual Blendshapes
+	matIt.reset(MFn::kBlendShape);
+	while (!matIt.isDone())
+	{
+		MFnBlendShapeDeformer bs(matIt.item());
+
+		MObjectArray base_objects;
+
+		//print blend shape name
+		cout << "Blendshape " << bs.name().asChar() << endl;
+
+		//Get a list of objects that this blend shape deforms
+		bs.getBaseObjects(base_objects);
+
+		cout << "NumBaseOBjects " << base_objects.length() << endl;
+
+		//loop through each blendshaped object
+		for (int i = 0; i < base_objects.length(); ++i)
+		{
+			//Get the base shape
+			MObject Base = base_objects[i];
+
+			//Output all of the target shapes and weights
+			OutputWeights(bs, Base);
+		}
+
+		//Get next blend shapes
+		matIt.next();
+	}
+
 
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
