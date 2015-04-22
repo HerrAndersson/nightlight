@@ -188,6 +188,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	if (FAILED(result))
 		OutputDebugString("Failed to create matrix buffer");
 
+	
 	return true;
 }
 
@@ -225,7 +226,14 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	deviceContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+
 	deviceContext->PSSetShaderResources(0, 1, &texture);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return true;
 }
@@ -282,9 +290,13 @@ bool RenderModule::Render(GameObject* gameObject)
 {
 	bool result = true;
 
+	UseDefaultShader();
+
 	//Set shader parameters, preparing them for render.
 	RenderObject* renderObject = gameObject->GetRenderObject();
 	//result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
+
+
 	result = SetDataPerObject(*gameObject->GetWorldMatrix(), nullptr, renderObject->vertexBuffer);
 	if (!result)
 		return false;
