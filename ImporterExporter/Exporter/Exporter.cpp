@@ -233,9 +233,8 @@ bool Exporter::IdentifyAndExtractScene ()
 //CURRENTLY ONLY SAVING THE MOST RELEVANT DATA
 void Exporter::extractCamera (MObject& cam)
 {
-	MSpace::Space world_space = MSpace::kPostTransform;
-	MSpace::Space object_space = MSpace::kLast;
-	MSpace::Space transform_space = MSpace::kPreTransform;
+	MSpace::Space world_space = MSpace::kWorld;
+	MSpace::Space transform_space = MSpace::kTransform;
 
 	//Temp storage for camera
 	cameraData TempCameraStorage;
@@ -293,25 +292,35 @@ void Exporter::extractCamera (MObject& cam)
 	TempCameraStorage.projectionMatrix = fn.projectionMatrix ();
 
 
+
+	MFloatMatrix modelMatrix = fs.transformation().asMatrix().matrix;
+	MFloatVector direction = modelMatrix * (MFloatVector)fn.viewDirection();
+
+	direction.normalize();
+	direction.x *= -1.0f;
+	direction.y *= -1.0f;
+
 	//Up direction
 	std::cout << "\nUp Vector: " << fn.upDirection ()
 		<< std::endl;
 	TempCameraStorage.upVector = fn.upDirection();
-
-	//view direction
-	std::cout << "\nView Direction: " << fn.viewDirection ()
-		<< std::endl;
-	TempCameraStorage.viewDirection = fn.viewDirection();
-
-	double debug[3];
-	MFloatMatrix modelMatrix = fs.transformation().asMatrix().matrix;
-
-	MFloatVector direction = modelMatrix * TempCameraStorage.viewDirection;
 	
+	//view direction
+	std::cout << "\nView Direction: " << direction
+		<< std::endl;
+	TempCameraStorage.viewDirection = direction;
 
-	MVector translation = fs.translation(transform_space);
+/*
+	MQuaternion rotation;
+	MEulerRotation eulerRotation1;
 
+	fs.getRotation(rotation, transform_space);
+	fs.getRotation(eulerRotation1);
+	
+	MEulerRotation eulerRotation2 = rotation.asEulerRotation(); // samma som eulerRotation1
+*/
 
+	TempCameraStorage.position = fs.translation(transform_space);
 	//pushback to store everything
 	scene_.cameras.push_back (TempCameraStorage);
 
