@@ -1,11 +1,12 @@
 #include "GameObject.h"
 
 
-GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position)
+GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation)
 {
 	this->worldMatrix = worldMatrix;
 	this->renderObject = renderObject;
 	this->position = position;
+	this->rotation = rotation;
 }
 
 
