@@ -1,0 +1,5 @@
+Assets/models.txt och Assets/textures.txt
+
+Varje rad blir en egen sträng och en exekvering av LoadRenderObject eller LoadTexture
+Samma fil kan läsas flera gånger och blir då separata RenderObjects.
+Måste avslutas med en tom ny rad.
