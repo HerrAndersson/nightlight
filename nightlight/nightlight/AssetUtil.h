@@ -33,6 +33,25 @@ struct Vertex
 	XMFLOAT3 normal;
 };
 
+struct pointLightStruct
+{
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 pos;
+};
+
+struct spotLightStruct
+{
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 dir;
+	XMFLOAT3 pos;
+
+	double coneAngle;
+	double penumbraAngle;
+	double dropoff;
+};
+
 struct RenderObject
 {
 	ID3D11Buffer* vertexBuffer = nullptr;
@@ -66,25 +85,6 @@ struct directionalLightStruct
 	XMFLOAT3 color;
 	XMFLOAT3 dir;
 	XMFLOAT3 pos;
-};
-
-struct pointLightStruct
-{
-	double intensity;
-	XMFLOAT3 color;
-	XMFLOAT3 pos;
-};
-
-struct spotLightStruct
-{
-	double intensity;
-	XMFLOAT3 color;
-	XMFLOAT3 dir;
-	XMFLOAT3 pos;
-
-	double coneAngle;
-	double penumbraAngle;
-	double dropoff;
 };
 
 

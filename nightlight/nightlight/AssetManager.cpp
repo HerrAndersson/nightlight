@@ -185,4 +185,5 @@ AssetManager::AssetManager(ID3D11Device* device_)
 
 AssetManager::~AssetManager()
 {
+	//Delete all vertex buffers and textures
 }
