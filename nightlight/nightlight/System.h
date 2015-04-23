@@ -3,17 +3,23 @@
 #include <windows.h>
 #include <stdexcept>
 #include "Game.h"
+#include "Timer.h"
 
 class System
 {
 
 private:
 
-	LPCSTR applicationName;
-	HINSTANCE hinstance;
-	HWND hwnd;
+	//const double MS_PER_FRAME = 16.66666667; //60FPS
+	const double MS_PER_FRAME =  8.33333333; //120FPS
+	//const double MS_PER_FRAME =  6.94444444; //144FPS
 
-	Game* game;
+	LPCSTR		applicationName;
+	HINSTANCE	hinstance;
+	HWND		hwnd;
+
+	Game*		game;
+	Timer*		timer;
 
 	int windowWidth, windowHeight;
 	int screenWidth, screenHeight;
