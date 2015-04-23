@@ -1,4 +1,4 @@
-Models/simple_cube.bin
+Models/simple_cube2.bin
 Models/simple_cube.bin
 Models/simple_cube.bin
 Models/simple_cube.bin
