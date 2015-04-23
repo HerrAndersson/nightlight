@@ -191,19 +191,10 @@ struct lightData
 	std::vector<spotLightStruct> spotLights;
 };
 
-struct KeyData
+struct BlendShapeTarget
 {
-
-	//MTime keyFrame;	//Keyframe position on timeline 
-	std::vector<vec3> points;		//Keyframes value
-	std::vector<vec3> normals;		//Keyframes value
-	std::vector<uvSet> uvSets;		//Keyframes value
-
-	//Current Key	//Not sure if needed in a struct nor for this assignment
-	//Next Key		//Not sure if needed in a struct nor for this assignment
-	//InTangent		//Not sure if needed in a struct nor for this assignment
-	//OutTangent	//Not sure if needed in a struct nor for this assignment
-	//FrameID
+	std::vector<vec3> points;
+	std::vector<vec3> normals;
 };
 
 struct AnimData
@@ -212,8 +203,10 @@ struct AnimData
 	MTime animationEnd;
 	int numKeys;
 	MTime keyFrame;					//Keyframe position on timeline 
+	float weights;
+	MTime currTime;
 
-	std::vector<KeyData> KeyFrames;
+	std::vector<BlendShapeTarget> BShapes;
 
 
 	//Stuff for later:

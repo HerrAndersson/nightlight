@@ -20,17 +20,20 @@ void InputManager::HandleMouse()
 
 	ScreenToClient(hwnd, point);
 
-	pos.x = (float)point->x;
-	pos.y = (float)point->y;
+	mousePos.x = (float)point->x;
+	mousePos.y = (float)point->y;
 
-	if (pos.x < 0)  { pos.x = 0; }
-	if (pos.y < 0)  { pos.y = 0; }
-	if (pos.x  > screenWidth)  { pos.x = (float)screenWidth; }
-	if (pos.y  > screenHeight) { pos.y = (float)screenHeight; }
-
-	//std::cout << "Mouse: " << pos.x << " " << pos.y << std::endl;
+	if (mousePos.x < 0)  { mousePos.x = 0; }
+	if (mousePos.y < 0)  { mousePos.y = 0; }
+	if (mousePos.x  > screenWidth)  { mousePos.x = (float)screenWidth; }
+	if (mousePos.y  > screenHeight) { mousePos.y = (float)screenHeight; }
 
 	delete point;
+}
+
+XMFLOAT2 InputManager::GetMousePos()
+{
+	return mousePos;
 }
 
 bool InputManager::KeyDown(char key)

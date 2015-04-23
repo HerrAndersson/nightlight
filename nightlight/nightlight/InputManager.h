@@ -9,7 +9,7 @@ private:
 	HWND hwnd;
 	int screenWidth, screenHeight;
 
-	XMFLOAT2 pos;
+	XMFLOAT2 mousePos;
 
 public:
 
@@ -17,6 +17,7 @@ public:
 	~InputManager();
 
 	void HandleMouse();
+	XMFLOAT2 GetMousePos();
 
 	bool KeyDown(char key);
 	bool Esc();

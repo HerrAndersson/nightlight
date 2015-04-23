@@ -15,25 +15,24 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	Logic = new GameLogic();
+	Logic = new GameLogic(hwnd, screenWidth, screenHeight);
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
-	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	Assets = new AssetManager(Renderer->GetDevice());
 }
 
 void Game::LoadAssets()
 {
-	gameObject = new GameObject(XMMatrixIdentity(), &Assets->assets.at(0), XMFLOAT3(0, 0, 0));
+	gameObject = new GameObject(XMMatrixIdentity(), &Assets->assets.at(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
 }
 
 Game::~Game()
 {
 	delete Logic;
 	delete Renderer;
-	delete Input;
 	delete camera;
 	delete Assets;
 	delete gameObject;
+	delete asset;
 }
 
 bool Game::Update()
@@ -68,12 +67,8 @@ bool Game::Update()
 	//		break;
 	//}
 
-	Input->HandleMouse();
-	Input->KeyDown('w');
-	//Input->KeyDown(VK_LBUTTON);
-	//Input->W();
+	result = Logic->Update(gameObject);
 
-	result = !Input->Esc();
 	return result;
 }
 
@@ -86,7 +81,7 @@ bool Game::Render()
 	camera->getProjectionMatrix(projectionMatrix);
 	camera->getViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
+	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix);
 
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject);
