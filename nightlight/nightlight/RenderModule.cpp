@@ -65,7 +65,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 			/*OutputDebugString(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize());*/
 			throw runtime_error(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
 		else
-			OutputDebugString("\nVertexshader not found");;
+			throw std::runtime_error("\nVertexshader not found");;
 
 		return false;
 	}
@@ -77,9 +77,9 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	if (FAILED(result))
 	{
 		if (errorMessage)
-			OutputDebugString("\nPixelshader failed to compile");
+			throw std::runtime_error("\nPixelshader failed to compile");
 		else
-			OutputDebugString("\nPixelshader not found");
+			throw std::runtime_error("\nPixelshader not found");
 
 		return false;
 	}
@@ -181,13 +181,13 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerObject);
 
 	if (FAILED(result))
-		OutputDebugString("\nFailed to create matrix buffer");
+		throw std::runtime_error("\nFailed to create matrix buffer");
 
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerFrame);
 
 	if (FAILED(result))
-		OutputDebugString("\nFailed to create matrix buffer");
+		throw std::runtime_error("\nFailed to create matrix buffer");
 
 	//this is the light dynamic constant buffer in the PIXEL SHADER
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -200,7 +200,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	result = device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
 
 	if (FAILED(result))
-		OutputDebugString("\nFailed to create light buffer");
+		throw std::runtime_error("\nFailed to create light buffer");
 	
 	return true;
 }
