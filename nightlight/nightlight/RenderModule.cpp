@@ -285,9 +285,12 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 
-	//CHANGES THE CUBES ORIENTATION, something is horribly wrong.
-	lightPtr->diffuseColor = XMFLOAT4(0.0f, 0.7f, 0.7f, 1.0f);
 	
+	lightPtr->diffuseColor = XMFLOAT4(0.0f, 0.7f, 0.7f, 1.0f);
+	lightPtr->lightDirection = XMFLOAT3(0.0f, 0.7f, 0.7f);
+	lightPtr->position = XMFLOAT4(0.0f, 50.f, 0.7f, 1.0f);
+
+
 	deviceContext->Unmap(lightBuffer, 0);
 
 	bufferNr = 0;

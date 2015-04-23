@@ -19,7 +19,7 @@ private:
 	
 	struct LightBuffer
 	{
-		XMFLOAT4 ambientColor;
+		XMFLOAT4 position;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
 		float padding;
