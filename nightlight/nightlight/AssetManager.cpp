@@ -6,7 +6,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	if (!infile.is_open())
 	{
 		std::string outputstring = file_path + " not found.\n";
-		OutputDebugString(outputstring.c_str());
+		throw std::runtime_error(outputstring.c_str());
 		return nullptr;
 	}
 	MainHeader mainHeader;
@@ -130,7 +130,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 
 	HRESULT result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);
 	if (FAILED(result)){
-		OutputDebugString("Failed to create vertexBuffer");
+		throw std::runtime_error("Failed to create vertexBuffer");
 		return nullptr;
 	}
 
