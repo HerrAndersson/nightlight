@@ -69,7 +69,7 @@ void CameraObject::updateCamera()
 	//position.m128_f32[3] = 1.0f;
 
 	//Set where the camera is looking by default.
-	lookAt = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
 	//lookAt.m128_f32[0] = 0.0f;
 	//lookAt.m128_f32[1] = 0.0f;
 	//lookAt.m128_f32[2] = 1.0f;

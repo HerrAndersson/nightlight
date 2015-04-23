@@ -11,7 +11,7 @@ struct pixelInputType
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
-	float zDepth : POSITION;
+	float yDepth : POSITION;
 };
 
 
@@ -25,7 +25,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	float4 fakeShadow;
 	
 	color = diffuseColor;
-	fakeShadow = float4 (input.zDepth, input.zDepth, input.zDepth, 1);
+	fakeShadow = float4 (input.yDepth, input.yDepth, input.yDepth, 1);
 	
 	fakeShadow += float4 (0.1f, 0.1f, 0.1f, 0.1f);
 	

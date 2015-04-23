@@ -27,10 +27,10 @@ bool GameLogic::UpdatePlayer(GameObject* player)
 	XMFLOAT3 rot = player->GetRotation();
 
 	if (Input->KeyDown('w'))
-		pos = XMFLOAT3(pos.x, pos.y + 0.1f, pos.z);
+		pos = XMFLOAT3(pos.x, pos.y, pos.z + 0.1f);
 
 	if (Input->KeyDown('s'))
-		pos = XMFLOAT3(pos.x, pos.y - 0.1f, pos.z);
+		pos = XMFLOAT3(pos.x, pos.y, pos.z - 0.1f);
 
 	if (Input->KeyDown('a'))
 		pos = XMFLOAT3(pos.x - 0.1f, pos.y, pos.z);
