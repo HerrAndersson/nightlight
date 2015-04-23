@@ -22,7 +22,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	gameObject = new GameObject(XMMatrixIdentity(), Assets->LoadRenderObject("Assets/Models/simple_cube.bin"), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	gameObject = new GameObject(XMMatrixIdentity(), &Assets->assets.at(0), XMFLOAT3(0, 0, 0));
 }
 
 Game::~Game()

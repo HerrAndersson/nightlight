@@ -33,6 +33,28 @@ struct Vertex
 	XMFLOAT3 normal;
 };
 
+struct ambientLightStruct
+{
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 pos;
+};
+
+struct areaLightStruct
+{
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 pos;
+};
+
+struct directionalLightStruct
+{
+	double intensity;
+	XMFLOAT3 color;
+	XMFLOAT3 dir;
+	XMFLOAT3 pos;
+};
+
 struct pointLightStruct
 {
 	double intensity;
@@ -64,29 +86,6 @@ struct RenderObject
 	std::vector<pointLightStruct> pointLights;
 	spotLightStruct spotLight;
 };
-
-struct ambientLightStruct
-{
-	double intensity;
-	XMFLOAT3 color;
-	XMFLOAT3 pos;
-};
-
-struct areaLightStruct
-{
-	double intensity;
-	XMFLOAT3 color;
-	XMFLOAT3 pos;
-};
-
-struct directionalLightStruct
-{
-	double intensity;
-	XMFLOAT3 color;
-	XMFLOAT3 dir;
-	XMFLOAT3 pos;
-};
-
 
 struct lightData
 {

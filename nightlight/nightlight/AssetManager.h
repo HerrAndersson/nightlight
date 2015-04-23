@@ -8,6 +8,7 @@ class AssetManager
 {
 public:
 	RenderObject asset; //single test asset
+	std::vector<RenderObject> assets;
 	AssetManager(ID3D11Device* device_);
 	RenderObject* LoadRenderObject(std::string file_path);
 	
