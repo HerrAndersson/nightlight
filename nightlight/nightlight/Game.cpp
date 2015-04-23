@@ -22,7 +22,8 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	gameObject = new GameObject(XMMatrixIdentity(), &Assets->assets.at(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), &Assets->assets.at(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), &Assets->assets.at(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -31,7 +32,7 @@ Game::~Game()
 	delete Renderer;
 	delete camera;
 	delete Assets;
-	delete gameObject;
+	//delete gameObject;
 	delete asset;
 }
 
@@ -67,7 +68,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(gameObject);
+	result = Logic->Update(gameObject.at(0));
 
 	return result;
 }
@@ -84,8 +85,8 @@ bool Game::Render()
 	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix);
 
 	Renderer->UseDefaultShader();
-	Renderer->Render(gameObject);
-
+	Renderer->Render(gameObject.at(0));
+	Renderer->Render(gameObject.at(1));
 	Renderer->EndScene();
 
 	return result;

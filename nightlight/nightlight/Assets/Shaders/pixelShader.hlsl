@@ -26,10 +26,12 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	float4 ambientLight = (0.1f, 0.1f, 0.1f, 1.0f);
 
 	color = diffuseColor;
-	fakeShadow = float4 (input.yDepth, input.yDepth, input.yDepth, 1);
-	fakeShadow += float4 (0.1f, 0.1f, 0.1f, 0.1f);
-	
-	//color *= fakeShadow;
+	if (input.yDepth == 0)
+	{
+
+		color = float4(0.5f, 0.2f, 0.0f, 1.0f);
+	}
+
 
 	float3 lightDir = normalize(input.worldPos - position);
 	float diffuseLighting = saturate(dot(input.normal, -lightDir));
