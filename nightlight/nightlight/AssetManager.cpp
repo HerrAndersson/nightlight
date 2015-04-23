@@ -176,13 +176,40 @@ ID3D11Buffer* AssetManager::getVertexBuffer()
 
 }
 
+//turns a text file into a vector of strings line-by-line
+void AssetManager::FileToStrings(std::string file_path, std::vector<std::string> &output)
+{
+	std::string delimiter = "\n";
+	std::ifstream file(file_path);
+	if (!file.is_open()){
+		printf("Failed to open models.txt\n");
+	}
+	std::string s((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+
+	size_t pos = 0;
+	std::string token;
+	while ((pos = s.find(delimiter)) != std::string::npos) {
+		token = s.substr(0, pos);
+		output.push_back(token);
+		s.erase(0, pos + delimiter.length());
+	}
+};
+
 AssetManager::AssetManager(ID3D11Device* device_)
 {
 	device = device_;
 
-	LoadRenderObject("Assets/Models/simple_cube.bin");
-	//loop för att läsa alla assets
+	std::vector<std::string> models;
+	FileToStrings("Assets/models.txt", models);
+	for (int i = 0; i < models.size(); i++)
+		LoadRenderObject("Assets/" + models[i]);
 
+	std::vector<std::string> textures;
+	FileToStrings("Assets/textures.txt", textures);
+	for (int i = 0; i < textures.size(); i++)
+		//LoadTexture("Assets/" + textures[i]);
+		int nothing = 0;
 }
 
 

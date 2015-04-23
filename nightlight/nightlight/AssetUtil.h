@@ -3,9 +3,10 @@
 #include <string>
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <iostream>
+#include <fstream>
 
 using namespace DirectX;
-
 
 struct MainHeader{
 	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
