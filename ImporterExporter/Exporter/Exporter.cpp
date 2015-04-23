@@ -639,24 +639,28 @@ void Exporter::extractKeyData(MObject& key)
 
 	std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
 	std::cout << "NumKeys " << animTemp.numKeys << std::endl;
+	cout << "Start Time: " << animTemp.animationStart << endl;
+	cout << "End TIme: " << animTemp.animationEnd << endl;
 
 	// get all keyframe times & values
 	for (unsigned int i = 0; i < animTemp.numKeys; i++)
 	{
-		MTime Time = AnimCurve.time(i).value();
-		float Value = AnimCurve.value(i);
+		MTime time = AnimCurve.time(i).value();
+		animTemp.weights = AnimCurve.value(i);
 
-		//Getting hte tangents for the animation curves
-		float ix, iy, ox, oy;
-		AnimCurve.getTangent(i, ix, iy, true);
-		AnimCurve.getTangent(i, ox, oy, false);
+		////Getting hte tangents for the animation curves
+		//float ix, iy, ox, oy;
+		//AnimCurve.getTangent(i, ix, iy, true);
+		//AnimCurve.getTangent(i, ox, oy, false);
 
 		// write keyframe info
-		std::cout << " time " << Time.as(MTime::kSeconds);
+		std::cout << " time " << time.as(MTime::kSeconds);
 		std::cout << " frame " << AnimCurve.time(i);
-		std::cout << " value " << Value;
-		std::cout << " InTangent " << iy;
-		std::cout << " OutTangent " << oy << std::endl;
+		std::cout << " value " << animTemp.weights << std::endl;;
+		//std::cout << " InTangent " << iy;
+		//std::cout << " OutTangent " << oy << std::endl;
+
+		animTemp.currTime = animTemp.currTime.as(MTime::kSeconds);
 
 		if (animTemp.keyFrame < AnimCurve.time(i))
 			animTemp.keyFrame = AnimCurve.time(i);
@@ -689,7 +693,7 @@ void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base)
 
 		//cout << "Weight unimportant stuff " << fn.weightIndexList(l) << endl;
 
-		cout << "\tnumTargets " << targets.length() << endl;
+		cout << "\t\tnumTargets " << targets.length() << endl;
 
 		//cout << "\tTarget Items unimportant stuff " << fn.targetItemIndexList(i, Base, l) << endl;
 
@@ -706,6 +710,8 @@ void Exporter::outPutTarget(MObject& target)
 	//Attach the function set to the object
 	MItGeometry it(target);
 
+	BlendShapeTarget temp;
+
 	//Write number of points
 	cout << "\t\tNumPoints " << it.count() << endl;
 
@@ -721,6 +727,12 @@ void Exporter::outPutTarget(MObject& target)
 			<< P.z << endl;
 		cout << "\t\t\t" << it.normal() << endl;
 		//cout << "\t\t\t" << it.weight() << endl;
+
+		vec3 point = { P.x, P.y, P.z };
+		vec3 norm = { it.normal().x, it.normal().y, it.normal().z };
+
+		temp.points.push_back(point);
+		temp.normals.push_back(norm);
 
 		it.next();
 	}
