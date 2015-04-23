@@ -81,7 +81,7 @@ bool Game::Render()
 	camera->getProjectionMatrix(projectionMatrix);
 	camera->getViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(0.0f, 0.0f, 0.0f, 1.0f, viewMatrix, projectionMatrix);
+	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix);
 
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject);

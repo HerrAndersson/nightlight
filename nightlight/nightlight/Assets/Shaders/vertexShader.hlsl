@@ -21,6 +21,7 @@ struct vertexOutput
 	float4 position : SV_POSITION0;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float zDepth : POSITION;
 };
 
 vertexOutput vertexShader(vertexInputType input)
@@ -36,6 +37,13 @@ vertexOutput vertexShader(vertexInputType input)
 	output.tex = input.tex;
 	output.normal = mul(input.normal, (float3x3)worldMatrix);
 	output.normal = normalize(output.normal);
+
+	output.zDepth = 1;
+
+	if (input.position.z > 0)
+	{
+		output.zDepth = 0;
+	}
 
 	return output;
 
