@@ -3,8 +3,8 @@
 CameraObject::CameraObject()
 {
 	positionX = 0.0f;
-	positionY = 0.0f;
-	positionZ = -10.0f;
+	positionY = 10.0f;
+	positionZ = 0.0f;
 
 	rotationX = 0.0f;
 	rotationY = 0.0f;
@@ -54,7 +54,7 @@ void CameraObject::updateCamera()
 
 	//Set the default up vector.
 
-	up = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+	up = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
 
 	//up.m128_f32[0] = 0.0f;
 	//up.m128_f32[1] = 1.0f;
@@ -69,7 +69,7 @@ void CameraObject::updateCamera()
 	//position.m128_f32[3] = 1.0f;
 
 	//Set where the camera is looking by default.
-	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+	lookAt = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 	//lookAt.m128_f32[0] = 0.0f;
 	//lookAt.m128_f32[1] = 0.0f;
 	//lookAt.m128_f32[2] = 1.0f;
