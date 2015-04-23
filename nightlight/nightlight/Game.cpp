@@ -89,22 +89,11 @@ bool Game::Render()
 	camera->getProjectionMatrix(projectionMatrix);
 	camera->getViewMatrix(viewMatrix);
 
-	//D3D->BeginScene(0.0f, 0.4f, 0.0f, 1.0f);
 	
 	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
 
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject);
-	
-	//example 
-	//D3D->SetCullingState(2);
-	//render shadowmap
-	//D3D->SetCullingState(3);
-	//Renderer->Render(objects using our own culling technique)
-	//D3D->SetCullingState(1);
-	//Renderer->Render(normal objects)
-	//D3D->DisableDepth();
-	//Renderer->Render(2d stuff)
 
 	Renderer->EndScene();
 

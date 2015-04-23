@@ -310,6 +310,8 @@ void RenderModule::UseDefaultShader()
 
 	deviceContext->IASetInputLayout(layoutPosUvNorm);
 
+	d3d->SetCullingState(1);
+
 	//Set shaders
 	deviceContext->VSSetShader(vertexShader, NULL, 0);
 	deviceContext->PSSetShader(pixelShader, NULL, 0);

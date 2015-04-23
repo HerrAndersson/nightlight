@@ -60,6 +60,9 @@
     <ClCompile Include="lightObject.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -96,6 +99,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="lightObject.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
