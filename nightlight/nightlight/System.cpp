@@ -1,5 +1,4 @@
 #include "System.h"
-#include <iostream>
 
 System::System(bool fullscreen, bool showCursor, int screenWidth, int screenHeight)
 {
@@ -63,7 +62,6 @@ bool System::Update()
 
 	if (timer->GetGameTime() > MS_PER_FRAME)
 	{
-		std::cout << timer->GetGameTime() << std::endl;
 		result = game->Update();
 		if (!result) { return false; }
 

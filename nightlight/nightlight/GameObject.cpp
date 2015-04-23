@@ -1,15 +1,17 @@
 #include "GameObject.h"
 
 
-GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject)
+GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position)
 {
 	this->worldMatrix = worldMatrix;
 	this->renderObject = renderObject;
+	this->position = position;
 }
 
 
 GameObject::~GameObject()
 {
+	//Should not delete RenderObject, handled from AssetManager
 }
 
 XMMATRIX* GameObject::GetWorldMatrix()
