@@ -39,8 +39,8 @@ bool GameLogic::UpdatePlayer(GameObject* player)
 		pos = XMFLOAT3(pos.x + 0.1f, pos.y, pos.z);
 
 
-	int dx = (int)abs(newP.x - oldP.x);
-	int dy = (int)abs(newP.y - oldP.y);
+	int dx = (int)(newP.x - oldP.x);
+	int dy = (int)(newP.y - oldP.y);
 
 	rot = XMFLOAT3(0.0f, rot.y + dy, 0.0f);
 
