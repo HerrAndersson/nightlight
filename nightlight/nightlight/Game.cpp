@@ -1,6 +1,4 @@
 #include "Game.h"
-#include <iostream>
-
 
 Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
 {
@@ -13,7 +11,6 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
-//	OutputDebugString("test\n");
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
@@ -77,8 +74,6 @@ bool Game::Update()
 	//Input->KeyDown(VK_LBUTTON);
 	//Input->W();
 
-	//std::cout << "Update" << std::endl;
-
 	result = !Input->Esc();
 	return result;
 }
@@ -92,8 +87,6 @@ bool Game::Render()
 	camera->getProjectionMatrix(projectionMatrix);
 	camera->getViewMatrix(viewMatrix);
 
-	//std::cout << "Render" << std::endl;
-
 	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
 
 	Renderer->UseDefaultShader();
@@ -103,10 +96,6 @@ bool Game::Render()
 
 	return result;
 }
-
-
-
-
 
 void* Game::operator new(size_t i)
 {
