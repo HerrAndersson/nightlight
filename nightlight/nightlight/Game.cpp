@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <iostream>
 
 
 Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
@@ -76,6 +77,8 @@ bool Game::Update()
 	//Input->KeyDown(VK_LBUTTON);
 	//Input->W();
 
+	//std::cout << "Update" << std::endl;
+
 	result = !Input->Esc();
 	return result;
 }
@@ -89,7 +92,8 @@ bool Game::Render()
 	camera->getProjectionMatrix(projectionMatrix);
 	camera->getViewMatrix(viewMatrix);
 
-	
+	//std::cout << "Render" << std::endl;
+
 	Renderer->BeginScene(Input->KeyDown('w'), Input->KeyDown('a'), Input->KeyDown('d'), 1.0f, viewMatrix, projectionMatrix);
 
 	Renderer->UseDefaultShader();
