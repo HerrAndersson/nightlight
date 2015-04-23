@@ -9,6 +9,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 		OutputDebugString(outputstring.c_str());
 		return nullptr;
 	}
+	char test;
 	MainHeader mainHeader;
 	MeshHeader meshHeader;
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
@@ -71,6 +72,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	}
 
 
+	infile.read((char*)&test, 0);
 	lightData tempLightStorage;
 	tempLightStorage.ambientLights.resize(mainHeader.ambientLightSize);
 	tempLightStorage.areaLights.resize(mainHeader.areaLightSize);
@@ -78,11 +80,16 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	tempLightStorage.dirLights.resize(mainHeader.dirLightSize);
 	tempLightStorage.pointLights.resize(mainHeader.pointLightSize);
 
-	infile.read((char*)tempLightStorage.ambientLights.data(), mainHeader.ambientLightSize*sizeof(ambientLightStruct));
-	infile.read((char*)tempLightStorage.areaLights.data(), mainHeader.areaLightSize*sizeof(areaLightStruct));
-	infile.read((char*)tempLightStorage.dirLights.data(), mainHeader.dirLightSize* sizeof(directionalLightStruct));
-	infile.read((char*)tempLightStorage.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
-	infile.read((char*)tempLightStorage.spotLights.data(), mainHeader.spotLightSize* sizeof(spotLightStruct));
+	if (mainHeader.ambientLightSize)
+		infile.read((char*)tempLightStorage.ambientLights.data(), mainHeader.ambientLightSize*sizeof(ambientLightStruct));
+	if (mainHeader.areaLightSize)
+		infile.read((char*)tempLightStorage.areaLights.data(), mainHeader.areaLightSize*sizeof(areaLightStruct));
+	if (mainHeader.dirLightSize)
+		infile.read((char*)tempLightStorage.dirLights.data(), mainHeader.dirLightSize* sizeof(directionalLightStruct));
+	if (mainHeader.pointLightSize)
+		infile.read((char*)tempLightStorage.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
+	if (mainHeader.spotLightSize)
+		infile.read((char*)tempLightStorage.spotLights.data(), mainHeader.spotLightSize* sizeof(spotLightStruct));
 
 	std::vector<Vertex> vertices;
 	vertices.reserve(meshHeader.numberPoints);
