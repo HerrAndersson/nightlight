@@ -23,7 +23,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	gameObject = new GameObject(XMMatrixIdentity(), &Assets->assets.at(0));
+	gameObject = new GameObject(XMMatrixIdentity(), &Assets->assets.at(0), XMFLOAT3(0, 0, 0));
 }
 
 Game::~Game()
