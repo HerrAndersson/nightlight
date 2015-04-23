@@ -23,6 +23,22 @@ RenderObject* GameObject::GetRenderObject()
 	return renderObject;
 }
 
+void GameObject::UpdateWorldMatrix()
+{
+	worldMatrix = XMMatrixTranslation(position.x, position.y, position.z);
+}
+
+void GameObject::SetPosition(XMFLOAT3 pos)
+{
+	position = pos;
+	UpdateWorldMatrix();
+}
+
+XMFLOAT3 GameObject::GetPosition()
+{
+	return position;
+}
+
 void* GameObject::operator new(size_t i)
 {
 	return _mm_malloc(i, 16);

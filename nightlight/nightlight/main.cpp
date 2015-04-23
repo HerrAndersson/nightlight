@@ -3,7 +3,7 @@
 #include <crtdbg.h>
 #include <iostream>
 #include <ctime>
-//#include "vld.h"
+#include "vld.h"
 
 //#if DEBUG
 #include "Console.h"
