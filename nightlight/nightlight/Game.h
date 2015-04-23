@@ -6,7 +6,6 @@
 #include "GameLogic.h"
 
 #include "D3DManager.h"
-#include "InputManager.h"
 #include "AssetManager.h"
 #include "AssetUtil.h"
 #include "cameraObject.h"
@@ -21,8 +20,12 @@ private:
 
 	enum ObjectIDs
 	{
-		PLAYER = 1,
-
+		PLAYER		= 1,
+		ENEMY		= 2,
+		TILE_FLOOR	= 3,
+		TILE_WALL   = 4,
+		TILE_DOOR   = 5
+		//ETC?
 	};
 
 	enum GameStates
@@ -40,16 +43,11 @@ private:
 	GameObject* gameObject;
 	CameraObject* camera;
 
-	XMMATRIX world; //needed?
-
-	//Object** objects; use vector?.
 	//World* world; this is the game world consisting of tiles in either Tile** or vector<vector<Tile>> format.  world[2][5] gives tile on position (2,5) in the grid.
-
 
 	GameLogic*              Logic;
 	RenderModule*           Renderer;
 
-	InputManager*           Input;
 	AssetManager *			Assets;
 
 
@@ -58,8 +56,6 @@ private:
 
 	SoundManager
 	SaveLoadManager
-	Timer
-	Camera? Or should we have Player object containing a camera?
 
 	*/
 
@@ -73,8 +69,6 @@ public:
 
 	bool Update(); //determines which objects to update and then calls Logic->Update(objectsToUpdate);
 	bool Render(); //determines which objects to render and then calls Render->Render(objectsToRender);
-
-
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

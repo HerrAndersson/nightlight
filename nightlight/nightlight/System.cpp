@@ -11,12 +11,14 @@ System::System(bool fullscreen, bool showCursor, int screenWidth, int screenHeig
 
 	//Create and initialize the application
 	game = new Game(hinstance, hwnd, screenWidth, screenHeight, fullscreen);
+	timer = new Timer();
 }
 
 
 System::~System()
 {
 	delete game;
+	delete timer;
 	ShutdownWindows();
 }
 
@@ -56,16 +58,18 @@ bool System::Update()
 {
 	bool result = true;
 
-	//SetCursorPos(screenWidth / 2, screenHeight / 2);
+	timer->Update();
 
-	result = game->Update();
-	if (!result) { return false; }
+	if (timer->GetGameTime() > MS_PER_FRAME)
+	{
+		result = game->Update();
+		if (!result) { return false; }
 
-	result = game->Render();
-	if (!result) { return false; }
+		result = game->Render();
+		if (!result) { return false; }
 
-	if (!result)
-		return false;
+		timer->Reset();
+	}
 
 	return result;
 }

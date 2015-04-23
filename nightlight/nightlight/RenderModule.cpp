@@ -62,7 +62,6 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	if (FAILED(result))
 	{
 		if (errorMessage)
-			/*OutputDebugString(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize());*/
 			throw runtime_error(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
 		else
 			throw std::runtime_error("\nVertexshader not found");;
@@ -77,7 +76,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	if (FAILED(result))
 	{
 		if (errorMessage)
-			throw std::runtime_error("\nPixelshader failed to compile");
+			throw runtime_error(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
 		else
 			throw std::runtime_error("\nPixelshader not found");
 
@@ -215,7 +214,6 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	
 	XMMATRIX worldMatrixC;
 
-	//transposing the matrices
 	worldMatrixC = XMMatrixTranspose(worldMatrix);
 	
 	//lock the constant buffer for writing
@@ -234,15 +232,14 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
 
 
-	//setting the sent in shader texture resource in the pixel shader //No textures for the moment
+	//setting the sent in shader texture resource in the pixel shader
 	UINT32 vertexSize = sizeof(Vertex);
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
-
+	//deviceContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
@@ -297,9 +294,6 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 
 	//setting matrix constant buffer in the VS with its new and updated values
 	deviceContext->PSSetConstantBuffers(bufferNr, 1, &lightBuffer);
-
-
-
 
 	return true;
 }

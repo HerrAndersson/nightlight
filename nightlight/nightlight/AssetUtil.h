@@ -33,19 +33,6 @@ struct Vertex
 	XMFLOAT3 normal;
 };
 
-struct RenderObject
-{
-	ID3D11Buffer* vertexBuffer = nullptr;
-	int vertexBufferSize;
-	XMFLOAT3 diffuse;
-	XMFLOAT3 specular;
-	float shine = 0;
-	Texture* diffuseTexture = nullptr;
-	Texture* specularTexture = nullptr;
-};
-
-
-
 struct ambientLightStruct
 {
 	double intensity;
@@ -87,6 +74,18 @@ struct spotLightStruct
 	double dropoff;
 };
 
+struct RenderObject
+{
+	ID3D11Buffer* vertexBuffer = nullptr;
+	int vertexBufferSize;
+	XMFLOAT3 diffuse;
+	XMFLOAT3 specular;
+	float shine = 0;
+	Texture* diffuseTexture = nullptr;
+	Texture* specularTexture = nullptr;
+	std::vector<pointLightStruct> pointLights;
+	spotLightStruct spotLight;
+};
 
 struct lightData
 {
