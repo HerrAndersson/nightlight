@@ -3,7 +3,7 @@
 CameraObject::CameraObject()
 {
 	positionX = 0.0f;
-	positionY = 10.0f;
+	positionY = 20.0f;
 	positionZ = 0.0f;
 
 	rotationX = 0.0f;
@@ -11,7 +11,7 @@ CameraObject::CameraObject()
 	rotationZ = 0.0f;
 
 	//Ugly aspect ratio fix (2/1.33333)
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 2, 2 / 1.333333, 0.1f, 1000);
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 3, 2 / 1.333333, 0.1f, 1000);
 	updateCamera();
 }
 
@@ -69,7 +69,7 @@ void CameraObject::updateCamera()
 	//position.m128_f32[3] = 1.0f;
 
 	//Set where the camera is looking by default.
-	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+	lookAt = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 	//lookAt.m128_f32[0] = 0.0f;
 	//lookAt.m128_f32[1] = 0.0f;
 	//lookAt.m128_f32[2] = 1.0f;
