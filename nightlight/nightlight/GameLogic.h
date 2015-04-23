@@ -14,9 +14,11 @@ public:
 	~GameLogic();
 
 	bool Update(GameObject* gameObject);
+	bool UpdatePlayer(GameObject* player);
 
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
+	//UpdatePlayer(playerobject)
 	//Etc
 };
 

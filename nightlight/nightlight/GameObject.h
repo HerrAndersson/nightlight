@@ -25,7 +25,10 @@ public:
 	RenderObject* GetRenderObject();
 
 	XMFLOAT3 GetPosition();
+	XMFLOAT3 GetRotation();
+
 	void SetPosition(XMFLOAT3 pos);
+	void SetRotation(XMFLOAT3 rot);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
