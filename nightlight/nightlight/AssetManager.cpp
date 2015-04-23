@@ -89,7 +89,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	if (mainHeader.pointLightSize)
 		infile.read((char*)asset.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
 	if (mainHeader.spotLightSize)
-		infile.read((char*)&asset.spotLight, mainHeader.spotLightSize);
+		infile.read((char*)&asset.spotLight, sizeof(spotLightStruct));
 
 	std::vector<Vertex> vertices;
 	vertices.reserve(meshHeader.numberPoints);
@@ -97,6 +97,8 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	asset.vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
 	asset.vertexBufferSize = vertexIndices.size();
 	infile.close();
+
+	assets.push_back(asset);
 
 	//RenderObject* object; return object;
 	
@@ -178,6 +180,7 @@ AssetManager::AssetManager(ID3D11Device* device_)
 {
 	device = device_;
 
+	LoadRenderObject("Assets/Models/simple_cube.bin");
 	//loop för att läsa alla assets
 
 }
