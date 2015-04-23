@@ -42,9 +42,9 @@ struct RenderObject
 	float shine = 0;
 	Texture* diffuseTexture = nullptr;
 	Texture* specularTexture = nullptr;
+	std::vector<pointLightStruct> pointLights;
+	spotLightStruct spotLight;
 };
-
-
 
 struct ambientLightStruct
 {

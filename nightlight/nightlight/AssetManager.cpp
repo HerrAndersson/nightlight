@@ -78,7 +78,7 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	tempLightStorage.areaLights.resize(mainHeader.areaLightSize);
 	tempLightStorage.spotLights.resize(mainHeader.spotLightSize);
 	tempLightStorage.dirLights.resize(mainHeader.dirLightSize);
-	tempLightStorage.pointLights.resize(mainHeader.pointLightSize);
+	asset.pointLights.resize(mainHeader.pointLightSize);
 
 	if (mainHeader.ambientLightSize)
 		infile.read((char*)tempLightStorage.ambientLights.data(), mainHeader.ambientLightSize*sizeof(ambientLightStruct));
@@ -87,9 +87,9 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	if (mainHeader.dirLightSize)
 		infile.read((char*)tempLightStorage.dirLights.data(), mainHeader.dirLightSize* sizeof(directionalLightStruct));
 	if (mainHeader.pointLightSize)
-		infile.read((char*)tempLightStorage.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
+		infile.read((char*)asset.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
 	if (mainHeader.spotLightSize)
-		infile.read((char*)tempLightStorage.spotLights.data(), mainHeader.spotLightSize* sizeof(spotLightStruct));
+		infile.read((char*)&asset.spotLight, mainHeader.spotLightSize);
 
 	std::vector<Vertex> vertices;
 	vertices.reserve(meshHeader.numberPoints);
