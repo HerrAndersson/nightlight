@@ -285,10 +285,9 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 
-	
 	lightPtr->diffuseColor = XMFLOAT4(0.0f, 0.7f, 0.7f, 1.0f);
 	lightPtr->lightDirection = XMFLOAT3(0.0f, 0.7f, 0.7f);
-	lightPtr->position = XMFLOAT4(0.0f, 50.f, 0.7f, 1.0f);
+	lightPtr->position = XMFLOAT4(0.0f, 5.0f, 0.0f, 1.0f);
 
 
 	deviceContext->Unmap(lightBuffer, 0);
