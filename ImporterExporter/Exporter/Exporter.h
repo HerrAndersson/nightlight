@@ -203,7 +203,7 @@ struct AnimData
 	MTime animationEnd;
 	int numKeys;
 	MTime keyFrame;					//Keyframe position on timeline 
-	float weights;
+	float weights;					//Not necessary weights, but for morph animation it is
 	MTime currTime;
 
 	std::vector<BlendShapeTarget> BShapes;
