@@ -1,0 +1,8 @@
+The coordinate system starts from the bottom left corner of the map.
+
+Först allt levelspecifikt såsom flaggor, detaljer, osv
+Startpos:(int, int) coordinate, Endpos:(int, int) coordinate
+
+
+Levelformatet består därefter av en lista med GameObjects.
+(int, int) coordinate, (4x4 float) transformation matrix, (int) render object reference, (int) game object type reference

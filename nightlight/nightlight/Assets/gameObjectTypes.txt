@@ -1,0 +1,6 @@
+Wall
+Floor
+Box
+SmallEnemy
+Enemy
+LargeEnemy
