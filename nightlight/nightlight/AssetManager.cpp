@@ -99,8 +99,10 @@ void AssetManager::CreateRenderObject(int modelID, int diffuseID, int specularID
 {
 	RenderObject* renderObject = new RenderObject();
 	renderObject->model = models[modelID];
-	renderObject->diffuseTexture = textures[diffuseID];
-	renderObject->specularTexture = textures[specularID];
+	if (diffuseID!=-1)
+		renderObject->diffuseTexture = textures[diffuseID];
+	if (specularID != -1)
+		renderObject->specularTexture = textures[specularID];
 	renderObjects.push_back(renderObject);
 }
 
@@ -201,6 +203,7 @@ void AssetManager::FileToStrings(std::string file_path, std::vector<std::string>
 		output.push_back(token);
 		s.erase(0, pos + delimiter.length());
 	}
+	output.push_back(s);
 };
 
 std::vector<int> AssetManager::StringToIntArray(std::string input)
