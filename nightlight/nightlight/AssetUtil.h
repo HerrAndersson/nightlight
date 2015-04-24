@@ -72,12 +72,17 @@ struct spotLightStruct
 
 struct Model
 {
+	~Model()
+	{
+		vertexBuffer->Release();
+		pointLights.clear();
+	}
 	ID3D11Buffer* vertexBuffer;
 	int vertexBufferSize;
 	std::vector<pointLightStruct> pointLights;
 	spotLightStruct spotLight;
-	XMFLOAT3 diffuse;
-	XMFLOAT3 specular;
+	XMFLOAT4 diffuse;
+	XMFLOAT4 specular;
 };
 
 struct RenderObject

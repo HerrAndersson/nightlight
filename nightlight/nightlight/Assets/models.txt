@@ -1,5 +1,5 @@
-Models/simple_cube2.bin
-Models/simple_floor.bin
-Models/simple_cube.bin
-Models/simple_sphere.bin
-Models/simple_wall.bin
+simple_cube2.bin
+simple_floor.bin
+simple_cube.bin
+simple_sphere.bin
+simple_wall.bin
