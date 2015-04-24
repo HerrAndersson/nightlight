@@ -68,7 +68,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(gameObject.at(0));
+	result = Logic->Update(gameObject.at(0), camera);
 
 	return result;
 }
