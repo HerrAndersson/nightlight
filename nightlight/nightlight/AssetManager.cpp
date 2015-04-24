@@ -1,15 +1,16 @@
 #include "AssetManager.h"
 
-RenderObject* AssetManager::LoadRenderObject(std::string file_path){
+void AssetManager::LoadModel(std::string file_path){
+	Model* model = new Model();
+
 	std::ifstream infile;
 	infile.open(file_path.c_str(), std::ifstream::binary);
 	if (!infile.is_open())
 	{
 		std::string outputstring = file_path + " not found.\n";
 		throw std::runtime_error(outputstring.c_str());
-		return nullptr;
+		return;
 	}
-	char test;
 	MainHeader mainHeader;
 	MeshHeader meshHeader;
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
@@ -25,38 +26,34 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	points.resize(meshHeader.numberPoints);
 	normals.resize(meshHeader.numberNormals);
 	UVs.resize(meshHeader.numberCoords);
-	vertexIndices.resize(meshHeader.numberFaces*3);
+	vertexIndices.resize(meshHeader.numberFaces * 3);
 
 	infile.read((char*)name.data(), meshHeader.nameLength);
 	infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(XMFLOAT3));
 	infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
-	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3)*3);
+	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
 
-	for (int i = 0; i < mainHeader.matCount;i++)
+	for (int i = 0; i < mainHeader.matCount; i++)
 	{
+		
 		if (i == 0){
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
 
-			infile.seekg(16+matHeader.ambientNameLength, std::ios::cur);
+			infile.seekg(16 + matHeader.ambientNameLength, std::ios::cur);
 
-			Texture *diffuseTexture = new Texture();
-			infile.read((char*)&asset.diffuse, 16);
-			diffuseTexture->textureName.resize(matHeader.diffuseNameLength);
-			infile.read((char*)diffuseTexture->textureName.data(), matHeader.diffuseNameLength);
-			asset.diffuseTexture = diffuseTexture;
+			infile.read((char*)&model->diffuse, 16);
+			infile.seekg(matHeader.diffuseNameLength, std::ios::cur);
 
-			Texture *specularTexture = new Texture();
-			infile.read((char*)&asset.specular, 16);
-			specularTexture->textureName.resize(matHeader.specularNameLength);
-			infile.read((char*)specularTexture->textureName.data(), matHeader.specularNameLength);
-			asset.specularTexture = specularTexture;
+			infile.read((char*)&model->specular, 16);
+			infile.seekg(matHeader.specularNameLength, std::ios::cur);
 
 			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
 
 			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
 		}
+
 		else{
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
@@ -65,20 +62,19 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 				+ matHeader.diffuseNameLength
 				+ matHeader.specularNameLength
 				+ matHeader.transparencyNameLength
-				+ matHeader.glowNameLength, 
+				+ matHeader.glowNameLength,
 				std::ios::cur);
 		}
-
 	}
 
 
-	infile.read((char*)&test, 0);
 	lightData tempLightStorage;
 	tempLightStorage.ambientLights.resize(mainHeader.ambientLightSize);
 	tempLightStorage.areaLights.resize(mainHeader.areaLightSize);
 	tempLightStorage.spotLights.resize(mainHeader.spotLightSize);
 	tempLightStorage.dirLights.resize(mainHeader.dirLightSize);
-	asset.pointLights.resize(mainHeader.pointLightSize);
+	model->pointLights.resize(mainHeader.pointLightSize);
+
 
 	if (mainHeader.ambientLightSize)
 		infile.read((char*)tempLightStorage.ambientLights.data(), mainHeader.ambientLightSize*sizeof(ambientLightStruct));
@@ -87,22 +83,33 @@ RenderObject* AssetManager::LoadRenderObject(std::string file_path){
 	if (mainHeader.dirLightSize)
 		infile.read((char*)tempLightStorage.dirLights.data(), mainHeader.dirLightSize* sizeof(directionalLightStruct));
 	if (mainHeader.pointLightSize)
-		infile.read((char*)asset.pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
+		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
 	if (mainHeader.spotLightSize)
-		infile.read((char*)&asset.spotLight, sizeof(spotLightStruct));
+		infile.read((char*)&model->spotLight, sizeof(spotLightStruct));
 
-	std::vector<Vertex> vertices;
-	vertices.reserve(meshHeader.numberPoints);
-	//RenderObject asset;
-	asset.vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
-	asset.vertexBufferSize = vertexIndices.size();
+
+	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
 
-	assets.push_back(asset);
+	model->vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
+	models.push_back(model);
+}
 
-	//RenderObject* object; return object;
-	
-	return &asset;
+void AssetManager::CreateRenderObject(int modelID, int diffuseID, int specularID)
+{
+	RenderObject* renderObject = new RenderObject();
+	renderObject->model = models[modelID];
+	renderObject->diffuseTexture = textures[diffuseID];
+	renderObject->specularTexture = textures[specularID];
+	renderObjects.push_back(renderObject);
+}
+
+void AssetManager::LoadTexture(std::string file_path)
+{
+	ID3D11ShaderResourceView* texture;
+	std::wstring widestr = std::wstring(file_path.begin(), file_path.end());
+	DirectX::CreateWICTextureFromFile(device, widestr.c_str(), nullptr, &texture, 0);
+	textures.push_back(texture);
 }
 
 ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices){
@@ -146,7 +153,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 	return vertexBuffer;
 }
 
-
+/*
 void AssetManager::setUpBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
@@ -175,7 +182,7 @@ ID3D11Buffer* AssetManager::getVertexBuffer()
 	return asset.vertexBuffer;
 
 }
-
+*/
 //turns a text file into a vector of strings line-by-line
 void AssetManager::FileToStrings(std::string file_path, std::vector<std::string> &output)
 {
@@ -196,24 +203,51 @@ void AssetManager::FileToStrings(std::string file_path, std::vector<std::string>
 	}
 };
 
+std::vector<int> AssetManager::StringToIntArray(std::string input)
+{
+	std::vector<int> output;
+	int from = 0;
+	
+	for (int to = 0; to < input.size(); to++)
+	{
+		if (input[to] == ','){
+			output.push_back(std::stoi(input.substr(from, to - from)));
+			from = to+1;
+		}
+	}
+	output.push_back(std::stoi(input.substr(from, input.size() - from)));
+
+	
+	return output;
+}
+
 AssetManager::AssetManager(ID3D11Device* device_)
 {
 	device = device_;
 
-	std::vector<std::string> models;
-	FileToStrings("Assets/models.txt", models);
-	for (int i = 0; i < models.size(); i++)
-		LoadRenderObject("Assets/" + models[i]);
+	std::vector<std::string> modelNames;
+	FileToStrings("Assets/models.txt", modelNames);
+	for (int i = 0; i < modelNames.size(); i++)
+		LoadModel("Assets/" + modelNames[i]);
 
-	std::vector<std::string> textures;
-	FileToStrings("Assets/textures.txt", textures);
-	for (int i = 0; i < textures.size(); i++)
-		//LoadTexture("Assets/" + textures[i]);
-		int nothing = 0;
-}
+	std::vector<std::string> textureNames;
+	FileToStrings("Assets/textures.txt", textureNames);
+	for (int i = 0; i < textureNames.size(); i++)
+		LoadTexture("Assets/" + textureNames[i]);
+
+	std::vector<std::string> renderObjectIDs;
+	FileToStrings("Assets/renderObjects.txt", renderObjectIDs);
+	for (int i = 0; i < renderObjectIDs.size(); i++)
+	{
+		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
+		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
+	}
+	int stop = 0;
+};
 
 
 AssetManager::~AssetManager()
 {
 	//Delete all vertex buffers and textures
-}
+};
+

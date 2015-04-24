@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include <iostream>
 #include <fstream>
+#include "WICTextureLoader\WICTextureLoader.h"
 
 using namespace DirectX;
 
@@ -19,12 +20,6 @@ struct MeshHeader
 
 struct MatHeader{
 	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
-};
-
-struct Texture
-{
-	std::string textureName;
-	ID3D11ShaderResourceView* texturePointer = nullptr;
 };
 
 struct Vertex
@@ -75,17 +70,21 @@ struct spotLightStruct
 	double dropoff;
 };
 
-struct RenderObject
+struct Model
 {
-	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* vertexBuffer;
 	int vertexBufferSize;
-	XMFLOAT3 diffuse;
-	XMFLOAT3 specular;
-	float shine = 0;
-	Texture* diffuseTexture = nullptr;
-	Texture* specularTexture = nullptr;
 	std::vector<pointLightStruct> pointLights;
 	spotLightStruct spotLight;
+	XMFLOAT3 diffuse;
+	XMFLOAT3 specular;
+};
+
+struct RenderObject
+{
+	Model* model;
+	ID3D11ShaderResourceView* diffuseTexture = nullptr;
+	ID3D11ShaderResourceView* specularTexture = nullptr;
 };
 
 struct lightData
