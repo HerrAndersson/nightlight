@@ -65,16 +65,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="cameraObject.cpp" />
+    <ClCompile Include="CameraObject.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3DManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="lightObject.cpp" />
+    <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RenderModule.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WICTextureLoader\WICTextureLoader.cpp" />
@@ -82,15 +83,16 @@
   <ItemGroup>
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetUtil.h" />
-    <ClInclude Include="cameraObject.h" />
+    <ClInclude Include="CameraObject.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="lightObject.h" />
+    <ClInclude Include="LightObject.h" />
     <ClInclude Include="RenderModule.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WICTextureLoader\WICTextureLoader.h" />

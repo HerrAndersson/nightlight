@@ -6,11 +6,13 @@ using std::vector;
 class AssetManager
 {
 public:
-	AssetManager(ID3D11Device* device_);
+
+	AssetManager(ID3D11Device* device);
 	~AssetManager();
 	RenderObject* GetRenderObject(int id);
 
 private:
+
 	ID3D11Device* device;
 	std::vector<Model*> models;
 	std::vector<ID3D11ShaderResourceView*> textures;

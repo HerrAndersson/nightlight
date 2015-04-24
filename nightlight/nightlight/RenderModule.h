@@ -22,7 +22,7 @@ private:
 		XMFLOAT4 position;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 lightDirection;
-		float padding;
+		float	 padding;
 	};
 
 	struct MatrixBufferPerObject
@@ -53,7 +53,7 @@ private:
 	ID3D11Buffer*			matrixBufferPerObject;
 	ID3D11Buffer*			matrixBufferPerFrame;
 	ID3D11Buffer*			lightBuffer;
-	HWND hwnd;
+	HWND					hwnd;
 
 	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 

@@ -58,7 +58,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera)
 
 		double angle = atan2(dx, dy) * (180 / XM_PI);
 
-		rot = XMFLOAT3(0.0f, angle, 0.0f);
+		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 
 		if (rot.y < 0)
 			rot.y += 360;

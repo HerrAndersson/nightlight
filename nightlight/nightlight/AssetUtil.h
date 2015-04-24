@@ -9,7 +9,8 @@
 
 using namespace DirectX;
 
-struct MainHeader{
+struct MainHeader
+{
 	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
 };
 
@@ -18,7 +19,8 @@ struct MeshHeader
 	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
 };
 
-struct MatHeader{
+struct MatHeader
+{
 	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
 };
 
@@ -29,21 +31,21 @@ struct Vertex
 	XMFLOAT3 normal;
 };
 
-struct ambientLightStruct
+struct AmbientLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
 	XMFLOAT3 pos;
 };
 
-struct areaLightStruct
+struct AreaLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
 	XMFLOAT3 pos;
 };
 
-struct directionalLightStruct
+struct DirectionalLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
@@ -51,14 +53,14 @@ struct directionalLightStruct
 	XMFLOAT3 pos;
 };
 
-struct pointLightStruct
+struct PointLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
 	XMFLOAT3 pos;
 };
 
-struct spotLightStruct
+struct SpotLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
@@ -79,8 +81,8 @@ struct Model
 	}
 	ID3D11Buffer* vertexBuffer;
 	int vertexBufferSize;
-	std::vector<pointLightStruct> pointLights;
-	spotLightStruct spotLight;
+	std::vector<PointLightStruct> pointLights;
+	SpotLightStruct spotLight;
 	XMFLOAT4 diffuse;
 	XMFLOAT4 specular;
 };
@@ -92,11 +94,11 @@ struct RenderObject
 	ID3D11ShaderResourceView* specularTexture = nullptr;
 };
 
-struct lightData
+struct LightData
 {
-	std::vector<pointLightStruct> pointLights;
-	std::vector<ambientLightStruct> ambientLights;
-	std::vector<areaLightStruct> areaLights;
-	std::vector<directionalLightStruct> dirLights;
-	std::vector<spotLightStruct> spotLights;
+	std::vector<PointLightStruct> pointLights;
+	std::vector<AmbientLightStruct> ambientLights;
+	std::vector<AreaLightStruct> areaLights;
+	std::vector<DirectionalLightStruct> dirLights;
+	std::vector<SpotLightStruct> spotLights;
 };

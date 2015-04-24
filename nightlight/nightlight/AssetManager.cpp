@@ -70,15 +70,15 @@ void AssetManager::LoadModel(std::string file_path){
 
 
 	if (mainHeader.ambientLightSize)
-		infile.seekg(mainHeader.ambientLightSize*sizeof(ambientLightStruct), std::ios::cur);
+		infile.seekg(mainHeader.ambientLightSize*sizeof(AmbientLightStruct), std::ios::cur);
 	if (mainHeader.areaLightSize)
-		infile.seekg(mainHeader.areaLightSize*sizeof(areaLightStruct), std::ios::cur);
+		infile.seekg(mainHeader.areaLightSize*sizeof(AreaLightStruct), std::ios::cur);
 	if (mainHeader.dirLightSize)
-		infile.seekg(mainHeader.dirLightSize* sizeof(directionalLightStruct), std::ios::cur);
+		infile.seekg(mainHeader.dirLightSize* sizeof(DirectionalLightStruct), std::ios::cur);
 	if (mainHeader.pointLightSize)
-		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
+		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(PointLightStruct));
 	if (mainHeader.spotLightSize)
-		infile.read((char*)&model->spotLight, sizeof(spotLightStruct));
+		infile.read((char*)&model->spotLight, sizeof(SpotLightStruct));
 
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
@@ -106,7 +106,8 @@ void AssetManager::LoadTexture(std::string file_path)
 	textures.push_back(texture);
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices){
+ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices)
+{
 
 	std::vector<Vertex> vertices;
 
@@ -216,9 +217,9 @@ std::vector<int> AssetManager::StringToIntArray(std::string input)
 	return output;
 }
 
-AssetManager::AssetManager(ID3D11Device* device_)
+AssetManager::AssetManager(ID3D11Device* device)
 {
-	device = device_;
+	this->device = device;
 
 	std::vector<std::string> modelNames;
 	FileToStrings("Assets/models.txt", modelNames);
@@ -252,6 +253,7 @@ AssetManager::~AssetManager()
 	renderObjects.clear();
 };
 
-RenderObject* AssetManager::GetRenderObject(int id){
+RenderObject* AssetManager::GetRenderObject(int id)
+{
 	return renderObjects[id];
 }

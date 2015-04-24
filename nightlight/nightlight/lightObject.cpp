@@ -1,4 +1,4 @@
-#include "lightObject.h"
+#include "LightObject.h"
 
 
 LightClass::LightClass()

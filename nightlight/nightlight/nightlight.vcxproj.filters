@@ -48,9 +48,6 @@
     <ClCompile Include="D3DManager.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="cameraObject.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="GameLogic.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -60,14 +57,20 @@
     <ClCompile Include="Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="lightObject.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="WICTextureLoader\WICTextureLoader.cpp">
       <Filter>Wic</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraObject.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="LightObject.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +95,6 @@
     <ClInclude Include="D3DManager.h">
       <Filter>Render</Filter>
     </ClInclude>
-    <ClInclude Include="cameraObject.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="GameLogic.h">
       <Filter>Game</Filter>
     </ClInclude>
@@ -104,14 +104,20 @@
     <ClInclude Include="Game.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="lightObject.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="WICTextureLoader\WICTextureLoader.h">
       <Filter>Wic</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraObject.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="LightObject.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
