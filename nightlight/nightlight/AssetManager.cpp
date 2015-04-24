@@ -252,3 +252,6 @@ AssetManager::~AssetManager()
 	renderObjects.clear();
 };
 
+RenderObject* AssetManager::GetRenderObject(int id){
+	return renderObjects[id];
+}
