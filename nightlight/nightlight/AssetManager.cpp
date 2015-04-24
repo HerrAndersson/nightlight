@@ -66,7 +66,6 @@ void AssetManager::LoadModel(std::string file_path){
 		}
 	}
 
-
 	model->pointLights.resize(mainHeader.pointLightSize);
 
 
@@ -80,7 +79,6 @@ void AssetManager::LoadModel(std::string file_path){
 		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
 	if (mainHeader.spotLightSize)
 		infile.read((char*)&model->spotLight, sizeof(spotLightStruct));
-
 
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
@@ -121,7 +119,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 	
-	for (int i = 0; i < vertexIndices->size(); i+=3){
+	for (int i = 0; i < (signed)vertexIndices->size(); i+=3){
 		for (int a = 0; a < 3; a++){
 			Vertex tempVertex;
 			tempVertex.position = points->at(vertexIndices->at(i+a).x);
@@ -205,7 +203,7 @@ std::vector<int> AssetManager::StringToIntArray(std::string input)
 	std::vector<int> output;
 	int from = 0;
 	
-	for (int to = 0; to < input.size(); to++)
+	for (int to = 0; to < (signed)input.size(); to++)
 	{
 		if (input[to] == ','){
 			output.push_back(std::stoi(input.substr(from, to - from)));
@@ -224,17 +222,17 @@ AssetManager::AssetManager(ID3D11Device* device_)
 
 	std::vector<std::string> modelNames;
 	FileToStrings("Assets/models.txt", modelNames);
-	for (int i = 0; i < modelNames.size(); i++)
-		LoadModel("Assets/" + modelNames[i]);
+	for (int i = 0; i < (signed)modelNames.size(); i++)
+		LoadModel("Assets/Models/" + modelNames[i]);
 
 	std::vector<std::string> textureNames;
 	FileToStrings("Assets/textures.txt", textureNames);
-	for (int i = 0; i < textureNames.size(); i++)
-		LoadTexture("Assets/" + textureNames[i]);
+	for (int i = 0; i < (signed)textureNames.size(); i++)
+		LoadTexture("Assets/Textures/" + textureNames[i]);
 
 	std::vector<std::string> renderObjectIDs;
 	FileToStrings("Assets/renderObjects.txt", renderObjectIDs);
-	for (int i = 0; i < renderObjectIDs.size(); i++)
+	for (int i = 0; i < (signed)renderObjectIDs.size(); i++)
 	{
 		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
 		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
@@ -244,6 +242,13 @@ AssetManager::AssetManager(ID3D11Device* device_)
 
 AssetManager::~AssetManager()
 {
-	//Delete all vertex buffers and textures
+	for (auto m : models) delete m;
+	models.clear();
+
+	for (auto t : textures) t->Release();
+	textures.clear();
+
+	for (auto ro : renderObjects) delete ro;
+	renderObjects.clear();
 };
 
