@@ -328,12 +328,12 @@ bool RenderModule::Render(GameObject* gameObject)
 	//result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
 
 
-	result = SetDataPerObject(*gameObject->GetWorldMatrix(), nullptr, renderObject->vertexBuffer);
+	result = SetDataPerObject(*gameObject->GetWorldMatrix(), nullptr, renderObject->model->vertexBuffer);
 	if (!result)
 		return false;
 
 	//Now render the prepared buffers with the shader.
-	d3d->GetDeviceContext()->Draw(renderObject->vertexBufferSize, 0);
+	d3d->GetDeviceContext()->Draw(renderObject->model->vertexBufferSize, 0);
 
 	return result;
 }
