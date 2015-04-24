@@ -1,5 +1,9 @@
 Assets/models.txt, Assets/textures.txt, Assets/renderObjects.txt, gameObjectTypes.txt och levels.txt
 
+Allt i spelet, från huvudkaraktären till golvet representeras av GameObjects. Ett GameObject består av en tvådimensionel koordinat, en transformationsmatris samt två IDs till ett RenderObject och en objecttyp. Ett RenderObject består av en pekare till en Model, samt två pekare till texturer. Texturer är handles till data på GPU. En Model består av en pekare till en vertisbuffer, materialdata samt ljusobjekt.
+
+
+Inläsning:
 Varje rad blir en egen sträng och en exekvering av LoadModel, LoadTexture, CreateRenderObject eller LoadLevelFile.
 gameObjectTypes.txt blir en array av strängar, för skapning av GameObjects vid level parsing.
 Samma fil kan läsas flera gånger och blir då separata entiteter.
