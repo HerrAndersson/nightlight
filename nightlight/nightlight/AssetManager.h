@@ -6,25 +6,19 @@ using std::vector;
 class AssetManager
 {
 public:
-	RenderObject asset; //single test asset
-
 	std::vector<RenderObject*> renderObjects;
+	void CreateRenderObject(int modelID, int diffuseID, int specularID);
+
 	std::vector<Model*> models;
+	void LoadModel(std::string file_path);
+
 	std::vector<ID3D11ShaderResourceView*> textures;
-
-	void LoadModel(std::string file_path);//todo
-	void CreateRenderObject(int modelID, int diffuseID, int specularID);//todo
-	void LoadTexture(std::string file_path);//todo
-
+	void LoadTexture(std::string file_path);
 
 	void FileToStrings(std::string file_path, std::vector<std::string> &output);
 
-	
-
 	AssetManager(ID3D11Device* device_);
 	~AssetManager();
-
-	RenderObject* GetRenderObject(); 
 
 private:
 	ID3D11Device* device;
@@ -33,8 +27,9 @@ private:
 	std::vector<int> StringToIntArray(std::string input);
 
 /*
-	void setUpBuffers(ID3D11DeviceContext*);
+	RenderObject* GetRenderObject(); 
 	ID3D11Buffer* getVertexBuffer();
+	void setUpBuffers(ID3D11DeviceContext*);
 */	 
 };
 

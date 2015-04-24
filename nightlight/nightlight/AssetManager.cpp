@@ -36,7 +36,6 @@ void AssetManager::LoadModel(std::string file_path){
 
 	for (int i = 0; i < mainHeader.matCount; i++)
 	{
-		
 		if (i == 0){
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
@@ -68,20 +67,15 @@ void AssetManager::LoadModel(std::string file_path){
 	}
 
 
-	lightData tempLightStorage;
-	tempLightStorage.ambientLights.resize(mainHeader.ambientLightSize);
-	tempLightStorage.areaLights.resize(mainHeader.areaLightSize);
-	tempLightStorage.spotLights.resize(mainHeader.spotLightSize);
-	tempLightStorage.dirLights.resize(mainHeader.dirLightSize);
 	model->pointLights.resize(mainHeader.pointLightSize);
 
 
 	if (mainHeader.ambientLightSize)
-		infile.read((char*)tempLightStorage.ambientLights.data(), mainHeader.ambientLightSize*sizeof(ambientLightStruct));
+		infile.seekg(mainHeader.ambientLightSize*sizeof(ambientLightStruct), std::ios::cur);
 	if (mainHeader.areaLightSize)
-		infile.read((char*)tempLightStorage.areaLights.data(), mainHeader.areaLightSize*sizeof(areaLightStruct));
+		infile.seekg(mainHeader.areaLightSize*sizeof(areaLightStruct), std::ios::cur);
 	if (mainHeader.dirLightSize)
-		infile.read((char*)tempLightStorage.dirLights.data(), mainHeader.dirLightSize* sizeof(directionalLightStruct));
+		infile.seekg(mainHeader.dirLightSize* sizeof(directionalLightStruct), std::ios::cur);
 	if (mainHeader.pointLightSize)
 		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(pointLightStruct));
 	if (mainHeader.spotLightSize)
@@ -245,7 +239,6 @@ AssetManager::AssetManager(ID3D11Device* device_)
 		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
 		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
 	}
-	int stop = 0;
 };
 
 
