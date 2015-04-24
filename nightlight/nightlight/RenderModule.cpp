@@ -327,8 +327,10 @@ bool RenderModule::Render(GameObject* gameObject)
 	RenderObject* renderObject = gameObject->GetRenderObject();
 	//result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
 
+	XMMATRIX w;
+	gameObject->GetWorldMatrix(w);
 
-	result = SetDataPerObject(*gameObject->GetWorldMatrix(), nullptr, renderObject->model->vertexBuffer);
+	result = SetDataPerObject(w, nullptr, renderObject->model->vertexBuffer);
 	if (!result)
 		return false;
 
