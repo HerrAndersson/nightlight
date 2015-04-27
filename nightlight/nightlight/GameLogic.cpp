@@ -68,25 +68,24 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		if (rot.y < 0)
 			rot.y += 360;
 		else if (rot.y > 360)
-			rot.y = 0; // +angle;
-
-		std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
-		std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
-		std::cout << "Mouse screenspace: " << msp.x << " " << msp.y << std::endl;
-		std::cout << "ScreenSpacePos:   " << "SX: " << screenSpacePos.x << " SY: " << screenSpacePos.y << " SZ: " << screenSpacePos.z << std::endl;
-		//std::cout << "dxdy:             " << dx << " " << dy << std::endl;
-		std::cout << "angle:            " << angle << std::endl;
-		std::cout << "roty:             " << rot.y << std::endl;
-		std::cout << std::endl;
+			rot.y = 0;
 
 		player->SetRotation(rot);
-		updateSpotLight(player, camera, spotlight);
+		UpdateSpotLight(player, camera, spotlight);
+
+
+		//std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
+		//std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
+		//std::cout << "Mouse screenspace: " << msp.x << " " << msp.y << std::endl;
+		//std::cout << "ScreenSpacePos:   " << "SX: " << screenSpacePos.x << " SY: " << screenSpacePos.y << " SZ: " << screenSpacePos.z << std::endl;
+		//std::cout << "angle:            " << angle << std::endl;
+		//std::cout << "roty:             " << rot.y << std::endl;
+		//std::cout << std::endl;
+
 	}
 
 	player->SetPosition(pos);
 	spotlight->SetPosition(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
-	
-	
 
 	return !Input->Esc();
 }
@@ -94,7 +93,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
 {
 	XMFLOAT3 lightDirFinal;
-	XMStoreFloat3(&lightDirFinal, player->getForwardVector());
+	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());
 	spotlight->SetDirection(lightDirFinal.x, lightDirFinal.y, lightDirFinal.z);
 	
 	return true;

@@ -27,7 +27,7 @@ public:
 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
-	XMVECTOR getForwardVector();
+	XMVECTOR GetForwardVector();
 	
 
 	void SetPosition(XMFLOAT3 pos);
