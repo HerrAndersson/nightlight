@@ -49,7 +49,7 @@ void GameObject::SetRotation(XMFLOAT3 rot)
 	UpdateWorldMatrix();
 }
 
-XMVECTOR GameObject::getForwardVector()
+XMVECTOR GameObject::GetForwardVector()
 {
 	forwardVector = XMVector3TransformCoord(forwardVector, worldMatrix);
 	XMVector3Normalize(forwardVector);
