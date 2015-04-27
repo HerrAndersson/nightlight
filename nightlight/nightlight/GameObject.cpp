@@ -15,9 +15,9 @@ GameObject::~GameObject()
 	//Should not delete RenderObject, handled from AssetManager
 }
 
-XMMATRIX* GameObject::GetWorldMatrix()
+void GameObject::GetWorldMatrix(XMMATRIX& worldMatrix)
 {
-	return &worldMatrix;
+	worldMatrix = this->worldMatrix;
 }
 RenderObject* GameObject::GetRenderObject()
 {

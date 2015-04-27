@@ -1,4 +1,4 @@
-#include "cameraObject.h"
+#include "CameraObject.h"
 
 CameraObject::CameraObject()
 {
@@ -11,7 +11,7 @@ CameraObject::CameraObject()
 	rotationZ = 0.0f;
 
 	//Ugly aspect ratio fix (2/1.33333)
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 3, 2 / 1.333333, 0.1f, 1000);
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 3,float(2 / 1.33333), 0.1f, 1000);
 	updateCamera();
 }
 
@@ -49,39 +49,20 @@ XMFLOAT3 CameraObject::getRotation()
 void CameraObject::updateCamera()
 {
 	XMVECTOR up, position, lookAt;
-	float yaw, pitch, roll;
 	XMMATRIX rotationMatrix;
 
 	//Set the default up vector.
 
 	up = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
 
-	//up.m128_f32[0] = 0.0f;
-	//up.m128_f32[1] = 1.0f;
-	//up.m128_f32[2] = 0.0f;
-	//up.m128_f32[3] = 1.0f;
-
 	//Set the default world position.
 	position = XMVectorSet(positionX, positionY, positionZ, 1.0f);
-	//position.m128_f32[0] = positionX;
-	//position.m128_f32[1] = positionY;
-	//position.m128_f32[2] = positionZ;
-	//position.m128_f32[3] = 1.0f;
 
 	//Set where the camera is looking by default.
 	lookAt = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
-	//lookAt.m128_f32[0] = 0.0f;
-	//lookAt.m128_f32[1] = 0.0f;
-	//lookAt.m128_f32[2] = 1.0f;
-	//lookAt.m128_f32[3] = 1.0f;
-
-	//Set the yaw, pitch, and roll in radians´.
-	pitch = rotationX * 0.0174532925f;
-	yaw = rotationY * 0.0174532925f;
-	roll = rotationZ * 0.0174532925f;
 
 	//Create the rotation matrix from the above values.
-	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+	rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotationX), XMConvertToRadians(rotationY), XMConvertToRadians(rotationZ));
 
 	//Transfoorm the lookAt and upp vector by the rotation matrix.
 	lookAt = XMVector3TransformCoord(lookAt, rotationMatrix);

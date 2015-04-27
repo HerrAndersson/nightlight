@@ -21,7 +21,7 @@ public:
 	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation);
 	virtual ~GameObject();
 
-	XMMATRIX* GetWorldMatrix();
+	void GetWorldMatrix(XMMATRIX& worldMatrix);
 	RenderObject* GetRenderObject();
 
 	XMFLOAT3 GetPosition();

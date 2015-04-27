@@ -1,6 +1,1 @@
-Models/simple_cube.bin
-Models/simple_cube.bin
-Models/simple_cube.bin
-Models/simple_cube.bin
-Models/simple_cube.bin
-Models/simple_cube.bin
+dummy.png

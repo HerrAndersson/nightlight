@@ -10,8 +10,8 @@ class System
 
 private:
 
-	//const double MS_PER_FRAME = 16.66666667; //60FPS
-	const double MS_PER_FRAME =  8.33333333; //120FPS
+	const double MS_PER_FRAME = 16.66666667; //60FPS
+	//const double MS_PER_FRAME =  8.33333333; //120FPS
 	//const double MS_PER_FRAME =  6.94444444; //144FPS
 
 	LPCSTR		applicationName;

@@ -67,21 +67,21 @@ bool InputManager::KeyDown(char key)
 	}
 
 	if (keyToCheck != -1)
-		return GetAsyncKeyState(keyToCheck);
+		return GetAsyncKeyState(keyToCheck) != 0;
 	else
 		return false;
 }
 bool InputManager::Esc()
 {
-	return GetAsyncKeyState(VK_ESCAPE);
+	return GetAsyncKeyState(VK_ESCAPE) != 0;
 }
 bool InputManager::LeftMouse()
 {
-	return GetAsyncKeyState(VK_LBUTTON);
+	return GetAsyncKeyState(VK_LBUTTON) != 0;
 }
 bool InputManager::RightMouse()
 {
-	return GetAsyncKeyState(VK_RBUTTON);
+	return GetAsyncKeyState(VK_RBUTTON) != 0;
 }
 
 //bool InputManager::W()

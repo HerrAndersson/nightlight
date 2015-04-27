@@ -5,10 +5,12 @@
 #include <DirectXMath.h>
 #include <iostream>
 #include <fstream>
+#include "WICTextureLoader\WICTextureLoader.h"
 
 using namespace DirectX;
 
-struct MainHeader{
+struct MainHeader
+{
 	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
 };
 
@@ -17,14 +19,9 @@ struct MeshHeader
 	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
 };
 
-struct MatHeader{
-	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
-};
-
-struct Texture
+struct MatHeader
 {
-	std::string textureName;
-	ID3D11ShaderResourceView* texturePointer = nullptr;
+	int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
 };
 
 struct Vertex
@@ -34,21 +31,21 @@ struct Vertex
 	XMFLOAT3 normal;
 };
 
-struct ambientLightStruct
+struct AmbientLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
 	XMFLOAT3 pos;
 };
 
-struct areaLightStruct
+struct AreaLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
 	XMFLOAT3 pos;
 };
 
-struct directionalLightStruct
+struct DirectionalLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
@@ -56,14 +53,14 @@ struct directionalLightStruct
 	XMFLOAT3 pos;
 };
 
-struct pointLightStruct
+struct PointLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
 	XMFLOAT3 pos;
 };
 
-struct spotLightStruct
+struct SpotLightStruct
 {
 	double intensity;
 	XMFLOAT3 color;
@@ -75,24 +72,33 @@ struct spotLightStruct
 	double dropoff;
 };
 
-struct RenderObject
+struct Model
 {
-	ID3D11Buffer* vertexBuffer = nullptr;
+	~Model()
+	{
+		vertexBuffer->Release();
+		pointLights.clear();
+	}
+	ID3D11Buffer* vertexBuffer;
 	int vertexBufferSize;
-	XMFLOAT3 diffuse;
-	XMFLOAT3 specular;
-	float shine = 0;
-	Texture* diffuseTexture = nullptr;
-	Texture* specularTexture = nullptr;
-	std::vector<pointLightStruct> pointLights;
-	spotLightStruct spotLight;
+	std::vector<PointLightStruct> pointLights;
+	SpotLightStruct spotLight;
+	XMFLOAT4 diffuse;
+	XMFLOAT4 specular;
 };
 
-struct lightData
+struct RenderObject
 {
-	std::vector<pointLightStruct> pointLights;
-	std::vector<ambientLightStruct> ambientLights;
-	std::vector<areaLightStruct> areaLights;
-	std::vector<directionalLightStruct> dirLights;
-	std::vector<spotLightStruct> spotLights;
+	Model* model;
+	ID3D11ShaderResourceView* diffuseTexture = nullptr;
+	ID3D11ShaderResourceView* specularTexture = nullptr;
+};
+
+struct LightData
+{
+	std::vector<PointLightStruct> pointLights;
+	std::vector<AmbientLightStruct> ambientLights;
+	std::vector<AreaLightStruct> areaLights;
+	std::vector<DirectionalLightStruct> dirLights;
+	std::vector<SpotLightStruct> spotLights;
 };

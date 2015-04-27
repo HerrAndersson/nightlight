@@ -12,12 +12,12 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(GameObject* gameObject)
+bool GameLogic::Update(GameObject* gameObject, CameraObject* camera)
 {
-	return UpdatePlayer(gameObject);
+	return UpdatePlayer(gameObject, camera);
 }
 
-bool GameLogic::UpdatePlayer(GameObject* player)
+bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
@@ -38,23 +38,46 @@ bool GameLogic::UpdatePlayer(GameObject* player)
 	if (Input->KeyDown('d'))
 		pos = XMFLOAT3(pos.x + 0.1f, pos.y, pos.z);
 
+	if (oldP.x != newP.x && oldP.y != newP.y)
+	{
+		XMMATRIX v, p, vp;
+		camera->getViewMatrix(v);
+		camera->getProjectionMatrix(p);
+		vp = v * p;
 
-	int dx = (int)(newP.x - oldP.x);
-	int dy = (int)(newP.y - oldP.y);
+		XMVECTOR worldPosVector;
+		worldPosVector = XMLoadFloat3(&pos);
+		worldPosVector = XMVector3Transform(worldPosVector, vp);
+		XMFLOAT3 screenSpacePos;
+		XMStoreFloat3(&screenSpacePos, worldPosVector);
 
-	rot = XMFLOAT3(0.0f, rot.y + dy, 0.0f);
 
-	if (rot.x < 0)
-		rot.x += 360;
-	else if (rot.x > 360)
-		rot.x = 0;
+
+		float dx = (newP.x - screenSpacePos.x);
+		float dy = (newP.y - screenSpacePos.y);
+
+		double angle = atan2(dx, dy) * (180 / XM_PI);
+
+		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
+
+		if (rot.y < 0)
+			rot.y += 360;
+		else if (rot.y > 360)
+			rot.y = 0;
+
+		std::cout << "Pos:              " << "X: " << pos.x << " Z: " << pos.z << std::endl;
+		std::cout << "ScreenSpacePos:   " << "SX: " << screenSpacePos.x << " SY: " << screenSpacePos.y << " SZ: " << screenSpacePos.z << std::endl;
+		std::cout << "dxdy:             " << dx << " " << dy << std::endl;
+		std::cout << "angle:            " << angle << std::endl;
+		std::cout << "roty:             " << rot.y << std::endl;
+		std::cout << std::endl;
+
+		player->SetRotation(rot);
+	}
 
 	player->SetPosition(pos);
-	player->SetRotation(rot);
-
-	//double angleRadians = atan2(dy, dx);
-
-	//double angleDegrees = (angleRadians * 180) / XM_PI;
 
 	return !Input->Esc();
 }
+
+
