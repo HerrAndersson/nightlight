@@ -7,6 +7,7 @@
 #include "D3DManager.h"
 #include "AssetUtil.h"
 #include "GameObject.h"
+#include "lightObject.h"
 
 using DirectX::XMMATRIX;
 using DirectX::XMFLOAT3;
@@ -16,6 +17,7 @@ class RenderModule
 {
 
 private:
+	
 	
 	struct LightBuffer
 	{
@@ -61,7 +63,7 @@ private:
 	ID3D11Buffer*			lightBuffer;
 	HWND					hwnd;
 
-	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
+	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject * spotlight);
 
 public:
 
@@ -76,7 +78,7 @@ public:
 	//void UseShadowShader();
 	//void Usesomeothershader() etc.
 
-	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
+	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject * spotlight);
 
 	bool Render(GameObject* gameObject);
 

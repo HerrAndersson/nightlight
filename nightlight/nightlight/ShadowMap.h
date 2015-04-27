@@ -14,6 +14,11 @@ class ShadowMap
 {
 private:
 
+	struct MatrixBuffer
+	{
+		XMMATRIX modelWorld;
+	};
+
 	float dimensions;
 
 	ID3D11Texture2D*				shadowMap;
@@ -27,6 +32,8 @@ private:
 	ID3D11InputLayout*              shadowInputLayout;
 	ID3D11VertexShader*             shadowVS;
 
+	ID3D11Buffer*					matrixBuffer;
+
 public:
 
 	ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename);
@@ -35,5 +42,6 @@ public:
 	ID3D11ShaderResourceView* GetShadowSRV();
 
 	void ActivateShadowRendering(ID3D11DeviceContext* deviceContext);
+	void SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld);
 };
 

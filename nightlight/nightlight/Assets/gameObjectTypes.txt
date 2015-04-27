@@ -1,6 +1,12 @@
 Wall
 Floor
-Box
+Door
+StaticObject
+MovableBox
+PressurePlate
+ShadowContainer
+MainCharacter
+SideCharacter
 SmallEnemy
-Enemy
+AverageEnemy
 LargeEnemy

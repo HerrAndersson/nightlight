@@ -25,6 +25,7 @@ struct vertexOutput
 	float3 worldPos : TEXCOORD1;
 	//fakeShade
 	float yDepth : POSITION;
+
 };
 
 vertexOutput vertexShader(vertexInputType input)
@@ -41,7 +42,7 @@ vertexOutput vertexShader(vertexInputType input)
 	output.position = mul(output.position, projectionMatrix);
 
 	output.tex = input.tex;
-	output.normal = mul(input.normal, (float3x3)worldMatrix);
+	output.normal = mul(input.normal, worldMatrix);
 	output.normal = normalize(output.normal);
 
 	output.yDepth = 1;

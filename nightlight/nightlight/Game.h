@@ -9,6 +9,7 @@
 #include "AssetManager.h"
 #include "AssetUtil.h"
 #include "cameraObject.h"
+#include "lightObject.h"
 
 using namespace DirectX;
 
@@ -43,6 +44,7 @@ private:
 	//GameObject* gameObject;
 	std::vector<GameObject*> gameObject;
 	CameraObject* camera;
+	LightObject* spotLight;
 
 	//World* world; this is the game world consisting of tiles in either Tile** or vector<vector<Tile>> format.  world[2][5] gives tile on position (2,5) in the grid.
 

@@ -1,38 +1,38 @@
 #include "LightObject.h"
 
 
-LightClass::LightClass()
+LightObject::LightObject()
 {
 }
 
 
-LightClass::~LightClass()
+LightObject::~LightObject()
 {
 }
 
 //Setters
 
-void LightClass::SetAmbientColor(float red, float green, float blue, float alpha)
+void LightObject::SetAmbientColor(float red, float green, float blue, float alpha)
 {
 	m_ambientColor = XMFLOAT4(red, green, blue, alpha);
 	return;
 }
 
 
-void LightClass::SetDiffuseColor(float red, float green, float blue, float alpha)
+void LightObject::SetDiffuseColor(float red, float green, float blue, float alpha)
 {
 	m_diffuseColor = XMFLOAT4(red, green, blue, alpha);
 	return;
 }
 
 
-void LightClass::SetDirection(float x, float y, float z)
+void LightObject::SetDirection(float x, float y, float z)
 {
 	m_direction = XMFLOAT3(x, y, z);
 	return;
 }
 
-void LightClass::SetPosition(float x, float y, float z)
+void LightObject::SetPosition(float x, float y, float z)
 {
 	m_position = XMFLOAT3(x, y, z);
 	return;
@@ -41,32 +41,35 @@ void LightClass::SetPosition(float x, float y, float z)
 
 //Getters
 
-XMFLOAT4 LightClass::GetAmbientColor()
+XMFLOAT4 LightObject::GetAmbientColor()
 {
 	return m_ambientColor;
 }
 
 
-XMFLOAT4 LightClass::GetDiffuseColor()
+XMFLOAT4 LightObject::GetDiffuseColor()
 {
 	return m_diffuseColor;
 }
 
 
-XMFLOAT3 LightClass::GetDirection()
+XMFLOAT3 LightObject::GetDirection()
 {
+	
 	return m_direction;
+
+
 }
 
 
-XMFLOAT3 LightClass::GetPosition()
+XMFLOAT3 LightObject::GetPosition()
 {
 	return m_position;
 }
 
 
 
-void LightClass::GenerateViewMatrix()
+void LightObject::GenerateViewMatrix()
 {
 	//setting up a perspective-based view matrix
 	XMFLOAT3 up;
@@ -86,7 +89,7 @@ void LightClass::GenerateViewMatrix()
 	return;
 }
 
-void LightClass::GenerateOrthoMatrix(float width, float screenDepth, float screenNear)
+void LightObject::GenerateOrthoMatrix(float width, float screenDepth, float screenNear)
 {
 	//setting up a orthographic-based view matrix
 	m_orthoMatrix = XMMatrixOrthographicLH(width, width, screenNear, screenDepth);
@@ -94,15 +97,16 @@ void LightClass::GenerateOrthoMatrix(float width, float screenDepth, float scree
 	return;
 }
 
-void LightClass::GetViewMatrix(XMMATRIX& viewMatrix)
+void LightObject::GetViewMatrix(XMMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
 	return;
 }
 
 
-void LightClass::GetOrthoMatrix(XMMATRIX& projectionMatrix)
+void LightObject::GetOrthoMatrix(XMMATRIX& projectionMatrix)
 {
 	projectionMatrix = m_orthoMatrix;
 	return;
 }
+

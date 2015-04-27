@@ -8,6 +8,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	//activeGameState = MENU;
 
 	camera = new CameraObject();
+	spotLight = new LightObject();
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
@@ -22,7 +23,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(2), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
@@ -32,8 +33,12 @@ Game::~Game()
 	delete Renderer;
 	delete camera;
 	delete Assets;
+	delete spotLight;
 	//delete gameObject;
 	delete asset;
+
+	for (auto g : gameObject) delete g;
+	gameObject.clear();
 }
 
 bool Game::Update()
@@ -68,7 +73,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(gameObject.at(0), camera);
+	result = Logic->Update(gameObject.at(0), camera, spotLight);
 
 	return result;
 }
@@ -82,7 +87,7 @@ bool Game::Render()
 	camera->getProjectionMatrix(projectionMatrix);
 	camera->getViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix);
+	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, spotLight);
 
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject.at(0));

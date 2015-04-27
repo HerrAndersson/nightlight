@@ -3,3 +3,9 @@ simple_floor2.bin
 simple_cube.bin
 simple_sphere.bin
 simple_wall.bin
+simple_floor.bin
+simple_door.bin
+simple_corner.bin
+simple_pressurep.bin
+simple_container.bin
+simple_child.bin

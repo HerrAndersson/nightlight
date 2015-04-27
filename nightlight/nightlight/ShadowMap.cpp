@@ -123,6 +123,23 @@ void ShadowMap::ActivateShadowRendering(ID3D11DeviceContext* deviceContext)
 	deviceContext->PSSetShader(nullPS, nullptr, 0);
 }
 
+void ShadowMap::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld)
+{
+	//Set constant buffer
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT hr;
+
+	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	MatrixBuffer* matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
+	XMMATRIX twvp = XMMatrixTranspose(modelWorld);
+	matrixDataBuffer->modelWorld = twvp;
+
+	deviceContext->Unmap(matrixBuffer, 0);
+
+	deviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
+}
+
 ID3D11ShaderResourceView* ShadowMap::GetShadowSRV()
 {
 	return shadowResourceView;
