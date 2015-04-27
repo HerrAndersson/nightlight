@@ -55,20 +55,33 @@ void Exporter::CleanUpMaya()
 	MLibrary::cleanup(0, false);
 }
 
-bool Exporter::CreateExportFiles(std::string file_path)
+bool Exporter::CreateExportFiles(std::string file_path, std::string output_type)
 {
 	// hitta index för punkten innan filtypen.
 	int sub_string_length = (int)file_path.find_last_of(".", file_path.size() - 1);
 
 	// spargenväg för den exporterade filen.
-	std::string save_path = file_path.substr(0, sub_string_length) + ".obj";
-	std::string binsave_path = file_path.substr(0, sub_string_length) + ".bin";
+	if (output_type == ".bin")
+	{
+		std::string binsave_path = file_path.substr(0, sub_string_length) + ".bin";
+		std::string save_path = file_path.substr(0, sub_string_length) + ".obj";
 
-	std::cout << "Exporting file to " << save_path.c_str() << std::endl << std::endl;
+		std::cout << "Exporting file to " << save_path.c_str() << std::endl << std::endl;
 
-	export_stream_.open(save_path.c_str(), std::ios_base::out | std::ios_base::trunc);
-	outfile.open(binsave_path.c_str(), std::ofstream::binary);
-	infile.open(binsave_path.c_str(), std::ifstream::binary);
+		export_stream_.open(save_path.c_str(), std::ios_base::out | std::ios_base::trunc);
+		outfile.open(binsave_path.c_str(), std::ofstream::binary);
+		infile.open(binsave_path.c_str(), std::ifstream::binary);
+	}
+
+	else if (output_type == ".lvl")
+	{
+		std::string lvlsave_path = file_path.substr(0, sub_string_length) + ".lvl";
+
+		std::cout << "Exporting level to " << lvlsave_path.c_str() << std::endl << std::endl;
+
+		export_stream_.open(lvlsave_path.c_str(), std::ios_base::out | std::ios_base::trunc);
+	}
+	
 
 	if (!export_stream_.is_open())
 	{
@@ -164,7 +177,14 @@ void Exporter::StartExporter(std::string directory_path)
 		// Formaterar och lagrar tecken och värden i en buffer
 		sprintf_s(tmp_str, sizeof(tmp_str), "%s%s", directory_path.c_str(), file->c_str());
 
-		ProcessScene(tmp_str);
+		if (file->find("level") != std::string::npos)
+		{
+			//ProcessLevel(tmp_str);
+		}
+		else
+		{
+			ProcessScene(tmp_str);
+		}
 
 		CloseExportFiles();
 	}
@@ -195,7 +215,7 @@ void Exporter::ProcessScene(const char *file_path)
 	}
 
 	// skapar exportfilerna
-	if (!CreateExportFiles(file_path))
+	if (!CreateExportFiles(file_path, ".bin"))
 	{
 		std::cout << "<Error> CreateExportFiles()" << std::endl;
 		return;
@@ -216,10 +236,81 @@ void Exporter::ProcessScene(const char *file_path)
 	}
 }
 
+void Exporter::ProcessLevel(const char *file_path)
+{
+	MStatus status = MS::kSuccess;
+
+	// [Ur Maya-dokumentationen]
+	// Set everything back to a new file state.
+	status = MFileIO::newFile(true);
+	if (!status)
+	{
+		std::cout << "<Error> MFileIO::newFile()" << std::endl;
+		return;
+	}
+
+	// [Ur Maya-dokumentationen]
+	// Open the given file, and set the current active file to this file. If there are unsaved changes in the current scene, this operation will fail unless the force flag is set to true.
+	status = MFileIO::open(file_path, NULL, true);
+	if (!status)
+	{
+		std::cout << "<Error> MFileIO::open()" << std::endl;
+		return;
+	}
+
+	// skapar exportfilerna
+	if (!CreateExportFiles(file_path, ".lvl"))
+	{
+		std::cout << "<Error> CreateExportFiles()" << std::endl;
+		return;
+	}
+
+	if (!IdentifyAndExtractLevelInformation())
+	{
+		std::cout << "<Error> IdentifyAndExtractLevelInformation()" << std::endl;
+		return;
+	}
+
+
+
+}
+
 //___________________________________________________________________________________________
 //|																							|
 //|								FUNKTIONER FÖR ATT IDENTIFIERA DATA							|
 //|_________________________________________________________________________________________|
+
+bool Exporter::IdentifyAndExtractLevelInformation()
+{
+	UINT index = 0;
+	scene_.meshes.clear();
+
+	MDagPath dag_path;
+	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+			MFnDagNode dag_node = dag_path.node();
+
+			MString nodeName = dag_node.name();
+
+			// vill endast ha "icke-history"-föremål
+			if (!dag_node.isIntermediateObject())
+			{
+				// triangulera meshen innan man hämtar punkterna
+				MFnMesh mesh(dag_path);
+				ExtractMeshData(mesh, index);
+				index++;
+			}
+		}
+
+		dag_iter.next();
+	}
+
+	return false;
+}
 
 // identifiera och extrahera data från scenen
 bool Exporter::IdentifyAndExtractScene()

@@ -303,15 +303,19 @@ private:
 	void OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base);
 	void outPutTarget(MObject& target);
 
-	bool CreateExportFiles(std::string file_path);
+	bool CreateExportFiles(std::string file_path, std::string output_type);
 	void CloseExportFiles();
 
 	bool GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill);
 
 	void ProcessScene(const char *file_path);
 
+	void ProcessLevel(const char *file_path);
+
 	bool IdentifyAndExtractScene();
 	bool IdentifyAndExtractMeshes();
+
+	bool IdentifyAndExtractLevelInformation();
 
 	bool ExtractMeshData(MFnMesh &mesh, UINT index);
 
