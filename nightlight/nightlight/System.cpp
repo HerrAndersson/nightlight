@@ -115,6 +115,9 @@ void System::InitializeWindows()
 		screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
+		windowHeight = screenHeight;
+		windowWidth = screenWidth;
+
 		//If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
@@ -138,10 +141,13 @@ void System::InitializeWindows()
 		screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	}
 
+	RECT rc = { 0, 0, windowWidth, windowHeight };
+	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
 	hwnd = CreateWindowEx(WS_EX_APPWINDOW, applicationName, applicationName,
 		WS_OVERLAPPEDWINDOW | CW_USEDEFAULT | CW_USEDEFAULT,
-		posX, posY, windowWidth, windowHeight, NULL, NULL, hinstance, NULL);
+		posX, posY, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hinstance, NULL);
+
 
 
 	ShowWindow(hwnd, SW_SHOW);
