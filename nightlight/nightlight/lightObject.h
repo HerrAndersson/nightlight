@@ -1,16 +1,13 @@
 #ifndef _LIGHTCLASS_H_
 #define _LIGHTCLASS_H_
 
-
-
-
 #include <DirectXMath.h>
 using namespace DirectX;
-
 
 class LightObject
 {
 public:
+
 	LightObject();
 	~LightObject();
 
@@ -33,9 +30,12 @@ public:
 	void GenerateOrthoMatrix(float, float, float);
 	void GetOrthoMatrix(XMMATRIX&);
 
-
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
 
 private:
+
 	XMFLOAT4 m_ambientColor;
 	XMFLOAT4 m_diffuseColor;
 	XMFLOAT3 m_position;
@@ -43,7 +43,6 @@ private:
 	XMFLOAT3 m_lookAt;
 	XMMATRIX m_viewMatrix;
 	XMMATRIX m_orthoMatrix;
-
 
 };
 

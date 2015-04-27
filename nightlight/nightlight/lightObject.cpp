@@ -110,3 +110,12 @@ void LightObject::GetOrthoMatrix(XMMATRIX& projectionMatrix)
 	return;
 }
 
+void* LightObject::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void LightObject::operator delete(void* p)
+{
+	_mm_free(p);
+}
