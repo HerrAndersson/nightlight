@@ -22,8 +22,8 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(4), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(2), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()

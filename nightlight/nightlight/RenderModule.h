@@ -19,10 +19,16 @@ private:
 	
 	struct LightBuffer
 	{
-		XMFLOAT4 position;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
-		float	 padding;
+		XMFLOAT3 lightPos;
+		float  lightRange;
+		XMFLOAT3 lightDir;
+		float lightCone;
+		XMFLOAT3 lightAtt;
+		float pad;
+		XMFLOAT4 lightAmbient;
+		XMFLOAT4 lightDiffuse;
+		
+		
 	};
 
 	struct MatrixBufferPerObject

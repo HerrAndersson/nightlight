@@ -284,10 +284,15 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	if (FAILED(result)) { return false; }
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
-
-	lightPtr->diffuseColor = XMFLOAT4(0.0f, 0.7f, 0.7f, 1.0f);
-	lightPtr->lightDirection = XMFLOAT3(0.0f, 0.7f, 0.7f);
-	lightPtr->position = XMFLOAT4(0.0f, 5.0f, 0.0f, 1.0f);
+	
+	lightPtr->lightPos = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	lightPtr->lightDir = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	lightPtr->lightRange = 1000.0f;
+	lightPtr->lightCone = 10.0f;
+	lightPtr->lightAtt = XMFLOAT3(0.4f, 0.02f, 0.0f);
+	lightPtr->lightAmbient = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	lightPtr->lightDiffuse = XMFLOAT4(0.0f, 1.0f, 0.7f, 1.0f);
+	
 
 
 	deviceContext->Unmap(lightBuffer, 0);
