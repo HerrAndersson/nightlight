@@ -533,19 +533,13 @@ void Exporter::extractLight(MObject& mObj)
 
 //Down here lies the pithole of animation, beware thy who dare travels here!
 
-//Short description on how morph animation seem to work: (THOUGH ALL OF THIS IS WITH BLEND SHAPES, I DON'T FIND ANY OTHER WAY TO DO MORPH ANIMATION)
+//Short description on how morph animation seem to work:
 //2 Key frames, Keyframe 1 holds target 1, keyframe 2 hold target 2
 //Target 1 includes bunch of vertices, target 2 includes another bunch of vertices (Both got same number of vertices)
 //When Keyframe 1 goes to keyframe 2 it is morphed with the help of a weight ( A value between 0 and 1, where 0 gives target 1 most power!) for each vertex
 //So between keyframe 1 and 2 the value would be 0.5, that means the vertices should be somewhere between the two target shapes
 //When it finally gets to keyframe 2, target 2 is dominant because weight value is 1, the keyframes only hold the values for the blendshapes aka the weight value
 //for our object
-
-//NO VERTEX INFORMATION KEY FRAMES THAT FRAN-MAN WANTS...!
-//So what am I to do?
-//Only way to gain vertex information key frames are to manually put keyframes on the vertices because if I put it on the object it takes only model space
-//values and uses them.
-//Joints will be easy, I can just strip their value straight out, skining and etc can be hard, but joints will be easy... Morph animation I dunno..
 
 //void Exporter::outputTransformData(MObject& Trans)
 //{
@@ -632,7 +626,7 @@ void Exporter::extractLight(MObject& mObj)
 //	}
 //	cout << endl;
 //}
-//
+
 void Exporter::extractKeyData(MObject& key)
 {
 
@@ -645,6 +639,9 @@ void Exporter::extractKeyData(MObject& key)
 
 	//get Keyframe values
 	MFnAnimCurve AnimCurve(key);
+
+	AnimCurve.kTangentLinear;
+	AnimCurve.kTangentSmooth;
 
 	animTemp.numKeys = AnimCurve.numKeys();
 
