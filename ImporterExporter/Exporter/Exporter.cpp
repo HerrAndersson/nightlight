@@ -906,6 +906,22 @@ bool Exporter::IdentifyAndExtractMeshes()
 		*/
 	}
 
+
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kJoint);
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+			MFnDagNode dag_node = dag_path.node();
+
+			if (!dag_node.isIntermediateObject())
+			{
+				extractJointData(dag_path);
+			}
+		}
+		dag_iter.next();
+	}
+
 	//dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
 	//while (!dag_iter.isDone())
 	//{
@@ -1051,6 +1067,53 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	scene_.meshes.push_back(mesh_data);
 
 	return true;
+}
+
+void Exporter::extractJointData(MDagPath path)
+{
+
+	MFnIkJoint joint(path);
+	cout << path.partialPathName().asChar() << std::endl;
+	MMatrix invMat;
+
+	MObject jointNode = path.node();
+	MFnDependencyNode fnJoint(jointNode);
+	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
+
+	MPlug plugWorldMatrixArray(jointNode, attrWorldMatrix);
+
+	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
+	{
+
+		MPlug elementPlug = plugWorldMatrixArray[i];
+
+		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
+
+		dgIt.disablePruningOnFilter();
+
+		for (; !dgIt.isDone(); dgIt.next())
+		{
+			MObject thisNode = dgIt.thisNode();
+
+			if (thisNode.apiType() == MFn::kSkinClusterFilter)
+			{
+				MFnSkinCluster skinFn(thisNode);
+
+				MPlug bindPreMatrixArrayPlug = skinFn.findPlug("bindPreMatrix");
+				int logicalIndex = skinFn.indexForInfluenceObject(path);
+				MPlug bindPreMatrixPlug = bindPreMatrixArrayPlug.elementByLogicalIndex(logicalIndex);
+				MObject dataObject;
+				bindPreMatrixArrayPlug.getValue(dataObject);
+
+				MFnMatrixData matDataFn(dataObject);
+
+				invMat = matDataFn.matrix().inverse();
+				cout << logicalIndex << std::endl;
+			}
+		}
+	}
+	MFloatMatrix res = invMat.matrix;
+	std::cout << invMat << std::endl;
 }
 
 

@@ -39,6 +39,9 @@
 
 #include <maya\MFnDependencyNode.h>
 #include <maya\MFnAttribute.h>
+#include <maya\MItDependencyGraph.h>
+#include <maya\MFnSkinCluster.h>
+#include <maya\MFnMatrixData.h>
 
 #include <maya/MItDependencyNodes.h>
 
@@ -68,6 +71,7 @@
 
 #include <maya/MQuaternion.h>
 #include <maya/MEulerRotation.h>
+#include <maya/MStatus.h>
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
 #pragma comment(lib, "OpenMayaAnim.lib")
@@ -285,6 +289,7 @@ private:
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
 	void extractKeyData(MObject& key);
+	void extractJointData(MDagPath path);
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
