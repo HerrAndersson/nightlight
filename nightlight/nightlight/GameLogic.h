@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "GameObject.h"
 #include "cameraObject.h"
+#include "lightObject.h"
 class GameLogic
 {
 private:
@@ -14,9 +15,9 @@ public:
 	GameLogic(HWND hwnd, int screenWidth, int screenHeight);
 	~GameLogic();
 
-	bool Update(GameObject* gameObject, CameraObject* camera);
-	bool UpdatePlayer(GameObject* player, CameraObject* camera);
-
+	bool Update(GameObject* gameObject, CameraObject* camera, LightObject* spotLight);
+	bool UpdatePlayer(GameObject* player, CameraObject* camera, LightObject* spotLight);
+	bool updateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight);
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
 	//UpdatePlayer(playerobject)
