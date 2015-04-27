@@ -640,8 +640,8 @@ void Exporter::extractKeyData(MObject& key)
 	//get Keyframe values
 	MFnAnimCurve AnimCurve(key);
 
-	AnimCurve.kTangentLinear;
-	AnimCurve.kTangentSmooth;
+	int t = AnimCurve.kTangentLinear;
+	int z = AnimCurve.kTangentSmooth;
 
 	animTemp.numKeys = AnimCurve.numKeys();
 
@@ -653,16 +653,27 @@ void Exporter::extractKeyData(MObject& key)
 	cout << "Start Time: " << animTemp.animationStart << endl;
 	cout << "End TIme: " << animTemp.animationEnd << endl;
 
+	float x, y, ox, oy;
+
 	// get all keyframe times & values
 	for (unsigned int i = 0; i < animTemp.numKeys; i++)
 	{
 		MTime time = AnimCurve.time(i).value();
-		animTemp.weights = AnimCurve.value(i);
+		animTemp.AnimValue = AnimCurve.value(i);
+
+		int test = AnimCurve.inTangentType(i);
+		int test2 = AnimCurve.outTangentType(i);
+
+		AnimCurve.getTangent(i, x, y, TRUE);
+		AnimCurve.getTangent(i, ox, oy, FALSE);
 
 		// write keyframe info
 		std::cout << " time " << time.as(MTime::kSeconds);
 		std::cout << " frame " << AnimCurve.time(i);
-		std::cout << " value " << animTemp.weights << std::endl;;
+		std::cout << " value " << animTemp.AnimValue;
+		std::cout << " Tangents " << test << " " << test2;
+		std::cout << " Tangent In " << x << " " << y;
+		std::cout << " Tangent Out " << ox << " " << oy << std::endl;
 
 		animTemp.currTime = animTemp.currTime.as(MTime::kSeconds);
 
