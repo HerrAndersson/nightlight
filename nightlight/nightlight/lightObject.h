@@ -8,11 +8,11 @@
 using namespace DirectX;
 
 
-class LightClass
+class LightObject
 {
 public:
-	LightClass();
-	~LightClass();
+	LightObject();
+	~LightObject();
 
 	void SetAmbientColor(float, float, float, float);
 	void SetDiffuseColor(float, float, float, float);

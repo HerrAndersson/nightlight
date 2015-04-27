@@ -248,7 +248,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	return true;
 }
 
-bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject * spotlight)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -285,11 +285,11 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 	
-	lightPtr->lightPos = XMFLOAT3(-5.0f, 1.0f, 0.0f);
-	lightPtr->lightDir = XMFLOAT3(1.0f, 0.0f, 0.1f);
+	lightPtr->lightPos = spotlight->GetPosition();
+	lightPtr->lightDir = spotlight->GetDirection();
 	lightPtr->lightRange = 100.0f;
 	lightPtr->lightCone = 15.0f;
-	lightPtr->lightAtt = XMFLOAT3(0.4f, 0.02f, 0.0f);
+	lightPtr->lightAtt = XMFLOAT3(0.0f, 0.03f, 0.0f);
 	lightPtr->lightAmbient = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	lightPtr->lightDiffuse = XMFLOAT4(0.0f, 1.0f, 0.7f, 1.0f);
 	
@@ -345,10 +345,10 @@ bool RenderModule::Render(GameObject* gameObject)
 	return result;
 }
 
-void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject* spotlight)
 {
 	
-	bool result = SetDataPerFrame(viewMatrix, projectionMatrix);
+	bool result = SetDataPerFrame(viewMatrix, projectionMatrix, spotlight);
 	d3d->BeginScene(red, green, blue, alpha);
 }
 void RenderModule::EndScene()

@@ -12,12 +12,13 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(GameObject* gameObject, CameraObject* camera)
+bool GameLogic::Update(GameObject* gameObject, CameraObject* camera, LightObject* spotLight)
 {
-	return UpdatePlayer(gameObject, camera);
+	return UpdatePlayer(gameObject, camera, spotLight);
+
 }
 
-bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera)
+bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObject* spotlight)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
@@ -103,11 +104,25 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera)
 		std::cout << std::endl;
 
 		player->SetRotation(rot);
+		
+
 	}
 
 	player->SetPosition(pos);
+	updateSpotLight(player, camera, spotlight);
+	
 
 	return !Input->Esc();
+}
+
+bool GameLogic::updateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
+{
+	Input->HandleMouse();
+	spotlight->SetPosition(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
+	//spotlight->SetDirection(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
+	spotlight->SetDirection(Input->GetMousePos().x, 1, Input->GetMousePos().y);
+	return true;
+
 }
 
 
