@@ -41,34 +41,10 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	if (oldP.x != newP.x && oldP.y != newP.y)
 	{
-		XMMATRIX v, p, vp, invVp;
+		XMMATRIX v, p, vp;
 		camera->getViewMatrix(v);
 		camera->getProjectionMatrix(p);
 		vp = v * p;
-
-		invVp = XMMatrixInverse(&XMMatrixDeterminant(vp), vp);
-
-		//XMVECTOR v1 = XMLoadFloat2(&newP);
-		//XMVECTOR v2 = XMLoadFloat2(&oldP);
-		//XMVECTOR  a = XMVector2Dot(v1, v2);
-		//double angle = cos(XMVectorGetX(a));
-
-		//XMFLOAT4 mousePos = XMFLOAT4(newP.x, 0.0f, newP.y, 0.0f);
-		//XMVECTOR screenSpace;
-		//screenSpace = XMLoadFloat4(&mousePos);
-		//screenSpace = XMVector4Transform(screenSpace, invVp);
-		//XMFLOAT3 worldSpace;
-		//XMStoreFloat3(&worldSpace, screenSpace);
-
-
-		//float dx = (worldSpace.x - pos.x);
-		//float dy = (worldSpace.z - pos.z);
-
-		//XMFLOAT2 up(0, -1);
-		//XMVECTOR v1 = XMLoadFloat2(&newP);
-		//XMVECTOR v2 = XMLoadFloat2(&up);
-		//XMVECTOR  a = XMVector2Dot(v1, v2);
-		//double angle = XMVectorGetX(a);
 
 		//Converting the players position from world to screen space
 		XMVECTOR worldPosVector;
@@ -92,7 +68,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		if (rot.y < 0)
 			rot.y += 360;
 		else if (rot.y > 360)
-			rot.y = 0;
+			rot.y = 0; // +angle;
 
 		std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
 		std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
