@@ -1071,10 +1071,16 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 
 void Exporter::extractJointData(MDagPath path)
 {
-
+	MFloatMatrix res;
 	MFnIkJoint joint(path);
 	cout << path.partialPathName().asChar() << std::endl;
 	MMatrix invMat;
+
+	MStatus status;
+	MTransformationMatrix restpose = joint.restPosition(&status);
+
+	cout << restpose.asMatrix() << endl;
+
 
 	MObject jointNode = path.node();
 	MFnDependencyNode fnJoint(jointNode);
@@ -1108,12 +1114,12 @@ void Exporter::extractJointData(MDagPath path)
 				MFnMatrixData matDataFn(dataObject);
 
 				invMat = matDataFn.matrix().inverse();
+				res = invMat.matrix;
 				cout << logicalIndex << std::endl;
 			}
 		}
 	}
-	MFloatMatrix res = invMat.matrix;
-	std::cout << invMat << std::endl;
+	std::cout << res << std::endl;
 }
 
 
