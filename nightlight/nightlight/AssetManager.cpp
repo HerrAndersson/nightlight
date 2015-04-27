@@ -1,5 +1,40 @@
 #include "AssetManager.h"
 
+AssetManager::AssetManager(ID3D11Device* device)
+{
+	this->device = device;
+
+	std::vector<std::string> modelNames;
+	FileToStrings("Assets/models.txt", modelNames);
+	for (int i = 0; i < (signed)modelNames.size(); i++)
+		LoadModel("Assets/Models/" + modelNames[i]);
+
+	std::vector<std::string> textureNames;
+	FileToStrings("Assets/textures.txt", textureNames);
+	for (int i = 0; i < (signed)textureNames.size(); i++)
+		LoadTexture("Assets/Textures/" + textureNames[i]);
+
+	std::vector<std::string> renderObjectIDs;
+	FileToStrings("Assets/renderObjects.txt", renderObjectIDs);
+	for (int i = 0; i < (signed)renderObjectIDs.size(); i++)
+	{
+		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
+		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
+	}
+};
+
+AssetManager::~AssetManager()
+{
+	for (auto m : models) delete m;
+	models.clear();
+
+	for (auto t : textures) t->Release();
+	textures.clear();
+
+	for (auto ro : renderObjects) delete ro;
+	renderObjects.clear();
+};
+
 void AssetManager::LoadModel(std::string file_path){
 	Model* model = new Model();
 
@@ -216,42 +251,6 @@ std::vector<int> AssetManager::StringToIntArray(std::string input)
 	
 	return output;
 }
-
-AssetManager::AssetManager(ID3D11Device* device)
-{
-	this->device = device;
-
-	std::vector<std::string> modelNames;
-	FileToStrings("Assets/models.txt", modelNames);
-	for (int i = 0; i < (signed)modelNames.size(); i++)
-		LoadModel("Assets/Models/" + modelNames[i]);
-
-	std::vector<std::string> textureNames;
-	FileToStrings("Assets/textures.txt", textureNames);
-	for (int i = 0; i < (signed)textureNames.size(); i++)
-		LoadTexture("Assets/Textures/" + textureNames[i]);
-
-	std::vector<std::string> renderObjectIDs;
-	FileToStrings("Assets/renderObjects.txt", renderObjectIDs);
-	for (int i = 0; i < (signed)renderObjectIDs.size(); i++)
-	{
-		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
-		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
-	}
-};
-
-
-AssetManager::~AssetManager()
-{
-	for (auto m : models) delete m;
-	models.clear();
-
-	for (auto t : textures) t->Release();
-	textures.clear();
-
-	for (auto ro : renderObjects) delete ro;
-	renderObjects.clear();
-};
 
 RenderObject* AssetManager::GetRenderObject(int id)
 {

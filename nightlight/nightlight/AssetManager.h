@@ -5,6 +5,7 @@ using std::vector;
 
 class AssetManager
 {
+
 public:
 
 	AssetManager(ID3D11Device* device);

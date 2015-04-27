@@ -6,6 +6,18 @@ using namespace DirectX;
 
 class LightObject
 {
+
+private:
+
+	XMMATRIX viewMatrix;
+	XMMATRIX orthoMatrix;
+
+	XMFLOAT4 ambientColor;
+	XMFLOAT4 diffuseColor;
+	XMFLOAT3 position;
+	XMFLOAT3 direction;
+	XMFLOAT3 lookAt;
+
 public:
 
 	LightObject();
@@ -33,16 +45,6 @@ public:
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
 	void operator delete(void* p);
-
-private:
-
-	XMFLOAT4 m_ambientColor;
-	XMFLOAT4 m_diffuseColor;
-	XMFLOAT3 m_position;
-	XMFLOAT3 m_direction;
-	XMFLOAT3 m_lookAt;
-	XMMATRIX m_viewMatrix;
-	XMMATRIX m_orthoMatrix;
 
 };
 

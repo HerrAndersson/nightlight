@@ -55,12 +55,12 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 		XMFLOAT2 msp = Input->GetMousePosScreenSpace();
 
-		float dx = (msp.x - pos.x);
-		float dy = (msp.y - pos.y);
+		double dx = (msp.x - pos.x);
+		double dy = (msp.y - pos.y);
 
-		float angle = (float)(atan2(dx, dy) * (180 / XM_PI));
+		double angle = atan2(dx, dy) * (180 / XM_PI);
 
-		rot = XMFLOAT3(0.0f, angle, 0.0f);
+		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 
 		if (rot.y < 0)
 			rot.y += 360;
