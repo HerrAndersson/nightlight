@@ -15,7 +15,6 @@ GameLogic::~GameLogic()
 bool GameLogic::Update(GameObject* gameObject, CameraObject* camera, LightObject* spotLight)
 {
 	return UpdatePlayer(gameObject, camera, spotLight);
-
 }
 
 bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObject* spotlight)
@@ -39,6 +38,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	if (Input->KeyDown('d'))
 		pos = XMFLOAT3(pos.x + 0.1f, pos.y, pos.z);
 
+	//Only update if mouse moved
 	if (oldP.x != newP.x && oldP.y != newP.y)
 	{
 		XMMATRIX v, p, vp;
@@ -53,15 +53,12 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		XMFLOAT3 screenSpacePos;
 		XMStoreFloat3(&screenSpacePos, worldPosVector);
 
-		//Converting mouse position to screen space range [-1, 1]
-		float x = 2 * (newP.x / 1440) - 1;
-		float y = -(2 * (newP.y / 900) - 1);
-		XMFLOAT2 msp(x, y);
+		XMFLOAT2 msp = Input->GetMousePosScreenSpace();
 
 		float dx = (msp.x - pos.x);
 		float dy = (msp.y - pos.y);
 
-		double angle = atan2(dx, dy) * (180 / XM_PI);
+		float angle = (float)(atan2(dx, dy) * (180 / XM_PI));
 
 		rot = XMFLOAT3(0.0f, angle, 0.0f);
 
@@ -81,7 +78,6 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		//std::cout << "angle:            " << angle << std::endl;
 		//std::cout << "roty:             " << rot.y << std::endl;
 		//std::cout << std::endl;
-
 	}
 
 	player->SetPosition(pos);
