@@ -84,8 +84,8 @@ bool Game::Render()
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
-	camera->getProjectionMatrix(projectionMatrix);
-	camera->getViewMatrix(viewMatrix);
+	camera->GetProjectionMatrix(projectionMatrix);
+	camera->GetViewMatrix(viewMatrix);
 
 	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, spotLight);
 

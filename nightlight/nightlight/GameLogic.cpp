@@ -42,8 +42,8 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	if (oldP.x != newP.x && oldP.y != newP.y)
 	{
 		XMMATRIX v, p, vp;
-		camera->getViewMatrix(v);
-		camera->getProjectionMatrix(p);
+		camera->GetViewMatrix(v);
+		camera->GetProjectionMatrix(p);
 		vp = v * p;
 
 		//Converting the players position from world to screen space

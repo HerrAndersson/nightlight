@@ -26,7 +26,7 @@ public:
 	void SetAmbientColor(float r, float g, float b, float a);
 	void SetDiffuseColor(float r, float g, float b, float a);
 	void SetDirection(float x, float y, float z);
-	void SetPosition(float x, float y, float x);
+	void SetPosition(float x, float y, float z);
 
 	XMFLOAT4 GetAmbientColor();
 	XMFLOAT4 GetDiffuseColor();

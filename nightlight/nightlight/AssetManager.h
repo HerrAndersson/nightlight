@@ -1,7 +1,7 @@
 #pragma once
 #include "AssetUtil.h"
 
-using std::vector;
+using namespace std;
 
 class AssetManager
 {
@@ -15,22 +15,17 @@ public:
 private:
 
 	ID3D11Device* device;
-	std::vector<Model*> models;
-	std::vector<ID3D11ShaderResourceView*> textures;
-	std::vector<RenderObject*> renderObjects;
+	vector<Model*> models;
+	vector<ID3D11ShaderResourceView*> textures;
+	vector<RenderObject*> renderObjects;
 
-	void LoadModel(std::string file_path);
+	void LoadModel(string file_path);
 	void CreateRenderObject(int modelID, int diffuseID, int specularID);
-	void LoadTexture(std::string file_path);
+	void LoadTexture(string file_path);
 
 	ID3D11Buffer* CreateVertexBuffer(vector<XMFLOAT3> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *faceIndices);
-	void FileToStrings(std::string file_path, std::vector<std::string> &output);
-	std::vector<int> StringToIntArray(std::string input);
+	void FileToStrings(string file_path, vector<string> &output);
+	vector<int> StringToIntArray(string input);
 
-/*
-	RenderObject* GetRenderObject(); 
-	ID3D11Buffer* getVertexBuffer();
-	void setUpBuffers(ID3D11DeviceContext*);
-*/	 
 };
 

@@ -4,21 +4,21 @@ AssetManager::AssetManager(ID3D11Device* device)
 {
 	this->device = device;
 
-	std::vector<std::string> modelNames;
+	vector<string> modelNames;
 	FileToStrings("Assets/models.txt", modelNames);
 	for (int i = 0; i < (signed)modelNames.size(); i++)
 		LoadModel("Assets/Models/" + modelNames[i]);
 
-	std::vector<std::string> textureNames;
+	vector<string> textureNames;
 	FileToStrings("Assets/textures.txt", textureNames);
 	for (int i = 0; i < (signed)textureNames.size(); i++)
 		LoadTexture("Assets/Textures/" + textureNames[i]);
 
-	std::vector<std::string> renderObjectIDs;
+	vector<string> renderObjectIDs;
 	FileToStrings("Assets/renderObjects.txt", renderObjectIDs);
 	for (int i = 0; i < (signed)renderObjectIDs.size(); i++)
 	{
-		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
+		vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
 		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
 	}
 };
@@ -35,15 +35,15 @@ AssetManager::~AssetManager()
 	renderObjects.clear();
 };
 
-void AssetManager::LoadModel(std::string file_path){
+void AssetManager::LoadModel(string file_path){
 	Model* model = new Model();
 
-	std::ifstream infile;
-	infile.open(file_path.c_str(), std::ifstream::binary);
+	ifstream infile;
+	infile.open(file_path.c_str(), ifstream::binary);
 	if (!infile.is_open())
 	{
-		std::string outputstring = file_path + " not found.\n";
-		throw std::runtime_error(outputstring.c_str());
+		string outputstring = file_path + " not found.\n";
+		throw runtime_error(outputstring.c_str());
 		return;
 	}
 	MainHeader mainHeader;
@@ -51,11 +51,11 @@ void AssetManager::LoadModel(std::string file_path){
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
 	infile.read((char*)&meshHeader, sizeof(MeshHeader));
 
-	std::string name;
-	std::vector<XMFLOAT3> points;
-	std::vector<XMFLOAT3> normals;
-	std::vector<XMFLOAT2> UVs;
-	std::vector<XMINT3> vertexIndices;
+	string name;
+	vector<XMFLOAT3> points;
+	vector<XMFLOAT3> normals;
+	vector<XMFLOAT2> UVs;
+	vector<XMINT3> vertexIndices;
 
 	name.resize(meshHeader.nameLength);
 	points.resize(meshHeader.numberPoints);
@@ -75,17 +75,17 @@ void AssetManager::LoadModel(std::string file_path){
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
 
-			infile.seekg(16 + matHeader.ambientNameLength, std::ios::cur);
+			infile.seekg(16 + matHeader.ambientNameLength, ios::cur);
 
 			infile.read((char*)&model->diffuse, 16);
-			infile.seekg(matHeader.diffuseNameLength, std::ios::cur);
+			infile.seekg(matHeader.diffuseNameLength, ios::cur);
 
 			infile.read((char*)&model->specular, 16);
-			infile.seekg(matHeader.specularNameLength, std::ios::cur);
+			infile.seekg(matHeader.specularNameLength, ios::cur);
 
-			infile.seekg(16 + matHeader.transparencyNameLength, std::ios::cur);
+			infile.seekg(16 + matHeader.transparencyNameLength, ios::cur);
 
-			infile.seekg(16 + matHeader.glowNameLength, std::ios::cur);
+			infile.seekg(16 + matHeader.glowNameLength, ios::cur);
 		}
 
 		else{
@@ -97,19 +97,18 @@ void AssetManager::LoadModel(std::string file_path){
 				+ matHeader.specularNameLength
 				+ matHeader.transparencyNameLength
 				+ matHeader.glowNameLength,
-				std::ios::cur);
+				ios::cur);
 		}
 	}
 
 	model->pointLights.resize(mainHeader.pointLightSize);
 
-
 	if (mainHeader.ambientLightSize)
-		infile.seekg(mainHeader.ambientLightSize*sizeof(AmbientLightStruct), std::ios::cur);
+		infile.seekg(mainHeader.ambientLightSize*sizeof(AmbientLightStruct), ios::cur);
 	if (mainHeader.areaLightSize)
-		infile.seekg(mainHeader.areaLightSize*sizeof(AreaLightStruct), std::ios::cur);
+		infile.seekg(mainHeader.areaLightSize*sizeof(AreaLightStruct), ios::cur);
 	if (mainHeader.dirLightSize)
-		infile.seekg(mainHeader.dirLightSize* sizeof(DirectionalLightStruct), std::ios::cur);
+		infile.seekg(mainHeader.dirLightSize* sizeof(DirectionalLightStruct), ios::cur);
 	if (mainHeader.pointLightSize)
 		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(PointLightStruct));
 	if (mainHeader.spotLightSize)
@@ -126,26 +125,26 @@ void AssetManager::CreateRenderObject(int modelID, int diffuseID, int specularID
 {
 	RenderObject* renderObject = new RenderObject();
 	renderObject->model = models[modelID];
+
 	if (diffuseID!=-1)
 		renderObject->diffuseTexture = textures[diffuseID];
 	if (specularID != -1)
 		renderObject->specularTexture = textures[specularID];
+
 	renderObjects.push_back(renderObject);
 }
 
-void AssetManager::LoadTexture(std::string file_path)
+void AssetManager::LoadTexture(string file_path)
 {
 	ID3D11ShaderResourceView* texture;
-	std::wstring widestr = std::wstring(file_path.begin(), file_path.end());
+	wstring widestr = wstring(file_path.begin(), file_path.end());
 	DirectX::CreateWICTextureFromFile(device, widestr.c_str(), nullptr, &texture, 0);
 	textures.push_back(texture);
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, std::vector<XMFLOAT3> *normals, std::vector<XMFLOAT2> *UVs, std::vector<XMINT3> *vertexIndices)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<XMFLOAT3> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices)
 {
-
-	std::vector<Vertex> vertices;
-
+	vector<Vertex> vertices;
 
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
@@ -162,7 +161,6 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 			tempVertex.normal = normals->at(vertexIndices->at(i+a).y);
 			tempVertex.uv = UVs->at(vertexIndices->at(i+a).z);
 			vertices.push_back(tempVertex);
-
 		}
 	}
 
@@ -176,57 +174,27 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(std::vector<XMFLOAT3> *points, st
 
 	HRESULT result = device->CreateBuffer(&vbDESC, &vertexData, &vertexBuffer);
 	if (FAILED(result)){
-		throw std::runtime_error("Failed to create vertexBuffer");
+		throw runtime_error("Failed to create vertexBuffer");
 		return nullptr;
 	}
 
 	return vertexBuffer;
 }
 
-/*
-void AssetManager::setUpBuffers(ID3D11DeviceContext* deviceContext)
-{
-	unsigned int stride;
-	unsigned int offset;
-
-	// Set vertex buffer stride and offset.
-	stride = sizeof(Vertex);
-	offset = 0;
-
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	
-	deviceContext->IASetVertexBuffers(0, 1, &asset.vertexBuffer, &stride, &offset);
-
-	//Set the index buffer to active in the input assembler so it can be rendered.
-	//deviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0); No index buffer for the moment
-
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	return;
-}
-
-ID3D11Buffer* AssetManager::getVertexBuffer()
-{
-
-	return asset.vertexBuffer;
-
-}
-*/
 //turns a text file into a vector of strings line-by-line
-void AssetManager::FileToStrings(std::string file_path, std::vector<std::string> &output)
+void AssetManager::FileToStrings(string file_path, vector<string> &output)
 {
-	std::string delimiter = "\n";
-	std::ifstream file(file_path);
+	string delimiter = "\n";
+	ifstream file(file_path);
 	if (!file.is_open()){
 		printf("Failed to open models.txt\n");
 	}
-	std::string s((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	string s((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 
 
 	size_t pos = 0;
-	std::string token;
-	while ((pos = s.find(delimiter)) != std::string::npos) {
+	string token;
+	while ((pos = s.find(delimiter)) != string::npos) {
 		token = s.substr(0, pos);
 		output.push_back(token);
 		s.erase(0, pos + delimiter.length());
@@ -234,21 +202,20 @@ void AssetManager::FileToStrings(std::string file_path, std::vector<std::string>
 	output.push_back(s);
 };
 
-std::vector<int> AssetManager::StringToIntArray(std::string input)
+vector<int> AssetManager::StringToIntArray(string input)
 {
-	std::vector<int> output;
+	vector<int> output;
 	int from = 0;
 	
 	for (int to = 0; to < (signed)input.size(); to++)
 	{
 		if (input[to] == ','){
-			output.push_back(std::stoi(input.substr(from, to - from)));
+			output.push_back(stoi(input.substr(from, to - from)));
 			from = to+1;
 		}
 	}
-	output.push_back(std::stoi(input.substr(from, input.size() - from)));
+	output.push_back(stoi(input.substr(from, input.size() - from)));
 
-	
 	return output;
 }
 
