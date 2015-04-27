@@ -18,6 +18,7 @@ public:
 
 	void HandleMouse();
 	XMFLOAT2 GetMousePos();
+	XMFLOAT2 GetMousePosScreenSpace();
 
 	bool KeyDown(char key);
 	bool Esc();

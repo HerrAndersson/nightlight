@@ -201,16 +201,23 @@ struct BlendShapeTarget
 	std::vector<vec3> normals;
 };
 
+struct TangentData
+{
+	int LERP, SLERP, Ltest, Stest;
+	float ix, iy, ox, oy;
+};
+
 struct AnimData
 {
 	MTime animationStart;
 	MTime animationEnd;
 	int numKeys;
 	MTime keyFrame;					//Keyframe position on timeline 
-	float weights;					//Not necessary weights, but for morph animation it is
+	float AnimValue;					//Not necessary weights, but for morph animation it is
 	MTime currTime;
 
 	std::vector<BlendShapeTarget> BShapes;
+	std::vector<TangentData> Tdata;
 
 
 	//Stuff for later:

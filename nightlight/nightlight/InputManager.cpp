@@ -36,6 +36,15 @@ XMFLOAT2 InputManager::GetMousePos()
 	return mousePos;
 }
 
+XMFLOAT2 InputManager::GetMousePosScreenSpace()
+{
+	//Converting mouse position to screen space range [-1, 1]
+	float x = 2 * (mousePos.x / screenWidth) - 1;
+	float y = -(2 * (mousePos.y / screenHeight) - 1);
+	
+	return XMFLOAT2(x, y);
+}
+
 bool InputManager::KeyDown(char key)
 {
 	int keyToCheck = -1;

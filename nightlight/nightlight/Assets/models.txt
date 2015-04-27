@@ -9,3 +9,4 @@ simple_corner.bin
 simple_pressurep.bin
 simple_container.bin
 simple_child.bin
+simple_cube3.bin
