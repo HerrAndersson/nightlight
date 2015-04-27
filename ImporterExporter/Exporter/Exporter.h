@@ -197,6 +197,12 @@ struct BlendShapeTarget
 	std::vector<vec3> normals;
 };
 
+struct TangentData
+{
+	int LERP, SLERP, Ltest, Stest;
+	float ix, iy, ox, oy;
+};
+
 struct AnimData
 {
 	MTime animationStart;
@@ -207,6 +213,7 @@ struct AnimData
 	MTime currTime;
 
 	std::vector<BlendShapeTarget> BShapes;
+	std::vector<TangentData> Tdata;
 
 
 	//Stuff for later:
