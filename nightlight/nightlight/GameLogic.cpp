@@ -52,7 +52,6 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera)
 		XMStoreFloat3(&screenSpacePos, worldPosVector);
 
 
-
 		float dx = (newP.x - screenSpacePos.x);
 		float dy = (newP.y - screenSpacePos.y);
 

@@ -34,6 +34,9 @@ Game::~Game()
 	delete Assets;
 	//delete gameObject;
 	delete asset;
+
+	for (auto g : gameObject) delete g;
+	gameObject.clear();
 }
 
 bool Game::Update()
