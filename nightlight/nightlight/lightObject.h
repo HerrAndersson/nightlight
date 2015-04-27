@@ -23,10 +23,10 @@ public:
 	LightObject();
 	~LightObject();
 
-	void SetAmbientColor(float, float, float, float);
-	void SetDiffuseColor(float, float, float, float);
-	void SetDirection(float, float, float);
-	void SetPosition(float, float, float);
+	void SetAmbientColor(float r, float g, float b, float a);
+	void SetDiffuseColor(float r, float g, float b, float a);
+	void SetDirection(float x, float y, float z);
+	void SetPosition(float x, float y, float x);
 
 	XMFLOAT4 GetAmbientColor();
 	XMFLOAT4 GetDiffuseColor();
@@ -37,10 +37,10 @@ public:
 	//These could in a later case be applied to create shadow maps.
 
 	void GenerateViewMatrix();
-	void GetViewMatrix(XMMATRIX&);
+	void GetViewMatrix(XMMATRIX& viewMatrix);
 
-	void GenerateOrthoMatrix(float, float, float);
-	void GetOrthoMatrix(XMMATRIX&);
+	void GenerateOrthoMatrix(float width, float screenDepth, float screenNear);
+	void GetOrthoMatrix(XMMATRIX& orthoMatrix);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

@@ -6,24 +6,6 @@ using namespace DirectX;
 
 class CameraObject
 {
-public:
-	CameraObject();
-	~CameraObject();
-	void setPosition(float, float, float);
-	void setRotation(float, float, float);
-
-	XMFLOAT3 getPosition();
-	XMFLOAT3 getRotation();
-	XMVECTOR getLookAt();
-	XMVECTOR getCamUp();
-
-	void updateCamera();
-	void getViewMatrix(XMMATRIX&);
-	void getProjectionMatrix(XMMATRIX&);
-
-	//Overloading these guarantees 16B alignment of XMMATRIX
-	void* operator new(size_t i);
-	void operator delete(void* p);
 
 private:
 
@@ -34,8 +16,25 @@ private:
 	XMMATRIX projectionMatrix;
 	XMVECTOR camUp;
 
+public:
 
+	CameraObject();
+	~CameraObject();
+	void SetPosition(float x, float y, float z);
+	void SetRotation(float x, float y, float z);
 
+	XMFLOAT3 GetPosition();
+	XMFLOAT3 GetRotation();
+	XMVECTOR GetLookAt();
+	XMVECTOR GetCamUp();
+
+	void UpdateCamera();
+	void GetViewMatrix(XMMATRIX& viewMatrix);
+	void GetProjectionMatrix(XMMATRIX& projectionMatrix);
+
+	//Overloading these guarantees 16B alignment of XMMATRIX
+	void* operator new(size_t i);
+	void operator delete(void* p);
 };
 
 

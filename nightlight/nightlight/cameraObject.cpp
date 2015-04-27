@@ -12,14 +12,14 @@ CameraObject::CameraObject()
 
 	//Ugly aspect ratio fix (2/1.33333)
 	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 3,float(2 / 1.33333), 0.1f, 1000);
-	updateCamera();
+	UpdateCamera();
 }
 
 CameraObject::~CameraObject()
 {}
 
 
-void CameraObject::setPosition(float x, float y, float z)
+void CameraObject::SetPosition(float x, float y, float z)
 {
 	positionX = x;
 	positionY = y;
@@ -27,7 +27,7 @@ void CameraObject::setPosition(float x, float y, float z)
 	return;
 }
 
-void CameraObject::setRotation(float x, float y, float z)
+void CameraObject::SetRotation(float x, float y, float z)
 {
 	rotationX = x;
 	rotationY = y; 
@@ -35,18 +35,18 @@ void CameraObject::setRotation(float x, float y, float z)
 	return;
 }
 
-XMFLOAT3 CameraObject::getPosition()
+XMFLOAT3 CameraObject::GetPosition()
 {
 	return XMFLOAT3(positionX, positionY, positionZ);
 }
 
 
-XMFLOAT3 CameraObject::getRotation()
+XMFLOAT3 CameraObject::GetRotation()
 {
 	return XMFLOAT3(rotationX, rotationY, rotationZ);
 }
 
-void CameraObject::updateCamera()
+void CameraObject::UpdateCamera()
 {
 	XMVECTOR up, position, lookAt;
 	XMMATRIX rotationMatrix;
@@ -77,19 +77,19 @@ void CameraObject::updateCamera()
 }
 
 
-XMVECTOR CameraObject::getCamUp()
+XMVECTOR CameraObject::GetCamUp()
 {
 
 	return camUp;
 }
 
-void CameraObject::getProjectionMatrix(XMMATRIX& projectionMatrixIn)
+void CameraObject::GetProjectionMatrix(XMMATRIX& projectionMatrixIn)
 {
 	projectionMatrixIn = projectionMatrix;
 
 }
 
-void CameraObject::getViewMatrix(XMMATRIX& viewMatrixIn)
+void CameraObject::GetViewMatrix(XMMATRIX& viewMatrixIn)
 {
 	viewMatrixIn = viewMatrix;
 
