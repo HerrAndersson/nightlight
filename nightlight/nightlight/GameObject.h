@@ -12,6 +12,7 @@ private:
 	XMMATRIX		worldMatrix;
 	XMFLOAT3		position;
 	XMFLOAT3		rotation;
+	XMVECTOR		forwardVector;
 	RenderObject*	renderObject;
 
 	void UpdateWorldMatrix();
@@ -26,6 +27,8 @@ public:
 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
+	XMVECTOR getForwardVector();
+	
 
 	void SetPosition(XMFLOAT3 pos);
 	void SetRotation(XMFLOAT3 rot);

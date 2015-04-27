@@ -104,12 +104,12 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		std::cout << std::endl;
 
 		player->SetRotation(rot);
-		
-
+		updateSpotLight(player, camera, spotlight);
 	}
 
 	player->SetPosition(pos);
-	UpdateSpotLight(player, camera, spotlight);
+	spotlight->SetPosition(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
+	
 	
 
 	return !Input->Esc();
@@ -117,10 +117,10 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
 {
-	Input->HandleMouse();
-	spotlight->SetPosition(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
-	//spotlight->SetDirection(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
-	spotlight->SetDirection(Input->GetMousePos().x, 1, Input->GetMousePos().y);
+	XMFLOAT3 lightDirFinal;
+	XMStoreFloat3(&lightDirFinal, player->getForwardVector());
+	spotlight->SetDirection(lightDirFinal.x, lightDirFinal.y, lightDirFinal.z);
+	
 	return true;
 
 }

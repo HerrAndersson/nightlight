@@ -7,6 +7,7 @@ GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOA
 	this->renderObject = renderObject;
 	this->position = position;
 	this->rotation = rotation;
+	forwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }
 
 
@@ -27,6 +28,8 @@ RenderObject* GameObject::GetRenderObject()
 void GameObject::UpdateWorldMatrix()
 {
 	worldMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)) * XMMatrixTranslation(position.x, position.y, position.z);
+	
+
 }
 
 void GameObject::SetPosition(XMFLOAT3 pos)
@@ -44,6 +47,16 @@ void GameObject::SetRotation(XMFLOAT3 rot)
 {
 	rotation = rot;
 	UpdateWorldMatrix();
+}
+
+XMVECTOR GameObject::getForwardVector()
+{
+	forwardVector = XMVector3TransformCoord(forwardVector, worldMatrix);
+	XMVector3Normalize(forwardVector);
+
+	XMVECTOR pos = XMVectorSet(position.x, position.y, position.z, 0);
+	forwardVector = pos + forwardVector;
+	return forwardVector;
 }
 
 XMFLOAT3 GameObject::GetRotation()

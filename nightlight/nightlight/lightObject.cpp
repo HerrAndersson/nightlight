@@ -55,7 +55,10 @@ XMFLOAT4 LightObject::GetDiffuseColor()
 
 XMFLOAT3 LightObject::GetDirection()
 {
+	
 	return m_direction;
+
+
 }
 
 
@@ -106,3 +109,4 @@ void LightObject::GetOrthoMatrix(XMMATRIX& projectionMatrix)
 	projectionMatrix = m_orthoMatrix;
 	return;
 }
+

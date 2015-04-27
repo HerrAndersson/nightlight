@@ -34,6 +34,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 {
 	float4 color;
 
+
 	float4 ambientLight = (1.1f, 0.1f, 0.1f, 1.0f);
 
 	input.normal = normalize(input.normal);
