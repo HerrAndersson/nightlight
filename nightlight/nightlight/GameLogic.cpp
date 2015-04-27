@@ -40,33 +40,64 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera)
 
 	if (oldP.x != newP.x && oldP.y != newP.y)
 	{
-		XMMATRIX v, p, vp;
+		XMMATRIX v, p, vp, invVp;
 		camera->getViewMatrix(v);
 		camera->getProjectionMatrix(p);
 		vp = v * p;
 
+		invVp = XMMatrixInverse(&XMMatrixDeterminant(vp), vp);
+
+		//XMVECTOR v1 = XMLoadFloat2(&newP);
+		//XMVECTOR v2 = XMLoadFloat2(&oldP);
+		//XMVECTOR  a = XMVector2Dot(v1, v2);
+		//double angle = cos(XMVectorGetX(a));
+
+		//XMFLOAT4 mousePos = XMFLOAT4(newP.x, 0.0f, newP.y, 0.0f);
+		//XMVECTOR screenSpace;
+		//screenSpace = XMLoadFloat4(&mousePos);
+		//screenSpace = XMVector4Transform(screenSpace, invVp);
+		//XMFLOAT3 worldSpace;
+		//XMStoreFloat3(&worldSpace, screenSpace);
+
+
+		//float dx = (worldSpace.x - pos.x);
+		//float dy = (worldSpace.z - pos.z);
+
+		//XMFLOAT2 up(0, -1);
+		//XMVECTOR v1 = XMLoadFloat2(&newP);
+		//XMVECTOR v2 = XMLoadFloat2(&up);
+		//XMVECTOR  a = XMVector2Dot(v1, v2);
+		//double angle = XMVectorGetX(a);
+
+		//Converting the players position from world to screen space
 		XMVECTOR worldPosVector;
 		worldPosVector = XMLoadFloat3(&pos);
 		worldPosVector = XMVector3Transform(worldPosVector, vp);
 		XMFLOAT3 screenSpacePos;
 		XMStoreFloat3(&screenSpacePos, worldPosVector);
 
+		//Converting mouse position to screen space range [-1, 1]
+		float x = 2 * (newP.x / 1440) - 1;
+		float y = -(2 * (newP.y / 900) - 1);
+		XMFLOAT2 msp(x, y);
 
-		float dx = (newP.x - screenSpacePos.x);
-		float dy = (newP.y - screenSpacePos.y);
+		float dx = (msp.x - pos.x);
+		float dy = (msp.y - pos.y);
 
 		double angle = atan2(dx, dy) * (180 / XM_PI);
 
-		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
+		rot = XMFLOAT3(0.0f, angle, 0.0f);
 
 		if (rot.y < 0)
 			rot.y += 360;
 		else if (rot.y > 360)
 			rot.y = 0;
 
-		std::cout << "Pos:              " << "X: " << pos.x << " Z: " << pos.z << std::endl;
+		std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
+		std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
+		std::cout << "Mouse screenspace: " << msp.x << " " << msp.y << std::endl;
 		std::cout << "ScreenSpacePos:   " << "SX: " << screenSpacePos.x << " SY: " << screenSpacePos.y << " SZ: " << screenSpacePos.z << std::endl;
-		std::cout << "dxdy:             " << dx << " " << dy << std::endl;
+		//std::cout << "dxdy:             " << dx << " " << dy << std::endl;
 		std::cout << "angle:            " << angle << std::endl;
 		std::cout << "roty:             " << rot.y << std::endl;
 		std::cout << std::endl;

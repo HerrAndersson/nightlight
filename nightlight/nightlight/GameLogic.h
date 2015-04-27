@@ -19,7 +19,6 @@ public:
 
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
-	//UpdatePlayer(playerobject)
 	//Etc
 };
 
