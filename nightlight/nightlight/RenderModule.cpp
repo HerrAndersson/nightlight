@@ -285,10 +285,10 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 	
-	lightPtr->lightPos = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	lightPtr->lightDir = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	lightPtr->lightRange = 1000.0f;
-	lightPtr->lightCone = 10.0f;
+	lightPtr->lightPos = XMFLOAT3(-5.0f, 1.0f, 0.0f);
+	lightPtr->lightDir = XMFLOAT3(1.0f, 0.0f, 0.1f);
+	lightPtr->lightRange = 100.0f;
+	lightPtr->lightCone = 15.0f;
 	lightPtr->lightAtt = XMFLOAT3(0.4f, 0.02f, 0.0f);
 	lightPtr->lightAmbient = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	lightPtr->lightDiffuse = XMFLOAT4(0.0f, 1.0f, 0.7f, 1.0f);

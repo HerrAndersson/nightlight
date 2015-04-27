@@ -17,6 +17,7 @@ class RenderModule
 
 private:
 	
+	
 	struct LightBuffer
 	{
 		XMFLOAT3 lightPos;

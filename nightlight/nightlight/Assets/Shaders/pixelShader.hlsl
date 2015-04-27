@@ -81,6 +81,9 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDir), 0.0f), lightCone);
 	}
 
+	else if (howMuchLight < 0.0f)
+		finalColor = (0.0f, 0.0f, 0.0f);
+
 	//make sure the values are between 1 and 0, and add the ambient
 	finalColor = saturate(finalColor + finalAmbient);
 
