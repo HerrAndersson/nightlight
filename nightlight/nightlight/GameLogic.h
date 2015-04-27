@@ -17,7 +17,7 @@ public:
 
 	bool Update(GameObject* gameObject, CameraObject* camera, LightObject* spotLight);
 	bool UpdatePlayer(GameObject* player, CameraObject* camera, LightObject* spotLight);
-	bool updateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight);
+	bool UpdateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight);
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
 	//Etc

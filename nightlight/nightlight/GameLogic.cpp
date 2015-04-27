@@ -109,13 +109,13 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	}
 
 	player->SetPosition(pos);
-	updateSpotLight(player, camera, spotlight);
+	UpdateSpotLight(player, camera, spotlight);
 	
 
 	return !Input->Esc();
 }
 
-bool GameLogic::updateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
 {
 	Input->HandleMouse();
 	spotlight->SetPosition(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
