@@ -1,0 +1,27 @@
+#pragma once
+#include <vector>
+#include "GameObject.h"
+#include "Container.h"
+#include "Corner.h"
+#include "Door.h"
+#include "Floor.h"
+#include "Lever.h"
+#include "MovableObject.h"
+#include "PressurePlate.h"
+#include "StaticObject.h"
+#include "Wall.h"
+
+class Tile {
+private:
+	bool tileIsEmpty = true;
+	std::vector<GameObject> gameObjects;
+	
+public:
+	Tile ( );
+	~Tile ( );
+
+	void pushGameObjectToTile ( GameObject &content );
+
+	bool getTileIsEmpty ( ) const { return tileIsEmpty; }
+};
+
