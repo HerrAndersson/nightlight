@@ -771,7 +771,7 @@ void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 	std::cout << std::endl;
 }
 
-void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base, AnimData& AnimTemp)
+void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base, AnimData& AnimTemp)
 {
 	//Output info about the base shape
 	MFnDependencyNode fnDep(Base);
@@ -804,12 +804,12 @@ void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base, AnimData&
 		//output each target shape
 		for (unsigned int j = 0; j < targets.length(); ++j)
 		{
-			outPutTarget(targets[j], AnimTemp);
+			outPutTarget(targets[j], AnimTemp, Base);
 		}
 	}
 }
 
-void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp)
+void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp, MObject& Base)
 {
 	//Attach the function set to the object
 	MItGeometry it(target);
@@ -841,7 +841,29 @@ void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp)
 		it.next();
 	}
 	cout << endl;
-	AnimTemp.BShapes.push_back(temp);
+
+
+	MFnMesh basemfn(Base);
+
+	MDagPath dag_path;
+	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+	int y = 0;
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+			MFnDagNode dag_node = dag_path.node();
+			if (!dag_node.isIntermediateObject())
+			{
+
+				if (!strcmp(basemfn.partialPathName().asChar(), dag_node.partialPathName().asChar()))
+					temp.MeshTarget = y;
+				y++;
+			}
+		}
+		dag_iter.next();
+	}
+	scene_.blendShapes.push_back(temp);
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -931,7 +953,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 			MObject Base = base_objects[i];
 
 			//Output all of the target shapes and weights
-			OutputWeights(bs, Base, AnimTemp);
+			OutputBlendShapes(bs, Base, AnimTemp);
 		}
 		//Get next blend shapes
 		matIt.next();
@@ -1098,31 +1120,6 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 
 	std::string name = mesh.partialPathName().asChar();
 	if (!strcmp(name.substr(0, 5).c_str(), "Blend")){
-		BlendShapeTarget tempBlend;
-
-		MString command = "polyTriangulate -ch 1 " + mesh_data.name;
-		// hämta icke-indexerade vertexpunkter
-		if (!mesh.getPoints(points, world_space))
-		{
-			return false;
-		}
-
-		for (int i = 0; i < points.length(); i++){
-			vec3 temppoints = { points[i].x, points[i].y, points[i].z };
-			tempBlend.points.push_back(temppoints);
-		}
-
-		// hämta icke-indexerade normaler
-		if (!mesh.getNormals(normals, world_space))
-		{
-			return false;
-		}
-
-		for (int i = 0; i < normals.length(); i++){
-			vec3 tempnormals = { normals[i].x, normals[i].y, normals[i].z };
-			tempBlend.normals.push_back(tempnormals);
-		}
-		scene_.blendShapes.push_back(tempBlend);
 		return true;
 	}
 
@@ -1471,7 +1468,11 @@ void Exporter::ExportMeshes()
 		outfile.write((const char*)&scene_.cameras[i], 52);
 	}
 
-	outfile.write((const char*)scene_.AnimationData.data(), mainHeader.AnimationData*sizeof(AnimData));
+	for (int i = 0; i < mainHeader.blendShapeCount; i++){
+		outfile.write((const char*)&scene_.blendShapes[i].MeshTarget, 4);
+		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].points.size());
+		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].normals.size());
+	}
 
 	outfile.close();
 

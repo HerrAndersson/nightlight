@@ -220,6 +220,7 @@ struct lightData
 
 struct BlendShapeTarget
 {
+	int MeshTarget;
 	std::vector<vec3> points;
 	std::vector<vec3> normals;
 };
@@ -244,7 +245,6 @@ struct AnimData
 	MTime animationEnd;
 	int numKeys;
 
-	std::vector<BlendShapeTarget> BShapes;
 	//std::vector<TangentData> Tdata;
 	std::vector<KeyFrames> KeyData;
 
@@ -331,8 +331,8 @@ private:
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
-	void OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base, AnimData&);
-	void outPutTarget(MObject& target, AnimData&);
+	void OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base, AnimData&);
+	void outPutTarget(MObject& target, AnimData&, MObject& Base);
 
 	bool CreateExportFiles(std::string file_path, std::string output_type);
 	void CloseExportFiles();
