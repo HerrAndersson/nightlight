@@ -208,7 +208,7 @@ struct AnimData
 	MTime animationStart;
 	MTime animationEnd;
 	int numKeys;
-	MTime keyFrame;					//Keyframe position on timeline 
+	MTime keyFrame;					    //Keyframe position on timeline 
 	float AnimValue;					//Not necessary weights, but for morph animation it is
 	MTime currTime;
 
@@ -246,7 +246,7 @@ struct SceneData
 };
 
 struct MainHeader{
-	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
+	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
 };
 
 struct MeshHeader
