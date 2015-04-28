@@ -2,6 +2,7 @@
 #include "AssetUtil.h"
 
 using std::vector;
+using namespace assetUtility;
 
 class AssetManager
 {
@@ -24,9 +25,6 @@ private:
 	void LoadTexture(std::string file_path);
 
 	ID3D11Buffer* CreateVertexBuffer(vector<XMFLOAT3> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *faceIndices);
-	void FileToStrings(std::string file_path, std::vector<std::string> &output);
-	std::vector<int> StringToIntArray(std::string input);
-
 /*
 	RenderObject* GetRenderObject(); 
 	ID3D11Buffer* getVertexBuffer();

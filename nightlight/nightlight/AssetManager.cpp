@@ -5,20 +5,20 @@ AssetManager::AssetManager(ID3D11Device* device)
 	this->device = device;
 
 	std::vector<std::string> modelNames;
-	FileToStrings("Assets/models.txt", modelNames);
+	fileToStrings("Assets/models.txt", modelNames);
 	for (int i = 0; i < (signed)modelNames.size(); i++)
 		LoadModel("Assets/Models/" + modelNames[i]);
 
 	std::vector<std::string> textureNames;
-	FileToStrings("Assets/textures.txt", textureNames);
+	fileToStrings("Assets/textures.txt", textureNames);
 	for (int i = 0; i < (signed)textureNames.size(); i++)
 		LoadTexture("Assets/Textures/" + textureNames[i]);
 
 	std::vector<std::string> renderObjectIDs;
-	FileToStrings("Assets/renderObjects.txt", renderObjectIDs);
+	fileToStrings("Assets/renderObjects.txt", renderObjectIDs);
 	for (int i = 0; i < (signed)renderObjectIDs.size(); i++)
 	{
-		std::vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
+		std::vector<int> IDs = stringToIntArray(renderObjectIDs[i]);
 		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
 	}
 };
@@ -213,44 +213,6 @@ ID3D11Buffer* AssetManager::getVertexBuffer()
 
 }
 */
-//turns a text file into a vector of strings line-by-line
-void AssetManager::FileToStrings(std::string file_path, std::vector<std::string> &output)
-{
-	std::string delimiter = "\n";
-	std::ifstream file(file_path);
-	if (!file.is_open()){
-		printf("Failed to open models.txt\n");
-	}
-	std::string s((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-
-
-	size_t pos = 0;
-	std::string token;
-	while ((pos = s.find(delimiter)) != std::string::npos) {
-		token = s.substr(0, pos);
-		output.push_back(token);
-		s.erase(0, pos + delimiter.length());
-	}
-	output.push_back(s);
-};
-
-std::vector<int> AssetManager::StringToIntArray(std::string input)
-{
-	std::vector<int> output;
-	int from = 0;
-	
-	for (int to = 0; to < (signed)input.size(); to++)
-	{
-		if (input[to] == ','){
-			output.push_back(std::stoi(input.substr(from, to - from)));
-			from = to+1;
-		}
-	}
-	output.push_back(std::stoi(input.substr(from, input.size() - from)));
-
-	
-	return output;
-}
 
 RenderObject* AssetManager::GetRenderObject(int id)
 {
