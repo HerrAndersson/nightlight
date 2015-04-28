@@ -56,36 +56,16 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		camera->GetProjectionMatrix(p);
 		vp = v * p;
 
-		//Converting the players position from world to screen space
-		//XMVECTOR worldPosVector;
-		//worldPosVector = XMLoadFloat3(&pos);
-		//worldPosVector = XMVector3Transform(worldPosVector, vp);
-		//XMFLOAT3 screenSpacePos;
-		//XMStoreFloat3(&screenSpacePos, worldPosVector);
-
 		XMVECTOR localSpace = XMVector3Transform ( XMLoadFloat3 ( &pos ), vp );
 		float screenX = XMVectorGetX ( localSpace ) / XMVectorGetZ ( localSpace );
 		float screenY = XMVectorGetY ( localSpace ) / XMVectorGetZ ( localSpace );
 
 		XMFLOAT2 msp = Input->GetMousePosScreenSpace();
-
-		/*double dx = (msp.x - pos.x);
-		double dy = (msp.y - pos.y);*/
-
 		double dx = ( msp.x - screenX );
 		double dy = ( msp.y - screenY ) / camera->GetAspectRatio();
-
 		double angle = atan2(dy, dx) * (180 / XM_PI);
 
-		printf((std::to_string(msp.x) + " " + std::to_string(msp.y/1.6f) + "\n" + std::to_string(screenX) + " " + std::to_string(screenY) + "\n\n").c_str());
-
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
-
-		//if (rot.y < 0)
-		//	rot.y += 360;
-		//else if (rot.y > 360)
-		//	rot.y = 0;
-
 		player->SetRotation(rot);
 		
 
@@ -97,9 +77,11 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		//std::cout << "angle:            " << angle << std::endl;
 		//std::cout << "roty:             " << rot.y << std::endl;
 		//std::cout << std::endl;
+
 	}
 
 	player->SetPosition(pos);
+
 	UpdateSpotLight ( player, camera, spotlight );
 
 	return !Input->Esc();

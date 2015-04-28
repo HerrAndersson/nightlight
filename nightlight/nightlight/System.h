@@ -1,9 +1,10 @@
 #pragma once
-
+//#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <stdexcept>
 #include "Game.h"
 #include "Timer.h"
+#include "Cpu.h"
 
 class System
 {
@@ -20,6 +21,7 @@ private:
 
 	Game*		game;
 	Timer*		timer;
+	Cpu*        cpuUsage;
 
 	int windowWidth, windowHeight;
 	int screenWidth, screenHeight;

@@ -12,7 +12,7 @@ using namespace DirectX;
 namespace assetUtility {
 	struct MainHeader 
 	{
-		int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
+		int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
 	};
 
 	struct MeshHeader 
@@ -30,6 +30,14 @@ namespace assetUtility {
 		XMFLOAT3 position;
 		XMFLOAT2 uv;
 		XMFLOAT3 normal;
+		int boneIndices[4];
+		float boneWeigths[4];
+	};
+
+	struct point{
+		XMFLOAT3 position;
+		int boneIndices[4];
+		float boneWeigths[4];
 	};
 
 	struct AmbientLightStruct 

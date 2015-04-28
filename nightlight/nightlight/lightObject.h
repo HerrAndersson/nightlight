@@ -18,6 +18,7 @@ private:
 	XMFLOAT3 direction;
 	XMFLOAT3 lookAt;
 
+
 public:
 
 	LightObject();

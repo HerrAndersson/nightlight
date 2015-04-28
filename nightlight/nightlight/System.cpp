@@ -10,15 +10,11 @@ System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeig
 	InitializeWindows();
 
 	//Create and initialize the application
-	if ( fullscreen ) 
-	{
-		game = new Game ( hinstance, hwnd, screenWidth, screenHeight, fullscreen );
-	}
-	else 
-	{
-		game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
-	}
+
+	game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
+
 	timer = new Timer();
+	cpuUsage = new Cpu();
 }
 
 
@@ -26,6 +22,7 @@ System::~System()
 {
 	delete game;
 	delete timer;
+	delete cpuUsage;
 	ShutdownWindows();
 }
 
@@ -66,6 +63,7 @@ bool System::Update()
 	bool result = true;
 
 	timer->Update();
+	cpuUsage->Update();
 
 	if (timer->GetGameTime() > MS_PER_FRAME)
 	{
@@ -75,7 +73,11 @@ bool System::Update()
 		result = game->Render();
 		if (!result) { return false; }
 
-		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime()) + " msPerFrame: " + std::to_string(timer->GetGameTime()) + " SystemUpdatePerSecond : " + std::to_string(timer->GetFPS());
+		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime()) 
+			         + " msPerFrame: " + std::to_string(timer->GetGameTime()) 
+					 + " SystemUpdatePerSecond : " + std::to_string(timer->GetFPS()) 
+					 + " CPU% : " + std::to_string(cpuUsage->GetCpuPercentage());
+
 		applicationName = s.c_str();
 
 		SetWindowText(hwnd, applicationName);

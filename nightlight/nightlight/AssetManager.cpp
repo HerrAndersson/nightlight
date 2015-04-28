@@ -52,7 +52,7 @@ void AssetManager::LoadModel(string file_path){
 	infile.read((char*)&meshHeader, sizeof(MeshHeader));
 
 	string name;
-	vector<XMFLOAT3> points;
+	vector<point> points;
 	vector<XMFLOAT3> normals;
 	vector<XMFLOAT2> UVs;
 	vector<XMINT3> vertexIndices;
@@ -64,7 +64,7 @@ void AssetManager::LoadModel(string file_path){
 	vertexIndices.resize(meshHeader.numberFaces * 3);
 
 	infile.read((char*)name.data(), meshHeader.nameLength);
-	infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(XMFLOAT3));
+	infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(point));
 	infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
@@ -142,7 +142,7 @@ void AssetManager::LoadTexture(string file_path)
 	textures.push_back(texture);
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<XMFLOAT3> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<point> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices)
 {
 	vector<Vertex> vertices;
 
@@ -157,9 +157,14 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<XMFLOAT3> *points, vector<
 	for (int i = 0; i < (signed)vertexIndices->size(); i+=3){
 		for (int a = 0; a < 3; a++){
 			Vertex tempVertex;
-			tempVertex.position = points->at(vertexIndices->at(i+a).x);
+			tempVertex.position = points->at(vertexIndices->at(i+a).x).position;
 			tempVertex.normal = normals->at(vertexIndices->at(i+a).y);
 			tempVertex.uv = UVs->at(vertexIndices->at(i+a).z);
+			for (int b = 0; b < 4;b++)
+			{
+				tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
+				tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
+			}
 			vertices.push_back(tempVertex);
 		}
 	}
