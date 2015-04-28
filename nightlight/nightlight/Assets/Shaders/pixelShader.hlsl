@@ -104,7 +104,8 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 	if (diffuseLighting > 0)
 	{
-		reflection = normalize(2 * diffuseLighting * input.normal - pointLightDir);
+
+		reflection = normalize(2 * diffuseLighting * input.normal + pointLightDir);
 		
 		// Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
 		specular = pow(saturate(dot(reflection, input.viewDir)), 20);
