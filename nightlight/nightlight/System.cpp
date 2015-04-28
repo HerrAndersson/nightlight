@@ -10,7 +10,14 @@ System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeig
 	InitializeWindows();
 
 	//Create and initialize the application
-	game = new Game(hinstance, hwnd, screenWidth, screenHeight, fullscreen);
+	if ( fullscreen ) 
+	{
+		game = new Game ( hinstance, hwnd, screenWidth, screenHeight, fullscreen );
+	}
+	else 
+	{
+		game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
+	}
 	timer = new Timer();
 }
 

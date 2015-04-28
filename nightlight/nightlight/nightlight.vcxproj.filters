@@ -84,12 +84,14 @@
     <ClCompile Include="Wall.cpp">
       <Filter>Game\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Door.cpp" />
     <ClCompile Include="Level.cpp">
       <Filter>Game\Level</Filter>
     </ClCompile>
     <ClCompile Include="LevelParser.cpp">
       <Filter>Game\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

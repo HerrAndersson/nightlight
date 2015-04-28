@@ -18,7 +18,7 @@ AssetManager::AssetManager(ID3D11Device* device)
 	fileToStrings("Assets/renderObjects.txt", renderObjectIDs);
 	for (int i = 0; i < (signed)renderObjectIDs.size(); i++)
 	{
-		vector<int> IDs = StringToIntArray(renderObjectIDs[i]);
+		vector<int> IDs = stringToIntArray(renderObjectIDs[i]);
 		CreateRenderObject(IDs[0], IDs[1], IDs[2]);
 	}
 };

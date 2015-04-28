@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 
 using DirectX::XMMATRIX;
+using namespace assetUtility;
 
 class GameObject
 {
@@ -10,6 +11,9 @@ private:
 
 	int id;
 	XMMATRIX		worldMatrix;
+	XMMATRIX		scaleMatrix = XMMatrixIdentity ( );
+	XMMATRIX		rotationMatrix = XMMatrixIdentity ( );
+	XMMATRIX		translationMatrix = XMMatrixIdentity ( );
 	XMFLOAT3		position;
 	XMFLOAT3		rotation;
 	XMVECTOR		forwardVector;

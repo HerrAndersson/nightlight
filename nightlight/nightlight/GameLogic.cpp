@@ -26,20 +26,30 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	XMFLOAT3 pos = player->GetPosition();
 	XMFLOAT3 rot = player->GetRotation();
 
-	if (Input->KeyDown('w'))
-		pos = XMFLOAT3(pos.x, pos.y, pos.z + 0.1f);
+	bool playerMoved = false;
 
-	if (Input->KeyDown('s'))
-		pos = XMFLOAT3(pos.x, pos.y, pos.z - 0.1f);
+	if ( Input->KeyDown ( 'w' ) ) {
+		pos = XMFLOAT3 ( pos.x, pos.y, pos.z + 0.1f );
+		playerMoved = true;
+	}
+	
+	if ( Input->KeyDown ( 's' ) ) {
+		pos = XMFLOAT3 ( pos.x, pos.y, pos.z - 0.1f );
+		playerMoved = true;
+	}
 
-	if (Input->KeyDown('a'))
-		pos = XMFLOAT3(pos.x - 0.1f, pos.y, pos.z);
+	if ( Input->KeyDown ( 'a' ) ) {
+		pos = XMFLOAT3 ( pos.x - 0.1f, pos.y, pos.z );
+		playerMoved = true;
+	}
 
-	if (Input->KeyDown('d'))
-		pos = XMFLOAT3(pos.x + 0.1f, pos.y, pos.z);
-
-	//Only update if mouse moved
-	if (oldP.x != newP.x || oldP.y != newP.y)
+	if ( Input->KeyDown ( 'd' ) ) {
+		pos = XMFLOAT3 ( pos.x + 0.1f, pos.y, pos.z );
+		playerMoved = true;
+	}
+	
+	//Only update if mouse or player moved
+	if (oldP.x != newP.x || oldP.y != newP.y || playerMoved)
 	{
 		XMMATRIX v, p, vp;
 		camera->getViewMatrix(v);
@@ -67,6 +77,8 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 		double angle = atan2(dy, dx) * (180 / XM_PI);
 
+		printf ( ( std::to_string ( msp.x ) + " " + std::to_string ( msp.y ) + "\n" + std::to_string ( screenX) + " " + std::to_string ( screenY) + "\n\n" ).c_str ( ) );
+
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 
 		//if (rot.y < 0)
@@ -75,7 +87,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		//	rot.y = 0;
 
 		player->SetRotation(rot);
-		UpdateSpotLight(player, camera, spotlight);
+		
 
 
 		//std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
@@ -88,7 +100,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	}
 
 	player->SetPosition(pos);
-	
+	UpdateSpotLight ( player, camera, spotlight );
 
 	return !Input->Esc();
 }

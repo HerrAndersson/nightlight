@@ -285,8 +285,8 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 	
-	lightPtr->lightPos = spotlight->GetPosition();
-	lightPtr->lightDir = spotlight->GetDirection();
+	lightPtr->lightPos = spotlight->getPosition();
+	lightPtr->lightDir = spotlight->getDirection();
 	lightPtr->lightRange = 100.0f;
 	lightPtr->lightCone = 15.0f;
 	lightPtr->lightAtt = XMFLOAT3(0.0f, 0.03f, 0.0f);
