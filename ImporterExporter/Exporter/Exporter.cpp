@@ -1368,7 +1368,7 @@ void Exporter::ExportMeshes()
 
 		outfile.write((const char*)&meshHeader, sizeof(MeshHeader));
 		outfile.write((const char*)scene_.meshes[i].name.asChar(), meshHeader.nameLength);
-		outfile.write((const char*)scene_.meshes[i].points.data(), meshHeader.numberPoints*sizeof(vec3));
+		outfile.write((const char*)scene_.meshes[i].points.data(), meshHeader.numberPoints*sizeof(point));
 		outfile.write((const char*)scene_.meshes[i].normals.data(), meshHeader.numberNormals*sizeof(vec3));
 		outfile.write((const char*)scene_.meshes[i].uvSets[0].UVs.data(), meshHeader.numberCoords*sizeof(vec2));
 		for (int a = 0; a < meshHeader.numberFaces; a++){
