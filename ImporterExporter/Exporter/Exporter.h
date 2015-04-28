@@ -245,7 +245,7 @@ struct AnimData
 	int numKeys;
 
 	std::vector<BlendShapeTarget> BShapes;
-	std::vector<TangentData> Tdata;
+	//std::vector<TangentData> Tdata;
 	std::vector<KeyFrames> KeyData;
 
 
@@ -273,13 +273,14 @@ struct SceneData
 {
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
+	std::vector<BlendShapeTarget> blendShapes;
 	std::vector<cameraData> cameras;
 	lightData lights;
 	std::vector<AnimData> AnimationData;
 };
 
 struct MainHeader{
-	int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
+	int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
 };
 
 struct MeshHeader

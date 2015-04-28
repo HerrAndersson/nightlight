@@ -718,7 +718,7 @@ void Exporter::extractLight(MObject& mObj)
 
 void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 {
-	TangentData TD;
+	//TangentData TD;
 	KeyFrames KD;
 
 	animTemp.animationStart = MAnimControl::animationStartTime();
@@ -727,8 +727,8 @@ void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 	//get Keyframe values
 	MFnAnimCurve AnimCurve(key);
 
-	TD.LERP = AnimCurve.kTangentLinear;
-	TD.SLERP = AnimCurve.kTangentSmooth;
+	//TD.LERP = AnimCurve.kTangentLinear;
+	//TD.SLERP = AnimCurve.kTangentSmooth;
 
 	animTemp.numKeys = AnimCurve.numKeys();
 
@@ -746,26 +746,26 @@ void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 		KD.currTime = AnimCurve.time(i).value();
 		KD.AnimValue = AnimCurve.value(i);
 
-		TD.Ltest = AnimCurve.inTangentType(i);
-		TD.Stest = AnimCurve.outTangentType(i);
+		//TD.Ltest = AnimCurve.inTangentType(i);
+		//TD.Stest = AnimCurve.outTangentType(i);
 
-		AnimCurve.getTangent(i, TD.ix, TD.iy, TRUE);
-		AnimCurve.getTangent(i, TD.ox, TD.oy, FALSE);
+		//AnimCurve.getTangent(i, TD.ix, TD.iy, TRUE);
+		//AnimCurve.getTangent(i, TD.ox, TD.oy, FALSE);
 
 		// write keyframe info
 		std::cout << " time " << KD.currTime.as(MTime::kSeconds);
 		std::cout << " frame " << AnimCurve.time(i);
 		std::cout << " value " << KD.AnimValue;
-		std::cout << " Tangents " << TD.Ltest << " " << TD.Stest;
-		std::cout << " Tangent In " << TD.ix << " " << TD.iy;
-		std::cout << " Tangent Out " << TD.ox << " " << TD.oy << std::endl;
+		//std::cout << " Tangents " << TD.Ltest << " " << TD.Stest;
+		//std::cout << " Tangent In " << TD.ix << " " << TD.iy;
+		//std::cout << " Tangent Out " << TD.ox << " " << TD.oy << std::endl;
 
 		KD.currTime = KD.currTime.as(MTime::kSeconds);
 
 		if (KD.keyFrame < AnimCurve.time(i))
 			KD.keyFrame = AnimCurve.time(i);
 
-		animTemp.Tdata.push_back(TD);
+		//animTemp.Tdata.push_back(TD);
 		animTemp.KeyData.push_back(KD);
 	}
 	std::cout << std::endl;
@@ -1096,6 +1096,36 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	mesh_data.name = mesh.name();
 	mesh_data.id = index;
 
+	std::string name = mesh.partialPathName().asChar();
+	if (!strcmp(name.substr(0, 5).c_str(), "Blend")){
+		BlendShapeTarget tempBlend;
+
+		MString command = "polyTriangulate -ch 1 " + mesh_data.name;
+		// hämta icke-indexerade vertexpunkter
+		if (!mesh.getPoints(points, world_space))
+		{
+			return false;
+		}
+
+		for (int i = 0; i < points.length(); i++){
+			vec3 temppoints = { points[i].x, points[i].y, points[i].z };
+			tempBlend.points.push_back(temppoints);
+		}
+
+		// hämta icke-indexerade normaler
+		if (!mesh.getNormals(normals, world_space))
+		{
+			return false;
+		}
+
+		for (int i = 0; i < normals.length(); i++){
+			vec3 tempnormals = { normals[i].x, normals[i].y, normals[i].z };
+			tempBlend.normals.push_back(tempnormals);
+		}
+		scene_.blendShapes.push_back(tempBlend);
+		return true;
+	}
+
 	// triangulera meshen innan man hämtar punkterna
 	MString command = "polyTriangulate -ch 1 " + mesh_data.name;
 	if (!MGlobal::executeCommand(command))
@@ -1294,34 +1324,11 @@ void Exporter::OutputSkinCluster(MObject& obj)
 					}
 				}
 				float norm = outWts[0] + outWts[1] + outWts[2] + outWts[3];
-
-
-				MDagPath dag_path;
-				MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
-				int currentmesh = 0, y = 0;
-				while (!dag_iter.isDone())
-				{
-					if (dag_iter.getPath(dag_path))
-					{
-						MFnDagNode dag_node = dag_path.node();
-						if (!dag_node.isIntermediateObject())
-						{
-							MFnMesh mesh(dag_path);
-							if (!strcmp(skinPath.partialPathName().asChar(), mesh.partialPathName().asChar()))
-								currentmesh = y;
-							y++;
-						}
-					}
-
-					dag_iter.next();
-				}
-
-
 				for (int x = 0; x < 4;x++)
 				{
 					outWts[x] /= norm;
-					scene_.meshes[currentmesh].points[gIter.index()].boneIndices[x] = outInfs[x];
-					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x];
+					scene_.meshes[1].points[gIter.index()].boneIndices[x] = outInfs[x];
+					scene_.meshes[1].points[gIter.index()].boneWeigths[x] = outWts[x];
 				}
 			}
 		}
