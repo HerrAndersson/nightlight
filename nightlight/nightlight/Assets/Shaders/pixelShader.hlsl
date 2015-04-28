@@ -1,3 +1,6 @@
+Texture2D AssetTexture;
+SamplerState AssetSamplerState;
+
 cbuffer lightBuffer
 {
 	float3 lightPos;
@@ -34,14 +37,15 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 {
 	float4 color;
 
+	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
 
-	float4 ambientLight = (1.1f, 0.1f, 0.1f, 1.0f);
+	//float4 ambientLight = (0.1f, 0.1f, 0.1f, 1.0f);
 
 	input.normal = normalize(input.normal);
 
-	float4 diffuse = float4(0.0f, 1.0f, 0.0f, 1.0f);
+	//float4 diffuse = float4(0.0f, 1.0f, 0.0f, 1.0f);
 
-	float3 finalColor = float3(1.5f, 0.0f, 0.5f);
+	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
 
 	float3 lightToPixelVec = lightPos - input.worldPos;
 
@@ -53,7 +57,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 	//check if pixel to faaar
 	if (d > lightRange)
-		return float4(finalAmbient, lightDiffuse.a);
+		return float4(finalAmbient, diffuse.a);
 
 	lightToPixelVec /= d;
 
@@ -80,6 +84,6 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	finalColor = saturate(finalColor + finalAmbient);
 
 	//Return Final Color
-	return float4(finalColor, 1.0f);
+	return float4(finalColor, diffuse.a);
 
 }
