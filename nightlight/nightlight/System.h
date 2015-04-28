@@ -33,7 +33,7 @@ private:
 
 public:
 
-	System(bool fullscreen = false, bool showCursor = true, int screenWidth = 1000, int screenHeight = 800);
+	System(bool fullscreen = false, bool showCursor = true, int windowWidth = 1000, int windowHeight = 800);
 	~System();
 
 	void Run();

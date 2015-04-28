@@ -27,15 +27,15 @@ RenderObject* GameObject::GetRenderObject()
 
 void GameObject::UpdateWorldMatrix()
 {
-	worldMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)) * XMMatrixTranslation(position.x, position.y, position.z);
-	
-
+	//worldMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)) * XMMatrixTranslation(position.x, position.y, position.z);
+	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
 }
 
 void GameObject::SetPosition(XMFLOAT3 pos)
 {
 	position = pos;
-	UpdateWorldMatrix();
+	translationMatrix = XMMatrixTranslation ( pos.x, pos.y, pos.z );
+	UpdateWorldMatrix ( );
 }
 
 XMFLOAT3 GameObject::GetPosition()
@@ -46,23 +46,44 @@ XMFLOAT3 GameObject::GetPosition()
 void GameObject::SetRotation(XMFLOAT3 rot)
 {
 	rotation = rot;
-	UpdateWorldMatrix();
+	rotationMatrix = XMMatrixRotationRollPitchYaw ( XMConvertToRadians ( -rotation.x ), XMConvertToRadians ( -rotation.y ), XMConvertToRadians ( -rotation.z ) );
+	UpdateWorldMatrix ( );
 }
 
 XMVECTOR GameObject::GetForwardVector()
 {
-	forwardVector = XMVector3TransformCoord(forwardVector, worldMatrix);
+	forwardVector = XMVector3TransformCoord ( forwardVector, worldMatrix );
+	XMFLOAT4X4 rotationMatrixF;
+	XMStoreFloat4x4 ( &rotationMatrixF, rotationMatrix );
+	forwardVector = XMVectorSet ( rotationMatrixF._11, rotationMatrixF._12, rotationMatrixF._13, rotationMatrixF._14 );
+
+	/*forwardVector = XMVector3TransformCoord(forwardVector, worldMatrix);
 	XMVector3Normalize(forwardVector);
 
 	XMVECTOR pos = XMVectorSet(position.x, position.y, position.z, 0);
 	forwardVector = pos + forwardVector;
 	return forwardVector;
+	forwardVector = pos + forwardVector;*/
+
+	return XMVector3Normalize ( forwardVector );
 }
 
 XMFLOAT3 GameObject::GetRotation()
 {
 	return rotation;
 }
+
+
+ID3D11ShaderResourceView* GameObject::GetDiffuseTexture()
+{
+	return renderObject->diffuseTexture;
+}
+
+ID3D11ShaderResourceView* GameObject::GetSpecularTexture()
+{
+	return renderObject->specularTexture;
+}
+
 
 void* GameObject::operator new(size_t i)
 {

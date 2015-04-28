@@ -11,65 +11,55 @@ LightObject::~LightObject()
 }
 
 //Setters
-
-void LightObject::SetAmbientColor(float red, float green, float blue, float alpha)
+void LightObject::setAmbientColor(float red, float green, float blue, float alpha)
 {
-	m_ambientColor = XMFLOAT4(red, green, blue, alpha);
-	return;
+	ambientColor = XMFLOAT4(red, green, blue, alpha);
 }
 
 
-void LightObject::SetDiffuseColor(float red, float green, float blue, float alpha)
+void LightObject::setDiffuseColor(float red, float green, float blue, float alpha)
 {
-	m_diffuseColor = XMFLOAT4(red, green, blue, alpha);
-	return;
+	diffuseColor = XMFLOAT4(red, green, blue, alpha);
 }
 
 
-void LightObject::SetDirection(float x, float y, float z)
+void LightObject::setDirection(float x, float y, float z)
 {
-	m_direction = XMFLOAT3(x, y, z);
-	return;
+	direction = XMFLOAT3(x, y, z);
 }
 
-void LightObject::SetPosition(float x, float y, float z)
+void LightObject::setPosition(float x, float y, float z)
 {
-	m_position = XMFLOAT3(x, y, z);
-	return;
+	position = XMFLOAT3(x, y, z);
 }
 
 
 //Getters
-
-XMFLOAT4 LightObject::GetAmbientColor()
+XMFLOAT4 LightObject::getAmbientColor()
 {
-	return m_ambientColor;
+	return ambientColor;
 }
 
 
-XMFLOAT4 LightObject::GetDiffuseColor()
+XMFLOAT4 LightObject::getDiffuseColor()
 {
-	return m_diffuseColor;
+	return diffuseColor;
 }
 
 
-XMFLOAT3 LightObject::GetDirection()
+XMFLOAT3 LightObject::getDirection()
 {
-	
-	return m_direction;
-
-
+	return direction;
 }
 
 
-XMFLOAT3 LightObject::GetPosition()
+XMFLOAT3 LightObject::getPosition()
 {
-	return m_position;
+	return position;
 }
 
 
-
-void LightObject::GenerateViewMatrix()
+void LightObject::generateViewMatrix()
 {
 	//setting up a perspective-based view matrix
 	XMFLOAT3 up;
@@ -79,34 +69,36 @@ void LightObject::GenerateViewMatrix()
 	up.y = 1.0f;
 	up.z = 0.0f;
 
-	DirectX::XMVECTOR m_posVec = DirectX::XMLoadFloat3(&m_position);
-	DirectX::XMVECTOR m_upVec = DirectX::XMLoadFloat3(&up);
-	DirectX::XMVECTOR m_lookVec = DirectX::XMLoadFloat3(&m_lookAt);
+	DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
+	DirectX::XMVECTOR upVec = DirectX::XMLoadFloat3(&up);
+	DirectX::XMVECTOR lookVec = DirectX::XMLoadFloat3(&lookAt);
 
 	// Use the three loaded float3s as vectors for the view matrix
-	m_viewMatrix = DirectX::XMMatrixLookAtLH(m_posVec, m_lookVec, m_upVec);
-
-	return;
+	viewMatrix = XMMatrixLookAtLH(posVec, lookVec, upVec);
 }
 
-void LightObject::GenerateOrthoMatrix(float width, float screenDepth, float screenNear)
+void LightObject::generateOrthoMatrix(float width, float screenDepth, float screenNear)
 {
 	//setting up a orthographic-based view matrix
-	m_orthoMatrix = XMMatrixOrthographicLH(width, width, screenNear, screenDepth);
-
-	return;
+	orthoMatrix = XMMatrixOrthographicLH(width, width, screenNear, screenDepth);
 }
 
-void LightObject::GetViewMatrix(XMMATRIX& viewMatrix)
+void LightObject::getViewMatrix(XMMATRIX& viewMatrix)
 {
-	viewMatrix = m_viewMatrix;
-	return;
+	viewMatrix = viewMatrix;
 }
 
-
-void LightObject::GetOrthoMatrix(XMMATRIX& projectionMatrix)
+void LightObject::getOrthoMatrix(XMMATRIX& projectionMatrix)
 {
-	projectionMatrix = m_orthoMatrix;
-	return;
+	projectionMatrix = orthoMatrix;
 }
 
+void* LightObject::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void LightObject::operator delete(void* p)
+{
+	_mm_free(p);
+}

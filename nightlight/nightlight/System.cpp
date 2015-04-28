@@ -1,16 +1,23 @@
 #include "System.h"
 
-System::System(bool fullscreen, bool showCursor, int screenWidth, int screenHeight)
+System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeight)
 {
-	this->windowWidth = screenWidth;
-	this->windowHeight = screenHeight;
+	this->windowWidth = windowWidth;
+	this->windowHeight = windowHeight;
 	this->fullscreen = fullscreen;
 	this->showCursor = showCursor;
 
 	InitializeWindows();
 
 	//Create and initialize the application
-	game = new Game(hinstance, hwnd, screenWidth, screenHeight, fullscreen);
+	if ( fullscreen ) 
+	{
+		game = new Game ( hinstance, hwnd, screenWidth, screenHeight, fullscreen );
+	}
+	else 
+	{
+		game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
+	}
 	timer = new Timer();
 }
 
@@ -68,6 +75,11 @@ bool System::Update()
 		result = game->Render();
 		if (!result) { return false; }
 
+		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime()) + +" msPerFrame: " + std::to_string(timer->GetGameTime()) +" SystemUpdatePerSecond : " + std::to_string(timer->GetFPS());
+		applicationName = s.c_str();
+
+		SetWindowText(hwnd, applicationName);
+
 		timer->Reset();
 	}
 
@@ -114,7 +126,6 @@ void System::InitializeWindows()
 		//Determine the resolution of the screen.
 		screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
 		windowHeight = screenHeight;
 		windowWidth = screenWidth;
 

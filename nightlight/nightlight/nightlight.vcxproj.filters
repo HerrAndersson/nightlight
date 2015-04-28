@@ -27,6 +27,12 @@
     <Filter Include="Wic">
       <UniqueIdentifier>{8e029b6a-8ef5-4070-8e3b-1f9165a944d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\GameObjects">
+      <UniqueIdentifier>{1ad5cb94-ed8d-4fb9-95e7-6ea362b4515a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Level">
+      <UniqueIdentifier>{e4e6b5e4-50a5-48ed-af4b-dc766853f2a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -51,9 +57,6 @@
     <ClCompile Include="GameLogic.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -71,6 +74,24 @@
     </ClCompile>
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="FloorTile.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Wall.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Game\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelParser.cpp">
+      <Filter>Game\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,9 +119,6 @@
     <ClInclude Include="GameLogic.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Game</Filter>
     </ClInclude>
@@ -118,6 +136,24 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="FloorTile.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Wall.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelParser.h">
+      <Filter>Game\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Game\Level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

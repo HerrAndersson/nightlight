@@ -22,6 +22,7 @@
 
 
 #include <maya\MDagPath.h>
+#include <maya\MDagPathArray.h>
 #include <maya\MFloatPointArray.h>
 
 #include <maya/MFloatMatrix.h>
@@ -39,6 +40,9 @@
 
 #include <maya\MFnDependencyNode.h>
 #include <maya\MFnAttribute.h>
+#include <maya\MItDependencyGraph.h>
+#include <maya\MFnSkinCluster.h>
+#include <maya\MFnMatrixData.h>
 
 #include <maya/MItDependencyNodes.h>
 
@@ -68,6 +72,7 @@
 
 #include <maya/MQuaternion.h>
 #include <maya/MEulerRotation.h>
+#include <maya/MStatus.h>
 #pragma comment(lib, "Foundation.lib")
 #pragma comment(lib, "OpenMaya.lib")
 #pragma comment(lib, "OpenMayaAnim.lib")
@@ -81,6 +86,12 @@ enum matType{ LAMBERT, BLINN, PHONG };
 
 struct vec3{
 	float x, y, z;
+};
+
+struct point{
+	float x, y, z;
+	int boneIndices[4];
+	float boneWeigths[4];
 };
 
 struct vec2{
@@ -106,16 +117,32 @@ struct face
 	faceIndices verts[3];
 };
 
+struct Joint
+{
+	int parent;
+	MFloatVector LocalTx;
+	MFloatVector GlobalTx;
+	MFloatVector invBindPose;
+	Joint(int par, MFloatVector &data){
+		parent = par;
+		invBindPose = data;
+	}
+	Joint(){
+		parent = 0;
+	}
+};
+
 struct MeshData
 {
 	MDagPath mesh_path;
 	MString name;
 	UINT id;
 
-	std::vector<vec3> points;
+	std::vector<point> points;
 	std::vector<vec3> normals;
 	std::vector<uvSet> uvSets;
 	std::vector<face> faces;
+	std::vector<Joint> skeleton;
 };
 
 struct Color
@@ -202,6 +229,7 @@ struct TangentData
 	int LERP, SLERP, Ltest, Stest;
 	float ix, iy, ox, oy;
 };
+
 
 struct AnimData
 {
@@ -292,21 +320,27 @@ private:
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
 	void extractKeyData(MObject& key);
+	void extractJointData(MDagPath path);
+	void OutputSkinCluster(MObject& obj);
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
 	void OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base);
 	void outPutTarget(MObject& target);
 
-	bool CreateExportFiles(std::string file_path);
+	bool CreateExportFiles(std::string file_path, std::string output_type);
 	void CloseExportFiles();
 
 	bool GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill);
 
 	void ProcessScene(const char *file_path);
 
+	void ProcessLevel(const char *file_path);
+
 	bool IdentifyAndExtractScene();
 	bool IdentifyAndExtractMeshes();
+
+	bool IdentifyAndExtractLevelInformation();
 
 	bool ExtractMeshData(MFnMesh &mesh, UINT index);
 

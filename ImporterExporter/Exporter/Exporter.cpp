@@ -55,20 +55,33 @@ void Exporter::CleanUpMaya()
 	MLibrary::cleanup(0, false);
 }
 
-bool Exporter::CreateExportFiles(std::string file_path)
+bool Exporter::CreateExportFiles(std::string file_path, std::string output_type)
 {
 	// hitta index för punkten innan filtypen.
 	int sub_string_length = (int)file_path.find_last_of(".", file_path.size() - 1);
 
 	// spargenväg för den exporterade filen.
-	std::string save_path = file_path.substr(0, sub_string_length) + ".obj";
-	std::string binsave_path = file_path.substr(0, sub_string_length) + ".bin";
+	if (output_type == ".bin")
+	{
+		std::string binsave_path = file_path.substr(0, sub_string_length) + ".bin";
+		std::string save_path = file_path.substr(0, sub_string_length) + ".obj";
 
-	std::cout << "Exporting file to " << save_path.c_str() << std::endl << std::endl;
+		std::cout << "Exporting file to " << save_path.c_str() << std::endl << std::endl;
 
-	export_stream_.open(save_path.c_str(), std::ios_base::out | std::ios_base::trunc);
-	outfile.open(binsave_path.c_str(), std::ofstream::binary);
-	infile.open(binsave_path.c_str(), std::ifstream::binary);
+		export_stream_.open(save_path.c_str(), std::ios_base::out | std::ios_base::trunc);
+		outfile.open(binsave_path.c_str(), std::ofstream::binary);
+		infile.open(binsave_path.c_str(), std::ifstream::binary);
+	}
+
+	else if (output_type == ".lvl")
+	{
+		std::string lvlsave_path = file_path.substr(0, sub_string_length) + ".lvl";
+
+		std::cout << "Exporting level to " << lvlsave_path.c_str() << std::endl << std::endl;
+
+		export_stream_.open(lvlsave_path.c_str(), std::ios_base::out | std::ios_base::trunc);
+	}
+	
 
 	if (!export_stream_.is_open())
 	{
@@ -164,7 +177,14 @@ void Exporter::StartExporter(std::string directory_path)
 		// Formaterar och lagrar tecken och värden i en buffer
 		sprintf_s(tmp_str, sizeof(tmp_str), "%s%s", directory_path.c_str(), file->c_str());
 
-		ProcessScene(tmp_str);
+		if (file->find("level") != std::string::npos)
+		{
+			//ProcessLevel(tmp_str);
+		}
+		else
+		{
+			ProcessScene(tmp_str);
+		}
 
 		CloseExportFiles();
 	}
@@ -195,7 +215,7 @@ void Exporter::ProcessScene(const char *file_path)
 	}
 
 	// skapar exportfilerna
-	if (!CreateExportFiles(file_path))
+	if (!CreateExportFiles(file_path, ".bin"))
 	{
 		std::cout << "<Error> CreateExportFiles()" << std::endl;
 		return;
@@ -216,10 +236,81 @@ void Exporter::ProcessScene(const char *file_path)
 	}
 }
 
+void Exporter::ProcessLevel(const char *file_path)
+{
+	MStatus status = MS::kSuccess;
+
+	// [Ur Maya-dokumentationen]
+	// Set everything back to a new file state.
+	status = MFileIO::newFile(true);
+	if (!status)
+	{
+		std::cout << "<Error> MFileIO::newFile()" << std::endl;
+		return;
+	}
+
+	// [Ur Maya-dokumentationen]
+	// Open the given file, and set the current active file to this file. If there are unsaved changes in the current scene, this operation will fail unless the force flag is set to true.
+	status = MFileIO::open(file_path, NULL, true);
+	if (!status)
+	{
+		std::cout << "<Error> MFileIO::open()" << std::endl;
+		return;
+	}
+
+	// skapar exportfilerna
+	if (!CreateExportFiles(file_path, ".lvl"))
+	{
+		std::cout << "<Error> CreateExportFiles()" << std::endl;
+		return;
+	}
+
+	if (!IdentifyAndExtractLevelInformation())
+	{
+		std::cout << "<Error> IdentifyAndExtractLevelInformation()" << std::endl;
+		return;
+	}
+
+
+
+}
+
 //___________________________________________________________________________________________
 //|																							|
 //|								FUNKTIONER FÖR ATT IDENTIFIERA DATA							|
 //|_________________________________________________________________________________________|
+
+bool Exporter::IdentifyAndExtractLevelInformation()
+{
+	UINT index = 0;
+	scene_.meshes.clear();
+
+	MDagPath dag_path;
+	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+			MFnDagNode dag_node = dag_path.node();
+
+			MString nodeName = dag_node.name();
+
+			// vill endast ha "icke-history"-föremål
+			if (!dag_node.isIntermediateObject())
+			{
+				// triangulera meshen innan man hämtar punkterna
+				MFnMesh mesh(dag_path);
+				ExtractMeshData(mesh, index);
+				index++;
+			}
+		}
+
+		dag_iter.next();
+	}
+
+	return false;
+}
 
 // identifiera och extrahera data från scenen
 bool Exporter::IdentifyAndExtractScene()
@@ -539,96 +630,97 @@ void Exporter::extractLight(MObject& mObj)
 //When it finally gets to keyframe 2, target 2 is dominant because weight value is 1, the keyframes only hold the values for the blendshapes aka the weight value
 //for our object
 
-void Exporter::outputTransformData(MObject& Trans)
-{
-	//attach the function set to the object
-	MFnTransform tr(Trans);
-
-	// Gets transform data as a matrix, though quaternions more interesting! :D
-	MMatrix mat = tr.transformation().asMatrix();
-
-	MQuaternion JointOrient(0, 0, 0, 1);
-	MQuaternion Rotation(0, 0, 0, 1);
-	double scale[3];
-
-	//Get the transforms local translation
-	MVector Translation = tr.translation(MSpace::kTransform);
-
-	//Get the transforms scale
-	tr.getScale(scale);
-
-	//Get the transforms rotation as quaternions
-	tr.getRotation(Rotation);
-
-	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
-	if (tr.object().hasFn(MFn::kJoint))
-	{
-		MFnIkJoint IKjoint(tr.object());
-		IKjoint.getOrientation(JointOrient);
-	}
-
-	cout << "translation "
-		<< Translation.x << " "
-		<< Translation.y << " "
-		<< Translation.z << endl;
-	cout << "rotation "
-		<< Rotation.x << " "
-		<< Rotation.y << " "
-		<< Rotation.z << " "
-		<< Rotation.w << endl;
-	cout << "scale "
-		<< scale[0] << " "
-		<< scale[1] << " "
-		<< scale[2] << endl;
-	cout << "jointOrient "
-		<< JointOrient.x << " "
-		<< JointOrient.y << " "
-		<< JointOrient.z << " "
-		<< JointOrient.w << endl << endl;
-}
-
-void Exporter::outputParentInfo(MObject& par)
-{
-	//attach the function set to the object
-	MFnDagNode dn(par);
-
-	//Output the parent names
-	cout << "numparents " << dn.parentCount() << endl;
-
-	//list each parent
-	for (int i = 0; i != dn.parentCount(); ++i)
-	{
-		//Get a handle to the parent
-		MObject parent = dn.parent(i);
-
-		//Attach a function set to the parent object
-		MFnDagNode dnParent(parent);
-
-		cout << dnParent.name().asChar() << endl;
-	}
-
-	//Output child count
-	cout << "numChildren " << dn.childCount() << endl << endl;
-
-	// list each child name
-	for (int i = 0; i != dn.childCount(); ++i)
-	{
-
-		//Get the handle to the child
-		MObject child = dn.child(i);
-
-		//attach a function set to the child object
-		MFnDagNode dnChild(child);
-
-		cout << dnChild.name().asChar() << endl;
-	}
-	cout << endl;
-}
+//void Exporter::outputTransformData(MObject& Trans)
+//{
+//	//attach the function set to the object
+//	MFnTransform tr(Trans);
+//
+//	// Gets transform data as a matrix, though quaternions more interesting! :D
+//	MMatrix mat = tr.transformation().asMatrix();
+//
+//	MQuaternion JointOrient(0, 0, 0, 1);
+//	MQuaternion Rotation(0, 0, 0, 1);
+//	double scale[3];
+//
+//	//Get the transforms local translation
+//	MVector Translation = tr.translation(MSpace::kTransform);
+//
+//	//Get the transforms scale
+//	tr.getScale(scale);
+//
+//	//Get the transforms rotation as quaternions
+//	tr.getRotation(Rotation);
+//
+//	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
+//	if (tr.object().hasFn(MFn::kJoint))
+//	{
+//		MFnIkJoint IKjoint(tr.object());
+//		IKjoint.getOrientation(JointOrient);
+//	}
+//
+//	cout << "translation "
+//		<< Translation.x << " "
+//		<< Translation.y << " "
+//		<< Translation.z << endl;
+//	cout << "rotation "
+//		<< Rotation.x << " "
+//		<< Rotation.y << " "
+//		<< Rotation.z << " "
+//		<< Rotation.w << endl;
+//	cout << "scale "
+//		<< scale[0] << " "
+//		<< scale[1] << " "
+//		<< scale[2] << endl;
+//	cout << "jointOrient "
+//		<< JointOrient.x << " "
+//		<< JointOrient.y << " "
+//		<< JointOrient.z << " "
+//		<< JointOrient.w << endl << endl;
+//}
+//
+//void Exporter::outputParentInfo(MObject& par)
+//{
+//	//attach the function set to the object
+//	MFnDagNode dn(par);
+//
+//	//Output the parent names
+//	cout << "numparents " << dn.parentCount() << endl;
+//
+//	//list each parent
+//	for (int i = 0; i != dn.parentCount(); ++i)
+//	{
+//		//Get a handle to the parent
+//		MObject parent = dn.parent(i);
+//
+//		//Attach a function set to the parent object
+//		MFnDagNode dnParent(parent);
+//
+//		cout << dnParent.name().asChar() << endl;
+//	}
+//
+//	//Output child count
+//	cout << "numChildren " << dn.childCount() << endl << endl;
+//
+//	// list each child name
+//	for (int i = 0; i != dn.childCount(); ++i)
+//	{
+//
+//		//Get the handle to the child
+//		MObject child = dn.child(i);
+//
+//		//attach a function set to the child object
+//		MFnDagNode dnChild(child);
+//
+//		cout << dnChild.name().asChar() << endl;
+//	}
+//	cout << endl;
+//}
 
 void Exporter::extractKeyData(MObject& key)
 {
-	TangentData TD;
+
 	AnimData animTemp;
+	TangentData TD;
 
 	animTemp.animationStart = MAnimControl::animationStartTime();
 	animTemp.animationEnd = MAnimControl::animationEndTime();
@@ -875,6 +967,17 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
+	MItDependencyNodes it(MFn::kSkinClusterFilter);
+	for (; !it.isDone(); it.next()) {
+
+
+		MObject object = it.item();
+
+
+		OutputSkinCluster(object);
+
+	}
+
 	//Hitta kamera data
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kCamera);
 	while (!dag_iter.isDone())
@@ -912,26 +1015,41 @@ bool Exporter::IdentifyAndExtractMeshes()
 		*/
 	}
 
-	//dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
-	//while (!dag_iter.isDone())
-	//{
-	//	//Attach the function set to the object
-	//	MFnTransform fn(dag_iter.item());
-	//	
-	//	//Only want non-history items
-	//	if (!fn.isIntermediateObject())
-	//	{
-	//		//Print mesh name
-	//		cout << "Transform " << fn.name().asChar() << endl;
+// 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kJoint);
+// 	while (!dag_iter.isDone())
+// 	{
+// 		if (dag_iter.getPath(dag_path))
+// 		{
+// 			MFnDagNode dag_node = dag_path.node();
+// 
+// 			if (!dag_node.isIntermediateObject())
+// 			{
+// 				extractJointData(dag_path);
+// 			}
+// 		}
+// 		dag_iter.next();
+// 	}
 
-	//		//Described in the sections below
-	//		outputTransformData(dag_iter.item());
-	//		outputParentInfo(dag_iter.item());
-	//	}
-
-	//	//Get next transform
-	//	dag_iter.next();
-	//}
+// 	dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
+// 	while (!dag_iter.isDone())
+// 	{
+// 		//Attach the function set to the object
+// 		MFnTransform fn(dag_iter.item());
+// 		
+// 		//Only want non-history items
+// 		if (!fn.isIntermediateObject())
+// 		{
+// 			//Print mesh name
+// 			cout << "Transform " << fn.name().asChar() << endl;
+// 
+// 			//Described in the sections below
+// 			outputTransformData(dag_iter.item());
+// 			outputParentInfo(dag_iter.item());
+// 		}
+// 
+// 		//Get next transform
+// 		dag_iter.next();
+// 	}
 
 	//general purpose iterator, sista argument är filtret
 	/*
@@ -988,7 +1106,7 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	}
 
 	for (int i = 0; i < points.length(); i++){
-		vec3 temppoints = { points[i].x, points[i].y, points[i].z };
+		point temppoints = { points[i].x, points[i].y, points[i].z };
 		mesh_data.points.push_back(temppoints);
 	}
 
@@ -1057,6 +1175,130 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	scene_.meshes.push_back(mesh_data);
 
 	return true;
+}
+
+void Exporter::extractJointData(MDagPath path)
+{
+	MFloatMatrix res;
+	MFnIkJoint joint(path);
+	cout << path.partialPathName().asChar() << std::endl;
+	MMatrix invMat;
+
+	MStatus status;
+	MTransformationMatrix restpose = joint.restPosition(&status);
+
+	cout << status <<" "<< restpose.asMatrix() << endl;
+
+
+	MObject jointNode = path.node();
+	MFnDependencyNode fnJoint(jointNode);
+	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
+
+	MPlug plugWorldMatrixArray(jointNode, attrWorldMatrix);
+
+	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
+	{
+
+		MPlug elementPlug = plugWorldMatrixArray[i];
+
+		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
+
+		dgIt.disablePruningOnFilter();
+
+		for (; !dgIt.isDone(); dgIt.next())
+		{
+			MObject thisNode = dgIt.thisNode();
+
+			if (thisNode.apiType() == MFn::kSkinClusterFilter)
+			{
+				MFnSkinCluster skinFn(thisNode);
+
+				MPlug bindPreMatrixArrayPlug = skinFn.findPlug("bindPreMatrix");
+				int logicalIndex = skinFn.indexForInfluenceObject(path);
+				MPlug bindPreMatrixPlug = bindPreMatrixArrayPlug.elementByLogicalIndex(logicalIndex);
+				MObject dataObject;
+				bindPreMatrixArrayPlug.getValue(dataObject);
+
+				MFnMatrixData matDataFn(dataObject);
+
+				invMat = matDataFn.matrix().inverse();
+				res = invMat.matrix;
+				cout << logicalIndex << std::endl;
+			}
+		}
+	}
+	std::cout << res << std::endl;
+}
+
+void Exporter::OutputSkinCluster(MObject& obj)
+{
+	// attach a skin cluster function set to
+	// access the data
+	MFnSkinCluster fn(obj);
+	MDagPathArray infs;
+
+	int nInfs = fn.influenceObjects(infs);
+
+	// loop through the geometries affected by this cluster
+	int nGeoms = fn.numOutputConnections();
+	for (int i = 0; i < nGeoms; ++i) {
+		unsigned int index;
+		index = fn.indexForOutputConnection(i);
+
+		// get the dag path of the i'th geometry
+		MDagPath skinPath;
+		fn.getPathAtIndex(index, skinPath);
+
+		// iterate through the components of this geometry
+		MItGeometry gIter(skinPath);
+
+		// print out the name of the skin cluster,
+		// the vertexCount and the influenceCount
+		cout << "Skin: " << skinPath.partialPathName().asChar() << endl;
+		cout << "pointcount: " << gIter.count() << endl;
+		cout << "numInfluences: " << nInfs << endl;
+
+		for (; !gIter.isDone(); gIter.next()) {
+
+			MObject comp = gIter.component();
+			cout << gIter.index() << endl;
+			// Get the weights for this vertex (one per influence object)
+			//
+			MFloatArray wts;
+			unsigned int infCount;
+			fn.getWeights(skinPath, comp, wts, infCount);
+			if (0 != infCount && !gIter.isDone())
+			{
+				int numWeights = 0;
+				float outWts[40] = { 1.0f, 0 };
+				int outInfs[40] = { 0 };
+
+				// Output the weight data for this vertex
+				//
+				for (int j = 0; j != infCount; ++j)
+				{
+					// ignore weights of little effect
+					if (wts[j] > 0.001f)
+					{
+						if (numWeights != 0)
+						{
+							outWts[0] -= wts[j];
+							outWts[numWeights] = wts[j];
+						}
+						outInfs[numWeights] = j;
+						++numWeights;
+					}
+				}
+				float norm = outWts[0] + outWts[1] + outWts[2] + outWts[3];
+				for (int x = 0; x < 4;x++)
+				{
+					outWts[x] /= norm;
+					scene_.meshes[1].points[gIter.index()].boneIndices[x] = outInfs[x];
+					scene_.meshes[1].points[gIter.index()].boneWeigths[x] = outWts[x];
+				}
+			}
+		}
+	}
 }
 
 
