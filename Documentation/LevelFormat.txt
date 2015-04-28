@@ -5,13 +5,15 @@ Först allt levelspecifikt såsom flaggor, detaljer, osv
 
 
 Levelformatet består därefter av en lista med GameObjects.
-(int, int) coordinate, (4x4 float) transformation matrix, (int) render object reference, (int) game object type reference
+(int) render object reference, (int) game object type reference, (4x4 float) world matrix, (int, int) coordinate
 
 GameObject-typ Flaggor:
 	Dörr: (bool) öppen/stängd, (int) 0 = normal dörr, 1 = startdörr, 2 = slutdörr, (int) activation ID
-	Spak: (bool) power on/off, (int) activation ID [om ej: -1], (bool) activated on/off, (int) activates object reference ID
+	Spak: (bool) power on/off, (int) activation ID, (bool) activated on/off, (int) activates object reference ID
 	Pressure plate: (int) activates object reference ID
 	Shadow container: (int) activates object reference ID
 	
 	
 **I spakens fall, står power-bool för om möjlighet ATT aktivera spaken finns. Activated-boolen beskriver om den använts för att aktivera övrigt gameobject.
+
+**För att hämta translation, rotation och skala kan XMMATRIXDECOMPOSE med fördel användas.

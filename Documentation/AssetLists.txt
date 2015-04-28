@@ -10,3 +10,8 @@ Inläsning:
 Varje rad blir en egen sträng och en exekvering av LoadModel, LoadTexture, CreateRenderObject eller LoadLevelFile.
 gameObjectTypes.txt blir en array av strängar, för skapning av GameObjects vid level parsing.
 Samma fil kan läsas flera gånger och blir då separata entiteter.
+
+
+RenderObjects:
+Varje rad separeras till ett model reference ID, diffuse och specular IDs.
+Alla referenser syftar på en rad i models.txt eller textures.txt.

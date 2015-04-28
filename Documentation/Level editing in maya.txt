@@ -1,0 +1,51 @@
+To parse these levels we need to build them via explicit measures.
+
+Level building consists of importing the .mb-files necessary ONCE and then duplicating them from the already imported objects,
+as that should keep the names consistent. There will be a default "level" scene for use in Maya, with items included.
+Work from this and save the file as any name you wish as long as the title contains the word "level".
+
+All individual node settings are typeset in the nodename (ie: bools, references, flags).
+
+Naming convention:
+	Base naming:
+		p
+		Render object ID
+		GameObject name
+		activation ID
+		
+		example: p_00_Door1
+		Where render object name is pDoor, activation ID is 1.
+	
+	Additional naming (added to base name):
+	[Additional naming is separated by underscores as so "_"]
+	
+		Doors:
+		[must have 'door' in the title]
+			open/closed
+			start/end/other
+			
+			full example: p_00_Door1_closed_end
+			
+		Lever:
+		[must have 'lever' in the title]
+			poweron/poweroff
+			up/down                      - up: unactivated, down: activated
+			
+			activates object reference   - the name of the component you wish to activate
+			
+			full example: p_01_Lever1_poweron_up_00Door1
+			
+		Pressure plates:
+		[must have 'pressure' in the title]
+			activates object reference   - the name of the component you wish to activate
+			
+			full example: p_02_Pressure1_01Lever1
+			
+		Shadow container:
+		[must have 'container' in the title]
+			activates object reference   - the name of the component you wish to activate
+			
+			full example: p_03_Container1_01Lever1
+
+***If the object is not referring to any other component,
+***or if an additional naming part is missing, add "_NULL"
