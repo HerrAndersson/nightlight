@@ -179,14 +179,14 @@ void Exporter::StartExporter(std::string directory_path)
 
 		if (file->find("level") != std::string::npos)
 		{
-			//ProcessLevel(tmp_str);
+			ProcessLevel(tmp_str);
+			CloseExportFiles();
 		}
 		else
 		{
 			ProcessScene(tmp_str);
+			CloseExportFiles();
 		}
-
-		CloseExportFiles();
 	}
 
 	return;
@@ -265,12 +265,25 @@ void Exporter::ProcessLevel(const char *file_path)
 		return;
 	}
 
+	if (!isAssetListLoaded)
+	{
+		fileToStrings("../Bin/gameObjectTypes.txt", levelGameObjectTypes);
+		
+		isAssetListLoaded = true;
+	}
+
 	if (!IdentifyAndExtractLevelInformation())
 	{
 		std::cout << "<Error> IdentifyAndExtractLevelInformation()" << std::endl;
 		return;
 	}
 
+	else
+	{
+		// exportera leveldata till fil
+		std::cout << "Exporting level information" << std::endl << std::endl;
+		ExportLevel();
+	}
 
 
 }
@@ -282,34 +295,124 @@ void Exporter::ProcessLevel(const char *file_path)
 
 bool Exporter::IdentifyAndExtractLevelInformation()
 {
+	formattedLevelData.clear();
+
 	UINT index = 0;
 	scene_.meshes.clear();
 
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
 
+	std::vector<std::string> nodeVec;
+	bool relevantObjectFound = false;
+
+
 	while (!dag_iter.isDone())
 	{
 		if (dag_iter.getPath(dag_path))
 		{
 			MFnDagNode dag_node = dag_path.node();
+			MFnDagNode dag_node_parent = dag_node.parent(0);
 
-			MString nodeName = dag_node.name();
+			MString nodeName = dag_node_parent.name();
+			std::string nodeNameStr = nodeName.asChar();
+			std::transform(nodeNameStr.begin(), nodeNameStr.end(), nodeNameStr.begin(), ::tolower);
+			int gameObjectID = -1;
 
-			// vill endast ha "icke-history"-föremål
-			if (!dag_node.isIntermediateObject())
+			for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
 			{
-				// triangulera meshen innan man hämtar punkterna
-				MFnMesh mesh(dag_path);
-				ExtractMeshData(mesh, index);
-				index++;
+				if (nodeNameStr.find(levelGameObjectTypes.at(i)) != std::string::npos)
+				{
+					gameObjectID = i;
+					relevantObjectFound = true;
+				}
+			}
+			if (relevantObjectFound)
+			{
+				std::string formattedOutput;
+				nodeVec.clear();
+				splitStringToVector(nodeNameStr, nodeVec, "_");
+				
+				std::string goType = levelGameObjectTypes.at(gameObjectID);
+
+				MMatrix transformMat = dag_node_parent.transformationMatrix();
+
+				
+				int coordX = (int)(transformMat[3][0] + EPS);
+				int coordY = (int)(transformMat[3][2] + EPS);
+
+				formattedOutput += nodeVec.at(1) + "," +
+					std::to_string(gameObjectID) + "," +
+					std::to_string(transformMat[0][0]) + "," + std::to_string(transformMat[0][1]) + "," + std::to_string(transformMat[0][2]) + "," + std::to_string(transformMat[0][3]) + "," +
+					std::to_string(transformMat[1][0]) + "," + std::to_string(transformMat[1][1]) + "," + std::to_string(transformMat[1][2]) + "," + std::to_string(transformMat[1][3]) + "," +
+					std::to_string(transformMat[2][0]) + "," + std::to_string(transformMat[2][1]) + "," + std::to_string(transformMat[2][2]) + "," + std::to_string(transformMat[2][3]) + "," +
+					std::to_string(transformMat[3][0]) + "," + std::to_string(transformMat[3][1]) + "," + std::to_string(transformMat[3][2]) + "," + std::to_string(transformMat[3][3]) + "," +
+					std::to_string(coordX) + "," + std::to_string(coordY) + ",";
+
+				if (goType == "door")
+				{
+					if (nodeVec.at(3) == "open")
+					{
+						formattedOutput += "1,";
+					}
+					else
+					{
+						formattedOutput += "0,";
+					}
+
+					if (nodeVec.at(4) == "start")
+					{
+						formattedOutput += "1,";
+					}
+					else if (nodeVec.at(4) == "end")
+					{
+						formattedOutput += "2,";
+					}
+					else
+					{
+						formattedOutput += "0,";
+					}
+
+					formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+				}
+				else if (goType == "lever")
+				{
+					if (nodeVec.at(3) == "poweron")
+					{
+						formattedOutput += "1,";
+					}
+					else
+					{
+						formattedOutput += "0,";
+					}
+
+					formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+
+					if (nodeVec.at(4) == "down")
+					{
+						formattedOutput += "1,";
+					}
+					else
+					{
+						formattedOutput += "0,";
+					}
+
+					formattedOutput += nodeVec.at(5);
+				}
+				else if (goType == "pressure" ||
+					goType == "container")
+				{
+					formattedOutput += nodeVec.at(3);
+				}
+
+				formattedLevelData.push_back(formattedOutput);
+
+				relevantObjectFound = false;
 			}
 		}
-
 		dag_iter.next();
 	}
-
-	return false;
+	return true;
 }
 
 // identifiera och extrahera data från scenen
@@ -1361,6 +1464,15 @@ void Exporter::OutputSkinCluster(MObject& obj)
 //|																							|
 //|								FUNKTIONER FÖR ATT EXPORTERA								|
 //|_________________________________________________________________________________________|
+//exporterar allt inom level-filen: mesh-antal, namn per mesh, antal etc etc
+void Exporter::ExportLevel()
+{
+	for (std::string formattedOutput : formattedLevelData)
+	{
+		export_stream_ << formattedOutput << std::endl;
+	}
+}
+
 #include<maya/MFnCamera.h>
 // exporterar scenen
 void Exporter::ExportScene()
@@ -1601,3 +1713,32 @@ void Exporter::ExportMeshes()
 			*/
 
 }
+
+void Exporter::splitStringToVector(std::string input, std::vector<std::string> &output, std::string delimiter) {
+	size_t pos = 0;
+	std::string token;
+	while ((pos = input.find(delimiter)) != std::string::npos) {
+		token = input.substr(0, pos);
+		if (!token.empty()) {
+			output.push_back(token);
+		}
+		input.erase(0, pos + delimiter.length());
+	}
+	output.push_back(input);
+};
+
+//turns a text file into a vector of strings line-by-line
+void Exporter::fileToStrings(std::string file_path, std::vector<std::string> &output)
+{
+	std::ifstream file(file_path);
+	if (!file.is_open())
+	{
+		printf("Could not open ");
+		printf(file_path.c_str());
+		printf("\n");
+		return;
+	}
+	std::string s((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+	splitStringToVector(s, output, "\n");
+};

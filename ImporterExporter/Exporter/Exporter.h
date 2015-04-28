@@ -16,6 +16,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+
 #include <maya\MLibrary.h>
 #include <maya\MFileIO.h>
 #include <maya\MGlobal.h>
@@ -81,6 +83,8 @@
 //|																							|
 //|										GLOBAL STRUKT-DATA									|
 //|_________________________________________________________________________________________|
+
+static const float EPS = 0.1f;
 
 enum matType{ LAMBERT, BLINN, PHONG };
 
@@ -322,9 +326,12 @@ private:
 	SceneData scene_;
 
 private:
+	std::vector<std::string> levelGameObjectTypes;
+	std::vector<std::string> formattedLevelData;
+	bool isAssetListLoaded = false;
+
 	bool InitializeMaya();
 	void CleanUpMaya();
-
 	void extractLight(MObject& mObj);
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
@@ -353,6 +360,10 @@ private:
 
 	bool ExtractMeshData(MFnMesh &mesh, UINT index);
 
+	void ExportLevel();
 	void ExportScene();
 	void ExportMeshes();
+
+	void splitStringToVector(std::string input, std::vector<std::string> &output, std::string delimiter);
+	void fileToStrings(std::string file_path, std::vector<std::string> &output);
 };
