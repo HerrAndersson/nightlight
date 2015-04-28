@@ -1324,11 +1324,32 @@ void Exporter::OutputSkinCluster(MObject& obj)
 					}
 				}
 				float norm = outWts[0] + outWts[1] + outWts[2] + outWts[3];
+
+				MDagPath dag_path;
+				MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+				int currentmesh = 0, y = 0;
+				while (!dag_iter.isDone())
+				{
+					if (dag_iter.getPath(dag_path))
+					{
+						MFnDagNode dag_node = dag_path.node();
+						if (!dag_node.isIntermediateObject())
+						{
+							MFnMesh mesh(dag_path);
+							if (!strcmp(skinPath.partialPathName().asChar(), mesh.partialPathName().asChar()))
+								currentmesh = y;
+							y++;
+						}
+					}
+
+					dag_iter.next();
+				}
+
 				for (int x = 0; x < 4;x++)
 				{
 					outWts[x] /= norm;
-					scene_.meshes[1].points[gIter.index()].boneIndices[x] = outInfs[x];
-					scene_.meshes[1].points[gIter.index()].boneWeigths[x] = outWts[x];
+					scene_.meshes[currentmesh].points[gIter.index()].boneIndices[x] = outInfs[x];
+					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x];
 				}
 			}
 		}
