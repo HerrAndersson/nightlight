@@ -22,6 +22,7 @@
 
 
 #include <maya\MDagPath.h>
+#include <maya\MDagPathArray.h>
 #include <maya\MFloatPointArray.h>
 
 #include <maya/MFloatMatrix.h>
@@ -87,6 +88,12 @@ struct vec3{
 	float x, y, z;
 };
 
+struct point{
+	float x, y, z;
+	int boneIndices[4];
+	float boneWeigths[4];
+};
+
 struct vec2{
 	float u, v;
 };
@@ -110,16 +117,32 @@ struct face
 	faceIndices verts[3];
 };
 
+struct Joint
+{
+	int parent;
+	MFloatVector LocalTx;
+	MFloatVector GlobalTx;
+	MFloatVector invBindPose;
+	Joint(int par, MFloatVector &data){
+		parent = par;
+		invBindPose = data;
+	}
+	Joint(){
+		parent = 0;
+	}
+};
+
 struct MeshData
 {
 	MDagPath mesh_path;
 	MString name;
 	UINT id;
 
-	std::vector<vec3> points;
+	std::vector<point> points;
 	std::vector<vec3> normals;
 	std::vector<uvSet> uvSets;
 	std::vector<face> faces;
+	std::vector<Joint> skeleton;
 };
 
 struct Color
@@ -206,6 +229,7 @@ struct TangentData
 	int LERP, SLERP, Ltest, Stest;
 	float ix, iy, ox, oy;
 };
+
 
 struct AnimData
 {
@@ -297,6 +321,7 @@ private:
 	void extractCamera(MObject& obj);
 	void extractKeyData(MObject& key);
 	void extractJointData(MDagPath path);
+	void OutputSkinCluster(MObject& obj);
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
