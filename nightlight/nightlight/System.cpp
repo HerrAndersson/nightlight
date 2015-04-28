@@ -75,7 +75,7 @@ bool System::Update()
 		result = game->Render();
 		if (!result) { return false; }
 
-		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime()) + +" msPerFrame: " + std::to_string(timer->GetGameTime()) +" SystemUpdatePerSecond : " + std::to_string(timer->GetFPS());
+		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime()) + " msPerFrame: " + std::to_string(timer->GetGameTime()) + " SystemUpdatePerSecond : " + std::to_string(timer->GetFPS());
 		applicationName = s.c_str();
 
 		SetWindowText(hwnd, applicationName);
