@@ -93,6 +93,9 @@
     <ClCompile Include="Door.cpp">
       <Filter>Game\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Cpu.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="Door.h">
       <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Cpu.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

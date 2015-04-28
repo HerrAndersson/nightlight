@@ -36,13 +36,13 @@ private:
 		}
 	};
 
-
 	INT64 frequency;
 	double ticksPerMs;
 	INT64 startTime;
 
 	double frameTime;
 	double gameTime;
+
 	FPS framesPerSecond;
 
 public:
