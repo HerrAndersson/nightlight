@@ -441,7 +441,6 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 	p.getValue(tempcolor.a);
 	p = fn.findPlug(name.asChar());
 
-
 	MPlugArray connections;
 	p.connectedTo(connections, true, false);
 
@@ -469,7 +468,6 @@ void Exporter::extractColor(Color& tempcolor, MFnDependencyNode& fn, MString nam
 
 			// stop looping
 			break;
-
 		}
 
 	}
@@ -632,91 +630,91 @@ void Exporter::extractLight(MObject& mObj)
 //When it finally gets to keyframe 2, target 2 is dominant because weight value is 1, the keyframes only hold the values for the blendshapes aka the weight value
 //for our object
 
-// void Exporter::outputTransformData(MObject& Trans)
-// {
-// 	//attach the function set to the object
-// 	MFnTransform tr(Trans);
-// 
-// 	// Gets transform data as a matrix, though quaternions more interesting! :D
-// 	MMatrix mat = tr.transformation().asMatrix();
-// 
-// 	MQuaternion JointOrient(0, 0, 0, 1);
-// 	MQuaternion Rotation(0, 0, 0, 1);
-// 	double scale[3];
-// 
-// 	//Get the transforms local translation
-// 	MVector Translation = tr.translation(MSpace::kTransform);
-// 
-// 	//Get the transforms scale
-// 	tr.getScale(scale);
-// 
-// 	//Get the transforms rotation as quaternions
-// 	tr.getRotation(Rotation);
-// 
-// 	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
-// 	if (tr.object().hasFn(MFn::kJoint))
-// 	{
-// 		MFnIkJoint IKjoint(tr.object());
-// 		IKjoint.getOrientation(JointOrient);
-// 	}
-// 
-// 	cout << "translation "
-// 		<< Translation.x << " "
-// 		<< Translation.y << " "
-// 		<< Translation.z << endl;
-// 	cout << "rotation "
-// 		<< Rotation.x << " "
-// 		<< Rotation.y << " "
-// 		<< Rotation.z << " "
-// 		<< Rotation.w << endl;
-// 	cout << "scale "
-// 		<< scale[0] << " "
-// 		<< scale[1] << " "
-// 		<< scale[2] << endl;
-// 	cout << "jointOrient "
-// 		<< JointOrient.x << " "
-// 		<< JointOrient.y << " "
-// 		<< JointOrient.z << " "
-// 		<< JointOrient.w << endl << endl;
-// }
-
-// void Exporter::outputParentInfo(MObject& par)
-// {
-// 	//attach the function set to the object
-// 	MFnDagNode dn(par);
-// 
-// 	//Output the parent names
-// 	cout << "numparents " << dn.parentCount() << endl;
-// 
-// 	//list each parent
-// 	for (int i = 0; i != dn.parentCount(); ++i)
-// 	{
-// 		//Get a handle to the parent
-// 		MObject parent = dn.parent(i);
-// 
-// 		//Attach a function set to the parent object
-// 		MFnDagNode dnParent(parent);
-// 
-// 		cout << dnParent.name().asChar() << endl;
-// 	}
-// 
-// 	//Output child count
-// 	cout << "numChildren " << dn.childCount() << endl << endl;
-// 
-// 	// list each child name
-// 	for (int i = 0; i != dn.childCount(); ++i)
-// 	{
-// 
-// 		//Get the handle to the child
-// 		MObject child = dn.child(i);
-// 
-// 		//attach a function set to the child object
-// 		MFnDagNode dnChild(child);
-// 
-// 		cout << dnChild.name().asChar() << endl;
-// 	}
-// 	cout << endl;
-// }
+//void Exporter::outputTransformData(MObject& Trans)
+//{
+//	//attach the function set to the object
+//	MFnTransform tr(Trans);
+//
+//	// Gets transform data as a matrix, though quaternions more interesting! :D
+//	MMatrix mat = tr.transformation().asMatrix();
+//
+//	MQuaternion JointOrient(0, 0, 0, 1);
+//	MQuaternion Rotation(0, 0, 0, 1);
+//	double scale[3];
+//
+//	//Get the transforms local translation
+//	MVector Translation = tr.translation(MSpace::kTransform);
+//
+//	//Get the transforms scale
+//	tr.getScale(scale);
+//
+//	//Get the transforms rotation as quaternions
+//	tr.getRotation(Rotation);
+//
+//	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
+//	if (tr.object().hasFn(MFn::kJoint))
+//	{
+//		MFnIkJoint IKjoint(tr.object());
+//		IKjoint.getOrientation(JointOrient);
+//	}
+//
+//	cout << "translation "
+//		<< Translation.x << " "
+//		<< Translation.y << " "
+//		<< Translation.z << endl;
+//	cout << "rotation "
+//		<< Rotation.x << " "
+//		<< Rotation.y << " "
+//		<< Rotation.z << " "
+//		<< Rotation.w << endl;
+//	cout << "scale "
+//		<< scale[0] << " "
+//		<< scale[1] << " "
+//		<< scale[2] << endl;
+//	cout << "jointOrient "
+//		<< JointOrient.x << " "
+//		<< JointOrient.y << " "
+//		<< JointOrient.z << " "
+//		<< JointOrient.w << endl << endl;
+//}
+//
+//void Exporter::outputParentInfo(MObject& par)
+//{
+//	//attach the function set to the object
+//	MFnDagNode dn(par);
+//
+//	//Output the parent names
+//	cout << "numparents " << dn.parentCount() << endl;
+//
+//	//list each parent
+//	for (int i = 0; i != dn.parentCount(); ++i)
+//	{
+//		//Get a handle to the parent
+//		MObject parent = dn.parent(i);
+//
+//		//Attach a function set to the parent object
+//		MFnDagNode dnParent(parent);
+//
+//		cout << dnParent.name().asChar() << endl;
+//	}
+//
+//	//Output child count
+//	cout << "numChildren " << dn.childCount() << endl << endl;
+//
+//	// list each child name
+//	for (int i = 0; i != dn.childCount(); ++i)
+//	{
+//
+//		//Get the handle to the child
+//		MObject child = dn.child(i);
+//
+//		//attach a function set to the child object
+//		MFnDagNode dnChild(child);
+//
+//		cout << dnChild.name().asChar() << endl;
+//	}
+//	cout << endl;
+//}
 
 void Exporter::extractKeyData(MObject& key)
 {
@@ -726,8 +724,6 @@ void Exporter::extractKeyData(MObject& key)
 
 	animTemp.animationStart = MAnimControl::animationStartTime();
 	animTemp.animationEnd = MAnimControl::animationEndTime();
-
-	scene_.AnimationData.push_back(animTemp);
 
 	//get Keyframe values
 	MFnAnimCurve AnimCurve(key);
@@ -771,6 +767,8 @@ void Exporter::extractKeyData(MObject& key)
 			animTemp.keyFrame = AnimCurve.time(i);
 	}
 	std::cout << std::endl;
+
+		scene_.AnimationData.push_back(animTemp);
 }
 
 void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base)
@@ -891,32 +889,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 		matIt.next();
 	}
 
-	matIt.reset(MFn::kAnimCurve);
-
-	while (!matIt.isDone())
-	{
-		//Output each curve we find
-		extractKeyData(matIt.item());
-
-		//get next mesh
-		matIt.next();
-	}
-
-	//Turn off or on Blendshapes
-	matIt.reset(MFn::kBlendShape);
-	while (!matIt.isDone())
-	{
-		MFnBlendShapeDeformer bs(matIt.item());
-
-		//Get the envelope attribute plug
-		MPlug pl = bs.findPlug("en");
-
-		//Set the 0 to disable FFD effect, enable by setting it to 1:
-		pl.setValue(1.0f);
-
-		matIt.next();
-	}
-
 	//Get Actual Blendshapes
 	matIt.reset(MFn::kBlendShape);
 	while (!matIt.isDone())
@@ -947,6 +919,31 @@ bool Exporter::IdentifyAndExtractMeshes()
 		matIt.next();
 	}
 
+	matIt.reset(MFn::kAnimCurve);
+
+	while (!matIt.isDone())
+	{
+		//Output each curve we find
+		extractKeyData(matIt.item());
+
+		//get next mesh
+		matIt.next();
+	}
+
+	//Turn off or on Blendshapes
+	matIt.reset(MFn::kBlendShape);
+	while (!matIt.isDone())
+	{
+		MFnBlendShapeDeformer bs(matIt.item());
+
+		//Get the envelope attribute plug
+		MPlug pl = bs.findPlug("en");
+
+		//Set the 0 to disable FFD effect, enable by setting it to 1:
+		pl.setValue(1.0f);
+
+		matIt.next();
+	}
 
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
@@ -1441,6 +1438,9 @@ void Exporter::ExportMeshes()
 	for (int i = 0; i < mainHeader.camCount; i++){
 		outfile.write((const char*)&scene_.cameras[i], 52);
 	}
+
+	outfile.write((const char*)scene_.AnimationData.data(), mainHeader.AnimationData*sizeof(AnimData));
+
 	outfile.close();
 
 	outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);

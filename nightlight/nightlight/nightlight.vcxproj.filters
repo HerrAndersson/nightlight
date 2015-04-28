@@ -146,14 +146,14 @@
     <ClInclude Include="Wall.h">
       <Filter>Game\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Door.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="LevelParser.h">
       <Filter>Game\Level</Filter>
     </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Game\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

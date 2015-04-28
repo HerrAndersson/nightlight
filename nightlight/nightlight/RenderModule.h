@@ -21,15 +21,19 @@ private:
 	
 	struct LightBuffer
 	{
-		XMFLOAT3 lightPos;
-		float  lightRange;
-		XMFLOAT3 lightDir;
-		float lightCone;
-		XMFLOAT3 lightAtt;
+		//spotlight
+		XMFLOAT3 lightPosSpot;
+		float  lightRangeSpot;
+		XMFLOAT3 lightDirSpot;
+		float lightConeSpot;
+		XMFLOAT3 lightAttSpot;
 		float pad;
-		XMFLOAT4 lightAmbient;
-		XMFLOAT4 lightDiffuse;
-		
+		XMFLOAT4 lightAmbientSpot;
+		XMFLOAT4 lightDiffuseSpot;
+
+		XMFLOAT3 lightPosPoint1;
+		float pad2;
+		XMFLOAT4 lightDiffusePoint1;
 		
 	};
 

@@ -3,14 +3,18 @@ SamplerState AssetSamplerState;
 
 cbuffer lightBuffer
 {
-	float3 lightPos;
-	float lightRange;
-	float3 lightDir;
-	float lightCone;
-	float3 lightAtt;
-	float4 lightAmbient;
-	float4 lightDiffuse;
-	
+	float3 lightPosSpot;
+	float  lightRangeSpot;
+	float3 lightDirSpot;
+	float  lightConeSpot;
+	float3 lightAttSpot;
+	float4 lightAmbientSpot;
+	float4 lightDiffuseSpot;
+
+	float3 lightPosPoint;
+	float4 lightDiffusePoint;
+
+
 };
 
 
@@ -35,7 +39,6 @@ struct pixelInputType
 
 float4 pixelShader(pixelInputType input) : SV_TARGET
 {
-	float4 color;
 
 	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
 
@@ -47,18 +50,18 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
 
-	float3 lightToPixelVec = lightPos - input.worldPos;
+	float3 lightToPixelVec = lightPosSpot - input.worldPos;
 
 	//distance between the light pos and pixel pos
 	float d = length(lightToPixelVec);
 
 	//ambient light
-	float3 finalAmbient = diffuse * lightAmbient;
+	float3 finalAmbient = diffuse * lightAmbientSpot;
 
-	//check if pixel to faaar
-	if (d > lightRange)
-		return float4(finalAmbient, diffuse.a);
-
+//	//check if pixel to faaar
+//	if (d > lightRangeSpot)
+//		return float4(finalAmbient, diffuse.a);
+//
 	lightToPixelVec /= d;
 
 	//Calculate how much light the pixel gets by the angle
@@ -67,21 +70,32 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	if (howMuchLight > 0.0f)
 	{
 		//Add light to the finalColor of the pixel
-		finalColor += diffuse * lightDiffuse;
+		finalColor += diffuse * lightDiffuseSpot;
 
 		//Calculate Light's Distance Falloff factor
-		finalColor /= (lightAtt[0] + (lightAtt[1] * (d* d* d)/4.5) + (lightAtt[2] * (d * d * d * d)/4.5));
+		finalColor /= (lightAttSpot[0] + (lightAttSpot[1] * (d* d* d) / 4.5) + (lightAttSpot[2] * (d * d * d * d) / 4.5));
 
 		//Calculate falloff from center to edge of pointlight cone
-		finalColor *= pow(max(dot(-lightToPixelVec, lightDir), 0.0f), lightCone);
+		finalColor *= pow(max(dot(-lightToPixelVec, lightDirSpot), 0.0f), lightConeSpot);
 	}
 
 	if (howMuchLight < 0.0f)
-		finalColor = lightAmbient;
+		finalColor = lightAmbientSpot;
 	
 
 	//make sure the values are between 1 and 0, and add the ambient
 	finalColor = saturate(finalColor + finalAmbient);
+
+
+
+		
+	//float4 color = diffuse;
+	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
+	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
+	diffuseLighting *= (10) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
+	
+	finalColor += (diffuseLighting * lightDiffusePoint);
+
 
 	//Return Final Color
 	return float4(finalColor, diffuse.a);

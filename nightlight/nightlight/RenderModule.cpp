@@ -285,14 +285,16 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 	
-	lightPtr->lightPos = spotlight->getPosition();
-	lightPtr->lightDir = spotlight->getDirection();
-	lightPtr->lightRange = 15.0f;
-	lightPtr->lightCone = 30.0f;
-	lightPtr->lightAtt = XMFLOAT3(0.3f, 0.03f, 0.0f);
-	lightPtr->lightAmbient = XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f);
-	lightPtr->lightDiffuse = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
+	lightPtr->lightPosSpot = spotlight->getPosition();
+	lightPtr->lightDirSpot = spotlight->getDirection();
+	lightPtr->lightRangeSpot = 15.0f;
+	lightPtr->lightConeSpot = 30.0f;
+	lightPtr->lightAttSpot = XMFLOAT3(0.3f, 0.03f, 0.0f);
+	lightPtr->lightAmbientSpot = XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f);
+	lightPtr->lightDiffuseSpot = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	
+	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
+	lightPtr->lightPosPoint1 = XMFLOAT3(10.0f, 0.3f, 10.0f);
 
 
 	deviceContext->Unmap(lightBuffer, 0);
