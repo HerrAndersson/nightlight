@@ -10,6 +10,7 @@ private:
 	bool canReadCpu;
 	HQUERY queryHandle;
 	HCOUNTER counterHandle;
+
 	unsigned long lastSampleTime;
 	long cpu;
 

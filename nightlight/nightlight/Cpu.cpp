@@ -11,20 +11,9 @@ Cpu::Cpu()
 	if (status != ERROR_SUCCESS)
 		canReadCpu = false;
 
-	status = PdhAddCounter(queryHandle, TEXT("\\Processor(_Total)\\% Processor Time"), 0, &counterHandle);
+	status = PdhAddEnglishCounter(queryHandle, TEXT("\\Processor(_Total)\\% Processor Time"), 0, &counterHandle);
 	if (status != ERROR_SUCCESS)
 		canReadCpu = false;
-
-	if (status != ERROR_SUCCESS)
-	{
-		printf("PhdCollectQueryData() ***Error: 0x%X\n", status);
-		if (status == PDH_INVALID_HANDLE)
-			printf("PDH_INVALID_HANDLE\n");
-		else if (status == PDH_NO_DATA)
-			printf("PDH_NO_DATA\n");
-		else
-			printf("Unknown error\n");
-	}
 
 	lastSampleTime = GetTickCount();
 	cpu = 0;

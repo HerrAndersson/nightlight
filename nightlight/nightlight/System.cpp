@@ -11,10 +11,10 @@ System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeig
 
 	//Create and initialize the application
 
-	game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
-
 	timer = new Timer();
 	cpuUsage = new Cpu();
+
+	game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
 }
 
 
