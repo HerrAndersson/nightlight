@@ -6,31 +6,32 @@ using namespace DirectX;
 
 class CameraObject
 {
-
 private:
-
 	float positionX, positionY, positionZ;
 	float rotationX, rotationY, rotationZ;
+	float aspectRatioWbyH;
+	int width, height;
+	float viewNear, viewFar;
 
 	XMMATRIX viewMatrix;
 	XMMATRIX projectionMatrix;
 	XMVECTOR camUp;
 
 public:
-
-	CameraObject();
+	CameraObject(float fovAngleY, int width, int height, float viewNear, float viewFar);
 	~CameraObject();
-	void setPosition(float x, float y, float z);
-	void setRotation(float x, float y, float z);
+	void SetPosition(float x, float y, float z);
+	void SetRotation(float x, float y, float z);
 
-	XMFLOAT3 getPosition();
-	XMFLOAT3 getRotation();
-	XMVECTOR getLookAt();
-	XMVECTOR getCamUp();
+	XMFLOAT3 GetPosition();
+	XMFLOAT3 GetRotation();
+	XMVECTOR GetLookAt();
+	XMVECTOR GetCamUp();
+	const float GetAspectRatio();
 
-	void updateCamera();
-	void getViewMatrix(XMMATRIX& viewMatrix);
-	void getProjectionMatrix(XMMATRIX& projectionMatrix);
+	void UpdateCamera();
+	void GetViewMatrix(XMMATRIX& viewMatrix);
+	void GetProjectionMatrix(XMMATRIX& projectionMatrix);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

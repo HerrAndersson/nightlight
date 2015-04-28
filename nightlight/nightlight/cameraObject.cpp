@@ -1,6 +1,6 @@
 #include "CameraObject.h"
 
-CameraObject::CameraObject()
+CameraObject::CameraObject(float fovAngleY, int width, int height, float viewNear, float viewFar)
 {
 	positionX = 0.0f;
 	positionY = 20.0f;
@@ -10,43 +10,47 @@ CameraObject::CameraObject()
 	rotationY = 0.0f;
 	rotationZ = 0.0f;
 
+	this->width = width;
+	this->height = height;
+	this->aspectRatioWbyH = width / (float)height;
+	this->viewNear = viewNear;
+	this->viewFar = viewFar;
+
 	//Ugly aspect ratio fix (2/1.33333)
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 3,float(2 / 1.33333), 0.1f, 1000);
-	updateCamera();
+	projectionMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatioWbyH, viewNear, viewFar);
+	UpdateCamera();
 }
 
 CameraObject::~CameraObject()
 {}
 
 
-void CameraObject::setPosition(float x, float y, float z)
+void CameraObject::SetPosition(float x, float y, float z)
 {
 	positionX = x;
 	positionY = y;
 	positionZ = z;
-	return;
 }
 
-void CameraObject::setRotation(float x, float y, float z)
+void CameraObject::SetRotation(float x, float y, float z)
 {
 	rotationX = x;
 	rotationY = y; 
 	rotationZ = z;
-	return;
 }
 
-XMFLOAT3 CameraObject::getPosition()
+XMFLOAT3 CameraObject::GetPosition()
 {
 	return XMFLOAT3(positionX, positionY, positionZ);
 }
 
 
-XMFLOAT3 CameraObject::getRotation()
+XMFLOAT3 CameraObject::GetRotation()
 {
 	return XMFLOAT3(rotationX, rotationY, rotationZ);
 }
 
-void CameraObject::updateCamera()
+void CameraObject::UpdateCamera()
 {
 	XMVECTOR up, position, lookAt;
 	XMMATRIX rotationMatrix;
@@ -72,27 +76,22 @@ void CameraObject::updateCamera()
 
 	//Create the view matrix from the updated vectors.
 	viewMatrix = XMMatrixLookAtLH(position, lookAt, up);
-
-	return;
 }
 
 
-XMVECTOR CameraObject::getCamUp()
+XMVECTOR CameraObject::GetCamUp()
 {
-
 	return camUp;
 }
 
-void CameraObject::getProjectionMatrix(XMMATRIX& projectionMatrixIn)
+void CameraObject::GetProjectionMatrix(XMMATRIX& projectionMatrixIn)
 {
 	projectionMatrixIn = projectionMatrix;
-
 }
 
-void CameraObject::getViewMatrix(XMMATRIX& viewMatrixIn)
+void CameraObject::GetViewMatrix(XMMATRIX& viewMatrixIn)
 {
 	viewMatrixIn = viewMatrix;
-
 }
 
 void* CameraObject::operator new(size_t i)
@@ -103,4 +102,9 @@ void* CameraObject::operator new(size_t i)
 void CameraObject::operator delete(void* p)
 {
 	_mm_free(p);
+}
+
+const float CameraObject::GetAspectRatio()
+{
+	return aspectRatioWbyH;
 }
