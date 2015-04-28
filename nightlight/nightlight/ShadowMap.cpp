@@ -36,19 +36,15 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 
 	hr = device->CreateTexture2D(&shadowMapDesc, nullptr, &shadowMap);
 	if (FAILED(hr))
-	{
 		throw runtime_error("Could not create Shadow map Texture2D");
-	}
+
 	hr = device->CreateDepthStencilView(shadowMap, &depthStencilViewDesc, &shadowDepthView);
 	if (FAILED(hr))
-	{
 		throw runtime_error("Could not create Shadow map DSV");
-	}
+	
 	hr = device->CreateShaderResourceView(shadowMap, &shaderResourceViewDesc, &shadowResourceView);
 	if (FAILED(hr))
-	{
 		throw runtime_error("Could not create Shadow map SRV");
-	}
 
 	///////////////////////////////////////////////////////// Vertex shader /////////////////////////////////////////////////////////
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
@@ -62,13 +58,9 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 	if (FAILED(hr))
 	{
 		if (errorMessage)
-		{
 			throw runtime_error(string(static_cast<const char *>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
-		}
 		else
-		{
 			throw runtime_error("Shadow Vertex file missing");
-		}
 	}
 
 	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &shadowVS);
@@ -94,9 +86,7 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 
 	hr = device->CreateDepthStencilState(&shadowDepthStencilDesc, &shadowDepthState);
 	if (FAILED(hr))
-	{
-		throw std::runtime_error("Shadow Depth stencil error");
-	}
+		throw runtime_error("Shadow Depth stencil error");
 }
 
 ShadowMap::~ShadowMap()
@@ -125,9 +115,8 @@ void ShadowMap::ActivateShadowRendering(ID3D11DeviceContext* deviceContext)
 
 void ShadowMap::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld)
 {
-	//Set constant buffer
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT hr;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
