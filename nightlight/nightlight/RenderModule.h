@@ -46,6 +46,7 @@ private:
 	{
 		XMMATRIX viewMatrix;
 		XMMATRIX projectionMatrix;
+		XMFLOAT3 camPos;
 	};
 
 	D3DManager*				d3d;
@@ -67,7 +68,7 @@ private:
 	ID3D11Buffer*			lightBuffer;
 	HWND					hwnd;
 
-	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject * spotlight);
+	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
 
 public:
 
@@ -82,7 +83,7 @@ public:
 	//void UseShadowShader();
 	//void Usesomeothershader() etc.
 
-	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject * spotlight);
+	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
 
 	bool Render(GameObject* gameObject);
 

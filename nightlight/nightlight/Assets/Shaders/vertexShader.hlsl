@@ -7,6 +7,7 @@ cbuffer matrixBufferPerFrame : register(cb1)
 {
 	matrix viewMatrix;
 	matrix projectionMatrix;
+	float3 camPos;
 };
 
 struct vertexInputType
@@ -23,8 +24,7 @@ struct vertexOutput
 	float3 normal : NORMAL;
 
 	float3 worldPos : TEXCOORD1;
-	//fakeShade
-	float yDepth : POSITION;
+	float3 viewDir : POSITION;
 
 };
 
@@ -37,6 +37,8 @@ vertexOutput vertexShader(vertexInputType input)
 	output.position = mul(input.position, worldMatrix);
 	
 	output.worldPos = output.position;
+	output.viewDir = camPos.xyz - output.worldPos.xyz;
+	output.viewDir = normalize(output.viewDir);
 
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
@@ -45,12 +47,7 @@ vertexOutput vertexShader(vertexInputType input)
 	output.normal = mul(input.normal, worldMatrix);
 	output.normal = normalize(output.normal);
 
-	output.yDepth = 1;
-
-	if (input.position.y < 0)
-	{
-		output.yDepth = 0;
-	}
+	
 
 	return output;
 

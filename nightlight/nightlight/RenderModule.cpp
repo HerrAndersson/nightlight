@@ -223,7 +223,6 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
 	dataPtr->world = worldMatrixC;
-	
 	deviceContext->Unmap(matrixBufferPerObject, 0);
 
 	bufferNr = 0;
@@ -248,7 +247,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	return true;
 }
 
-bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject * spotlight)
+bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -271,6 +270,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 
 	dataPtr->viewMatrix = viewMatrixC;
 	dataPtr->projectionMatrix = projectionMatrixC;
+	dataPtr->camPos = camPos;
 
 	deviceContext->Unmap(matrixBufferPerFrame, 0);
 
@@ -294,7 +294,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightDiffuseSpot = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint1 = XMFLOAT3(10.0f, 0.3f, 10.0f);
+	lightPtr->lightPosPoint1 = XMFLOAT3(5.0f, 2.3f, 5.0f);
 
 
 	deviceContext->Unmap(lightBuffer, 0);
@@ -348,10 +348,10 @@ bool RenderModule::Render(GameObject* gameObject)
 	return result;
 }
 
-void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, LightObject* spotlight)
+void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject* spotlight)
 {
 	
-	bool result = SetDataPerFrame(viewMatrix, projectionMatrix, spotlight);
+	bool result = SetDataPerFrame(viewMatrix, projectionMatrix, camPos, spotlight);
 	d3d->BeginScene(red, green, blue, alpha);
 }
 void RenderModule::EndScene()
