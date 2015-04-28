@@ -9,6 +9,8 @@ class GameLogic
 private:
 
 	InputManager* Input;
+	int screenWidth;
+	int screenHeight;
 
 public:
 

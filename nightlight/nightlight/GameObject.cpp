@@ -27,14 +27,14 @@ RenderObject* GameObject::GetRenderObject()
 
 void GameObject::UpdateWorldMatrix()
 {
-	//worldMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)) * XMMatrixTranslation(position.x, position.y, position.z);
-	worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	worldMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)) * XMMatrixTranslation(position.x, position.y, position.z);
+	
+
 }
 
 void GameObject::SetPosition(XMFLOAT3 pos)
 {
 	position = pos;
-	translationMatrix = XMMatrixTranslation ( pos.x, pos.y, pos.z );
 	UpdateWorldMatrix();
 }
 
@@ -46,22 +46,17 @@ XMFLOAT3 GameObject::GetPosition()
 void GameObject::SetRotation(XMFLOAT3 rot)
 {
 	rotation = rot;
-	rotationMatrix = XMMatrixRotationRollPitchYaw ( XMConvertToRadians ( -rotation.x ), XMConvertToRadians ( -rotation.y ), XMConvertToRadians ( -rotation.z ) );
 	UpdateWorldMatrix();
 }
 
 XMVECTOR GameObject::GetForwardVector()
 {
-	XMFLOAT4X4 rotationMatrixF;
-	XMStoreFloat4x4 ( &rotationMatrixF, rotationMatrix );
-	forwardVector = XMVectorSet ( rotationMatrixF._11, rotationMatrixF._12, rotationMatrixF._13, rotationMatrixF._14 );
-
-	/*forwardVector = XMVector3TransformCoord(forwardVector, worldMatrix);
+	forwardVector = XMVector3TransformCoord(forwardVector, worldMatrix);
 	XMVector3Normalize(forwardVector);
 
 	XMVECTOR pos = XMVectorSet(position.x, position.y, position.z, 0);
-	forwardVector = pos + forwardVector;*/
-	return XMVector3Normalize(forwardVector);
+	forwardVector = pos + forwardVector;
+	return forwardVector;
 }
 
 XMFLOAT3 GameObject::GetRotation()

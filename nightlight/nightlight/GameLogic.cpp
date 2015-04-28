@@ -39,7 +39,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		pos = XMFLOAT3(pos.x + 0.1f, pos.y, pos.z);
 
 	//Only update if mouse moved
-	if (oldP.x != newP.x && oldP.y != newP.y)
+	if (oldP.x != newP.x || oldP.y != newP.y)
 	{
 		XMMATRIX v, p, vp;
 		camera->getViewMatrix(v);
@@ -47,25 +47,32 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		vp = v * p;
 
 		//Converting the players position from world to screen space
-		XMVECTOR worldPosVector;
-		worldPosVector = XMLoadFloat3(&pos);
-		worldPosVector = XMVector3Transform(worldPosVector, vp);
-		XMFLOAT3 screenSpacePos;
-		XMStoreFloat3(&screenSpacePos, worldPosVector);
+		//XMVECTOR worldPosVector;
+		//worldPosVector = XMLoadFloat3(&pos);
+		//worldPosVector = XMVector3Transform(worldPosVector, vp);
+		//XMFLOAT3 screenSpacePos;
+		//XMStoreFloat3(&screenSpacePos, worldPosVector);
+
+		XMVECTOR localSpace = XMVector3Transform ( XMLoadFloat3 ( &pos ), vp );
+		float screenX = XMVectorGetX ( localSpace ) / XMVectorGetZ ( localSpace );
+		float screenY = XMVectorGetY ( localSpace ) / XMVectorGetZ ( localSpace );
 
 		XMFLOAT2 msp = Input->GetMousePosScreenSpace();
 
-		double dx = (msp.x - pos.x);
-		double dy = (msp.y - pos.y);
+		/*double dx = (msp.x - pos.x);
+		double dy = (msp.y - pos.y);*/
 
-		double angle = atan2(dx, dy) * (180 / XM_PI);
+		double dx = ( msp.x - screenX );
+		double dy = ( msp.y - screenY );
+
+		double angle = atan2(dy, dx) * (180 / XM_PI);
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 
-		if (rot.y < 0)
-			rot.y += 360;
-		else if (rot.y > 360)
-			rot.y = 0;
+		//if (rot.y < 0)
+		//	rot.y += 360;
+		//else if (rot.y > 360)
+		//	rot.y = 0;
 
 		player->SetRotation(rot);
 		UpdateSpotLight(player, camera, spotlight);
@@ -81,17 +88,22 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	}
 
 	player->SetPosition(pos);
-	spotlight->SetPosition(player->GetPosition().x, player->GetPosition().y, player->GetPosition().z);
+	
 
 	return !Input->Esc();
 }
 
 bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
 {
-	XMFLOAT3 lightDirFinal;
-	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());
-	spotlight->SetDirection(lightDirFinal.x, lightDirFinal.y, lightDirFinal.z);
+	XMFLOAT3 pForward;
+	XMStoreFloat3 ( &pForward, player->GetForwardVector ( ) );
+	spotlight->setDirection ( pForward.x, pForward.y, pForward.z );
 	
+	/*XMFLOAT3 lightDirFinal;
+	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());*/
+	
+	XMFLOAT3 pPos = player->GetPosition ( );
+	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	return true;
 
 }
