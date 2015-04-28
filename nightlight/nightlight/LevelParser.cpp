@@ -1,6 +1,5 @@
 #include "LevelParser.h"
 
-
 LevelParser::LevelParser ( AssetManager* assetManager ) 
 {
 	if (assetManager == nullptr)
@@ -12,6 +11,7 @@ LevelParser::LevelParser ( AssetManager* assetManager )
 		this->assetManager = assetManager;
 	}
 	assetUtility::fileToStrings ( "Levels.txt", levelNames );
+	assetUtility::fileToStrings ( "gameObjectTypes.txt", gameObjectTypes );
 }
 
 
@@ -20,7 +20,7 @@ LevelParser::~LevelParser ( )
 
 }
 
-Level LevelParser::LoadLevel ( int levelID ) 
+Level LevelParser::LoadLevel ( int levelID, std::vector<Enemy> &enemies, Character &character )
 {
 	Level level = Level();
 
@@ -39,7 +39,7 @@ Level LevelParser::LoadLevel ( int levelID )
 		unparsedLine.clear ( );
 		assetUtility::splitStringToVector ( line, unparsedLine, "," );
 
-		//TODO Parse the GameObjects
+		
 
 	}
 	return level;
