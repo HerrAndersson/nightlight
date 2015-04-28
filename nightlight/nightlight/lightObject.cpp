@@ -11,56 +11,56 @@ LightObject::~LightObject()
 }
 
 //Setters
-void LightObject::SetAmbientColor(float red, float green, float blue, float alpha)
+void LightObject::setAmbientColor(float red, float green, float blue, float alpha)
 {
 	ambientColor = XMFLOAT4(red, green, blue, alpha);
 }
 
 
-void LightObject::SetDiffuseColor(float red, float green, float blue, float alpha)
+void LightObject::setDiffuseColor(float red, float green, float blue, float alpha)
 {
 	diffuseColor = XMFLOAT4(red, green, blue, alpha);
 }
 
 
-void LightObject::SetDirection(float x, float y, float z)
+void LightObject::setDirection(float x, float y, float z)
 {
 	direction = XMFLOAT3(x, y, z);
 }
 
-void LightObject::SetPosition(float x, float y, float z)
+void LightObject::setPosition(float x, float y, float z)
 {
 	position = XMFLOAT3(x, y, z);
 }
 
 
 //Getters
-XMFLOAT4 LightObject::GetAmbientColor()
+XMFLOAT4 LightObject::getAmbientColor()
 {
 	return ambientColor;
 }
 
 
-XMFLOAT4 LightObject::GetDiffuseColor()
+XMFLOAT4 LightObject::getDiffuseColor()
 {
 	return diffuseColor;
 }
 
 
-XMFLOAT3 LightObject::GetDirection()
+XMFLOAT3 LightObject::getDirection()
 {
 	
 	return direction;
 }
 
 
-XMFLOAT3 LightObject::GetPosition()
+XMFLOAT3 LightObject::getPosition()
 {
 	return position;
 }
 
 
-void LightObject::GenerateViewMatrix()
+void LightObject::generateViewMatrix()
 {
 	//setting up a perspective-based view matrix
 	XMFLOAT3 up;
@@ -78,18 +78,18 @@ void LightObject::GenerateViewMatrix()
 	viewMatrix = XMMatrixLookAtLH(posVec, lookVec, upVec);
 }
 
-void LightObject::GenerateOrthoMatrix(float width, float screenDepth, float screenNear)
+void LightObject::generateOrthoMatrix(float width, float screenDepth, float screenNear)
 {
 	//setting up a orthographic-based view matrix
 	orthoMatrix = XMMatrixOrthographicLH(width, width, screenNear, screenDepth);
 }
 
-void LightObject::GetViewMatrix(XMMATRIX& viewMatrix)
+void LightObject::getViewMatrix(XMMATRIX& viewMatrix)
 {
 	viewMatrix = viewMatrix;
 }
 
-void LightObject::GetOrthoMatrix(XMMATRIX& projectionMatrix)
+void LightObject::getOrthoMatrix(XMMATRIX& projectionMatrix)
 {
 	projectionMatrix = orthoMatrix;
 }
