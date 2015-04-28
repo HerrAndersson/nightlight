@@ -11,21 +11,25 @@ using DirectX::XMINT2;
 
 struct Position
 {
-	int x, y;
+	int x, z;
 
-	Position(int x, int y)
+	Position(int x, int z)
 	{
 		this->x = x;
-		this->y = y;
+		this->z = z;
 	}
 };
 
-XMINT2 GetPointFromCoord(int x, int y, int tileWidth)
+Position GetPositionFromCoord(int x, int z, int tileWidth)
 {
-	return XMINT2(floor(x / (int)tileWidth), floor(y / (int)tileWidth))
+	return Position(floor(x / (int)tileWidth), floor(z / (int)tileWidth))
 }
 
-vector<Position*> aStar(Level* levelGrid, float startX, float startY, float endX, float endY)
+vector<Position*> aStar(Level* levelGrid, int tileWidth, XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
 {
 	//Implement A* here
+	//XMFLOAT2 holds x-position at .x and z-position at pos.y
+
+	Position start = GetPositionFromCoord(startPosXZ.x, startPosXZ.y, tileWidth);
+	Position end = GetPositionFromCoord(endPosXZ.x, endPosXZ.y, tileWidth);
 }

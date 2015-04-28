@@ -22,3 +22,8 @@ void AiModule::HandleAI(Enemy* ai)
 		//Do something else?
 	}
 }
+
+Position* AiModule::GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
+{
+	//return aStar(level, level->GetTileDimension(), startPosXZ, endPosXZ);
+}

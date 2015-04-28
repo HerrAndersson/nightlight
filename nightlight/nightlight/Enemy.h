@@ -5,7 +5,7 @@ class Enemy : public GameObject
 {
 private:
 
-	bool followPlayer;
+	bool followingPlayer;
 	vector<Position*> path;
 
 public:

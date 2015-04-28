@@ -14,8 +14,12 @@ Enemy::~Enemy()
 
 void Enemy::Update()
 {
-	if (!followPlayer)
+	if (!followingPlayer)
 	{
+		if (!HasValidPath())
+		{
+			
+		}
 		//follow path here
 	}
 	else
@@ -26,7 +30,7 @@ void Enemy::Update()
 
 bool Enemy::IsFollowingPlayer()
 {
-	return followPlayer;
+	return followingPlayer;
 }
 
 bool Enemy::HasValidPath()
