@@ -19,17 +19,21 @@ struct Position
 		this->z = z;
 	}
 };
-
-Position GetPositionFromCoord(int x, int z, int tileWidth)
-{
-	return Position(floor(x / (int)tileWidth), floor(z / (int)tileWidth))
-}
-
-vector<Position*> aStar(Level* levelGrid, int tileWidth, XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
-{
-	//Implement A* here
-	//XMFLOAT2 holds x-position at .x and z-position at pos.y
-
-	Position start = GetPositionFromCoord(startPosXZ.x, startPosXZ.y, tileWidth);
-	Position end = GetPositionFromCoord(endPosXZ.x, endPosXZ.y, tileWidth);
-}
+//
+////Position GetPositionFromCoord(float x, float z, int tileWidth)
+////{
+////	return Position((int)floor(x / tileWidth), (int)floor(z / tileWidth));
+////}
+//
+//vector<Position*> aStar(Level* levelGrid, int tileWidth, XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
+//{
+//	//Implement A* here
+//	//XMFLOAT2 holds x-position at .x and z-position at pos.y
+//
+//	vector<Position*> path;
+//
+////	Position start = GetPositionFromCoord(startPosXZ.x, startPosXZ.y, tileWidth);
+//	//Position end = GetPositionFromCoord(endPosXZ.x, endPosXZ.y, tileWidth);
+//
+//	return path;
+//}
