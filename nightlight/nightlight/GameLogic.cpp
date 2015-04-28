@@ -80,6 +80,8 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	}
 
+	camera->SetPosition(player->GetPosition().x , 20, player->GetPosition().z );
+	camera->SetLookAt(player->GetPosition().x * 0.6, 0, player->GetPosition().z * 0.6);
 	player->SetPosition(pos);
 
 	UpdateSpotLight ( player, camera, spotlight );
