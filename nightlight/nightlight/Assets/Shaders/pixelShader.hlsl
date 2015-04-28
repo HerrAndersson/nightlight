@@ -1,3 +1,6 @@
+Texture2D AssetTexture;
+SamplerState AssetSamplerState;
+
 cbuffer lightBuffer
 {
 	float3 lightPos;
@@ -34,14 +37,15 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 {
 	float4 color;
 
+	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
 
-	float4 ambientLight = (1.1f, 0.1f, 0.1f, 1.0f);
+	//float4 ambientLight = (0.1f, 0.1f, 0.1f, 1.0f);
 
 	input.normal = normalize(input.normal);
 
-	float4 diffuse = float4(0.0f, 1.0f, 0.0f, 1.0f);
+	//float4 diffuse = float4(0.0f, 1.0f, 0.0f, 1.0f);
 
-	float3 finalColor = float3(1.5f, 0.0f, 0.5f);
+	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
 
 	float3 lightToPixelVec = lightPos - input.worldPos;
 
@@ -53,7 +57,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 	//check if pixel to faaar
 	if (d > lightRange)
-		return float4(finalAmbient, lightDiffuse.a);
+		return float4(finalAmbient, diffuse.a);
 
 	lightToPixelVec /= d;
 
@@ -66,20 +70,20 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		finalColor += diffuse * lightDiffuse;
 
 		//Calculate Light's Distance Falloff factor
-		finalColor /= (lightAtt[0] + (lightAtt[1] * d * d )) + (lightAtt[2] * (d* d * d * d));
+		finalColor /= (lightAtt[0] + (lightAtt[1] * (d* d* d)/4.5) + (lightAtt[2] * (d * d * d * d)/4.5));
 
 		//Calculate falloff from center to edge of pointlight cone
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDir), 0.0f), lightCone);
 	}
 
 	if (howMuchLight < 0.0f)
-		finalColor = (0.0f, 0.0f, 0.0f);
+		finalColor = lightAmbient;
 	
 
 	//make sure the values are between 1 and 0, and add the ambient
 	finalColor = saturate(finalColor + finalAmbient);
 
 	//Return Final Color
-	return float4(finalColor, 1.0f);
+	return float4(finalColor, diffuse.a);
 
 }

@@ -52,8 +52,8 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 	if (oldP.x != newP.x || oldP.y != newP.y || playerMoved)
 	{
 		XMMATRIX v, p, vp;
-		camera->getViewMatrix(v);
-		camera->getProjectionMatrix(p);
+		camera->GetViewMatrix(v);
+		camera->GetProjectionMatrix(p);
 		vp = v * p;
 
 		//Converting the players position from world to screen space
@@ -73,11 +73,11 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		double dy = (msp.y - pos.y);*/
 
 		double dx = ( msp.x - screenX );
-		double dy = ( msp.y - screenY );
+		double dy = ( msp.y - screenY ) / camera->GetAspectRatio();
 
 		double angle = atan2(dy, dx) * (180 / XM_PI);
 
-		printf ( ( std::to_string ( msp.x ) + " " + std::to_string ( msp.y ) + "\n" + std::to_string ( screenX) + " " + std::to_string ( screenY) + "\n\n" ).c_str ( ) );
+		printf((std::to_string(msp.x) + " " + std::to_string(msp.y/1.6f) + "\n" + std::to_string(screenX) + " " + std::to_string(screenY) + "\n\n").c_str());
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 
@@ -115,6 +115,10 @@ bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightO
 	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());*/
 	
 	XMFLOAT3 pPos = player->GetPosition ( );
+	//offset light
+	pPos.x += pForward.x/2;
+	pPos.z += pForward.z/2;
+	pPos.y += 0.1;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	return true;
 

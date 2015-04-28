@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	//activeGameState = MENU;
 
-	camera = new CameraObject();
+	camera = new CameraObject(XM_PI / 2, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
 
 	InitManagers(hwnd, fullscreen);
@@ -84,8 +84,8 @@ bool Game::Render()
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
-	camera->getProjectionMatrix(projectionMatrix);
-	camera->getViewMatrix(viewMatrix);
+	camera->GetProjectionMatrix(projectionMatrix);
+	camera->GetViewMatrix(viewMatrix);
 
 	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, spotLight);
 

@@ -32,7 +32,8 @@ public:
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
 	XMVECTOR GetForwardVector();
-	
+	ID3D11ShaderResourceView* GetDiffuseTexture();
+	ID3D11ShaderResourceView* GetSpecularTexture();
 
 	void SetPosition(XMFLOAT3 pos);
 	void SetRotation(XMFLOAT3 rot);
