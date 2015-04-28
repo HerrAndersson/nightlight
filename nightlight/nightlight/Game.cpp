@@ -26,7 +26,10 @@ void Game::LoadAssets()
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	for (int i = 0; i < 30; i++)
+	{
+		gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(5), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	}
 }
 
 Game::~Game()
@@ -94,7 +97,16 @@ bool Game::Render()
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject.at(0));
 	Renderer->Render(gameObject.at(1));
-	Renderer->Render(gameObject.at(2));
+	for (int j = 0; j < 30; j++)
+	{
+		for (int i = 0; i < 30; i++)
+		{
+			gameObject.at(2 + i)->SetPosition(XMFLOAT3(-15+i, 0, -15+j));
+			Renderer->Render(gameObject.at(2 + i));
+		}
+
+	}
+
 
 	Renderer->EndScene();
 

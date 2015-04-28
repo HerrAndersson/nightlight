@@ -96,6 +96,10 @@
     <ClCompile Include="Cpu.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="AiModule.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -159,6 +163,15 @@
       <Filter>Game\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Cpu.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AiUtil.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AiModule.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

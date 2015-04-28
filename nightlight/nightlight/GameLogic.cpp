@@ -68,8 +68,6 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 		player->SetRotation(rot);
 		
-
-
 		//std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
 		//std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
 		//std::cout << "Mouse screenspace: " << msp.x << " " << msp.y << std::endl;
@@ -80,6 +78,8 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	}
 
+	camera->SetPosition(player->GetPosition().x , 20, player->GetPosition().z );
+	camera->SetLookAt(player->GetPosition().x * 0.9, 0, player->GetPosition().z * 0.9);
 	player->SetPosition(pos);
 
 	UpdateSpotLight ( player, camera, spotlight );
@@ -100,7 +100,7 @@ bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightO
 	//offset light
 	pPos.x += pForward.x/2;
 	pPos.z += pForward.z/2;
-	pPos.y += 0.1;
+	pPos.y += 0.1f;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	return true;
 

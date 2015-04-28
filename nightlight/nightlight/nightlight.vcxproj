@@ -64,12 +64,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AiModule.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CameraObject.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="D3DManager.cpp" />
     <ClCompile Include="Door.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FloorTile.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
@@ -87,6 +89,8 @@
     <ClCompile Include="WICTextureLoader\WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AiModule.h" />
+    <ClInclude Include="AiUtil.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetUtil.h" />
     <ClInclude Include="CameraObject.h" />
@@ -94,6 +98,7 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="Door.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="FloorTile.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
