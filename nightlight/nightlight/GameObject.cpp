@@ -28,8 +28,6 @@ RenderObject* GameObject::GetRenderObject()
 void GameObject::UpdateWorldMatrix()
 {
 	worldMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z)) * XMMatrixTranslation(position.x, position.y, position.z);
-	
-
 }
 
 void GameObject::SetPosition(XMFLOAT3 pos)

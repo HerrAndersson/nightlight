@@ -1,9 +1,9 @@
 #include "System.h"
 
-System::System(bool fullscreen, bool showCursor, int screenWidth, int screenHeight)
+System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeight)
 {
-	this->windowWidth = screenWidth;
-	this->windowHeight = screenHeight;
+	this->windowWidth = windowWidth;
+	this->windowHeight = windowHeight;
 	this->fullscreen = fullscreen;
 	this->showCursor = showCursor;
 
@@ -114,7 +114,6 @@ void System::InitializeWindows()
 		//Determine the resolution of the screen.
 		screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
 		windowHeight = screenHeight;
 		windowWidth = screenWidth;
 
