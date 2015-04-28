@@ -49,7 +49,6 @@ XMFLOAT4 LightObject::getDiffuseColor()
 
 XMFLOAT3 LightObject::getDirection()
 {
-	
 	return direction;
 }
 

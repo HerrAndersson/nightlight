@@ -70,14 +70,14 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		finalColor += diffuse * lightDiffuse;
 
 		//Calculate Light's Distance Falloff factor
-		finalColor /= (lightAtt[0] + (lightAtt[1] * d * d )) + (lightAtt[2] * (d* d * d * d));
+		finalColor /= (lightAtt[0] + (lightAtt[1] * (d* d* d)/4.5) + (lightAtt[2] * (d * d * d * d)/4.5));
 
 		//Calculate falloff from center to edge of pointlight cone
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDir), 0.0f), lightCone);
 	}
 
 	if (howMuchLight < 0.0f)
-		finalColor = (0.1f, 0.1f, 0.1f);
+		finalColor = lightAmbient;
 	
 
 	//make sure the values are between 1 and 0, and add the ambient

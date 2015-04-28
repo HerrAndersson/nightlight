@@ -287,11 +287,11 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr->lightPos = spotlight->getPosition();
 	lightPtr->lightDir = spotlight->getDirection();
-	lightPtr->lightRange = 100.0f;
-	lightPtr->lightCone = 15.0f;
-	lightPtr->lightAtt = XMFLOAT3(0.0f, 0.03f, 0.0f);
-	lightPtr->lightAmbient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	lightPtr->lightDiffuse = XMFLOAT4(0.2f, 0.2f, 0.0f, 1.0f);
+	lightPtr->lightRange = 15.0f;
+	lightPtr->lightCone = 30.0f;
+	lightPtr->lightAtt = XMFLOAT3(0.3f, 0.03f, 0.0f);
+	lightPtr->lightAmbient = XMFLOAT4(0.05f, 0.05f, 0.05f, 1.0f);
+	lightPtr->lightDiffuse = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	
 
 
