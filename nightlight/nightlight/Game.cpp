@@ -23,8 +23,10 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(11), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -87,11 +89,13 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, spotLight);
+	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
 
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject.at(0));
 	Renderer->Render(gameObject.at(1));
+	Renderer->Render(gameObject.at(2));
+
 	Renderer->EndScene();
 
 	return result;

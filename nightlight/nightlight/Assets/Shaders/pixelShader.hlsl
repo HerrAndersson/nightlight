@@ -31,14 +31,26 @@ struct pixelInputType
 	float3 normal : NORMAL;
 	float3 worldPos : TEXCOORD1;
 	
-	//fakeShade
-	float yDepth : POSITION;
+	
+	float3 viewDir : POSITION;
 
 };
 
 
 float4 pixelShader(pixelInputType input) : SV_TARGET
 {
+	//specular
+	float3 reflection;
+	float4 specular;
+
+	//Initialize the specular color.
+	specular = float4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	//float4 color = diffuse;
+	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
+	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
+	diffuseLighting *= (10) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
+
 
 	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
 
@@ -77,6 +89,8 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 		//Calculate falloff from center to edge of pointlight cone
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDirSpot), 0.0f), lightConeSpot);
+
+
 	}
 
 	if (howMuchLight < 0.0f)
@@ -86,17 +100,18 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//make sure the values are between 1 and 0, and add the ambient
 	finalColor = saturate(finalColor + finalAmbient);
 
-
-
-		
-	//float4 color = diffuse;
-	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
-	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
-	diffuseLighting *= (10) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
-	
 	finalColor += (diffuseLighting * lightDiffusePoint);
 
+	if (diffuseLighting > 0)
+	{
 
+		reflection = normalize(2 * diffuseLighting * input.normal + pointLightDir);
+		
+		// Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
+		specular = pow(saturate(dot(reflection, input.viewDir)), 20);
+		finalColor += (specular);
+	}
+	
 	//Return Final Color
 	return float4(finalColor, diffuse.a);
 
