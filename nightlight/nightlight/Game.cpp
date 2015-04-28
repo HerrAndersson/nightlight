@@ -95,6 +95,7 @@ bool Game::Render()
 	Renderer->Render(gameObject.at(0));
 	Renderer->Render(gameObject.at(1));
 	Renderer->Render(gameObject.at(2));
+
 	Renderer->EndScene();
 
 	return result;
