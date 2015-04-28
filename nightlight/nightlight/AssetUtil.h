@@ -12,7 +12,7 @@ using namespace DirectX;
 namespace assetUtility {
 	struct MainHeader 
 	{
-		int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize;
+		int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
 	};
 
 	struct MeshHeader 
