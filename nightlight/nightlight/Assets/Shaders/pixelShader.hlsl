@@ -92,12 +92,12 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//float4 color = diffuse;
 	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
 	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
-	diffuseLighting *= (50) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
-	//
-	finalColor *= diffuseLighting;
+	diffuseLighting *= (10) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
+	
+	finalColor += (diffuseLighting * lightDiffusePoint);
 
 
 	//Return Final Color
-	return float4(finalColor, 1);
+	return float4(finalColor, diffuse.a);
 
 }
