@@ -69,6 +69,7 @@ void AssetManager::LoadModel(string file_path){
 	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
 
+
 	for (int i = 0; i < mainHeader.matCount; i++)
 	{
 		if (i == 0){

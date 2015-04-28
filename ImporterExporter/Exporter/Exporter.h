@@ -137,8 +137,10 @@ struct MeshData
 	MDagPath mesh_path;
 	MString name;
 	UINT id;
+	bool hasSkeleton = false;
 
 	std::vector<point> points;
+	std::vector<vec3> purepoints;
 	std::vector<vec3> normals;
 	std::vector<uvSet> uvSets;
 	std::vector<face> faces;
@@ -286,6 +288,7 @@ struct MainHeader{
 struct MeshHeader
 {
 	int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
+	bool hasSkeleton;
 };
 
 struct MatHeader{

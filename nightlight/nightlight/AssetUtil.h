@@ -18,6 +18,7 @@ namespace assetUtility {
 	struct MeshHeader 
 	{
 		int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
+//		bool hasSkeleton;
 	};
 
 	struct MatHeader 

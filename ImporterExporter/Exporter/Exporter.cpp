@@ -1138,7 +1138,9 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 
 	for (int i = 0; i < points.length(); i++){
 		point temppoints = { points[i].x, points[i].y, points[i].z };
+		vec3 temppurepoints = { points[i].x, points[i].y, points[i].z };
 		mesh_data.points.push_back(temppoints);
+		mesh_data.purepoints.push_back(temppurepoints);
 	}
 
 	// hämta icke-indexerade normaler
@@ -1348,6 +1350,7 @@ void Exporter::OutputSkinCluster(MObject& obj)
 					scene_.meshes[currentmesh].points[gIter.index()].boneIndices[x] = outInfs[x];
 					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x];
 				}
+				scene_.meshes[currentmesh].hasSkeleton = true;
 			}
 		}
 	}
@@ -1414,10 +1417,14 @@ void Exporter::ExportMeshes()
 		meshHeader.numberPoints = scene_.meshes[i].points.size();
 		meshHeader.numberNormals = scene_.meshes[i].normals.size();
 		meshHeader.numberCoords = scene_.meshes[i].uvSets[0].UVs.size();
+		meshHeader.hasSkeleton = scene_.meshes[i].hasSkeleton;
 
 		outfile.write((const char*)&meshHeader, sizeof(MeshHeader));
 		outfile.write((const char*)scene_.meshes[i].name.asChar(), meshHeader.nameLength);
-		outfile.write((const char*)scene_.meshes[i].points.data(), meshHeader.numberPoints*sizeof(point));
+		if (meshHeader.hasSkeleton)
+			outfile.write((const char*)scene_.meshes[i].points.data(), meshHeader.numberPoints*sizeof(point));
+		else
+			outfile.write((const char*)scene_.meshes[i].purepoints.data(), meshHeader.numberPoints*sizeof(vec3));
 		outfile.write((const char*)scene_.meshes[i].normals.data(), meshHeader.numberNormals*sizeof(vec3));
 		outfile.write((const char*)scene_.meshes[i].uvSets[0].UVs.data(), meshHeader.numberCoords*sizeof(vec2));
 		for (int a = 0; a < meshHeader.numberFaces; a++){
