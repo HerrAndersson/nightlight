@@ -230,18 +230,23 @@ struct TangentData
 	float ix, iy, ox, oy;
 };
 
+struct KeyFrames
+{
+	MTime keyFrame;					    //Keyframe position on timeline 
+	float AnimValue;					//Not necessary weights, but for morph animation it is
+	MTime currTime;
+};
+
 
 struct AnimData
 {
 	MTime animationStart;
 	MTime animationEnd;
 	int numKeys;
-	MTime keyFrame;					    //Keyframe position on timeline 
-	float AnimValue;					//Not necessary weights, but for morph animation it is
-	MTime currTime;
 
 	std::vector<BlendShapeTarget> BShapes;
 	std::vector<TangentData> Tdata;
+	std::vector<KeyFrames> KeyData;
 
 
 	//Stuff for later:
@@ -319,14 +324,14 @@ private:
 	void extractLight(MObject& mObj);
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
-	void extractKeyData(MObject& key);
+	void extractKeyData(MObject& key, AnimData&);
 	void extractJointData(MDagPath path);
 	void OutputSkinCluster(MObject& obj);
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
-	void OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base);
-	void outPutTarget(MObject& target);
+	void OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base, AnimData&);
+	void outPutTarget(MObject& target, AnimData&);
 
 	bool CreateExportFiles(std::string file_path, std::string output_type);
 	void CloseExportFiles();

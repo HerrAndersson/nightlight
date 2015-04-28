@@ -716,11 +716,10 @@ void Exporter::extractLight(MObject& mObj)
 //	cout << endl;
 //}
 
-void Exporter::extractKeyData(MObject& key)
+void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 {
-
-	AnimData animTemp;
 	TangentData TD;
+	KeyFrames KD;
 
 	animTemp.animationStart = MAnimControl::animationStartTime();
 	animTemp.animationEnd = MAnimControl::animationEndTime();
@@ -744,8 +743,8 @@ void Exporter::extractKeyData(MObject& key)
 	// get all keyframe times & values
 	for (unsigned int i = 0; i < animTemp.numKeys; i++)
 	{
-		MTime time = AnimCurve.time(i).value();
-		animTemp.AnimValue = AnimCurve.value(i);
+		KD.currTime = AnimCurve.time(i).value();
+		KD.AnimValue = AnimCurve.value(i);
 
 		TD.Ltest = AnimCurve.inTangentType(i);
 		TD.Stest = AnimCurve.outTangentType(i);
@@ -754,24 +753,25 @@ void Exporter::extractKeyData(MObject& key)
 		AnimCurve.getTangent(i, TD.ox, TD.oy, FALSE);
 
 		// write keyframe info
-		std::cout << " time " << time.as(MTime::kSeconds);
+		std::cout << " time " << KD.currTime.as(MTime::kSeconds);
 		std::cout << " frame " << AnimCurve.time(i);
-		std::cout << " value " << animTemp.AnimValue;
+		std::cout << " value " << KD.AnimValue;
 		std::cout << " Tangents " << TD.Ltest << " " << TD.Stest;
 		std::cout << " Tangent In " << TD.ix << " " << TD.iy;
 		std::cout << " Tangent Out " << TD.ox << " " << TD.oy << std::endl;
 
-		animTemp.currTime = animTemp.currTime.as(MTime::kSeconds);
+		KD.currTime = KD.currTime.as(MTime::kSeconds);
 
-		if (animTemp.keyFrame < AnimCurve.time(i))
-			animTemp.keyFrame = AnimCurve.time(i);
+		if (KD.keyFrame < AnimCurve.time(i))
+			KD.keyFrame = AnimCurve.time(i);
+
+		animTemp.Tdata.push_back(TD);
+		animTemp.KeyData.push_back(KD);
 	}
 	std::cout << std::endl;
-
-		scene_.AnimationData.push_back(animTemp);
 }
 
-void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base)
+void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base, AnimData& AnimTemp)
 {
 	//Output info about the base shape
 	MFnDependencyNode fnDep(Base);
@@ -804,12 +804,12 @@ void Exporter::OutputWeights(MFnBlendShapeDeformer& fn, MObject& Base)
 		//output each target shape
 		for (unsigned int j = 0; j < targets.length(); ++j)
 		{
-			outPutTarget(targets[j]);
+			outPutTarget(targets[j], AnimTemp);
 		}
 	}
 }
 
-void Exporter::outPutTarget(MObject& target)
+void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp)
 {
 	//Attach the function set to the object
 	MItGeometry it(target);
@@ -840,6 +840,8 @@ void Exporter::outPutTarget(MObject& target)
 
 		it.next();
 	}
+	cout << endl;
+	AnimTemp.BShapes.push_back(temp);
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -889,6 +891,23 @@ bool Exporter::IdentifyAndExtractMeshes()
 		matIt.next();
 	}
 
+	AnimData AnimTemp;
+
+	//Turn off or on Blendshapes
+	matIt.reset(MFn::kBlendShape);
+	while (!matIt.isDone())
+	{
+		MFnBlendShapeDeformer bs(matIt.item());
+
+		//Get the envelope attribute plug
+		MPlug pl = bs.findPlug("en");
+
+		//Set the 0 to disable FFD effect, enable by setting it to 1:
+		pl.setValue(1.0f);
+
+		matIt.next();
+	}
+
 	//Get Actual Blendshapes
 	matIt.reset(MFn::kBlendShape);
 	while (!matIt.isDone())
@@ -912,9 +931,8 @@ bool Exporter::IdentifyAndExtractMeshes()
 			MObject Base = base_objects[i];
 
 			//Output all of the target shapes and weights
-			OutputWeights(bs, Base);
+			OutputWeights(bs, Base, AnimTemp);
 		}
-
 		//Get next blend shapes
 		matIt.next();
 	}
@@ -924,24 +942,10 @@ bool Exporter::IdentifyAndExtractMeshes()
 	while (!matIt.isDone())
 	{
 		//Output each curve we find
-		extractKeyData(matIt.item());
+		extractKeyData(matIt.item(), AnimTemp);
 
+		scene_.AnimationData.push_back(AnimTemp);
 		//get next mesh
-		matIt.next();
-	}
-
-	//Turn off or on Blendshapes
-	matIt.reset(MFn::kBlendShape);
-	while (!matIt.isDone())
-	{
-		MFnBlendShapeDeformer bs(matIt.item());
-
-		//Get the envelope attribute plug
-		MPlug pl = bs.findPlug("en");
-
-		//Set the 0 to disable FFD effect, enable by setting it to 1:
-		pl.setValue(1.0f);
-
 		matIt.next();
 	}
 
