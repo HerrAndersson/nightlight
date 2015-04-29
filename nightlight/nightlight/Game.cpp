@@ -24,10 +24,10 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 void Game::LoadAssets()
 {
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(10), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(12), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(13), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -129,7 +129,7 @@ bool Game::Render()
 			{
 				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
-				Renderer->Render(gameObject.at(2));
+				Renderer->Render(gameObject.at(3));
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
 			}
 
