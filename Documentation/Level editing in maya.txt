@@ -49,3 +49,13 @@ Naming convention:
 
 ***If the object is not referring to any other component,
 ***or if an additional naming part is missing, add "_NULL"
+
+__________________________________________________________
+Current base names:
+		p_00_Door1
+		p_01_Lever1
+		p_02_Pressure1
+		p_03_Container1
+		p_04_Wall1
+		p_05_Corner1
+		p_06_Floor1
