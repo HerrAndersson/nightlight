@@ -108,6 +108,13 @@ namespace assetUtility {
 		XMFLOAT4 specular;
 	};
 
+	struct BlendShape
+	{
+		int MeshTarget;
+		std::vector<XMFLOAT3> points;
+		std::vector<XMFLOAT3> normals;
+	};
+
 	struct RenderObject 
 	{
 		Model* model;

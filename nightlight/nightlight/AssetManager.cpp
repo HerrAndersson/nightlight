@@ -149,8 +149,28 @@ void AssetManager::LoadModel(string file_path){
 		infile.seekg(mainHeader.dirLightSize* sizeof(DirectionalLightStruct), ios::cur);
 	if (mainHeader.pointLightSize)
 		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(PointLightStruct));
-	if (mainHeader.spotLightSize)
-		infile.read((char*)&model->spotLight, sizeof(SpotLightStruct));//todo
+	if (mainHeader.spotLightSize){
+		infile.read((char*)&model->spotLight, sizeof(SpotLightStruct));
+		infile.seekg(mainHeader.spotLightSize - 1 * sizeof(SpotLightStruct), ios::cur);
+	}
+
+	infile.seekg(mainHeader.camCount * 52, ios::cur);
+
+/*	
+	for (int i = 0; i < mainHeader.camCount; i++){
+		läs kameror
+	}
+*/
+	std::vector<BlendShape> blendShapes;
+	for (int i = 0; i < mainHeader.blendShapeCount; i++){
+		BlendShape blendShape;
+		infile.read((char*)&blendShape.MeshTarget, 4);
+		blendShape.points.resize(points.size() + purePoints.size());
+		infile.read((char*)blendShape.points.data(), blendShape.points.size()*sizeof(XMFLOAT3));
+		blendShape.normals.resize(normals.size());
+		infile.read((char*)blendShape.normals.data(), blendShape.normals.size()*sizeof(XMFLOAT3));
+		blendShapes.push_back(blendShape);
+	}
 
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();

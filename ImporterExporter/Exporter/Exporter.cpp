@@ -1512,6 +1512,7 @@ void Exporter::ExportMeshes()
 
 	MainHeader mainHeader;
 	mainHeader.meshCount = scene_.meshes.size();
+	mainHeader.blendShapeCount = scene_.blendShapes.size();
 	mainHeader.matCount = scene_.materials.size();
 	mainHeader.pointLightSize = scene_.lights.pointLights.size();
 	mainHeader.ambientLightSize = scene_.lights.ambientLights.size();
