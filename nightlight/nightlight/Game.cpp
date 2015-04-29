@@ -28,7 +28,7 @@ void Game::LoadAssets()
 
 	for (int i = 0; i < 30; i++)
 	{
-		gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(5), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+		gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	}
 }
 
@@ -101,7 +101,7 @@ bool Game::Render()
 	{
 		for (int i = 0; i < 30; i++)
 		{
-			gameObject.at(2 + i)->SetPosition(XMFLOAT3(-15+i, 0, -15+j));
+			gameObject.at(2 + i)->SetPosition(XMFLOAT3(-15+i*2, 0, -15+j*2));
 			Renderer->Render(gameObject.at(2 + i));
 		}
 

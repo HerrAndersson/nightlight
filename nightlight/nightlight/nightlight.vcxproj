@@ -72,7 +72,7 @@
     <ClCompile Include="D3DManager.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="FloorTile.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -84,6 +84,7 @@
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="System.cpp" />
+    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="WICTextureLoader\WICTextureLoader.cpp" />
@@ -99,7 +100,7 @@
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="Door.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="FloorTile.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="Tile.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WICTextureLoader\WICTextureLoader.h" />

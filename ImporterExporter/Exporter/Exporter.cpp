@@ -1397,7 +1397,6 @@ void Exporter::OutputSkinCluster(MObject& obj)
 		for (; !gIter.isDone(); gIter.next()) {
 
 			MObject comp = gIter.component();
-			cout << gIter.index() << endl;
 			// Get the weights for this vertex (one per influence object)
 			//
 			MFloatArray wts;
@@ -1427,6 +1426,7 @@ void Exporter::OutputSkinCluster(MObject& obj)
 				}
 				float norm = outWts[0] + outWts[1] + outWts[2] + outWts[3];
 
+
 				MDagPath dag_path;
 				MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
 				int currentmesh = 0, y = 0;
@@ -1447,11 +1447,11 @@ void Exporter::OutputSkinCluster(MObject& obj)
 					dag_iter.next();
 				}
 
+
 				for (int x = 0; x < 4;x++)
 				{
-					outWts[x] /= norm;
 					scene_.meshes[currentmesh].points[gIter.index()].boneIndices[x] = outInfs[x];
-					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x];
+					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x]/norm;
 				}
 				scene_.meshes[currentmesh].hasSkeleton = true;
 			}
@@ -1551,14 +1551,11 @@ void Exporter::ExportMeshes()
 	for (int i = 0; i < mainHeader.matCount; i++){
 		MatHeader matHeader;
 		matHeader.ambientNameLength = scene_.materials[i].ambient.texfileInternal.length();
-
 		matHeader.diffuseNameLength = scene_.materials[i].diffuse.texfileInternal.length();
-
 		matHeader.specularNameLength = scene_.materials[i].specular.texfileInternal.length();
-
 		matHeader.transparencyNameLength = scene_.materials[i].transparency.texfileInternal.length();
-
 		matHeader.glowNameLength = scene_.materials[i].glow.texfileInternal.length();
+
 
 		outfile.write((const char*)&matHeader, sizeof(MatHeader));
 		outfile.write((const char*)&scene_.materials[i].ambient, 16);
@@ -1569,7 +1566,7 @@ void Exporter::ExportMeshes()
 
 		outfile.write((const char*)&scene_.materials[i].specular, 16);
 		outfile.write((const char*)scene_.materials[i].specular.texfileInternal.data(), matHeader.specularNameLength);
-
+		 
 		outfile.write((const char*)&scene_.materials[i].transparency, 16);
 		outfile.write((const char*)scene_.materials[i].transparency.texfileInternal.data(), matHeader.transparencyNameLength);
 
@@ -1591,14 +1588,6 @@ void Exporter::ExportMeshes()
 		outfile.write((const char*)&scene_.blendShapes[i].MeshTarget, 4);
 		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].points.size());
 		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].normals.size());
-	}
-
-	outfile.close();
-
-	outfile.open("testBin3.txt", std::ios_base::out | std::ios_base::trunc);
-	if (!outfile.is_open())
-	{
-		std::cout << "<Error> fstream::open()" << std::endl;
 	}
 
 	outfile.close();

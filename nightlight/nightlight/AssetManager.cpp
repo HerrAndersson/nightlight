@@ -47,27 +47,64 @@ void AssetManager::LoadModel(string file_path){
 		return;
 	}
 	MainHeader mainHeader;
-	MeshHeader meshHeader;
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
-	infile.read((char*)&meshHeader, sizeof(MeshHeader));
 
 	string name;
-	vector<point> points;
+	vector<Point> points;
+	vector<PurePoint> purePoints;
 	vector<XMFLOAT3> normals;
 	vector<XMFLOAT2> UVs;
 	vector<XMINT3> vertexIndices;
+	bool hasSkeleton;
 
-	name.resize(meshHeader.nameLength);
-	points.resize(meshHeader.numberPoints);
-	normals.resize(meshHeader.numberNormals);
-	UVs.resize(meshHeader.numberCoords);
-	vertexIndices.resize(meshHeader.numberFaces * 3);
+	for (int i = 0; i < mainHeader.meshCount; i++){
+		if (i == 0){
+			MeshHeader meshHeader;
+			infile.read((char*)&meshHeader, sizeof(MeshHeader));
 
-	infile.read((char*)name.data(), meshHeader.nameLength);
-	infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(point));
-	infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
-	infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
-	infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
+
+			name.resize(meshHeader.nameLength);
+			if (meshHeader.hasSkeleton)
+				points.resize(meshHeader.numberPoints);
+			else
+				purePoints.resize(meshHeader.numberPoints);
+			normals.resize(meshHeader.numberNormals);
+			UVs.resize(meshHeader.numberCoords);
+			vertexIndices.resize(meshHeader.numberFaces * 3);
+			hasSkeleton = meshHeader.hasSkeleton;
+
+
+			infile.read((char*)name.data(), meshHeader.nameLength);
+			if (meshHeader.hasSkeleton)
+				infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(Point));
+			else
+				infile.read((char*)purePoints.data(), meshHeader.numberPoints*sizeof(PurePoint));
+			infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
+			infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
+			infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
+		}
+		else{
+			MeshHeader meshHeader;
+			infile.read((char*)&meshHeader, sizeof(MeshHeader));
+			if (meshHeader.hasSkeleton)
+			{
+				infile.seekg(meshHeader.nameLength, ios::cur);
+				infile.seekg(meshHeader.numberPoints*sizeof(Point), ios::cur);
+				infile.seekg(meshHeader.numberNormals*sizeof(XMFLOAT3), ios::cur);
+				infile.seekg(meshHeader.numberCoords*sizeof(XMFLOAT2), ios::cur);
+				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
+			}
+			else
+			{
+				infile.seekg(meshHeader.nameLength, ios::cur);
+				infile.seekg(meshHeader.numberPoints*sizeof(PurePoint), ios::cur);
+				infile.seekg(meshHeader.numberNormals*sizeof(XMFLOAT3), ios::cur);
+				infile.seekg(meshHeader.numberCoords*sizeof(XMFLOAT2), ios::cur);
+				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
+			}
+		}
+
+	}
 
 
 	for (int i = 0; i < mainHeader.matCount; i++)
@@ -113,12 +150,12 @@ void AssetManager::LoadModel(string file_path){
 	if (mainHeader.pointLightSize)
 		infile.read((char*)model->pointLights.data(), mainHeader.pointLightSize* sizeof(PointLightStruct));
 	if (mainHeader.spotLightSize)
-		infile.read((char*)&model->spotLight, sizeof(SpotLightStruct));
+		infile.read((char*)&model->spotLight, sizeof(SpotLightStruct));//todo
 
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
 
-	model->vertexBuffer = CreateVertexBuffer(&points, &normals, &UVs, &vertexIndices);
+	model->vertexBuffer = CreateVertexBuffer(&points, &purePoints, &normals, &UVs, &vertexIndices, hasSkeleton);
 	models.push_back(model);
 }
 
@@ -143,36 +180,52 @@ void AssetManager::LoadTexture(string file_path)
 	textures.push_back(texture);
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<point> *points, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<PurePoint> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton)
 {
 	vector<Vertex> vertices;
+	vector<PureVertex> pureVertices;
 
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
-	vbDESC.ByteWidth = sizeof(Vertex)* vertexIndices->size();
+	if (hasSkeleton)
+		vbDESC.ByteWidth = sizeof(Vertex)* vertexIndices->size();
+	else
+		vbDESC.ByteWidth = sizeof(PureVertex)* vertexIndices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
-	
-	for (int i = 0; i < (signed)vertexIndices->size(); i+=3){
+
+	for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
 		for (int a = 0; a < 3; a++){
-			Vertex tempVertex;
-			tempVertex.position = points->at(vertexIndices->at(i+a).x).position;
-			tempVertex.normal = normals->at(vertexIndices->at(i+a).y);
-			tempVertex.uv = UVs->at(vertexIndices->at(i+a).z);
-			for (int b = 0; b < 4;b++)
-			{
-				tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
-				tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
+			if (hasSkeleton){
+				Vertex tempVertex;
+				tempVertex.position = points->at(vertexIndices->at(i + a).x).position;
+				tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
+				tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
+				for (int b = 0; b < 4; b++)
+				{
+					tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
+					tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
+				}
+				vertices.push_back(tempVertex);
 			}
-			vertices.push_back(tempVertex);
+			else{
+				PureVertex tempVertex;
+				tempVertex.position = purePoints->at(vertexIndices->at(i + a).x).position;
+				tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
+				tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
+				pureVertices.push_back(tempVertex);
+			}
 		}
 	}
 
 	D3D11_SUBRESOURCE_DATA vertexData;
 
-	vertexData.pSysMem = vertices.data();
+	if (hasSkeleton)
+		vertexData.pSysMem = vertices.data();
+	else
+		vertexData.pSysMem = pureVertices.data();
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 

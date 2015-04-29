@@ -12,13 +12,13 @@ using namespace DirectX;
 namespace assetUtility {
 	struct MainHeader 
 	{
-		int meshCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
+		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
 	};
 
 	struct MeshHeader 
 	{
 		int nameLength, numberPoints, numberNormals, numberCoords, numberFaces;
-//		bool hasSkeleton;
+		bool hasSkeleton;
 	};
 
 	struct MatHeader 
@@ -26,7 +26,7 @@ namespace assetUtility {
 		int diffuseNameLength, ambientNameLength, specularNameLength, transparencyNameLength, glowNameLength;
 	};
 
-	struct Vertex 
+	struct Vertex
 	{
 		XMFLOAT3 position;
 		XMFLOAT2 uv;
@@ -35,10 +35,21 @@ namespace assetUtility {
 		float boneWeigths[4];
 	};
 
-	struct point{
+	struct Point{
 		XMFLOAT3 position;
 		int boneIndices[4];
 		float boneWeigths[4];
+	};
+
+	struct PureVertex
+	{
+		XMFLOAT3 position;
+		XMFLOAT2 uv;
+		XMFLOAT3 normal;
+	};
+
+	struct PurePoint{
+		XMFLOAT3 position;
 	};
 
 	struct AmbientLightStruct 
@@ -89,6 +100,7 @@ namespace assetUtility {
 			pointLights.clear ( );
 		}
 		ID3D11Buffer* vertexBuffer;
+		bool hasSkeleton=false;
 		int vertexBufferSize;
 		std::vector<PointLightStruct> pointLights;
 		SpotLightStruct spotLight;
