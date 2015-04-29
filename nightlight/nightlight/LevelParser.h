@@ -12,6 +12,8 @@ private:
 	std::vector<std::string> levelNames;
 	std::vector<std::string> gameObjectTypes;
 
+	GameObject CreateGameObjectFromLevelData ( std::vector<std::string> unparsedData );
+
 public:
 	LevelParser ( AssetManager* assetManager );
 	~LevelParser ( );
