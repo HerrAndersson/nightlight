@@ -10,4 +10,4 @@ simple_cube2.bin
 simple_door.bin
 simple_floor.bin
 simple_pressurep.bin
-simple_wall.bin
+simple_wall2.bin

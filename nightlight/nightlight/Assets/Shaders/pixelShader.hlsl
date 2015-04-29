@@ -49,7 +49,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//float4 color = diffuse;
 	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
 	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
-	diffuseLighting *= (10) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
+	diffuseLighting *= (3) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
 
 
 	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);

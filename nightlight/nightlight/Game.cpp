@@ -26,10 +26,8 @@ void Game::LoadAssets()
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 
-	for (int i = 0; i < 30; i++)
-	{
-		gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	}
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(10), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(12), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -101,12 +99,45 @@ bool Game::Render()
 	{
 		for (int i = 0; i < 30; i++)
 		{
-			gameObject.at(2 + i)->SetPosition(XMFLOAT3(-15+i*2, 0, -15+j*2));
-			Renderer->Render(gameObject.at(2 + i));
+			gameObject.at(2)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+			Renderer->Render(gameObject.at(2));
+
+			if (i == 0)
+			{
+				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				Renderer->Render(gameObject.at(3));
+			}
+
+			if (j == 0)
+			{
+				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 90, 0));
+				Renderer->Render(gameObject.at(3));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
+			if (j == 29)
+			{
+				if (!(i >10 && i < 14))
+					gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 270, 0));
+				Renderer->Render(gameObject.at(3));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
+			if (i == 29)
+			{
+				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
+				Renderer->Render(gameObject.at(2));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
 		}
 
-	}
 
+
+	}
 
 	Renderer->EndScene();
 

@@ -298,7 +298,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightDiffuseSpot = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint1 = XMFLOAT3(5.0f, 2.3f, 5.0f);
+	lightPtr->lightPosPoint1 = XMFLOAT3(-3.0f, 2.3f, 15.0f);
 
 
 	deviceContext->Unmap(lightBuffer, 0);
