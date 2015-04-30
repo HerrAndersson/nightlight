@@ -10,6 +10,7 @@ class GameObject
 private:
 
 	int id;
+	int tileCoordX, tileCoordY;
 	XMMATRIX		worldMatrix;
 	XMMATRIX		scaleMatrix = XMMatrixIdentity ( );
 	XMMATRIX		rotationMatrix = XMMatrixIdentity ( );

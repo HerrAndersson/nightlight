@@ -1,12 +1,17 @@
-simple_cube.bin
-simple_floor.bin
-simple_cube.bin
-simple_cube.bin
-simple_wall.bin
-simple_floor.bin
-simple_door.bin
-simple_corner.bin
-simple_pressurep.bin
-simple_container.bin
+container.bin
+cube_and_sphere + light.bin
+cube_and_sphere.bin
 simple_child.bin
+simple_container.bin
+simple_corner.bin
+simple_cube + light.bin
 simple_cube.bin
+simple_cube2.bin
+simple_door.bin
+simple_floor.bin
+simple_floor.bin
+simple_pressurep.bin
+simple_wall.bin
+simple_wall.bin
+container.bin
+simple_child.bin

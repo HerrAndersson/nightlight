@@ -67,23 +67,31 @@
     <ClCompile Include="AiModule.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CameraObject.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Container.cpp" />
+    <ClCompile Include="Corner.cpp" />
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="D3DManager.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="FloorTile.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelParser.cpp" />
+    <ClCompile Include="Lever.cpp" />
     <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MovableObject.cpp" />
+    <ClCompile Include="PressurePlate.cpp" />
     <ClCompile Include="RenderModule.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="System.cpp" />
+    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Wall.cpp" />
     <ClCompile Include="WICTextureLoader\WICTextureLoader.cpp" />
@@ -94,22 +102,30 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetUtil.h" />
     <ClInclude Include="CameraObject.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="Container.h" />
+    <ClInclude Include="Corner.h" />
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="D3DManager.h" />
     <ClInclude Include="Door.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="FloorTile.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelParser.h" />
+    <ClInclude Include="Lever.h" />
     <ClInclude Include="LightObject.h" />
+    <ClInclude Include="MovableObject.h" />
+    <ClInclude Include="PressurePlate.h" />
     <ClInclude Include="RenderModule.h" />
     <ClInclude Include="ShadowMap.h" />
+    <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />
+    <ClInclude Include="Tile.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WICTextureLoader\WICTextureLoader.h" />
@@ -117,6 +133,20 @@
   <ItemGroup>
     <None Include="Assets\Shaders\pixelShader.hlsl" />
     <None Include="Assets\Shaders\vertexShader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="depthPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </None>
+    <None Include="depthVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

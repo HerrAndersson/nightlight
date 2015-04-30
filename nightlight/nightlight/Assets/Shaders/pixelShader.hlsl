@@ -11,8 +11,13 @@ cbuffer lightBuffer
 	float4 lightAmbientSpot;
 	float4 lightDiffuseSpot;
 
+	//door point light
 	float3 lightPosPoint;
 	float4 lightDiffusePoint;
+
+	//player point light
+	float3 lightPosPoint2;
+	float4 lightDiffusePoint2;
 
 
 };
@@ -39,41 +44,40 @@ struct pixelInputType
 
 float4 pixelShader(pixelInputType input) : SV_TARGET
 {
-	//specular
+	input.normal = normalize(input.normal);
+	
+	//initialize variables
 	float3 reflection;
-	float4 specular;
-
-	//Initialize the specular color.
-	specular = float4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	//float4 color = diffuse;
-	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
-	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
-	diffuseLighting *= (10) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
-
-
-	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
-
-	//float4 ambientLight = (0.1f, 0.1f, 0.1f, 1.0f);
-
+	float4 specular = float4(0.0f, 1.0f, 0.0f, 1.0f);
+	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
+	
+	//normalize normals
 	input.normal = normalize(input.normal);
 
-	//float4 diffuse = float4(0.0f, 1.0f, 0.0f, 1.0f);
+	//sample the texture for diffuse
+	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
+	//use this to create ambient light
+	float3 finalAmbient = diffuse * lightAmbientSpot;
+	
+	//calculate the point lights directions
+	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
+	float3 pointLightDir2 = normalize(input.worldPos - lightPosPoint2);
+	
+	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
+	float diffuseLighting2 = saturate(dot(input.normal, -pointLightDir2));
+	//add the two point lights
+	
 
-	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
+	//calculate fallof for point lights. 
+	diffuseLighting *= (3) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
+	diffuseLighting2 *= (0.9) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
 
+	//calculate light to pixel vector for spotlight
 	float3 lightToPixelVec = lightPosSpot - input.worldPos;
 
-	//distance between the light pos and pixel pos
+	//calculate vector lenght;
 	float d = length(lightToPixelVec);
 
-	//ambient light
-	float3 finalAmbient = diffuse * lightAmbientSpot;
-
-//	//check if pixel to faaar
-//	if (d > lightRangeSpot)
-//		return float4(finalAmbient, diffuse.a);
-//
 	lightToPixelVec /= d;
 
 	//Calculate how much light the pixel gets by the angle
@@ -89,25 +93,22 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 		//Calculate falloff from center to edge of pointlight cone
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDirSpot), 0.0f), lightConeSpot);
-
-
 	}
-
-	if (howMuchLight < 0.0f)
-		finalColor = lightAmbientSpot;
-	
 
 	//make sure the values are between 1 and 0, and add the ambient
 	finalColor = saturate(finalColor + finalAmbient);
 
-	finalColor += (diffuseLighting * lightDiffusePoint);
+	finalColor += (diffuseLighting *  lightDiffusePoint);
+	//add second pointlight
+	//finalColor += (diffuseLighting2 *  lightDiffusePoint2);
 
 	if (diffuseLighting > 0)
 	{
 
 		reflection = normalize(2 * diffuseLighting * input.normal + pointLightDir);
+		reflection *= normalize(2 * diffuseLighting * input.normal + lightDirSpot);
 		
-		// Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
+		//Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
 		specular = pow(saturate(dot(reflection, input.viewDir)), 20);
 		finalColor += (specular);
 	}

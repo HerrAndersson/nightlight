@@ -78,9 +78,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Game\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="FloorTile.cpp">
-      <Filter>Game\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Wall.cpp">
       <Filter>Game\GameObjects</Filter>
     </ClCompile>
@@ -99,7 +96,36 @@
     <ClCompile Include="AiModule.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Floor.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Game\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Container.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Corner.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Lever.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="MovableObject.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="PressurePlate.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticObject.cpp">
+      <Filter>Game\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -147,9 +173,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>Game\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="FloorTile.h">
-      <Filter>Game\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Wall.h">
       <Filter>Game\GameObjects</Filter>
     </ClInclude>
@@ -171,8 +194,35 @@
     <ClInclude Include="AiModule.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
+    <ClInclude Include="Floor.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Game\Level</Filter>
+    </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Core</Filter>
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Container.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Corner.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Lever.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MovableObject.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="PressurePlate.h">
+      <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticObject.h">
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +230,12 @@
       <Filter>Render\Shaders</Filter>
     </None>
     <None Include="Assets\Shaders\vertexShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
+    <None Include="depthVertexShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
+    <None Include="depthPixelShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
   </ItemGroup>

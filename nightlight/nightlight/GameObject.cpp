@@ -10,7 +10,6 @@ GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOA
 	forwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }
 
-
 GameObject::~GameObject()
 {
 	//Should not delete RenderObject, handled from AssetManager
@@ -73,7 +72,6 @@ XMFLOAT3 GameObject::GetRotation()
 	return rotation;
 }
 
-
 ID3D11ShaderResourceView* GameObject::GetDiffuseTexture()
 {
 	return renderObject->diffuseTexture;
@@ -83,7 +81,6 @@ ID3D11ShaderResourceView* GameObject::GetSpecularTexture()
 {
 	return renderObject->specularTexture;
 }
-
 
 void* GameObject::operator new(size_t i)
 {

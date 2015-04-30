@@ -8,6 +8,7 @@
 #include "AssetUtil.h"
 #include "GameObject.h"
 #include "lightObject.h"
+#include "ShadowMap.h"
 
 using DirectX::XMMATRIX;
 using DirectX::XMFLOAT3;
@@ -34,6 +35,10 @@ private:
 		XMFLOAT3 lightPosPoint1;
 		float pad2;
 		XMFLOAT4 lightDiffusePoint1;
+
+		XMFLOAT3 lightPosPoint2;
+		float pad3;
+		XMFLOAT4 lightDiffusePoint2;
 		
 	};
 
@@ -50,6 +55,7 @@ private:
 	};
 
 	D3DManager*				d3d;
+	ShadowMap*				shadowMap;
 
 	//Vertex shaders
 	ID3D11VertexShader*		vertexShader;
@@ -77,7 +83,7 @@ public:
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 
-	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer);
+	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton, bool hasBlendShapes);
 
 	void UseDefaultShader();
 	//void UseShadowShader();

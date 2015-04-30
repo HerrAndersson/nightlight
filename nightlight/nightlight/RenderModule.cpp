@@ -16,11 +16,16 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	hwnd = hwnd;
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
+	//initialize shadowmap
+	shadowMap = new ShadowMap(d3d->GetDevice(), 512, L"depthVertexShader.hlsl");
 
 	bool result;
 
 	//initializing shader files
 	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
+
+	
+
 }
 
 
@@ -204,7 +209,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	return true;
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton, bool hasBlendShapes)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -232,7 +237,17 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 
 
 	//setting the sent in shader texture resource in the pixel shader
-	UINT32 vertexSize = sizeof(Vertex);
+	UINT32 vertexSize;
+	if (hasSkeleton)
+		if (hasBlendShapes)
+			vertexSize = sizeof(BlendVertex);
+		else
+			vertexSize = sizeof(Vertex);
+	else
+		if (hasBlendShapes)
+			vertexSize = sizeof(PureBlendVertex);
+		else
+			vertexSize = sizeof(PureVertex);
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
@@ -294,8 +309,10 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightDiffuseSpot = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint1 = XMFLOAT3(5.0f, 2.3f, 5.0f);
+	lightPtr->lightPosPoint1 = XMFLOAT3(-3.0f, 2.3f, 15.0f);
 
+	lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
+	lightPtr->lightPosPoint2 = XMFLOAT3(spotlight->getPosition().x, spotlight->getPosition().y+3, spotlight->getPosition().z) ;
 
 	deviceContext->Unmap(lightBuffer, 0);
 
@@ -313,7 +330,7 @@ void RenderModule::UseDefaultShader()
 
 	deviceContext->IASetInputLayout(layoutPosUvNorm);
 
-	d3d->SetCullingState(1);
+	d3d->SetCullingState(3);
 
 	//Set shaders
 	deviceContext->VSSetShader(vertexShader, NULL, 0);
@@ -338,7 +355,7 @@ bool RenderModule::Render(GameObject* gameObject)
 	XMMATRIX w;
 	gameObject->GetWorldMatrix(w);
 
-	result = SetDataPerObject(w, renderObject->diffuseTexture, renderObject->model->vertexBuffer);
+	result = SetDataPerObject(w, renderObject->diffuseTexture, renderObject->model->vertexBuffer, renderObject->model->hasSkeleton, renderObject->model->hasBlendShapes);
 	if (!result)
 		return false;
 

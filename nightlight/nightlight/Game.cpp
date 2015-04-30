@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	//activeGameState = MENU;
 
-	camera = new CameraObject(XM_PI / 2, screenWidth, screenHeight, 0.1f, 1000);
+	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
 
 	InitManagers(hwnd, fullscreen);
@@ -23,13 +23,17 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
+	//player object
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(1), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	//container
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(15), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 
-	for (int i = 0; i < 30; i++)
-	{
-		gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(5), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	}
+	//floor
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(10), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	//wall
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(13), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	//lever
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(16), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -101,12 +105,53 @@ bool Game::Render()
 	{
 		for (int i = 0; i < 30; i++)
 		{
-			gameObject.at(2 + i)->SetPosition(XMFLOAT3(-15+i, 0, -15+j));
-			Renderer->Render(gameObject.at(2 + i));
+			gameObject.at(2)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+			Renderer->Render(gameObject.at(2));
+
+			if (i == 0)
+			{
+				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				Renderer->Render(gameObject.at(3));
+			}
+
+			if (j == 0)
+			{
+				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 90, 0));
+				Renderer->Render(gameObject.at(3));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
+			if (j == 29)
+			{
+				if (!(i >10 && i < 14))
+					gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 270, 0));
+				Renderer->Render(gameObject.at(3));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
+			if (i == 29)
+			{
+				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
+				Renderer->Render(gameObject.at(3));
+				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
+			if (i == 29 && j == 5)
+			{
+				gameObject.at(4)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(4)->SetRotation(XMFLOAT3(0, 180, 0));
+				Renderer->Render(gameObject.at(4));
+				gameObject.at(4)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
 		}
+		
+
 
 	}
-
 
 	Renderer->EndScene();
 
