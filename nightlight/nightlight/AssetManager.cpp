@@ -175,7 +175,7 @@ void AssetManager::LoadModel(string file_path){
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
 
-	model->vertexBuffer = CreateVertexBuffer(&points, &purePoints, &normals, &UVs, &vertexIndices, hasSkeleton);
+	model->vertexBuffer = CreateVertexBuffer(&points, &purePoints, &normals, &UVs, &vertexIndices, hasSkeleton, &blendShapes);
 	models.push_back(model);
 }
 
@@ -200,52 +200,118 @@ void AssetManager::LoadTexture(string file_path)
 	textures.push_back(texture);
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<PurePoint> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<PurePoint> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton, std::vector<BlendShape> *blendShapes)
 {
 	vector<Vertex> vertices;
 	vector<PureVertex> pureVertices;
+	vector<BlendVertex> blendVertices;
+	vector<PureBlendVertex> pureBlendVertices;
+
+	if (hasSkeleton){
+		if (blendShapes->size() > 0){
+			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
+				for (int a = 0; a < 3; a++){
+					BlendVertex tempVertex;
+					tempVertex.position0 = points->at(vertexIndices->at(i + a).x).position;
+					tempVertex.position1 = blendShapes->at(0).points[vertexIndices->at(i + a).x];
+					tempVertex.position2 = blendShapes->at(1).points[vertexIndices->at(i + a).x];
+					tempVertex.position3 = blendShapes->at(2).points[vertexIndices->at(i + a).x];
+
+					tempVertex.normal0 = normals->at(vertexIndices->at(i + a).y);
+					tempVertex.normal1 = blendShapes->at(0).normals[vertexIndices->at(i + a).x];
+					tempVertex.normal2 = blendShapes->at(1).normals[vertexIndices->at(i + a).x];
+					tempVertex.normal3 = blendShapes->at(2).normals[vertexIndices->at(i + a).x];
+
+					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
+					for (int b = 0; b < 4; b++)
+					{
+						tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
+						tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
+					}
+					blendVertices.push_back(tempVertex);
+				}
+			}
+		}
+		else{
+			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
+				for (int a = 0; a < 3; a++){
+					Vertex tempVertex;
+					tempVertex.position = points->at(vertexIndices->at(i + a).x).position;
+					tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
+					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
+					for (int b = 0; b < 4; b++)
+					{
+						tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
+						tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
+					}
+					vertices.push_back(tempVertex);
+				}
+			}
+		}
+	}
+	else{
+		if (blendShapes->size() > 0){
+			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
+				for (int a = 0; a < 3; a++){
+					PureBlendVertex tempVertex;
+
+					tempVertex.position0 = purePoints->at(vertexIndices->at(i + a).x).position;
+					tempVertex.position1 = blendShapes->at(0).points[vertexIndices->at(i + a).x];
+					tempVertex.position2 = blendShapes->at(1).points[vertexIndices->at(i + a).x];
+					tempVertex.position3 = blendShapes->at(2).points[vertexIndices->at(i + a).x];
+					tempVertex.normal0 = normals->at(vertexIndices->at(i + a).y);
+
+					tempVertex.normal1 = blendShapes->at(0).normals[vertexIndices->at(i + a).x];
+					tempVertex.normal2 = blendShapes->at(1).normals[vertexIndices->at(i + a).x];
+					tempVertex.normal3 = blendShapes->at(2).normals[vertexIndices->at(i + a).x];
+					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
+
+					pureBlendVertices.push_back(tempVertex);
+				}
+			}
+		}
+		else{
+			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
+				for (int a = 0; a < 3; a++){
+					PureVertex tempVertex;
+					tempVertex.position = points->at(vertexIndices->at(i + a).x).position;
+					tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
+					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
+					pureVertices.push_back(tempVertex);
+				}
+			}
+		}
+	}
 
 	D3D11_BUFFER_DESC vbDESC;
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
 	if (hasSkeleton)
-		vbDESC.ByteWidth = sizeof(Vertex)* vertexIndices->size();
+		if (blendShapes->size() > 0)
+			vbDESC.ByteWidth = sizeof(BlendVertex)* vertexIndices->size();
+		else
+			vbDESC.ByteWidth = sizeof(Vertex)* vertexIndices->size();
 	else
-		vbDESC.ByteWidth = sizeof(PureVertex)* vertexIndices->size();
+		if (blendShapes->size() > 0)
+			vbDESC.ByteWidth = sizeof(PureBlendVertex)* vertexIndices->size();
+		else
+			vbDESC.ByteWidth = sizeof(PureVertex)* vertexIndices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
 	vbDESC.StructureByteStride = 0;
 
-	for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
-		for (int a = 0; a < 3; a++){
-			if (hasSkeleton){
-				Vertex tempVertex;
-				tempVertex.position = points->at(vertexIndices->at(i + a).x).position;
-				tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
-				tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
-				for (int b = 0; b < 4; b++)
-				{
-					tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
-					tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
-				}
-				vertices.push_back(tempVertex);
-			}
-			else{
-				PureVertex tempVertex;
-				tempVertex.position = purePoints->at(vertexIndices->at(i + a).x).position;
-				tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
-				tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
-				pureVertices.push_back(tempVertex);
-			}
-		}
-	}
-
 	D3D11_SUBRESOURCE_DATA vertexData;
 
 	if (hasSkeleton)
-		vertexData.pSysMem = vertices.data();
+		if (blendShapes->size() > 0)
+			vertexData.pSysMem = blendVertices.data();
+		else
+			vertexData.pSysMem = vertices.data();
 	else
-		vertexData.pSysMem = pureVertices.data();
+		if (blendShapes->size() > 0)
+			vertexData.pSysMem = pureBlendVertices.data();
+		else
+			vertexData.pSysMem = pureVertices.data();
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 

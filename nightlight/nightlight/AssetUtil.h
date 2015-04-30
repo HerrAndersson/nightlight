@@ -34,6 +34,21 @@ namespace assetUtility {
 		int boneIndices[4];
 		float boneWeigths[4];
 	};
+	
+	struct BlendVertex
+	{
+		XMFLOAT3 position0;
+		XMFLOAT3 position1;
+		XMFLOAT3 position2;
+		XMFLOAT3 position3;
+		XMFLOAT2 uv;
+		XMFLOAT3 normal0;
+		XMFLOAT3 normal1;
+		XMFLOAT3 normal2;
+		XMFLOAT3 normal3;
+		int boneIndices[4];
+		float boneWeigths[4];
+	};
 
 	struct Point{
 		XMFLOAT3 position;
@@ -46,6 +61,19 @@ namespace assetUtility {
 		XMFLOAT3 position;
 		XMFLOAT2 uv;
 		XMFLOAT3 normal;
+	};
+
+	struct PureBlendVertex
+	{
+		XMFLOAT3 position0;
+		XMFLOAT3 position1;
+		XMFLOAT3 position2;
+		XMFLOAT3 position3;
+		XMFLOAT2 uv;
+		XMFLOAT3 normal0;
+		XMFLOAT3 normal1;
+		XMFLOAT3 normal2;
+		XMFLOAT3 normal3;
 	};
 
 	struct PurePoint{
