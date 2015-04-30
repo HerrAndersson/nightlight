@@ -55,7 +55,6 @@ void AssetManager::LoadModel(string file_path){
 	vector<XMFLOAT3> normals;
 	vector<XMFLOAT2> UVs;
 	vector<XMINT3> vertexIndices;
-	bool hasSkeleton;
 
 	for (int i = 0; i < mainHeader.meshCount; i++){
 		if (i == 0){
@@ -71,7 +70,7 @@ void AssetManager::LoadModel(string file_path){
 			normals.resize(meshHeader.numberNormals);
 			UVs.resize(meshHeader.numberCoords);
 			vertexIndices.resize(meshHeader.numberFaces * 3);
-			hasSkeleton = meshHeader.hasSkeleton;
+			model->hasSkeleton = meshHeader.hasSkeleton;
 
 
 			infile.read((char*)name.data(), meshHeader.nameLength);
@@ -161,6 +160,9 @@ void AssetManager::LoadModel(string file_path){
 		läs kameror
 	}
 */
+	if (mainHeader.blendShapeCount)
+		model->hasBlendShapes = true;
+	
 	std::vector<BlendShape> blendShapes;
 	for (int i = 0; i < mainHeader.blendShapeCount; i++){
 		BlendShape blendShape;
@@ -175,7 +177,7 @@ void AssetManager::LoadModel(string file_path){
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
 
-	model->vertexBuffer = CreateVertexBuffer(&points, &purePoints, &normals, &UVs, &vertexIndices, hasSkeleton, &blendShapes);
+	model->vertexBuffer = CreateVertexBuffer(&points, &purePoints, &normals, &UVs, &vertexIndices, model->hasSkeleton, &blendShapes);
 	models.push_back(model);
 }
 

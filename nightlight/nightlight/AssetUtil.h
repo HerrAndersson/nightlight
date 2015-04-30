@@ -38,11 +38,11 @@ namespace assetUtility {
 	struct BlendVertex
 	{
 		XMFLOAT3 position0;
+		XMFLOAT2 uv;
+		XMFLOAT3 normal0;
 		XMFLOAT3 position1;
 		XMFLOAT3 position2;
 		XMFLOAT3 position3;
-		XMFLOAT2 uv;
-		XMFLOAT3 normal0;
 		XMFLOAT3 normal1;
 		XMFLOAT3 normal2;
 		XMFLOAT3 normal3;
@@ -66,11 +66,11 @@ namespace assetUtility {
 	struct PureBlendVertex
 	{
 		XMFLOAT3 position0;
+		XMFLOAT2 uv;
+		XMFLOAT3 normal0;
 		XMFLOAT3 position1;
 		XMFLOAT3 position2;
 		XMFLOAT3 position3;
-		XMFLOAT2 uv;
-		XMFLOAT3 normal0;
 		XMFLOAT3 normal1;
 		XMFLOAT3 normal2;
 		XMFLOAT3 normal3;
@@ -128,7 +128,8 @@ namespace assetUtility {
 			pointLights.clear ( );
 		}
 		ID3D11Buffer* vertexBuffer;
-		bool hasSkeleton=false;
+		bool hasSkeleton = false;
+		bool hasBlendShapes = false;
 		int vertexBufferSize;
 		std::vector<PointLightStruct> pointLights;
 		SpotLightStruct spotLight;

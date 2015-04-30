@@ -204,7 +204,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	return true;
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton, bool hasBlendShapes)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -234,9 +234,15 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	//setting the sent in shader texture resource in the pixel shader
 	UINT32 vertexSize;
 	if (hasSkeleton)
-		vertexSize = sizeof(Vertex);
+		if (hasBlendShapes)
+			vertexSize = sizeof(BlendVertex);
+		else
+			vertexSize = sizeof(Vertex);
 	else
-		vertexSize = sizeof(PureVertex);
+		if (hasBlendShapes)
+			vertexSize = sizeof(PureBlendVertex);
+		else
+			vertexSize = sizeof(PureVertex);
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
@@ -342,7 +348,7 @@ bool RenderModule::Render(GameObject* gameObject)
 	XMMATRIX w;
 	gameObject->GetWorldMatrix(w);
 
-	result = SetDataPerObject(w, renderObject->diffuseTexture, renderObject->model->vertexBuffer, renderObject->model->hasSkeleton);
+	result = SetDataPerObject(w, renderObject->diffuseTexture, renderObject->model->vertexBuffer, renderObject->model->hasSkeleton, renderObject->model->hasBlendShapes);
 	if (!result)
 		return false;
 

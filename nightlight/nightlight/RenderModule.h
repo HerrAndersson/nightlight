@@ -77,7 +77,7 @@ public:
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 
-	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton);
+	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton, bool hasBlendShapes);
 
 	void UseDefaultShader();
 	//void UseShadowShader();
