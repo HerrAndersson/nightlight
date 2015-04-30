@@ -14,3 +14,4 @@ simple_pressurep.bin
 simple_wall2.bin
 simple_wall.bin
 container.bin
+simple_lever.bin

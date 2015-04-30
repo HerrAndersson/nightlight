@@ -66,7 +66,7 @@ GameObject LevelParser::CreateGameObjectFromLevelData ( std::vector<std::string>
 	if ( gameObjectType == "floor" ) {
 
 	} else if ( gameObjectType == "wall" ) {
-
+		 
 	} else if ( gameObjectType == "corner"  ) {
 
 	} else if ( gameObjectType == "door" ) {
@@ -88,7 +88,10 @@ GameObject LevelParser::CreateGameObjectFromLevelData ( std::vector<std::string>
 	} else if ( gameObjectType == "mainc" ) {
 
 	}
+	
+	
 
+	return gameObject;
 	}
 	
-}
+

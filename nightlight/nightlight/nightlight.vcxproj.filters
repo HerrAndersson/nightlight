@@ -232,5 +232,11 @@
     <None Include="Assets\Shaders\vertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
+    <None Include="depthVertexShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
+    <None Include="depthPixelShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
