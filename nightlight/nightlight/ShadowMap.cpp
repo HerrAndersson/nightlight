@@ -53,7 +53,7 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 	};
 
 
-	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
+	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "depthVertexShader", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
 
 	if (FAILED(hr))
 	{
