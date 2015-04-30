@@ -113,7 +113,7 @@ bool Exporter::GetMayaFilenamesInDirectory(char *folder_path, std::vector<std::s
 		}
 	}
 
-	// även en "tom" katalog ger två resultat - . och ..
+	// även en "tom" katalog ger tvEresultat - . och ..
 	// vi vill inte ha dem :-)
 	//fileList.push_back(fdata.cFileName);
 
@@ -314,6 +314,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
 
 	std::vector<std::string> nodeVec;
+	nodeVec.clear();
 	bool relevantObjectFound = false;
 
 
@@ -340,7 +341,6 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 			if (relevantObjectFound)
 			{
 				std::string formattedOutput;
-				nodeVec.clear();
 				splitStringToVector(nodeNameStr, nodeVec, "_");
 				
 				std::string goType = levelGameObjectTypes.at(gameObjectID);
@@ -1137,7 +1137,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		//namn:
 		export_stream_ << "Light: " << func.name().asChar() << std::endl;
 
-		//kalla på extractLight function
+		//kalla pEextractLight function
 		extractLight(dag_iter.item());
 
 		//vidare till nästa ljus i dag'en
