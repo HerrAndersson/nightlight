@@ -7,7 +7,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	//activeGameState = MENU;
 
-	camera = new CameraObject(XM_PI / 2, screenWidth, screenHeight, 0.1f, 1000);
+	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
 
 	InitManagers(hwnd, fullscreen);
@@ -27,10 +27,13 @@ void Game::LoadAssets()
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(3), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	//container
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(15), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+
 	//floor
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(10), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	//wall
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(13), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	//lever
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(16), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -134,6 +137,14 @@ bool Game::Render()
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
 				Renderer->Render(gameObject.at(3));
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
+			}
+
+			if (i == 29 && j == 5)
+			{
+				gameObject.at(4)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+				gameObject.at(4)->SetRotation(XMFLOAT3(0, 180, 0));
+				Renderer->Render(gameObject.at(4));
+				gameObject.at(4)->SetRotation(XMFLOAT3(0, 0, 0));
 			}
 
 		}
