@@ -17,7 +17,7 @@ struct PixelInputType
 };
 
 
-PixelInputType DepthVertexShader(VertexInputType input)
+PixelInputType depthVertexShader(VertexInputType input)
 {
 	PixelInputType output;
 

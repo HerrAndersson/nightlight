@@ -16,11 +16,16 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	hwnd = hwnd;
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
+	//initialize shadowmap
+	shadowMap = new ShadowMap(d3d->GetDevice(), 512, L"depthVertexShader.hlsl");
 
 	bool result;
 
 	//initializing shader files
 	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
+
+	
+
 }
 
 
@@ -306,6 +311,8 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
 	lightPtr->lightPosPoint1 = XMFLOAT3(-3.0f, 2.3f, 15.0f);
 
+	lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
+	lightPtr->lightPosPoint2 = XMFLOAT3(spotlight->getPosition().x, spotlight->getPosition().y+3, spotlight->getPosition().z) ;
 
 	deviceContext->Unmap(lightBuffer, 0);
 
