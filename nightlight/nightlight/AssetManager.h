@@ -24,6 +24,6 @@ private:
 	void CreateRenderObject(int modelID, int diffuseID, int specularID);
 	void LoadTexture(string file_path);
 
-	ID3D11Buffer* CreateVertexBuffer(vector<Point> *points, vector<PurePoint> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton, vector<BlendShape> *blendShapes);
+	ID3D11Buffer* CreateVertexBuffer(vector<WeightedPoint> *points, vector<Point> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton, vector<BlendShape> *blendShapes);
 };
 

@@ -240,14 +240,14 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 	UINT32 vertexSize;
 	if (hasSkeleton)
 		if (hasBlendShapes)
+			vertexSize = sizeof(WeightedBlendVertex);
+		else
+			vertexSize = sizeof(WeightedVertex);
+	else
+		if (hasBlendShapes)
 			vertexSize = sizeof(BlendVertex);
 		else
 			vertexSize = sizeof(Vertex);
-	else
-		if (hasBlendShapes)
-			vertexSize = sizeof(PureBlendVertex);
-		else
-			vertexSize = sizeof(PureVertex);
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
