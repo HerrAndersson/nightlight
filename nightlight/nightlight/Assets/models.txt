@@ -9,9 +9,9 @@ simple_cube.bin
 simple_cube2.bin
 simple_door.bin
 simple_floor.bin
-simple_floor.bin
+simple_lever.bin
 simple_pressurep.bin
 simple_wall.bin
-simple_wall.bin
+simple_wall2.bin
 container.bin
-simple_child.bin
+simple_lever.bin

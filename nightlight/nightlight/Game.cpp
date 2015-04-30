@@ -31,7 +31,7 @@ void Game::LoadAssets()
 	//floor
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(10), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	//wall
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(13), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
+	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(14), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	//lever
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(16), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
