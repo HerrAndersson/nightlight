@@ -234,6 +234,16 @@ void Exporter::ProcessScene(const char *file_path)
 		std::cout << "Exporting scene information" << std::endl << std::endl;
 		ExportScene();
 	}
+	scene_.meshes.clear();
+	scene_.materials.clear();
+	scene_.cameras.clear();
+	scene_.blendShapes.clear();
+	scene_.AnimationData.clear();
+	scene_.lights.ambientLights.clear();
+	scene_.lights.areaLights.clear();
+	scene_.lights.dirLights.clear();
+	scene_.lights.spotLights.clear();
+	scene_.lights.pointLights.clear();
 }
 
 void Exporter::ProcessLevel(const char *file_path)

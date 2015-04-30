@@ -160,7 +160,7 @@ void AssetManager::LoadModel(string file_path){
 		läs kameror
 	}
 */
-	if (mainHeader.blendShapeCount)
+	if (mainHeader.blendShapeCount==3)
 		model->hasBlendShapes = true;
 	
 	std::vector<BlendShape> blendShapes;

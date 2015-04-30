@@ -1,4 +1,4 @@
-Blendshapes.bin
+container.bin
 cube_and_sphere + light.bin
 cube_and_sphere.bin
 simple_child.bin
@@ -9,9 +9,9 @@ simple_cube.bin
 simple_cube2.bin
 simple_door.bin
 simple_floor.bin
-simple_floor2.bin
+simple_floor.bin
 simple_pressurep.bin
-simple_wall2.bin
+simple_wall.bin
 simple_wall.bin
 container.bin
-simple_lever.bin
+simple_child.bin
