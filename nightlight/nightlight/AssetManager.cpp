@@ -50,8 +50,8 @@ void AssetManager::LoadModel(string file_path){
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
 
 	string name;
-	vector<Point> points;
-	vector<PurePoint> purePoints;
+	vector<WeightedPoint> points;
+	vector<Point> purePoints;
 	vector<XMFLOAT3> normals;
 	vector<XMFLOAT2> UVs;
 	vector<XMINT3> vertexIndices;
@@ -75,9 +75,9 @@ void AssetManager::LoadModel(string file_path){
 
 			infile.read((char*)name.data(), meshHeader.nameLength);
 			if (meshHeader.hasSkeleton)
-				infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(Point));
+				infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(WeightedPoint));
 			else
-				infile.read((char*)purePoints.data(), meshHeader.numberPoints*sizeof(PurePoint));
+				infile.read((char*)purePoints.data(), meshHeader.numberPoints*sizeof(Point));
 			infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
 			infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
 			infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
@@ -88,7 +88,7 @@ void AssetManager::LoadModel(string file_path){
 			if (meshHeader.hasSkeleton)
 			{
 				infile.seekg(meshHeader.nameLength, ios::cur);
-				infile.seekg(meshHeader.numberPoints*sizeof(Point), ios::cur);
+				infile.seekg(meshHeader.numberPoints*sizeof(WeightedPoint), ios::cur);
 				infile.seekg(meshHeader.numberNormals*sizeof(XMFLOAT3), ios::cur);
 				infile.seekg(meshHeader.numberCoords*sizeof(XMFLOAT2), ios::cur);
 				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
@@ -96,7 +96,7 @@ void AssetManager::LoadModel(string file_path){
 			else
 			{
 				infile.seekg(meshHeader.nameLength, ios::cur);
-				infile.seekg(meshHeader.numberPoints*sizeof(PurePoint), ios::cur);
+				infile.seekg(meshHeader.numberPoints*sizeof(Point), ios::cur);
 				infile.seekg(meshHeader.numberNormals*sizeof(XMFLOAT3), ios::cur);
 				infile.seekg(meshHeader.numberCoords*sizeof(XMFLOAT2), ios::cur);
 				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
@@ -202,18 +202,18 @@ void AssetManager::LoadTexture(string file_path)
 	textures.push_back(texture);
 }
 
-ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<PurePoint> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton, std::vector<BlendShape> *blendShapes)
+ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedPoint> *points, vector<Point> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton, std::vector<BlendShape> *blendShapes)
 {
+	vector<WeightedVertex> weightedVertices;
 	vector<Vertex> vertices;
-	vector<PureVertex> pureVertices;
+	vector<WeightedBlendVertex> weightedBlendVertices;
 	vector<BlendVertex> blendVertices;
-	vector<PureBlendVertex> pureBlendVertices;
 
 	if (hasSkeleton){
 		if (blendShapes->size() > 0){
 			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
 				for (int a = 0; a < 3; a++){
-					BlendVertex tempVertex;
+					WeightedBlendVertex tempVertex;
 					tempVertex.position0 = points->at(vertexIndices->at(i + a).x).position;
 					tempVertex.position1 = blendShapes->at(0).points[vertexIndices->at(i + a).x];
 					tempVertex.position2 = blendShapes->at(1).points[vertexIndices->at(i + a).x];
@@ -230,14 +230,14 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 						tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
 						tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
 					}
-					blendVertices.push_back(tempVertex);
+					weightedBlendVertices.push_back(tempVertex);
 				}
 			}
 		}
 		else{
 			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
 				for (int a = 0; a < 3; a++){
-					Vertex tempVertex;
+					WeightedVertex tempVertex;
 					tempVertex.position = points->at(vertexIndices->at(i + a).x).position;
 					tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
 					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
@@ -246,7 +246,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 						tempVertex.boneIndices[b] = points->at(vertexIndices->at(i + a).x).boneIndices[b];
 						tempVertex.boneWeigths[b] = points->at(vertexIndices->at(i + a).x).boneWeigths[b];
 					}
-					vertices.push_back(tempVertex);
+					weightedVertices.push_back(tempVertex);
 				}
 			}
 		}
@@ -255,7 +255,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 		if (blendShapes->size() > 0){
 			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
 				for (int a = 0; a < 3; a++){
-					PureBlendVertex tempVertex;
+					BlendVertex tempVertex;
 
 					tempVertex.position0 = purePoints->at(vertexIndices->at(i + a).x).position;
 					tempVertex.position1 = blendShapes->at(0).points[vertexIndices->at(i + a).x];
@@ -268,18 +268,18 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 					tempVertex.normal3 = blendShapes->at(2).normals[vertexIndices->at(i + a).x];
 					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
 
-					pureBlendVertices.push_back(tempVertex);
+					blendVertices.push_back(tempVertex);
 				}
 			}
 		}
 		else{
 			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
 				for (int a = 0; a < 3; a++){
-					PureVertex tempVertex;
+					Vertex tempVertex;
 					tempVertex.position = purePoints->at(vertexIndices->at(i + a).x).position;
 					tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
 					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
-					pureVertices.push_back(tempVertex);
+					vertices.push_back(tempVertex);
 				}
 			}
 		}
@@ -289,14 +289,14 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 	vbDESC.Usage = D3D11_USAGE_DEFAULT;
 	if (hasSkeleton)
 		if (blendShapes->size() > 0)
+			vbDESC.ByteWidth = sizeof(WeightedBlendVertex)* vertexIndices->size();
+		else
+			vbDESC.ByteWidth = sizeof(WeightedVertex)* vertexIndices->size();
+	else
+		if (blendShapes->size() > 0)
 			vbDESC.ByteWidth = sizeof(BlendVertex)* vertexIndices->size();
 		else
 			vbDESC.ByteWidth = sizeof(Vertex)* vertexIndices->size();
-	else
-		if (blendShapes->size() > 0)
-			vbDESC.ByteWidth = sizeof(PureBlendVertex)* vertexIndices->size();
-		else
-			vbDESC.ByteWidth = sizeof(PureVertex)* vertexIndices->size();
 	vbDESC.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbDESC.CPUAccessFlags = 0;
 	vbDESC.MiscFlags = 0;
@@ -306,14 +306,14 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 
 	if (hasSkeleton)
 		if (blendShapes->size() > 0)
+			vertexData.pSysMem = weightedBlendVertices.data();
+		else
+			vertexData.pSysMem = weightedVertices.data();
+	else
+		if (blendShapes->size() > 0)
 			vertexData.pSysMem = blendVertices.data();
 		else
 			vertexData.pSysMem = vertices.data();
-	else
-		if (blendShapes->size() > 0)
-			vertexData.pSysMem = pureBlendVertices.data();
-		else
-			vertexData.pSysMem = pureVertices.data();
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
