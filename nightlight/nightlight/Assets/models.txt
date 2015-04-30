@@ -15,3 +15,4 @@ simple_wall.bin
 simple_wall.bin
 container.bin
 simple_child.bin
+Big_Shadow.bin

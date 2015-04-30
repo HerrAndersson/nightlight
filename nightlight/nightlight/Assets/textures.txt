@@ -3,3 +3,4 @@ wall.png
 floor.png
 container.png
 metal.png
+Big_Shadow.png
