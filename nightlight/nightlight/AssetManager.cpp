@@ -276,7 +276,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<Point> *points, vector<Pur
 			for (int i = 0; i < (signed)vertexIndices->size(); i += 3){
 				for (int a = 0; a < 3; a++){
 					PureVertex tempVertex;
-					tempVertex.position = points->at(vertexIndices->at(i + a).x).position;
+					tempVertex.position = purePoints->at(vertexIndices->at(i + a).x).position;
 					tempVertex.normal = normals->at(vertexIndices->at(i + a).y);
 					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
 					pureVertices.push_back(tempVertex);
