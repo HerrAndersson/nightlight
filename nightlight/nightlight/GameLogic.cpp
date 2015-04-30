@@ -78,7 +78,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	}
 
-	camera->SetPosition(player->GetPosition().x, 20, player->GetPosition().z );
+	camera->SetPosition(player->GetPosition().x, 25, player->GetPosition().z );
 	camera->SetLookAt(player->GetPosition().x * 0.9, 0, player->GetPosition().z * 0.9);
 	player->SetPosition(pos);
 
@@ -98,9 +98,9 @@ bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightO
 	
 	XMFLOAT3 pPos = player->GetPosition ( );
 	//offset light
-	pPos.x += pForward.x/2;
-	pPos.z += pForward.z/2;
-	pPos.y += 0.1f;
+	pPos.x += pForward.x/100;
+	pPos.z += pForward.z/100;
+	pPos.y += 0.7f;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	return true;
 

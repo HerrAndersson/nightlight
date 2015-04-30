@@ -2,3 +2,4 @@ dummy.png
 wall.png
 floor.png
 container.png
+metal.png
