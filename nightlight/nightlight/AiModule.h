@@ -14,8 +14,9 @@ public:
 
 	void HandleAI(Enemy* ai);
 
-	//For use from  the outside?
-	Position* GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ);
+	//For use from the outside?
+	vector<Position> GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ);
+
 
 };
 

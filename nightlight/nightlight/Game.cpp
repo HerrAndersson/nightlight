@@ -12,6 +12,9 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
+
+	//AI = new AiModule(enemies, grid);
+	AI = new AiModule();
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
@@ -49,8 +52,6 @@ Game::~Game()
 	delete camera;
 	delete Assets;
 	delete spotLight;
-	//delete gameObject;
-	delete asset;
 
 	for (auto g : gameObject) delete g;
 	gameObject.clear();

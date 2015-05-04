@@ -4,8 +4,8 @@
 
 #include "RenderModule.h"
 #include "GameLogic.h"
+#include "AiModule.h"
 
-#include "D3DManager.h"
 #include "AssetManager.h"
 #include "AssetUtil.h"
 #include "LevelParser.h"
@@ -18,8 +18,6 @@ using namespace DirectX;
 class Game
 {
 private:
-
-	RenderObject* asset;//single test asset
 
 	enum ObjectIDs
 	{
@@ -52,6 +50,7 @@ private:
 
 	GameLogic*              Logic;
 	RenderModule*           Renderer;
+	AiModule*               AI;
 	AssetManager*			Assets;
 	LevelParser*			Levels;
 
