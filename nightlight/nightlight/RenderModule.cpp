@@ -32,6 +32,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 RenderModule::~RenderModule()
 {
 	delete d3d;
+	delete shadowMap;
 
 	layoutPosUvNorm->Release();
 	matrixBufferPerObject->Release();

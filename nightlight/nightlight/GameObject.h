@@ -25,6 +25,7 @@ private:
 public:
 
 	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation);
+	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, int coordX, int coordY);
 	virtual ~GameObject();
 
 	void GetWorldMatrix(XMMATRIX& worldMatrix);
@@ -32,6 +33,8 @@ public:
 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
+	int GetTileXCoord(){ return tileCoordX; };
+	int GetTileYCoord(){ return tileCoordY; };
 	XMVECTOR GetForwardVector();
 	ID3D11ShaderResourceView* GetDiffuseTexture();
 	ID3D11ShaderResourceView* GetSpecularTexture();

@@ -10,6 +10,15 @@ GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOA
 	forwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }
 
+GameObject::GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, int coordX, int coordY)
+{
+	this->worldMatrix = worldMatrix;
+	this->renderObject = renderObject;
+	this->tileCoordX = coordX;
+	this->tileCoordY = coordY;
+	forwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+}
+
 GameObject::~GameObject()
 {
 	//Should not delete RenderObject, handled from AssetManager
