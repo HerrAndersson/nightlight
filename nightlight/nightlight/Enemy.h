@@ -6,7 +6,7 @@ class Enemy : public GameObject
 private:
 	int enemyType;
 	bool followingPlayer;
-	vector<Position*> path;
+	vector<Node> path;
 
 public:
 

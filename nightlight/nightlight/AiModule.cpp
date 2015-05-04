@@ -2,8 +2,8 @@
 
 AiModule::AiModule()
 {
-	//Recieve all enemies here and save a pointer to them?
-	//Recieve the level grid here and save.
+	//Receive all enemies here and save a pointer to them?
+	//Receive the level grid here and save.
 }
 
 AiModule::~AiModule()
@@ -23,7 +23,7 @@ void AiModule::HandleAI(Enemy* ai)
 	}
 }
 
-//Position* AiModule::GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
+//vector<Position> AiModule::GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
 //{
 //	//return aStar(level, level->GetTileDimension(), startPosXZ, endPosXZ);
 //}

@@ -33,19 +33,19 @@ Naming convention:
 			
 			activates object reference   - the name of the component you wish to activate
 			
-			full example: p_01_Lever1_poweron_up_00Door1
+			full example: p_01_Lever1_poweron_up_00Do1
 			
 		Pressure plates:
 		[must have 'pressure' in the title]
 			activates object reference   - the name of the component you wish to activate
 			
-			full example: p_02_Pressure1_01Lever1
+			full example: p_02_Pressure1_01Lev1
 			
 		Shadow container:
 		[must have 'container' in the title]
 			activates object reference   - the name of the component you wish to activate
 			
-			full example: p_03_Container1_01Lever1
+			full example: p_03_Container1_01Lev1
 
 ***If the object is not referring to any other component,
 ***or if an additional naming part is missing, add "_NULL"
@@ -59,3 +59,8 @@ Current base names:
 		p_04_Wall1
 		p_05_Corner1
 		p_06_Floor1
+		
+Activation ID name:
+	**Due to the exporter writing over for example Lever1 with Door1 in use of the activation ID, we will use shortened words for these.
+		00Do1
+		01Lev1
