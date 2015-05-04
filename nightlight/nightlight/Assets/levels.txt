@@ -1,1 +1,1 @@
-Levels/dummy.lvl
+leveltest.lvl

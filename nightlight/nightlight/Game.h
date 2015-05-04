@@ -8,6 +8,8 @@
 #include "D3DManager.h"
 #include "AssetManager.h"
 #include "AssetUtil.h"
+#include "LevelParser.h"
+#include "GameObject.h"
 #include "cameraObject.h"
 #include "lightObject.h"
 
@@ -50,8 +52,8 @@ private:
 
 	GameLogic*              Logic;
 	RenderModule*           Renderer;
-
-	AssetManager *			Assets;
+	AssetManager*			Assets;
+	LevelParser*			Levels;
 
 
 	/*

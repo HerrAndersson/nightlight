@@ -19,10 +19,17 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 	Logic = new GameLogic(hwnd, screenWidth, screenHeight);
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
+	Levels = new LevelParser(Assets);
 }
 
 void Game::LoadAssets()
 {
+
+	std::vector<Enemy> Enemies;
+
+	Character character(XMMatrixIdentity(), Assets->GetRenderObject(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
+
+	Levels->LoadLevel(0, Enemies, character);
 	//player object
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(18), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	//shadow
