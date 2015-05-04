@@ -100,9 +100,9 @@ bool Game::Render()
 	Renderer->UseDefaultShader();
 	Renderer->Render(gameObject.at(0));
 	Renderer->Render(gameObject.at(1));
-	for (int j = 0; j < 30; j++)
+	for (int j = 0; j < 20; j++)
 	{
-		for (int i = 0; i < 30; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			gameObject.at(2)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
 			Renderer->Render(gameObject.at(2));
@@ -110,6 +110,7 @@ bool Game::Render()
 			if (i == 0)
 			{
 				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+
 				Renderer->Render(gameObject.at(3));
 			}
 
@@ -121,24 +122,26 @@ bool Game::Render()
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
 			}
 
-			if (j == 29)
+			if (j == 19)
 			{
 				if (!(i >10 && i < 14))
 					gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 270, 0));
 				Renderer->Render(gameObject.at(3));
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
 			}
 
-			if (i == 29)
+			if (i == 19)
 			{
 				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
+
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
 				Renderer->Render(gameObject.at(3));
 				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
 			}
 
-			if (i == 29 && j == 5)
+			if (i == 19 && j == 5)
 			{
 				gameObject.at(4)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
 				gameObject.at(4)->SetRotation(XMFLOAT3(0, 180, 0));
