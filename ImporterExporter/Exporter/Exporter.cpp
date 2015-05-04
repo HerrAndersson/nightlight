@@ -401,7 +401,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
 					}
-					else if (goType == "lever")
+					if (goType == "lever")
 					{
 						if (nodeVec.at(3) == "poweron")
 						{
@@ -412,7 +412,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 							formattedOutput += "0,";
 						}
 
-						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+						
 
 						if (nodeVec.at(4) == "down")
 						{
@@ -423,9 +423,11 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 							formattedOutput += "0,";
 						}
 
+						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+						formattedOutput += ",";
 						formattedOutput += nodeVec.at(5);
 					}
-					else if (goType == "pressure" ||
+					if (goType == "pressure" ||
 						goType == "container")
 					{
 						formattedOutput += nodeVec.at(3);

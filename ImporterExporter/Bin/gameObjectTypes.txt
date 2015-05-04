@@ -5,6 +5,7 @@ static
 movable
 pressure
 container
+lever
 mainc
 sidec
 smallenemy
