@@ -8,7 +8,7 @@ Tile::Tile ( ) {
 Tile::~Tile ( ) {
 }
 
-void Tile::pushGameObjectToTile ( GameObject &content ) {
+void Tile::pushGameObjectToTile ( GameObject& content ) {
 	gameObjects.push_back ( content );
 	tileIsEmpty = false;
 }

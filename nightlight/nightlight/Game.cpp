@@ -29,7 +29,9 @@ void Game::LoadAssets()
 
 	Character character(XMMatrixIdentity(), Assets->GetRenderObject(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
 
-	Levels->LoadLevel(0, Enemies, character);
+	currentLevel = Levels->LoadLevel(0, Enemies, character);
+	currentLevel.SetGameObjects();
+
 	//player object
 	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(18), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 	//shadow
@@ -105,6 +107,12 @@ bool Game::Render()
 	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
 
 	Renderer->UseDefaultShader();
+
+	std::vector<GameObject*> toRender = currentLevel.GetGameObjects();
+	for (int i = 0; i < toRender.size(); i++){
+		Renderer->Render(toRender[i]);
+	}
+
 	Renderer->Render(gameObject.at(0));
 	Renderer->Render(gameObject.at(1));
 	for (int j = 0; j < 20; j++)
