@@ -34,10 +34,10 @@ Level LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character
 	assetUtility::fileToStrings(pathToLevel, unparsedLevel);
 
 	std::vector<std::string> unparsedLine;
-	for each (std::string line in unparsedLevel)
+	for (int i = 0; i < (int)(unparsedLevel.size() - 1); i++)
 	{
 		unparsedLine.clear();
-		assetUtility::splitStringToVector(line, unparsedLine, ",");
+		assetUtility::splitStringToVector(unparsedLevel[i], unparsedLine, ",");
 
 		GameObject go = CreateGameObjectFromLevelData(unparsedLine);
 		level.PushGameObjectToGrid(go.GetTileXCoord(), go.GetTileYCoord(), go);
