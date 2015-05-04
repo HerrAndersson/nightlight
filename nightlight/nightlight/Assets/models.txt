@@ -18,3 +18,4 @@ simple_lever.bin
 Big_Shadow.bin
 mainchar.bin
 Armless_Shadow.bin
+Boy_Shadow.bin

@@ -5,3 +5,4 @@ container.png
 metal.png
 Big_Shadow.png
 Armless_Shadow.png
+Boy_Shadow.png
