@@ -13,8 +13,6 @@
 #include <cstdlib>
 //#endif
 
-using namespace std;
-
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
 //#if DEBUG

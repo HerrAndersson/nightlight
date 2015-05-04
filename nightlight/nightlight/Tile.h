@@ -11,12 +11,15 @@
 #include "StaticObject.h"
 #include "Wall.h"
 
-class Tile {
+class Tile 
+{
 private:
+
 	bool tileIsEmpty = true;
 	std::vector<GameObject> gameObjects;
 	
 public:
+
 	Tile ( );
 	~Tile ( );
 

@@ -1,21 +1,24 @@
 #pragma once
 #include "AiUtil.h"
 #include "Enemy.h"
+#include "Tile.h"
+using namespace std;
+
 class AiModule
 {
 private:
 
-	//Level* level
+	vector<vector<Tile>> tileGrid;
 
 public:
 
 	AiModule();
 	~AiModule();
 
-	void HandleAI(Enemy* ai);
+	void HandleAI(Enemy* enemy);
 
 	//For use from the outside?
-	vector<Position> GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ);
+	vector<Node> GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ);
 
 
 };
