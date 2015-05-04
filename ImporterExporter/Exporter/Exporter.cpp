@@ -184,8 +184,8 @@ void Exporter::StartExporter(std::string directory_path)
 		}
 		else
 		{
-			ProcessScene(tmp_str);
-			CloseExportFiles();
+			//ProcessScene(tmp_str);
+			//CloseExportFiles();
 		}
 	}
 
@@ -314,9 +314,10 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
 
 	std::vector<std::string> nodeVec;
-	nodeVec.clear();
 	bool relevantObjectFound = false;
 
+	std::vector<MString> takenNames;
+	
 
 	while (!dag_iter.isDone())
 	{
@@ -327,97 +328,113 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 			MString nodeName = dag_node_parent.name();
 			std::string nodeNameStr = nodeName.asChar();
-			std::transform(nodeNameStr.begin(), nodeNameStr.end(), nodeNameStr.begin(), ::tolower);
-			int gameObjectID = -1;
+			nodeVec.clear();
 
-			for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
-			{
-				if (nodeNameStr.find(levelGameObjectTypes.at(i)) != std::string::npos)
+			
+			bool taken = false;
+			for (int i = 0; i < takenNames.size(); i++){
+				if (strcmp(takenNames[i].asChar(), nodeName.asChar()) == 0)
 				{
-					gameObjectID = i;
-					relevantObjectFound = true;
+					taken = true;
 				}
 			}
-			if (relevantObjectFound)
+				
+			if (taken == false)
 			{
-				std::string formattedOutput;
-				splitStringToVector(nodeNameStr, nodeVec, "_");
-				
-				std::string goType = levelGameObjectTypes.at(gameObjectID);
+				takenNames.push_back(nodeName);
 
-				MMatrix transformMat = dag_node_parent.transformationMatrix();
+				std::transform(nodeNameStr.begin(), nodeNameStr.end(), nodeNameStr.begin(), ::tolower);
+				int gameObjectID = -1;
 
-				
-				int coordX = (int)(transformMat[3][0] + EPS);
-				int coordY = (int)(transformMat[3][2] + EPS);
-
-				formattedOutput += nodeVec.at(1) + "," +
-					std::to_string(gameObjectID) + "," +
-					std::to_string(transformMat[0][0]) + "," + std::to_string(transformMat[0][1]) + "," + std::to_string(transformMat[0][2]) + "," + std::to_string(transformMat[0][3]) + "," +
-					std::to_string(transformMat[1][0]) + "," + std::to_string(transformMat[1][1]) + "," + std::to_string(transformMat[1][2]) + "," + std::to_string(transformMat[1][3]) + "," +
-					std::to_string(transformMat[2][0]) + "," + std::to_string(transformMat[2][1]) + "," + std::to_string(transformMat[2][2]) + "," + std::to_string(transformMat[2][3]) + "," +
-					std::to_string(transformMat[3][0]) + "," + std::to_string(transformMat[3][1]) + "," + std::to_string(transformMat[3][2]) + "," + std::to_string(transformMat[3][3]) + "," +
-					std::to_string(coordX) + "," + std::to_string(coordY) + ",";
-
-				if (goType == "door")
+				for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
 				{
-					if (nodeVec.at(3) == "open")
+					if (nodeNameStr.find(levelGameObjectTypes.at(i)) != std::string::npos)
 					{
-						formattedOutput += "1,";
+						gameObjectID = i;
+						relevantObjectFound = true;
 					}
-					else
-					{
-						formattedOutput += "0,";
-					}
-
-					if (nodeVec.at(4) == "start")
-					{
-						formattedOutput += "1,";
-					}
-					else if (nodeVec.at(4) == "end")
-					{
-						formattedOutput += "2,";
-					}
-					else
-					{
-						formattedOutput += "0,";
-					}
-
-					formattedOutput += nodeVec.at(1) + nodeVec.at(2);
 				}
-				else if (goType == "lever")
+				if (relevantObjectFound)
 				{
-					if (nodeVec.at(3) == "poweron")
+					std::string formattedOutput;
+					splitStringToVector(nodeNameStr, nodeVec, "_");
+
+					std::string goType = levelGameObjectTypes.at(gameObjectID);
+
+					MMatrix transformMat = dag_node_parent.transformationMatrix();
+
+
+					int coordX = (int)(transformMat[3][0] + EPS);
+					int coordY = (int)(transformMat[3][2] + EPS);
+
+					formattedOutput += nodeVec.at(1) + "," +
+						std::to_string(gameObjectID) + "," +
+						std::to_string(transformMat[0][0]) + "," + std::to_string(transformMat[0][1]) + "," + std::to_string(transformMat[0][2]) + "," + std::to_string(transformMat[0][3]) + "," +
+						std::to_string(transformMat[1][0]) + "," + std::to_string(transformMat[1][1]) + "," + std::to_string(transformMat[1][2]) + "," + std::to_string(transformMat[1][3]) + "," +
+						std::to_string(transformMat[2][0]) + "," + std::to_string(transformMat[2][1]) + "," + std::to_string(transformMat[2][2]) + "," + std::to_string(transformMat[2][3]) + "," +
+						std::to_string(transformMat[3][0]) + "," + std::to_string(transformMat[3][1]) + "," + std::to_string(transformMat[3][2]) + "," + std::to_string(transformMat[3][3]) + "," +
+						std::to_string(coordX) + "," + std::to_string(coordY) + ",";
+
+					if (goType == "door")
 					{
-						formattedOutput += "1,";
+						if (nodeVec.at(3) == "open")
+						{
+							formattedOutput += "1,";
+						}
+						else
+						{
+							formattedOutput += "0,";
+						}
+
+						if (nodeVec.at(4) == "start")
+						{
+							formattedOutput += "1,";
+						}
+						else if (nodeVec.at(4) == "end")
+						{
+							formattedOutput += "2,";
+						}
+						else
+						{
+							formattedOutput += "0,";
+						}
+
+						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
 					}
-					else
+					else if (goType == "lever")
 					{
-						formattedOutput += "0,";
+						if (nodeVec.at(3) == "poweron")
+						{
+							formattedOutput += "1,";
+						}
+						else
+						{
+							formattedOutput += "0,";
+						}
+
+						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+
+						if (nodeVec.at(4) == "down")
+						{
+							formattedOutput += "1,";
+						}
+						else
+						{
+							formattedOutput += "0,";
+						}
+
+						formattedOutput += nodeVec.at(5);
+					}
+					else if (goType == "pressure" ||
+						goType == "container")
+					{
+						formattedOutput += nodeVec.at(3);
 					}
 
-					formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+					formattedLevelData.push_back(formattedOutput);
 
-					if (nodeVec.at(4) == "down")
-					{
-						formattedOutput += "1,";
-					}
-					else
-					{
-						formattedOutput += "0,";
-					}
-
-					formattedOutput += nodeVec.at(5);
+					relevantObjectFound = false;
 				}
-				else if (goType == "pressure" ||
-					goType == "container")
-				{
-					formattedOutput += nodeVec.at(3);
-				}
-
-				formattedLevelData.push_back(formattedOutput);
-
-				relevantObjectFound = false;
 			}
 		}
 		dag_iter.next();

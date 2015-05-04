@@ -1,0 +1,12 @@
+wall
+floor
+door
+static
+movable
+pressure
+container
+mainc
+sidec
+smallenemy
+averageenemy
+largeenemy
