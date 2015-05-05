@@ -29,7 +29,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 void Game::LoadAssets()
 {
 
-	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(18), 0, 0);
+	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(0), 0, 0);
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
 	currentLevel.SetGameObjects();
