@@ -63,7 +63,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		XMFLOAT2 msp = Input->GetMousePosScreenSpace();
 		double dx = ( msp.x - screenX );
 		double dy = ( msp.y - screenY ) / camera->GetAspectRatio();
-		double angle = atan2(dy, dx) * (180 / XM_PI);
+		double angle = atan2(dx, dy) * (180 / XM_PI);
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 		player->SetRotation(rot);
@@ -78,7 +78,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	}
 
-	camera->SetPosition(player->GetPosition().x, 15, player->GetPosition().z );
+	camera->SetPosition(player->GetPosition().x, 20, player->GetPosition().z );
 	camera->SetLookAt(player->GetPosition().x * 0.9, 0, player->GetPosition().z * 0.9);
 	player->SetPosition(pos);
 

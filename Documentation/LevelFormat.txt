@@ -5,7 +5,7 @@ Först allt levelspecifikt såsom flaggor, detaljer, osv
 
 
 Levelformatet består därefter av en lista med GameObjects.
-(int) render object reference, (int) game object type reference, (4x4 float) world matrix, (int, int) coordinate
+(int) render object reference, (int) game object type reference, (3 floats) position, (float) rotation, (int, int) coordinate
 
 GameObject-typ Flaggor:
 	Dörr: (bool) öppen/stängd, (int) 0 = normal dörr, 1 = startdörr, 2 = slutdörr, (int) activation ID

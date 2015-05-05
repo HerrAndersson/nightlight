@@ -285,6 +285,7 @@ void Exporter::ProcessLevel(const char *file_path)
 	if (!IdentifyAndExtractLevelInformation())
 	{
 		std::cout << "<Error> IdentifyAndExtractLevelInformation()" << std::endl;
+		cin.ignore();
 		return;
 	}
 
@@ -312,6 +313,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+	MSpace::Space transform_space = MSpace::kTransform;
 
 	std::vector<std::string> nodeVec;
 	bool relevantObjectFound = false;
@@ -324,7 +326,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 		if (dag_iter.getPath(dag_path))
 		{
 			MFnDagNode dag_node = dag_path.node();
-			MFnDagNode dag_node_parent = dag_node.parent(0);
+			MFnTransform dag_node_parent = dag_node.parent(0);
 
 			MString nodeName = dag_node_parent.name();
 			std::string nodeNameStr = nodeName.asChar();
@@ -363,16 +365,25 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 					MMatrix transformMat = dag_node_parent.transformationMatrix();
 
+					MEulerRotation eulerRotation;
+					MFloatVector position;
 
-					int coordX = (int)(transformMat[3][0] + EPS);
-					int coordY = (int)(transformMat[3][2] + EPS);
+					dag_node_parent.getRotation(eulerRotation);
+					position = dag_node_parent.translation(transform_space);
+
+					int coordX = (int)(position.x + EPS);
+					int coordY = (int)(position.z + EPS);
+
+					if (coordX < 0 || coordY < 0)
+					{
+						cout << "A gameObject:" + nodeNameStr + " is out of bounds.";
+						return false;
+					}
 
 					formattedOutput += nodeVec.at(1) + "," +
 						std::to_string(gameObjectID) + "," +
-						std::to_string(transformMat[0][0]) + "," + std::to_string(transformMat[0][1]) + "," + std::to_string(transformMat[0][2]) + "," + std::to_string(transformMat[0][3]) + "," +
-						std::to_string(transformMat[1][0]) + "," + std::to_string(transformMat[1][1]) + "," + std::to_string(transformMat[1][2]) + "," + std::to_string(transformMat[1][3]) + "," +
-						std::to_string(transformMat[2][0]) + "," + std::to_string(transformMat[2][1]) + "," + std::to_string(transformMat[2][2]) + "," + std::to_string(transformMat[2][3]) + "," +
-						std::to_string(transformMat[3][0]) + "," + std::to_string(transformMat[3][1]) + "," + std::to_string(transformMat[3][2]) + "," + std::to_string(transformMat[3][3]) + "," +
+						std::to_string(position.x) + "," + std::to_string(position.y) + "," + std::to_string(position.z) + "," + 
+						std::to_string(eulerRotation.y) + "," +
 						std::to_string(coordX) + "," + std::to_string(coordY) + ",";
 
 					if (goType == "door")

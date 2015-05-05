@@ -53,16 +53,17 @@ GameObject LevelParser::CreateGameObjectFromLevelData(std::vector<std::string> u
 
 	int gameObjectTypeRef = std::stoi(unparsedData.at(i++));
 
-	XMMATRIX worldMatrix = XMMATRIX(
-		std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)),
-		std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)),
-		std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)),
-		std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)), std::stof(unparsedData.at(i++)));
+	float rotation;
+	XMFLOAT3 position;
+	position.x = std::stof(unparsedData.at(i++));
+	position.y = std::stof(unparsedData.at(i++));
+	position.z = std::stof(unparsedData.at(i++));
+	rotation = std::stof(unparsedData.at(i++));
 
 	int tileCoordX = std::stoi(unparsedData.at(i++));
 	int tileCoordY = std::stoi(unparsedData.at(i++));
 
-	GameObject gameObject(worldMatrix, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
+	GameObject gameObject(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
 	
 	std::string gameObjectType = gameObjectTypes.at(gameObjectTypeRef);
 	if (gameObjectType == "floor") {
