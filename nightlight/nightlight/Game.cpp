@@ -41,8 +41,15 @@ Game::~Game()
 	delete Renderer;
 	delete camera;
 	delete Assets;
+	delete AI;
+	delete Levels;
+
+
 	delete spotLight;
 	delete character;
+
+	//for (auto e : enemies) delete e;
+	//enemies.clear();
 /*
 
 	for (auto g : gameObject) delete g;
