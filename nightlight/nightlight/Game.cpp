@@ -23,7 +23,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 	//AI = new AiModule(enemies, grid);
 	AI = new AiModule();
-	//AI->GetPath(XMINT2(0, 0), XMINT2(12, 12));
+	//AI->GetPath(currentLevel XMINT2(0, 0), XMINT2(12, 12));
 }
 
 void Game::LoadAssets()

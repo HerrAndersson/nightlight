@@ -43,12 +43,12 @@ struct Node
 	}
 };
 
-static int ManhattanDistance(Node* n1, Node* n2)
+static int ManhattanDistance(Node* n1, Node* n2) //Cheap, less accurate
 {
 	return (abs(n1->x - n2->x) + abs(n1->y - n2->y));
 }
 
-static int EuclideanDistance(Node* n1, Node* n2)
+static int EuclideanDistance(Node* n1, Node* n2) //Expensive, more accurate
 {
 	return (int)sqrt((pow((n1->x - n2->x), 2) + pow((n1->y - n2->y), 2)));
 }
@@ -63,7 +63,7 @@ static Node GetPositionFromCoord(float x, float z, int tileWidth)
 	return Node((int)floor(x / tileWidth), (int)floor(z / tileWidth));
 }
 
-static vector<Node*> aStar(vector<vector<Tile>>* tileGrid, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
+static vector<Node*> aStar(vector< vector<Tile> >* tileGrid, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
 {
 	vector<Node*> path;	
 	Node* start = new Node(startPosXZ.x, startPosXZ.y);
@@ -71,7 +71,7 @@ static vector<Node*> aStar(vector<vector<Tile>>* tileGrid, int tileSize, XMINT2 
 	Node* current = nullptr;
 
 	vector<Node*> closedset;
-	deque<Node*> openset;
+	list<Node*> openset;
 	openset.push_back(start);
 
 	vector<Node> adjList;
@@ -81,11 +81,17 @@ static vector<Node*> aStar(vector<vector<Tile>>* tileGrid, int tileSize, XMINT2 
 	while (!openset.empty())
 	{
 		current = openset.front();
+		for each (Node* n in openset)
+		{
+			if (n->f < current->f)
+				current = n;
+		}
+
 		if (current == end)
 			break;
 
 		closedset.push_back(current);
-		openset.pop_front();
+		openset.remove(current);
 
 		adjList.clear();
 		adjList.push_back(Node(current->x - 1, current->y - 1));
@@ -106,7 +112,7 @@ static vector<Node*> aStar(vector<vector<Tile>>* tileGrid, int tileSize, XMINT2 
 
 				if (!inOpen || tentativeG < n.g)
 				{
-					if (n.x >= 0 && n.x < (signed)tileGrid->size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid[0][n.x][n.y].getTileIsWalkable())
+					if (n.x >= 0 && n.x < (signed)tileGrid->size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid[n.x][0][n.y].getTileIsWalkable())
 					{
 						Node* x = new Node(n.x, n.y);
 						x->parent = current;
