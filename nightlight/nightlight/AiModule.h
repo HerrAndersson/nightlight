@@ -18,8 +18,7 @@ public:
 	void HandleAI(Enemy* enemy);
 
 	//For use from the outside?
-	vector<Node> GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ);
-
+	vector<Node*> GetPath(vector<vector<Tile>>* tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
 };
 
