@@ -262,7 +262,8 @@ struct jointTrans
 
 	float tx, ty, tz;			//Translation data
 	float rx, ry, rz, rw;		//Rotation Data
-	float rox, roy, roz, row;	//Joint Orientation Data
+	float rox, roy, roz, row;	//Joint Orientation Data (People say there may be an issue where you must do Rotation Orientation * rotation * Joint Orientation 
+								//to get this one correctly
 	double scale[3];			//Joint Scale Data
 };
 
