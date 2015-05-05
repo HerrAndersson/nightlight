@@ -9,8 +9,8 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 
 Enemy::~Enemy()
 {
-	//for (auto p : path) delete p;
-	//path.clear();
+	for (auto p : path) delete p;
+	path.clear();
 }
 
 void Enemy::Update()

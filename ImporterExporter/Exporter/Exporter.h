@@ -239,11 +239,49 @@ struct TangentData
 
 struct KeyFrames
 {
+	//PROBLEM MIXING UP JOINT AND BLENDSHAPE DATA AS WELL AS THE FACT THAT JOINTS/IK HANDLES HAVE MORE THAN JUST TRANSLATE, ROTATE, SCALE!
+
 	MTime keyFrame;					    //Keyframe position on timeline 
 	float AnimValue;					//Not necessary weights, but for morph animation it is
 	MTime currTime;
 };
 
+struct parentData
+{
+	//PROBLEM TAKES THE PARENT DATA OF EACH OBJECT IN THE SCENE!
+
+	int numParents;
+	//Parent ID
+	int numChildren;
+	//Child ID
+};
+
+struct jointTrans
+{
+	//PROBLEM DO NOT JUST GO INTO THE JOINTS BUT EVERY OBJECT IN THE SCENE!
+
+	float tx, ty, tz;			//Translation data
+	float rx, ry, rz, rw;		//Rotation Data
+	float rox, roy, roz, row;	//Joint Orientation Data (People say there may be an issue where you must do Rotation Orientation * rotation * Joint Orientation 
+								//to get this one correctly
+	double scale[3];			//Joint Scale Data
+};
+
+struct skinData
+{
+	//Object influenced by a skeleton ID
+	int points;
+	int influences;
+	//Skin Weight values
+	//Number of weights?
+};
+
+struct JointData
+{
+	std::vector<parentData> parData;
+	std::vector<jointTrans> jointTransformations;
+	std::vector<skinData> skinD;
+};
 
 struct AnimData
 {
@@ -254,25 +292,20 @@ struct AnimData
 	//std::vector<TangentData> Tdata;
 	std::vector<KeyFrames> KeyData;
 
+	//Stuff we get out:
+	//Start Animation
+	//End Animation
+	//Num Keyframes
+	//current Frame
+	//Value (such as weight and position)
+	//Current time in seconds
 
-	//Stuff for later:
-	//Joints, position, orientations data
-	//SkeletonHierachy
-	//Weights (start and count)
-	//String Name
-	//ParentID
-	//Flags
-	//Start Index
+	//Transform values of everything including joints (If we save them in the bind pose we get the bind pose values as well as Quaternions)
+	//Parent/child information as well as how many
 
-	//For morph animation:
-	//Vertex data in need of change
-	//Position of model
-	//Position to be interpolated into (as well as maybe: Second normal to be interpolated into)
-	//Frame Rate (How many Frame rates for each animation)
-	//Frame time (Uses to to figure out how many seconds for each frame rate)
-	//Total Animation Time
-	//Current Animation Time
-	//Num animated components
+	//What are we lacking:
+	//Skin Weights (Cannot tell if you get this correctly)
+	//
 };
 
 struct SceneData

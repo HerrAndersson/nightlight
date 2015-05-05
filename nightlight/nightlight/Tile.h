@@ -16,6 +16,7 @@ class Tile
 private:
 
 	bool tileIsEmpty = true;
+	bool tileIsWalkable = false;
 	std::vector<GameObject> gameObjects;
 	
 public:
@@ -28,5 +29,6 @@ public:
 	GameObject* GetGameObject(int i){ return& gameObjects[i]; };
 	int GetNumberOfGameObjects(){ return gameObjects.size(); };
 	bool getTileIsEmpty ( ) const { return tileIsEmpty; }
+	bool getTileIsWalkable() const { return tileIsWalkable; }
 };
 

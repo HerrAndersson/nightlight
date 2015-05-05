@@ -4,9 +4,10 @@
 class Enemy : public GameObject
 {
 private:
+
 	int enemyType;
 	bool followingPlayer;
-	vector<Node> path;
+	vector<Node*> path;
 
 public:
 

@@ -773,91 +773,119 @@ void Exporter::extractLight(MObject& mObj)
 //When it finally gets to keyframe 2, target 2 is dominant because weight value is 1, the keyframes only hold the values for the blendshapes aka the weight value
 //for our object
 
-//void Exporter::outputTransformData(MObject& Trans)
-//{
-//	//attach the function set to the object
-//	MFnTransform tr(Trans);
-//
-//	// Gets transform data as a matrix, though quaternions more interesting! :D
-//	MMatrix mat = tr.transformation().asMatrix();
-//
-//	MQuaternion JointOrient(0, 0, 0, 1);
-//	MQuaternion Rotation(0, 0, 0, 1);
-//	double scale[3];
-//
-//	//Get the transforms local translation
-//	MVector Translation = tr.translation(MSpace::kTransform);
-//
-//	//Get the transforms scale
-//	tr.getScale(scale);
-//
-//	//Get the transforms rotation as quaternions
-//	tr.getRotation(Rotation);
-//
-//	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
-//	if (tr.object().hasFn(MFn::kJoint))
-//	{
-//		MFnIkJoint IKjoint(tr.object());
-//		IKjoint.getOrientation(JointOrient);
-//	}
-//
-//	cout << "translation "
-//		<< Translation.x << " "
-//		<< Translation.y << " "
-//		<< Translation.z << endl;
-//	cout << "rotation "
-//		<< Rotation.x << " "
-//		<< Rotation.y << " "
-//		<< Rotation.z << " "
-//		<< Rotation.w << endl;
-//	cout << "scale "
-//		<< scale[0] << " "
-//		<< scale[1] << " "
-//		<< scale[2] << endl;
-//	cout << "jointOrient "
-//		<< JointOrient.x << " "
-//		<< JointOrient.y << " "
-//		<< JointOrient.z << " "
-//		<< JointOrient.w << endl << endl;
-//}
-//
-//void Exporter::outputParentInfo(MObject& par)
-//{
-//	//attach the function set to the object
-//	MFnDagNode dn(par);
-//
-//	//Output the parent names
-//	cout << "numparents " << dn.parentCount() << endl;
-//
-//	//list each parent
-//	for (int i = 0; i != dn.parentCount(); ++i)
-//	{
-//		//Get a handle to the parent
-//		MObject parent = dn.parent(i);
-//
-//		//Attach a function set to the parent object
-//		MFnDagNode dnParent(parent);
-//
-//		cout << dnParent.name().asChar() << endl;
-//	}
-//
-//	//Output child count
-//	cout << "numChildren " << dn.childCount() << endl << endl;
-//
-//	// list each child name
-//	for (int i = 0; i != dn.childCount(); ++i)
-//	{
-//
-//		//Get the handle to the child
-//		MObject child = dn.child(i);
-//
-//		//attach a function set to the child object
-//		MFnDagNode dnChild(child);
-//
-//		cout << dnChild.name().asChar() << endl;
-//	}
-//	cout << endl;
-//}
+void Exporter::outputTransformData(MObject& Trans)
+{
+	jointTrans jt;
+
+	//attach the function set to the object
+	MFnTransform tr(Trans);
+
+	// Gets transform data as a matrix, though quaternions more interesting! :D
+	MMatrix mat = tr.transformation().asMatrix();
+
+	MQuaternion JointOrient(0, 0, 0, 1);
+	MQuaternion Rotation(0, 0, 0, 1);
+
+	//Get the transforms local translation
+	MVector Translation = tr.translation(MSpace::kTransform);
+
+	//Get the transforms scale
+	tr.getScale(jt.scale);
+
+	//Get the transforms rotation as quaternions
+	tr.getRotation(Rotation);
+
+	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
+	if (tr.object().hasFn(MFn::kJoint))
+	{
+		MFnIkJoint IKjoint(tr.object());
+		IKjoint.getOrientation(JointOrient);
+	}
+
+	//Get Translation data
+	jt.tx = Translation.x;
+	jt.ty = Translation.y;
+	jt.tz = Translation.z;
+
+	//Get Rotation Data
+	jt.rx = Rotation.x;
+	jt.ry = Rotation.y;
+	jt.rz = Rotation.z;
+	jt.rw = Rotation.w;
+
+	//Get Joint Orientation Data
+	jt.rox = JointOrient.x;
+	jt.roy = JointOrient.y;
+	jt.roz = JointOrient.z;
+	jt.row = JointOrient.w;
+
+	cout << "translation "
+		<< Translation.x << " "
+		<< Translation.y << " "
+		<< Translation.z << endl;
+	cout << "rotation "
+		<< Rotation.x << " "
+		<< Rotation.y << " "
+		<< Rotation.z << " "
+		<< Rotation.w << endl;
+	cout << "scale "
+		<< jt.scale[0] << " "
+		<< jt.scale[1] << " "
+		<< jt.scale[2] << endl;
+	cout << "jointOrient "
+		<< JointOrient.x << " "
+		<< JointOrient.y << " "
+		<< JointOrient.z << " "
+		<< JointOrient.w << endl << endl;
+
+	//jointData.push_back(jt);
+}
+
+void Exporter::outputParentInfo(MObject& par)
+{
+	parentData pap;
+
+	//attach the function set to the object
+	MFnDagNode dn(par);
+
+	//Output the parent names
+	cout << "numparents " << dn.parentCount() << endl;
+
+	pap.numParents = dn.parentCount();
+
+	//list each parent
+	for (int i = 0; i != dn.parentCount(); ++i)
+	{
+		//Get a handle to the parent
+		MObject parent = dn.parent(i);
+
+		//Attach a function set to the parent object
+		MFnDagNode dnParent(parent);
+
+		cout << dnParent.name().asChar() << endl;
+	}
+
+	//Output child count
+	cout << "numChildren " << dn.childCount() << endl << endl;
+
+	pap.numChildren = dn.childCount();
+
+	// list each child name
+	for (int i = 0; i != dn.childCount(); ++i)
+	{
+		//Get the handle to the child
+		MObject child = dn.child(i);
+
+		//attach a function set to the child object
+		MFnDagNode dnChild(child);
+
+		cout << dnChild.name().asChar() << endl;
+	}
+
+	//jointData.push_back(pap);
+
+	cout << endl;
+}
 
 void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 {
@@ -898,7 +926,7 @@ void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
 		// write keyframe info
 		std::cout << " time " << KD.currTime.as(MTime::kSeconds);
 		std::cout << " frame " << AnimCurve.time(i);
-		std::cout << " value " << KD.AnimValue;
+		std::cout << " value " << KD.AnimValue << endl;
 		//std::cout << " Tangents " << TD.Ltest << " " << TD.Stest;
 		//std::cout << " Tangent In " << TD.ix << " " << TD.iy;
 		//std::cout << " Tangent Out " << TD.ox << " " << TD.oy << std::endl;
@@ -1184,41 +1212,41 @@ bool Exporter::IdentifyAndExtractMeshes()
 		*/
 	}
 
-// 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kJoint);
-// 	while (!dag_iter.isDone())
-// 	{
-// 		if (dag_iter.getPath(dag_path))
-// 		{
-// 			MFnDagNode dag_node = dag_path.node();
-// 
-// 			if (!dag_node.isIntermediateObject())
-// 			{
-// 				extractJointData(dag_path);
-// 			}
-// 		}
-// 		dag_iter.next();
-// 	}
+ 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kJoint);
+ 	while (!dag_iter.isDone())
+ 	{
+ 		if (dag_iter.getPath(dag_path))
+ 		{
+ 			MFnDagNode dag_node = dag_path.node();
+ 
+ 			if (!dag_node.isIntermediateObject())
+ 			{
+ 				extractJointData(dag_path);
+ 			}
+ 		}
+ 		dag_iter.next();
+ 	}
 
-// 	dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
-// 	while (!dag_iter.isDone())
-// 	{
-// 		//Attach the function set to the object
-// 		MFnTransform fn(dag_iter.item());
-// 		
-// 		//Only want non-history items
-// 		if (!fn.isIntermediateObject())
-// 		{
-// 			//Print mesh name
-// 			cout << "Transform " << fn.name().asChar() << endl;
-// 
-// 			//Described in the sections below
-// 			outputTransformData(dag_iter.item());
-// 			outputParentInfo(dag_iter.item());
-// 		}
-// 
-// 		//Get next transform
-// 		dag_iter.next();
-// 	}
+ 	dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
+ 	while (!dag_iter.isDone())
+ 	{
+ 		//Attach the function set to the object
+ 		MFnTransform fn(dag_iter.item());
+ 		
+ 		//Only want non-history items
+ 		if (!fn.isIntermediateObject())
+ 		{
+ 			//Print mesh name
+ 			cout << "Transform " << fn.name().asChar() << endl;
+ 
+ 			//Described in the sections below
+ 			outputTransformData(dag_iter.item());
+ 			outputParentInfo(dag_iter.item());
+ 		}
+ 
+ 		//Get next transform
+ 		dag_iter.next();
+ 	}
 
 	//general purpose iterator, sista argument är filtret
 	/*
@@ -1374,7 +1402,6 @@ void Exporter::extractJointData(MDagPath path)
 
 	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
 	{
-
 		MPlug elementPlug = plugWorldMatrixArray[i];
 
 		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
@@ -1410,10 +1437,12 @@ void Exporter::OutputSkinCluster(MObject& obj)
 {
 	// attach a skin cluster function set to
 	// access the data
+	skinData SD;
 	MFnSkinCluster fn(obj);
 	MDagPathArray infs;
 
-	int nInfs = fn.influenceObjects(infs);
+	//Get influences
+	SD.influences = fn.influenceObjects(infs);
 
 	// loop through the geometries affected by this cluster
 	int nGeoms = fn.numOutputConnections();
@@ -1432,7 +1461,10 @@ void Exporter::OutputSkinCluster(MObject& obj)
 		// the vertexCount and the influenceCount
 		cout << "Skin: " << skinPath.partialPathName().asChar() << endl;
 		cout << "pointcount: " << gIter.count() << endl;
-		cout << "numInfluences: " << nInfs << endl;
+		cout << "numInfluences: " << SD.influences << endl;
+
+		//Get points affected
+		SD.points = gIter.count();
 
 		for (; !gIter.isDone(); gIter.next()) {
 

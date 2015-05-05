@@ -12,9 +12,6 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
-
-	//AI = new AiModule(enemies, grid);
-	AI = new AiModule();
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
@@ -23,6 +20,10 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
+
+	//AI = new AiModule(enemies, grid);
+	AI = new AiModule();
+	//AI->GetPath(currentLevel XMINT2(0, 0), XMINT2(12, 12));
 }
 
 void Game::LoadAssets()
@@ -94,7 +95,7 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(0.1f, 0.1f, 0.1f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
+	Renderer->BeginScene(0.01f, 0.01f, 0.01f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
 
 	Renderer->UseDefaultShader();
 
@@ -154,11 +155,7 @@ bool Game::Render()
 				Renderer->Render(gameObject.at(4));
 				gameObject.at(4)->SetRotation(XMFLOAT3(0, 0, 0));
 			}
-
 		}
-		
-
-
 	}
 */
 	Renderer->EndScene();

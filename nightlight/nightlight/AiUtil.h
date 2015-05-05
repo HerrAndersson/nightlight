@@ -5,6 +5,7 @@
 #include <DirectXMath.h>
 #include <deque>
 #include "Tile.h"
+#include <list>
 
 using namespace std;
 using DirectX::XMFLOAT2;
@@ -13,36 +14,48 @@ using DirectX::XMINT2;
 struct Node
 {
 	int x, y;
-	int dist;
+
+	//f = g + h, g = sum of all costs to get here, h = heuristic
+	int f, g;
+
+	Node* parent;
 
 	Node(int x, int y)
 	{
 		this->x = x;
 		this->y = y;
+		f, g = 0;
+		parent = nullptr;
 	}
 
-	bool operator==(const Node n)
+	Node()
 	{
-		if (this->x == n.x && this->y == n.y)
+		x, y, f, g  = 0;
+		parent = nullptr;
+	}
+
+	bool operator==(const Node* n)
+	{
+		if (this->x == n->x && this->y == n->y)
 			return true;
 		else 
 			return false;
 	}
 };
 
-static int ManhattanDistance(Node n1, Node n2)
+static int ManhattanDistance(Node* n1, Node* n2) //Cheap, less accurate
 {
-	return (abs(n1.x - n2.x) + abs(n1.y - n2.y));
+	return (abs(n1->x - n2->x) + abs(n1->y - n2->y));
 }
 
-static int EuclideanDistance(Node n1, Node n2)
+static int EuclideanDistance(Node* n1, Node* n2) //Expensive, more accurate
 {
-	return (int)sqrt((pow((n1.x - n2.x), 2) + pow((n1.y - n2.y), 2)));
+	return (int)sqrt((pow((n1->x - n2->x), 2) + pow((n1->y - n2->y), 2)));
 }
 
-static int ChebyshevDistance(Node n1, Node n2)
+static int ChebyshevDistance(Node* n1, Node* n2)
 {
-	return max(abs(n1.x - n2.x), abs(n1.y - n2.y));
+	return max(abs(n1->x - n2->x), abs(n1->y - n2->y));
 }
 
 static Node GetPositionFromCoord(float x, float z, int tileWidth)
@@ -50,75 +63,78 @@ static Node GetPositionFromCoord(float x, float z, int tileWidth)
 	return Node((int)floor(x / tileWidth), (int)floor(z / tileWidth));
 }
 
-static vector<Node*> aStar(vector<vector<Tile>>* tileGrid, int tileWidth, XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
+static vector<Node*> aStar(vector< vector<Tile> >* tileGrid, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
 {
 	vector<Node*> path;	
-	Node start = GetPositionFromCoord(startPosXZ.x, startPosXZ.y, tileWidth);
-	Node end = GetPositionFromCoord(endPosXZ.x, endPosXZ.y, tileWidth);
+	Node* start = new Node(startPosXZ.x, startPosXZ.y);
+	Node* end = new Node(endPosXZ.x, endPosXZ.y);
+	Node* current = nullptr;
 
-	vector<Node> closedset;
-	deque<Node> openset;
+	vector<Node*> closedset;
+	list<Node*> openset;
 	openset.push_back(start);
 
 	vector<Node> adjList;
 
-	int totalCost = INFINITE;
-	int estimatedCost = totalCost + ManhattanDistance(start, end);
+	start->f = start->g + ManhattanDistance(start, end);
 
 	while (!openset.empty())
 	{
-		Node current = openset.front();
+		current = openset.front();
+		for each (Node* n in openset)
+		{
+			if (n->f < current->f)
+				current = n;
+		}
+
 		if (current == end)
-			return path;
-		//return reconstruct_path(came_from, goal)
+			break;
 
 		closedset.push_back(current);
-		openset.pop_front();
+		openset.remove(current);
 
-		//lägg till i adj list. Specialfall för borders.
-		tileGrid[current.x - 1][current.y - 1];
-		tileGrid[current.x - 1][current.y];
-		tileGrid[current.x - 1][current.y + 1];
-		tileGrid[current.x + 1][current.y - 1];
-		tileGrid[current.x + 1][current.y];
-		tileGrid[current.x + 1][current.y + 1];
-		tileGrid[current.x][current.y - 1];
-		tileGrid[current.x][current.y + 1];
+		adjList.clear();
+		adjList.push_back(Node(current->x - 1, current->y - 1));
+		adjList.push_back(Node(current->x - 1, current->y));
+		adjList.push_back(Node(current->x - 1, current->y + 1));
+		adjList.push_back(Node(current->x + 1, current->y - 1));
+		adjList.push_back(Node(current->x + 1, current->y));
+		adjList.push_back(Node(current->x + 1, current->y + 1));
+		adjList.push_back(Node(current->x, current->y + 1));
+		adjList.push_back(Node(current->x, current->y - 1));
 
-		for each (Node x in adjList)
+		for each (Node n in adjList)
 		{
-			if (!(find(closedset.begin(), closedset.end(), x) != closedset.end()))
+			if (!(find(closedset.begin(), closedset.end(), &n) != closedset.end()))
 			{
-				//int cost = g_score[current] + cost from neighbor;
+				int tentativeG = current->g + 1;
+				bool inOpen = find(openset.begin(), openset.end(), &n) != openset.end();
 
+				if (!inOpen || tentativeG < n.g)
+				{
+					if (n.x >= 0 && n.x < (signed)tileGrid->size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid[n.x][0][n.y].getTileIsWalkable())
+					{
+						Node* x = new Node(n.x, n.y);
+						x->parent = current;
+						x->g = tentativeG;
+						x->f = x->g + ManhattanDistance(x, end);
 
-				//if (!(find(openset.begin(), openset.end(), x) != openset.end()) || cost < g_score[neighbor])
-
-				//	came_from[neighbor] : = current
-				//	g_score[neighbor] : = tentative_g_score
-				//	f_score[neighbor] : = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal)
-				//	if neighbor not in openset
-				//		add neighbor to openset
+						if (!inOpen)
+							openset.push_back(x);
+						else
+							delete x;
+					}
+				}
 			}
-
 		}
 	}
 
-//
-//function reconstruct_path(came_from, current)
-//
-//total_path : = [current]
-//
-//	while current in came_from :
-//		current : = came_from[current]
-//		total_path.append(current)
-
-//return total_path
-
-
-
-
-
+	while (current != start)
+	{
+		cout << current->x << " " << current->y << endl;
+		path.push_back(current);
+		current = current->parent;
+	}
 
 	return path;
 }

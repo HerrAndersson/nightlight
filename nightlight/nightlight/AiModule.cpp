@@ -23,7 +23,34 @@ void AiModule::HandleAI(Enemy* ai)
 	}
 }
 
-//vector<Position> AiModule::GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
-//{
-//	//return aStar(level, level->GetTileDimension(), startPosXZ, endPosXZ);
-//}
+vector<Node*> AiModule::GetPath(vector< vector<Tile> >* tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ)
+{
+	return aStar(tileGrid, 10, startPosXZ, endPosXZ);
+}
+
+void AiModule::ChangeLevel(vector< vector<Tile> > tileGrid)
+{
+	this->tileGrid = tileGrid;
+	//GenerateStaticPF();
+}
+
+void AiModule::Update(vector<GameObject*> dynamicObjects)
+{
+	//Generate dynamic pf each frame, or as often as needed.
+
+	GenerateTotalPF();
+}
+
+void AiModule::GenerateStaticPF(vector<GameObject*> staticObjects)
+{
+	//Sum the potential fields of all static objects (walls, pillars, static lights etc). Or check position and generate a field there.
+}
+void AiModule::GenerateDynamicPF(vector<GameObject*> dynamicObjects)
+{
+	//Sum the potential fields of all dynamic objects (player, boxes, dynamic lights etc). Or check position and generate a field there.
+}
+void AiModule::GenerateTotalPF()
+{
+	//Sum the static and dynamic fields to get the total.
+	//Update the field for each tile?
+}
