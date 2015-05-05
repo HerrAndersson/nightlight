@@ -28,23 +28,10 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 void Game::LoadAssets()
 {
 
-	std::vector<Enemy> Enemies;
+	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(18), 0, 0);
 
-	Character character(XMMatrixIdentity(), Assets->GetRenderObject(0), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
-
-	currentLevel = Levels->LoadLevel(0, Enemies, character);
+	currentLevel = Levels->LoadLevel(0, enemies, *character);
 	currentLevel.SetGameObjects();
-
-	//player object
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(18), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	//shadow
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(17), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	//floor
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(10), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	//wall
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(14), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
-	//lever
-	gameObject.push_back(new GameObject(XMMatrixIdentity(), Assets->GetRenderObject(16), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0)));
 }
 
 Game::~Game()
@@ -54,9 +41,11 @@ Game::~Game()
 	delete camera;
 	delete Assets;
 	delete spotLight;
+	delete character;
+/*
 
 	for (auto g : gameObject) delete g;
-	gameObject.clear();
+	gameObject.clear();*/
 }
 
 bool Game::Update()
@@ -91,7 +80,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(gameObject.at(0), camera, spotLight);
+	result = Logic->Update(character, camera, spotLight);
 
 	return result;
 }
@@ -113,7 +102,8 @@ bool Game::Render()
 	for (int i = 0; i < toRender.size(); i++){
 		Renderer->Render(toRender[i]);
 	}
-
+	Renderer->Render(character);
+/*
 	Renderer->Render(gameObject.at(0));
 	Renderer->Render(gameObject.at(1));
 	for (int j = 0; j < 20; j++)
@@ -170,7 +160,7 @@ bool Game::Render()
 
 
 	}
-
+*/
 	Renderer->EndScene();
 
 	return result;

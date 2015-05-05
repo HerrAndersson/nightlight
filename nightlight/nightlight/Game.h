@@ -43,9 +43,11 @@ private:
 	int screenWidth, screenHeight;
 
 	//GameObject* gameObject;
-	std::vector<GameObject*> gameObject;
+	std::vector<Enemy> enemies;
 	CameraObject* camera;
 	LightObject* spotLight;
+	Character* character;
+
 
 	//World* world; this is the game world consisting of tiles in either Tile** or vector<vector<Tile>> format.  world[2][5] gives tile on position (2,5) in the grid.
 
