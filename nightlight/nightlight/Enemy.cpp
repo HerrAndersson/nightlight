@@ -9,8 +9,8 @@ Enemy::Enemy(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 positio
 
 Enemy::~Enemy()
 {
-	//for (auto p : path) delete p;
-	//path.clear();
+	for (auto p : path) delete p;
+	path.clear();
 }
 
 void Enemy::Update()

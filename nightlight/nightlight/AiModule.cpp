@@ -23,7 +23,7 @@ void AiModule::HandleAI(Enemy* ai)
 	}
 }
 
-//vector<Position> AiModule::GetPath(XMFLOAT2 startPosXZ, XMFLOAT2 endPosXZ)
-//{
-//	//return aStar(level, level->GetTileDimension(), startPosXZ, endPosXZ);
-//}
+vector<Node*> AiModule::GetPath(vector<vector<Tile>>* tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ)
+{
+	return aStar(tileGrid, 10, startPosXZ, endPosXZ);
+}
