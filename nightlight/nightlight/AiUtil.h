@@ -131,7 +131,7 @@ static vector<Node*> aStar(vector< vector<Tile> >* tileGrid, int tileSize, XMINT
 
 	while (current != start)
 	{
-		cout << current->x << " " << current->y << endl;
+		//cout << current->x << " " << current->y << endl;
 		path.push_back(current);
 		current = current->parent;
 	}

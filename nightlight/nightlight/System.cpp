@@ -78,9 +78,7 @@ bool System::Update()
 					 + " SystemUpdatePerSecond : " + std::to_string(timer->GetFPS()) 
 					 + " CPU% : " + std::to_string(cpuUsage->GetCpuPercentage());
 
-		applicationName = s.c_str();
-
-		SetWindowText(hwnd, applicationName);
+		SetWindowText ( hwnd, s.c_str ( ) );
 
 		timer->Reset();
 	}
@@ -160,8 +158,6 @@ void System::InitializeWindows()
 	hwnd = CreateWindowEx(WS_EX_APPWINDOW, applicationName, applicationName,
 		WS_OVERLAPPEDWINDOW | CW_USEDEFAULT | CW_USEDEFAULT,
 		posX, posY, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hinstance, NULL);
-
-
 
 	ShowWindow(hwnd, SW_SHOW);
 	SetForegroundWindow(hwnd);

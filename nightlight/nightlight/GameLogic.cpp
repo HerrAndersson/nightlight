@@ -12,42 +12,46 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(GameObject* gameObject, CameraObject* camera, LightObject* spotLight)
+bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight)
 {
-	return UpdatePlayer(gameObject, camera, spotLight);
+	return UpdatePlayer(currentLevel, character, camera, spotLight);
 }
 
-bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
 	XMFLOAT2 newP = Input->GetMousePos();
 
-	XMFLOAT3 pos = player->GetPosition();
-	XMFLOAT3 rot = player->GetRotation();
+	XMFLOAT3 pos = character->GetPosition();
+	XMFLOAT3 rot = character->GetRotation();
 
 	bool playerMoved = false;
 
-	if ( Input->KeyDown ( 'w' ) ) {
-		pos = XMFLOAT3 ( pos.x, pos.y, pos.z + 0.1f );
-		playerMoved = true;
-	}
-	
-	if ( Input->KeyDown ( 's' ) ) {
-		pos = XMFLOAT3 ( pos.x, pos.y, pos.z - 0.1f );
+	if ( Input->KeyDown ('w') ) {
+		pos = XMFLOAT3 (pos.x, pos.y, pos.z + 0.1f);
 		playerMoved = true;
 	}
 
-	if ( Input->KeyDown ( 'a' ) ) {
-		pos = XMFLOAT3 ( pos.x - 0.1f, pos.y, pos.z );
+	if ( Input->KeyDown ('s') ) {
+		pos = XMFLOAT3 (pos.x, pos.y, pos.z - 0.1f);
 		playerMoved = true;
 	}
 
-	if ( Input->KeyDown ( 'd' ) ) {
-		pos = XMFLOAT3 ( pos.x + 0.1f, pos.y, pos.z );
+	if ( Input->KeyDown ('a') ) {
+		pos = XMFLOAT3 (pos.x - 0.1f, pos.y, pos.z);
 		playerMoved = true;
 	}
-	
+
+	if ( Input->KeyDown ('d') ) {
+		pos = XMFLOAT3 (pos.x + 0.1f, pos.y, pos.z);
+		playerMoved = true;
+	}
+
+	if (playerMoved) {
+		pos = ManageStaticPlayerCollisions(currentLevel, character, pos);
+	}
+
 	//Only update if mouse or player moved
 	if (oldP.x != newP.x || oldP.y != newP.y || playerMoved)
 	{
@@ -66,7 +70,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 		double angle = atan2(dx, dy) * (180 / XM_PI);
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
-		player->SetRotation(rot);
+		character->SetRotation(rot);
 		
 		//std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
 		//std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
@@ -78,16 +82,16 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	}
 
-	camera->SetPosition(player->GetPosition().x, 15, player->GetPosition().z );
-	camera->SetLookAt(player->GetPosition().x * 0.9, 0, player->GetPosition().z * 0.9);
-	player->SetPosition(pos);
+	camera->SetPosition(character->GetPosition().x, 15, character->GetPosition().z );
+	camera->SetLookAt(character->GetPosition().x * 0.9, 0, character->GetPosition().z * 0.9);
+	character->SetPosition(pos);
 
-	UpdateSpotLight ( player, camera, spotlight );
+	UpdateSpotLight ( character, camera, spotlight );
 
 	return !Input->Esc();
 }
 
-bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightObject* spotlight)
 {
 	XMFLOAT3 pForward;
 	XMStoreFloat3 ( &pForward, player->GetForwardVector ( ) );
@@ -106,4 +110,37 @@ bool GameLogic::UpdateSpotLight(GameObject* player, CameraObject* camera, LightO
 
 }
 
+XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) {
+	float tileOffset = TILE_SIZE / 2;
 
+	XMFLOAT3 currentPos = character->GetPosition();
+	Tile* currentTile = currentLevel->getTile((int)(currentPos.x + tileOffset), (int)(currentPos.z + tileOffset));
+	
+	if (currentTile != nullptr && !currentTile->getTileIsEmpty()) {
+		
+		int nextTileCoordX = (int)(nextPos.x + tileOffset);
+		int nextTileCoordY = (int)(nextPos.z + tileOffset);
+		Tile* nextTile = currentLevel->getTile(nextTileCoordX, nextTileCoordY);
+		if (nextTile != nullptr && !nextTile->getTileIsEmpty())
+		{
+			for (int x = nextTileCoordX - 1; x < nextTileCoordX + 1; x++)
+			{
+				for (int y = nextTileCoordY - 1; y < nextTileCoordY + 1; y++) 
+				{
+					if (x != nextTileCoordX && y != nextTileCoordY) {
+
+
+					}
+				}
+			}
+
+
+
+			cout << to_string(nextPos.x + tileOffset) + " " + to_string(nextPos.z + tileOffset) + "\n";
+		}
+	}
+
+
+
+	return nextPos;
+}

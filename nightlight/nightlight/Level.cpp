@@ -27,3 +27,12 @@ void Level::SetGameObjects()
 			for (int z = 0; z < (signed)tileGrid[x][y].GetNumberOfGameObjects(); z++)
 				gameObjects.push_back(tileGrid[x][y].GetGameObject(z));
 }
+
+Tile* Level::getTile (int x, int y) {
+	Tile* tile = nullptr;
+	try {
+		tile = &tileGrid.at(x).at(y);
+	} catch ( ... ) { }
+	return tile;
+}
+

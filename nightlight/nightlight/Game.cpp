@@ -88,9 +88,9 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(character, camera, spotLight);
+	result = Logic->Update(&currentLevel, character, camera, spotLight);
 
-	cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
+	//cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
 
 	return result;
 }

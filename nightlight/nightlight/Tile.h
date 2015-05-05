@@ -11,6 +11,8 @@
 #include "StaticObject.h"
 #include "Wall.h"
 
+#define TILE_SIZE 1.0f
+
 class Tile 
 {
 private:

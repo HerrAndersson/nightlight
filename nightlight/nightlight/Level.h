@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Tile.h"
+#include "AiUtil.h"
 
 class Level 
 {
@@ -13,5 +14,6 @@ public:
 	std::vector<GameObject*> GetGameObjects(){ return gameObjects; };
 	void PushGameObjectToGrid ( int coordX, int coordY, GameObject& content );
 	void SetGameObjects();
+	Tile* getTile (int x, int y);
 };
 
