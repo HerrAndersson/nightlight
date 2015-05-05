@@ -59,6 +59,7 @@ Current base names:
 		p_04_Wall1
 		p_05_Corner1
 		p_06_Floor1
+		p_07_Box1
 		
 Activation ID name:
 	**Due to the exporter writing over for example Lever1 with Door1 in use of the activation ID, we will use shortened words for these.
