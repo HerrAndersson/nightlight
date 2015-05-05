@@ -791,6 +791,23 @@ void Exporter::outputTransformData(MObject& Trans)
 		IKjoint.getOrientation(JointOrient);
 	}
 
+	//Get Translation data
+	jt.tx = Translation.x;
+	jt.ty = Translation.y;
+	jt.tz = Translation.z;
+
+	//Get Rotation Data
+	jt.rx = Rotation.x;
+	jt.ry = Rotation.y;
+	jt.rz = Rotation.z;
+	jt.rw = Rotation.w;
+
+	//Get Joint Orientation Data
+	jt.rox = JointOrient.x;
+	jt.roy = JointOrient.y;
+	jt.roz = JointOrient.z;
+	jt.row = JointOrient.w;
+
 	cout << "translation "
 		<< Translation.x << " "
 		<< Translation.y << " "
@@ -810,7 +827,7 @@ void Exporter::outputTransformData(MObject& Trans)
 		<< JointOrient.z << " "
 		<< JointOrient.w << endl << endl;
 
-	//scene_.pap.push_back(temp);
+	//jointData.push_back(jt);
 }
 
 void Exporter::outputParentInfo(MObject& par)
@@ -854,7 +871,7 @@ void Exporter::outputParentInfo(MObject& par)
 		cout << dnChild.name().asChar() << endl;
 	}
 
-	//scene_.pap.push_back(temp);
+	//jointData.push_back(pap);
 
 	cout << endl;
 }
@@ -1409,10 +1426,12 @@ void Exporter::OutputSkinCluster(MObject& obj)
 {
 	// attach a skin cluster function set to
 	// access the data
+	skinData SD;
 	MFnSkinCluster fn(obj);
 	MDagPathArray infs;
 
-	int nInfs = fn.influenceObjects(infs);
+	//Get influences
+	SD.influences = fn.influenceObjects(infs);
 
 	// loop through the geometries affected by this cluster
 	int nGeoms = fn.numOutputConnections();
@@ -1431,7 +1450,10 @@ void Exporter::OutputSkinCluster(MObject& obj)
 		// the vertexCount and the influenceCount
 		cout << "Skin: " << skinPath.partialPathName().asChar() << endl;
 		cout << "pointcount: " << gIter.count() << endl;
-		cout << "numInfluences: " << nInfs << endl;
+		cout << "numInfluences: " << SD.influences << endl;
+
+		//Get points affected
+		SD.points = gIter.count();
 
 		for (; !gIter.isDone(); gIter.next()) {
 

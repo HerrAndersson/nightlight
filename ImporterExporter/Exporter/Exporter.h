@@ -239,6 +239,8 @@ struct TangentData
 
 struct KeyFrames
 {
+	//PROBLEM MIXING UP JOINT AND BLENDSHAPE DATA AS WELL AS THE FACT THAT JOINTS/IK HANDLES HAVE MORE THAN JUST TRANSLATE, ROTATE, SCALE!
+
 	MTime keyFrame;					    //Keyframe position on timeline 
 	float AnimValue;					//Not necessary weights, but for morph animation it is
 	MTime currTime;
@@ -246,6 +248,8 @@ struct KeyFrames
 
 struct parentData
 {
+	//PROBLEM TAKES THE PARENT DATA OF EACH OBJECT IN THE SCENE!
+
 	int numParents;
 	//Parent ID
 	int numChildren;
@@ -254,18 +258,21 @@ struct parentData
 
 struct jointTrans
 {
-	//Trans
-	//Rot
-	//JointOrient
-	double scale[3];
+	//PROBLEM DO NOT JUST GO INTO THE JOINTS BUT EVERY OBJECT IN THE SCENE!
+
+	float tx, ty, tz;			//Translation data
+	float rx, ry, rz, rw;		//Rotation Data
+	float rox, roy, roz, row;	//Joint Orientation Data
+	double scale[3];			//Joint Scale Data
 };
 
 struct skinData
 {
-	//Object influenced by a skeleton
-	//Number points in the object
-	//How many influences
+	//Object influenced by a skeleton ID
+	int points;
+	int influences;
 	//Skin Weight values
+	//Number of weights?
 };
 
 struct JointData
