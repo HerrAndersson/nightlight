@@ -8,7 +8,7 @@ private:
 
 
 public:
-	Floor(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation);
+	Floor(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	~Floor();
 };
 

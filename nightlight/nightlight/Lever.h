@@ -3,7 +3,7 @@
 class Lever :
 	public GameObject {
 public:
-	Lever(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int leverStatus);
+	Lever(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int leverStatus);
 	~Lever ( );
 private:
 	int leverStatus;

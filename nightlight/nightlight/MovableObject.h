@@ -3,7 +3,7 @@
 class MovableObject :
 	public GameObject {
 public:
-	MovableObject ( XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation );
+	MovableObject ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
 	~MovableObject ( );
 };
 

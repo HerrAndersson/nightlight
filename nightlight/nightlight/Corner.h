@@ -3,7 +3,7 @@
 class Corner :
 	public GameObject {
 public:
-	Corner ( XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation );
+	Corner ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
 	~Corner ( );
 };
 

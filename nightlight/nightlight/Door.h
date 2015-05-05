@@ -8,7 +8,7 @@ private:
 	int doorType;
 public:
 
-	Door(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int doorStatus, int doorType);
+	Door(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int doorStatus, int doorType);
 	~Door();
 
 };

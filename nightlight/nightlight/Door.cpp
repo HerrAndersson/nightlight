@@ -1,7 +1,7 @@
 #include "Door.h"
 
-Door::Door(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int doorStatus, int doorType)
-	: GameObject(worldMatrix, renderObject, position, rotation)
+Door::Door(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int doorStatus, int doorType)
+	: GameObject(position, rotation,  renderObject, coordX, coordY)
 {
 	this->doorStatus = doorStatus;
 	this->doorType = doorType;

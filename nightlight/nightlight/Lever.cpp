@@ -1,8 +1,8 @@
 #include "Lever.h"
 
 
-Lever::Lever(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int leverStatus)
-	: GameObject ( worldMatrix, renderObject, position, rotation ) {
+Lever::Lever(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int leverStatus)
+	: GameObject ( position, rotation,  renderObject, coordX, coordY ) {
 
 }
 

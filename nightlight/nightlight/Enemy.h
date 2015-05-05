@@ -10,7 +10,7 @@ private:
 
 public:
 
-	Enemy(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int enemyType);
+	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType);
 	virtual ~Enemy();
 
 	void Update();

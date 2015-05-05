@@ -11,24 +11,17 @@ private:
 
 	int id;
 	int tileCoordX, tileCoordY;
-	XMMATRIX		worldMatrix;
-	XMMATRIX		scaleMatrix = XMMatrixIdentity ( );
-	XMMATRIX		rotationMatrix = XMMatrixIdentity ( );
-	XMMATRIX		translationMatrix = XMMatrixIdentity ( );
 	XMFLOAT3		position;
 	XMFLOAT3		rotation;
 	XMVECTOR		forwardVector;
 	RenderObject*	renderObject;
 
-	void UpdateWorldMatrix();
-
 public:
 
-	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation);
-	GameObject(XMMATRIX& worldMatrix, RenderObject* renderObject, int coordX, int coordY);
+	GameObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	virtual ~GameObject();
 
-	void GetWorldMatrix(XMMATRIX& worldMatrix);
+	XMMATRIX GetWorldMatrix();
 	RenderObject* GetRenderObject();
 
 	XMFLOAT3 GetPosition();

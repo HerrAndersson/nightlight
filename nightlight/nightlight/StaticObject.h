@@ -3,7 +3,7 @@
 class StaticObject :
 	public GameObject {
 public:
-	StaticObject ( XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation );
+	StaticObject ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
 	~StaticObject ( );
 };
 

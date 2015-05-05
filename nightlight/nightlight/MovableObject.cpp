@@ -1,8 +1,8 @@
 #include "MovableObject.h"
 
 
-MovableObject::MovableObject ( XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation )
-	: GameObject ( worldMatrix, renderObject, position, rotation ) {
+MovableObject::MovableObject ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY )
+	: GameObject ( position,  rotation,  renderObject,  coordX,  coordY ) {
 
 }
 

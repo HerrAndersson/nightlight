@@ -1,7 +1,7 @@
 #include "Enemy.h"
 
-Enemy::Enemy(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int enemyType)
-	 : GameObject(worldMatrix, renderObject, position, rotation)
+Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType)
+	 : GameObject(position, rotation,  renderObject, coordX, coordY)
 {
 	this->enemyType = enemyType;
 	bool followPlayer = false;

@@ -3,7 +3,7 @@
 class PressurePlate :
 	public GameObject {
 public:
-	PressurePlate(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int plateStatus);
+	PressurePlate(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int plateStatus);
 	~PressurePlate ( );
 private:
 	int plateStatus;

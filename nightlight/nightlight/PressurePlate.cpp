@@ -1,8 +1,8 @@
 #include "PressurePlate.h"
 
 
-PressurePlate::PressurePlate(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 position, XMFLOAT3 rotation, int plateStatus)
-	: GameObject ( worldMatrix, renderObject, position, rotation )
+PressurePlate::PressurePlate(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int plateStatus)
+	: GameObject (  position,  rotation,  renderObject,  coordX,  coordY )
 {
 	
 }
