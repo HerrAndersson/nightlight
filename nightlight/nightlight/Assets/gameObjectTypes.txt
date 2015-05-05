@@ -5,8 +5,10 @@ static
 movable
 pressure
 container
+lever
 mainc
 sidec
 smallenemy
 averageenemy
 largeenemy
+corner

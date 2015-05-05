@@ -57,6 +57,7 @@ GameObject LevelParser::CreateGameObjectFromLevelData(std::vector<std::string> u
 	XMFLOAT3 position;
 	position.x = std::stof(unparsedData.at(i++));
 	position.y = std::stof(unparsedData.at(i++));
+	position.y = 0;
 	position.z = std::stof(unparsedData.at(i++));
 	rotation = std::stof(unparsedData.at(i++));
 

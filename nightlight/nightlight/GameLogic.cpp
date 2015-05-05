@@ -78,7 +78,7 @@ bool GameLogic::UpdatePlayer(GameObject* player, CameraObject* camera, LightObje
 
 	}
 
-	camera->SetPosition(player->GetPosition().x, 1, player->GetPosition().z-7 );
+	camera->SetPosition(player->GetPosition().x, 15, player->GetPosition().z );
 	camera->SetLookAt(player->GetPosition().x * 0.9, 0, player->GetPosition().z * 0.9);
 	player->SetPosition(pos);
 

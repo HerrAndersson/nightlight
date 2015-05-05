@@ -29,7 +29,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 void Game::LoadAssets()
 {
 
-	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(0), 0, 0);
+	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
 	currentLevel.SetGameObjects();
@@ -102,7 +102,7 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(0.01f, 0.01f, 0.01f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
+	Renderer->BeginScene(1.0f, 0.0f, 0.0f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
 
 	Renderer->UseDefaultShader();
 

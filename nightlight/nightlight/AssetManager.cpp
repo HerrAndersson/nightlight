@@ -74,6 +74,7 @@ void AssetManager::LoadModel(string file_path){
 
 
 			infile.read((char*)name.data(), meshHeader.nameLength);
+			model->name = name;
 			if (meshHeader.hasSkeleton)
 				infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(WeightedPoint));
 			else

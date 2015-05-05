@@ -11,3 +11,4 @@ sidec
 smallenemy
 averageenemy
 largeenemy
+corner

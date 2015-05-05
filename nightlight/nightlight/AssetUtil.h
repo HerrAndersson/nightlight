@@ -127,6 +127,7 @@ namespace assetUtility {
 			vertexBuffer->Release ( );
 			pointLights.clear ( );
 		}
+		std::string name;
 		ID3D11Buffer* vertexBuffer;
 		bool hasSkeleton = false;
 		bool hasBlendShapes = false;

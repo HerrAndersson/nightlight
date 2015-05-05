@@ -313,7 +313,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
-	MSpace::Space transform_space = MSpace::kTransform;
+	MSpace::Space transform_space = MSpace::kPostTransform;
 
 	std::vector<std::string> nodeVec;
 	bool relevantObjectFound = false;
@@ -1555,6 +1555,8 @@ void Exporter::ExportScene()
 // exporterar alla meshar (antal meshar, namn per mesh, antal vertexpunkter per mesh och vertexpositioner per mesh)
 void Exporter::ExportMeshes()
 {
+
+
 	export_stream_ << "\tmeshes " << scene_.meshes.size() << std::endl;
 	for (auto mesh_iter = scene_.meshes.begin(); mesh_iter != scene_.meshes.end(); mesh_iter++)
 	{
@@ -1581,6 +1583,7 @@ void Exporter::ExportMeshes()
 				<< std::endl;
 		}
 	}
+
 
 	MainHeader mainHeader;
 	mainHeader.meshCount = scene_.meshes.size();
