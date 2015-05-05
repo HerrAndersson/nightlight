@@ -31,7 +31,7 @@ vector<Node*> AiModule::GetPath(vector< vector<Tile> >* tileGrid, XMINT2 startPo
 void AiModule::ChangeLevel(vector< vector<Tile> > tileGrid)
 {
 	this->tileGrid = tileGrid;
-	GenerateStaticPF();
+	//GenerateStaticPF();
 }
 
 void AiModule::Update(vector<GameObject*> dynamicObjects)
