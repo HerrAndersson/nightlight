@@ -24,7 +24,7 @@ Level LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character
 {
 	Level level = Level();
 
-	if (levelID <= -1 || levelID > levelNames.size() - 1) {
+	if (levelID <= -1 || levelID > (signed)levelNames.size() - 1) {
 		OutputDebugString("Error on LoadLevel: levelID out of bounds.");
 		return level;
 	}

@@ -8,7 +8,10 @@ class AiModule
 {
 private:
 
-	vector< vector<Tile> > tileGrid;
+	const int R_MAX = 10;
+	const int R_MIN = 4;
+
+	vector< vector<Tile> >* tileGrid;
 
 	vector< vector<int> > staticPF;
 	vector< vector<int> > dynamicPF;
@@ -18,6 +21,8 @@ private:
 	void GenerateDynamicPF(vector<GameObject*> dynamicObjects);
 	void GenerateTotalPF();
 
+	XMINT2 GetRandomPosition(Enemy* ai);
+
 public:
 
 	AiModule();
@@ -25,11 +30,12 @@ public:
 
 	void HandleAI(Enemy* enemy);
 
-	void ChangeLevel(vector< vector<Tile> > tileGrid);
+	void ChangeTileGrid(vector< vector<Tile> >* tileGrid);
 	void Update(vector<GameObject*> dynamicObjects);
 
 	//For use from the outside?
 	vector<Node*> GetPath(vector< vector<Tile> >* tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
+	vector< vector<int> > GetTotalPF();
 };
 

@@ -112,7 +112,7 @@ static vector<Node*> aStar(vector< vector<Tile> >* tileGrid, int tileSize, XMINT
 
 				if (!inOpen || tentativeG < n.g)
 				{
-					if (n.x >= 0 && n.x < (signed)tileGrid->size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid[n.x][0][n.y].getTileIsWalkable())
+					if (n.x >= 0 && n.x < (signed)tileGrid->size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid->at(n.x).at(n.y).getTileIsWalkable())
 					{
 						Node* x = new Node(n.x, n.y);
 						x->parent = current;

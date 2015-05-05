@@ -42,3 +42,8 @@ bool Enemy::HasValidPath()
 	//Check the path for validity
 	return true;
 }
+
+void Enemy::SetPath(vector<Node*> path)
+{
+	this->path = path;
+}

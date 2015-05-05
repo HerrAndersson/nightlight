@@ -16,6 +16,8 @@ public:
 
 	void Update();
 
+	void SetPath(vector<Node*> path);
+
 	bool IsFollowingPlayer();
 	bool HasValidPath();
 };

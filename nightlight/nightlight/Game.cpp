@@ -90,6 +90,8 @@ bool Game::Update()
 
 	result = Logic->Update(character, camera, spotLight);
 
+	cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
+
 	return result;
 }
 
