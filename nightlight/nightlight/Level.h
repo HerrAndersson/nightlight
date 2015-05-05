@@ -6,9 +6,12 @@ class Level
 {
 private:
 	std::vector<std::vector<Tile>> tileGrid;
+	std::vector<GameObject*> gameObjects;
 public:
 	Level ( );
 	~Level ( );
-	void PushGameObjectToGrid ( int coordX, int coordY, GameObject &content );
+	std::vector<GameObject*> GetGameObjects(){ return gameObjects; };
+	void PushGameObjectToGrid ( int coordX, int coordY, GameObject& content );
+	void SetGameObjects();
 };
 

@@ -38,6 +38,7 @@ private:
 	};
 
 	int activeGameState;
+	Level currentLevel;
 
 	int screenWidth, screenHeight;
 

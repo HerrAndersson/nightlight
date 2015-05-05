@@ -24,8 +24,10 @@ public:
 	Tile ( );
 	~Tile ( );
 
-	void pushGameObjectToTile ( GameObject &content );
+	void pushGameObjectToTile ( GameObject& content );
 
+	GameObject* GetGameObject(int i){ return& gameObjects[i]; };
+	int GetNumberOfGameObjects(){ return gameObjects.size(); };
 	bool getTileIsEmpty ( ) const { return tileIsEmpty; }
 	bool getTileIsWalkable() const { return tileIsWalkable; }
 };
