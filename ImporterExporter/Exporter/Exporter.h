@@ -244,6 +244,36 @@ struct KeyFrames
 	MTime currTime;
 };
 
+struct parentData
+{
+	int numParents;
+	//Parent ID
+	int numChildren;
+	//Child ID
+};
+
+struct jointTrans
+{
+	//Trans
+	//Rot
+	//JointOrient
+	double scale[3];
+};
+
+struct skinData
+{
+	//Object influenced by a skeleton
+	//Number points in the object
+	//How many influences
+	//Skin Weight values
+};
+
+struct JointData
+{
+	std::vector<parentData> parData;
+	std::vector<jointTrans> jointTransformations;
+	std::vector<skinData> skinD;
+};
 
 struct AnimData
 {
@@ -254,25 +284,20 @@ struct AnimData
 	//std::vector<TangentData> Tdata;
 	std::vector<KeyFrames> KeyData;
 
+	//Stuff we get out:
+	//Start Animation
+	//End Animation
+	//Num Keyframes
+	//current Frame
+	//Value (such as weight and position)
+	//Current time in seconds
 
-	//Stuff for later:
-	//Joints, position, orientations data
-	//SkeletonHierachy
-	//Weights (start and count)
-	//String Name
-	//ParentID
-	//Flags
-	//Start Index
+	//Transform values of everything including joints (If we save them in the bind pose we get the bind pose values as well as Quaternions)
+	//Parent/child information as well as how many
 
-	//For morph animation:
-	//Vertex data in need of change
-	//Position of model
-	//Position to be interpolated into (as well as maybe: Second normal to be interpolated into)
-	//Frame Rate (How many Frame rates for each animation)
-	//Frame time (Uses to to figure out how many seconds for each frame rate)
-	//Total Animation Time
-	//Current Animation Time
-	//Num animated components
+	//What are we lacking:
+	//Skin Weights (Cannot tell if you get this correctly)
+	//
 };
 
 struct SceneData
