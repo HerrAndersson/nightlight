@@ -80,6 +80,24 @@ namespace assetUtility {
 		XMFLOAT3 position;
 	};
 
+	struct Keyframe{
+		float time;
+		XMFLOAT3 trans;
+		XMVECTOR rot;
+	};
+
+	struct KeyframesPerBone{
+		std::vector<Keyframe> frames;
+		int bone;
+		int numframes;
+		float length;
+	};
+
+	struct Animation{
+		std::vector<KeyframesPerBone> bones;
+		int length;
+	};
+
 	struct AmbientLightStruct 
 	{
 		double intensity;

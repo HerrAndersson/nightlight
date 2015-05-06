@@ -1381,101 +1381,170 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	return true;
 }
 
-void Exporter::extractJointData(MDagPath path)
-{
-	MFloatMatrix res;
-	MFnIkJoint joint(path);
-	cout << path.partialPathName().asChar() << std::endl;
-	MMatrix invMat;
 
-	MStatus status;
-	MTransformationMatrix restpose = joint.restPosition(&status);
-
-	cout << status <<" "<< restpose.asMatrix() << endl;
-
+void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
+	
+	Bone output;
 
 	jointTrans jt;
 
-	//attach the function set to the object
-	MFnTransform tr(path);
-
-	// Gets transform data as a matrix, though quaternions more interesting! :D
-	MMatrix mat = tr.transformation().asMatrix();
-
-	MQuaternion JointOrient(0, 0, 0, 1);
-	MQuaternion Rotation(0, 0, 0, 1);
-
-	//Get the transforms local translation
-	MVector Translation = tr.translation(MSpace::kObject);
-
-	//Get the transforms scale
-	tr.getScale(jt.scale);
-
-	//Get the transforms rotation as quaternions
-	tr.getRotation(Rotation);
-
-	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
-	if (tr.object().hasFn(MFn::kJoint))
+	MItDependencyNodes matIt(MFn::kAnimCurve);
+	while (!matIt.isDone())
 	{
-		MFnIkJoint IKjoint(tr.object());
-		IKjoint.getOrientation(JointOrient);
-	}
+		MFnAnimCurve animCurve(matIt.item());
+		cout << animCurve.name().asChar() << endl;
 
-	//Get Translation data
-	jt.tx = Translation.x;
-	jt.ty = Translation.y;
-	jt.tz = Translation.z;
+		if (!strcmp(animCurve.name().substring(0, joint.name().length() - 1).asChar(), joint.name().asChar())){
 
-	//Get Rotation Data
-	jt.rx = Rotation.x;
-	jt.ry = Rotation.y;
-	jt.rz = Rotation.z;
-	jt.rw = Rotation.w;
+			std::string type = animCurve.name().substring(joint.name().length(),animCurve.name().length()).asChar();
+			MMatrix mat = joint.transformation().asMatrix();
 
-	//Get Joint Orientation Data
-	jt.rox = JointOrient.x;
-	jt.roy = JointOrient.y;
-	jt.roz = JointOrient.z;
-	jt.row = JointOrient.w;
-
-
-	MObject jointNode = path.node();
-	MFnDependencyNode fnJoint(jointNode);
-	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
-
-	MPlug plugWorldMatrixArray(jointNode, attrWorldMatrix);
-
-	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
-	{
-		MPlug elementPlug = plugWorldMatrixArray[i];
-
-		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
-
-		dgIt.disablePruningOnFilter();
-
-		for (; !dgIt.isDone(); dgIt.next())
-		{
-			MObject thisNode = dgIt.thisNode();
-
-			if (thisNode.apiType() == MFn::kSkinClusterFilter)
+			output.invBindPose = mat.inverse();
+			output.frames.resize(animCurve.numKeys());
+			for (int i = 0; i < animCurve.numKeys(); i++)
 			{
-				MFnSkinCluster skinFn(thisNode);
-
-				MPlug bindPreMatrixArrayPlug = skinFn.findPlug("bindPreMatrix");
-				int logicalIndex = skinFn.indexForInfluenceObject(path);
-				MPlug bindPreMatrixPlug = bindPreMatrixArrayPlug.elementByLogicalIndex(logicalIndex);
-				MObject dataObject;
-				bindPreMatrixArrayPlug.getValue(dataObject);
-
-				MFnMatrixData matDataFn(dataObject);
-
-				invMat = matDataFn.matrix().inverse();
-				res = invMat.matrix;
-				cout << logicalIndex << std::endl;
+				output.frames[i].time = animCurve.time(i).value();
+				if (!strcmp(type.c_str(), "_translateX")){
+					cout << animCurve.value(i) << endl;
+					output.frames[i].trans.x = animCurve.value(i);
+				}
+				if (!strcmp(type.c_str(), "_translateY")){
+					cout << animCurve.value(i) << endl;
+					output.frames[i].trans.y = animCurve.value(i);
+				}
+				if (!strcmp(type.c_str(), "_translateZ")){
+					cout << animCurve.value(i) << endl;
+					output.frames[i].trans.z = animCurve.value(i);
+				}
+				if (!strcmp(type.c_str(), "_rotateX")){
+					cout << animCurve.value(i) << endl;
+					output.frames[i].rot.x = animCurve.value(i);
+				}
+				if (!strcmp(type.c_str(), "_rotateY")){
+					cout << animCurve.value(i) << endl;
+					output.frames[i].rot.y = animCurve.value(i);
+				}
+				if (!strcmp(type.c_str(), "_rotateZ")){
+					cout << animCurve.value(i) << endl;
+					output.frames[i].rot.z = animCurve.value(i);
+				}
 			}
 		}
+		matIt.next();
 	}
-	std::cout << res << std::endl;
+
+
+	scene_.skeleton.push_back(output);
+	int children = joint.childCount();
+	for (int i = 0; i < children; i++)
+		RecursiveJointExtraction(MFnTransform(joint.child(i)), scene_.skeleton.size());
+
+};
+
+void Exporter::extractJointData(MDagPath path)
+{
+	MFnTransform joint(path);
+	int childcount = joint.childCount();
+	MFnDagNode rootpath(joint.parent(0));
+
+	if (!strcmp(rootpath.fullPathName().asChar(),""))
+			RecursiveJointExtraction(joint, -1);
+
+
+
+
+// 	MFloatMatrix res;
+// 	cout << path.partialPathName().asChar() << std::endl;
+// 	MMatrix invMat;
+// 
+// 	MStatus status;
+// 	MTransformationMatrix restpose = joint.restPosition(&status);
+// 
+// 	cout << status <<" "<< restpose.asMatrix() << endl;
+// 
+// 
+// 	jointTrans jt;
+// 
+// 	//attach the function set to the object
+// 	MFnTransform tr(path);
+// 
+// 	// Gets transform data as a matrix, though quaternions more interesting! :D
+// 	MMatrix mat = tr.transformation().asMatrix();
+// 
+// 	MQuaternion JointOrient(0, 0, 0, 1);
+// 	MQuaternion Rotation(0, 0, 0, 1);
+// 
+// 	//Get the transforms local translation
+// 	MVector Translation = tr.translation(MSpace::kTransform);
+// 
+// 	//Get the transforms scale
+// 	tr.getScale(jt.scale);
+// 
+// 	//Get the transforms rotation as quaternions
+// 	tr.getRotation(Rotation);
+// 
+// 	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
+// 	if (tr.object().hasFn(MFn::kJoint))
+// 	{
+// 		MFnIkJoint IKjoint(tr.object());
+// 		IKjoint.getOrientation(JointOrient);
+// 	}
+// 
+// 	//Get Translation data
+// 	jt.tx = Translation.x;
+// 	jt.ty = Translation.y;
+// 	jt.tz = Translation.z;
+// 
+// 	//Get Rotation Data
+// 	jt.rx = Rotation.x;
+// 	jt.ry = Rotation.y;
+// 	jt.rz = Rotation.z;
+// 	jt.rw = Rotation.w;
+// 
+// 	//Get Joint Orientation Data
+// 	jt.rox = JointOrient.x;
+// 	jt.roy = JointOrient.y;
+// 	jt.roz = JointOrient.z;
+// 	jt.row = JointOrient.w;
+// 
+// 
+// 	MObject jointNode = path.node();
+// 	MFnDependencyNode fnJoint(jointNode);
+// 	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
+// 
+// 	MPlug plugWorldMatrixArray(jointNode, attrWorldMatrix);
+// 
+// 	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
+// 	{
+// 		MPlug elementPlug = plugWorldMatrixArray[i];
+// 
+// 		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
+// 
+// 		dgIt.disablePruningOnFilter();
+// 
+// 		for (; !dgIt.isDone(); dgIt.next())
+// 		{
+// 			MObject thisNode = dgIt.thisNode();
+// 
+// 			if (thisNode.apiType() == MFn::kSkinClusterFilter)
+// 			{
+// 				MFnSkinCluster skinFn(thisNode);
+// 
+// 				MPlug bindPreMatrixArrayPlug = skinFn.findPlug("bindPreMatrix");
+// 				int logicalIndex = skinFn.indexForInfluenceObject(path);
+// 				MPlug bindPreMatrixPlug = bindPreMatrixArrayPlug.elementByLogicalIndex(logicalIndex);
+// 				MObject dataObject;
+// 				bindPreMatrixArrayPlug.getValue(dataObject);
+// 
+// 				MFnMatrixData matDataFn(dataObject);
+// 
+// 				invMat = matDataFn.matrix().inverse();
+// 				res = invMat.matrix;
+// 				cout << logicalIndex << std::endl;
+// 			}
+// 		}
+// 	}
+// 	std::cout << res << std::endl;
 }
 
 void Exporter::OutputSkinCluster(MObject& obj)

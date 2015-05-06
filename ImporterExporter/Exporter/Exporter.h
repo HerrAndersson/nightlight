@@ -308,12 +308,30 @@ struct AnimData
 	//
 };
 
+struct Keyframe{
+	float time;
+	MFloatVector trans;
+	MQuaternion rot;
+};
+
+struct Bone{
+	std::vector<Keyframe> frames;
+	int parent;
+	MMatrix invBindPose;
+};
+
+struct Animation{
+	int length, startFrame;
+};
+
 struct SceneData
 {
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 	std::vector<BlendShapeTarget> blendShapes;
 	std::vector<cameraData> cameras;
+	std::vector<Animation> animations;
+	std::vector<Bone> skeleton;
 	lightData lights;
 	std::vector<AnimData> AnimationData;
 };
@@ -371,6 +389,7 @@ private:
 	void extractKeyData(MObject& key, AnimData&);
 	void extractJointData(MDagPath path);
 	void OutputSkinCluster(MObject& obj);
+	void RecursiveJointExtraction(MFnTransform& joint, int parentIndex);
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
