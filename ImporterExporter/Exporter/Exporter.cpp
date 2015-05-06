@@ -382,7 +382,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 					formattedOutput += nodeVec.at(1) + "," +
 						std::to_string(gameObjectID) + "," +
-						std::to_string(position.x) + "," + std::to_string(position.y) + "," + std::to_string(position.z) + "," + 
+						std::to_string(-position.x) + "," + std::to_string(-position.y) + "," + std::to_string(-position.z) + "," + 
 						std::to_string(eulerRotation.y) + "," +
 						std::to_string(coordX) + "," + std::to_string(coordY) + ",";
 
@@ -1308,8 +1308,8 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	}
 
 	for (int i = 0; i < points.length(); i++){
-		point temppoints = { points[i].x, points[i].y, points[i].z };
-		vec3 temppurepoints = { points[i].x, points[i].y, points[i].z };
+		point temppoints = { points[i].x, -points[i].y, points[i].z };
+		vec3 temppurepoints = { points[i].x, -points[i].y, points[i].z };
 		mesh_data.points.push_back(temppoints);
 		mesh_data.purepoints.push_back(temppurepoints);
 	}
@@ -1321,7 +1321,7 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 	}
 
 	for (int i = 0; i < normals.length(); i++){
-		vec3 tempnormals = { normals[i].x, normals[i].y, normals[i].z };
+		vec3 tempnormals = { normals[i].x, -normals[i].y, normals[i].z };
 		mesh_data.normals.push_back(tempnormals);
 	}
 
@@ -1341,7 +1341,8 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 		mesh.getUVs(Us, Vs, &currentSet);
 		for (int a = 0; a < Us.length(); a++){
 			UVs.u = Us[a];
-			UVs.v = Vs[a];
+			UVs.v = 1.0f-Vs[a];
+			//1-Vs in order to get correct UV angles
 			tempUVSet.UVs.push_back(UVs);
 		}
 		mesh.getTangents(tempUVSet.tangents, world_space, &currentSet);

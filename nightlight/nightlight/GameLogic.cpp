@@ -39,12 +39,12 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	}
 
 	if ( Input->KeyDown ('a') ) {
-		pos = XMFLOAT3 (pos.x - 0.1f, pos.y, pos.z);
+		pos = XMFLOAT3 (pos.x + 0.1f, pos.y, pos.z);
 		playerMoved = true;
 	}
 
 	if ( Input->KeyDown ('d') ) {
-		pos = XMFLOAT3 (pos.x + 0.1f, pos.y, pos.z);
+		pos = XMFLOAT3 (pos.x - 0.1f, pos.y, pos.z);
 		playerMoved = true;
 	}
 
@@ -67,7 +67,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		XMFLOAT2 msp = Input->GetMousePosScreenSpace();
 		double dx = ( msp.x - screenX );
 		double dy = ( msp.y - screenY ) / camera->GetAspectRatio();
-		double angle = atan2(dx, dy) * (180 / XM_PI);
+		double angle = atan2(dy, dx) * (180 / XM_PI);
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 		character->SetRotation(rot);
@@ -82,7 +82,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 
 	}
 
-	camera->SetPosition(character->GetPosition().x, 15, character->GetPosition().z );
+	camera->SetPosition(character->GetPosition().x, -15, character->GetPosition().z );
 	camera->SetLookAt(character->GetPosition().x * 0.9, 0, character->GetPosition().z * 0.9);
 	character->SetPosition(pos);
 
@@ -104,7 +104,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	//offset light
 	pPos.x += pForward.x/100;
 	pPos.z += pForward.z/100;
-	pPos.y += 0.7f;
+	pPos.y -= 0.7f;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	return true;
 
