@@ -1394,6 +1394,51 @@ void Exporter::extractJointData(MDagPath path)
 	cout << status <<" "<< restpose.asMatrix() << endl;
 
 
+	jointTrans jt;
+
+	//attach the function set to the object
+	MFnTransform tr(path);
+
+	// Gets transform data as a matrix, though quaternions more interesting! :D
+	MMatrix mat = tr.transformation().asMatrix();
+
+	MQuaternion JointOrient(0, 0, 0, 1);
+	MQuaternion Rotation(0, 0, 0, 1);
+
+	//Get the transforms local translation
+	MVector Translation = tr.translation(MSpace::kObject);
+
+	//Get the transforms scale
+	tr.getScale(jt.scale);
+
+	//Get the transforms rotation as quaternions
+	tr.getRotation(Rotation);
+
+	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
+	if (tr.object().hasFn(MFn::kJoint))
+	{
+		MFnIkJoint IKjoint(tr.object());
+		IKjoint.getOrientation(JointOrient);
+	}
+
+	//Get Translation data
+	jt.tx = Translation.x;
+	jt.ty = Translation.y;
+	jt.tz = Translation.z;
+
+	//Get Rotation Data
+	jt.rx = Rotation.x;
+	jt.ry = Rotation.y;
+	jt.rz = Rotation.z;
+	jt.rw = Rotation.w;
+
+	//Get Joint Orientation Data
+	jt.rox = JointOrient.x;
+	jt.roy = JointOrient.y;
+	jt.roz = JointOrient.z;
+	jt.row = JointOrient.w;
+
+
 	MObject jointNode = path.node();
 	MFnDependencyNode fnJoint(jointNode);
 	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
