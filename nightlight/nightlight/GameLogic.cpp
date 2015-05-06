@@ -104,7 +104,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	//offset light
 	pPos.x += pForward.x/100;
 	pPos.z += pForward.z/100;
-	pPos.y += 0.7f;
+	pPos.y -= 0.7f;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	return true;
 
