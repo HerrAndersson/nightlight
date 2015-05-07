@@ -34,7 +34,6 @@ void Game::LoadAssets()
 	}
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
-	currentLevel->updateGameObjets();
 }
 
 Game::~Game()
@@ -104,9 +103,9 @@ bool Game::Render()
 
 	Renderer->UseDefaultShader();
 
-	std::vector<GameObject*> toRender = currentLevel->GetGameObjects();
-	for (int i = 0; i < toRender.size(); i++){
-		Renderer->Render(toRender[i]);
+	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+	for (int i = 0; i < toRender->size(); i++){
+		Renderer->Render(toRender->at(i));
 	}
 	Renderer->Render(character);
 /*

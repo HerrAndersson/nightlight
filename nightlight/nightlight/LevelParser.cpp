@@ -14,10 +14,28 @@ LevelParser::LevelParser(AssetManager* assetManager)
 	assetUtility::fileToStrings("Assets/gameObjectTypes.txt", gameObjectTypes);
 }
 
-
 LevelParser::~LevelParser()
 {
 
+}
+
+template<typename T>
+void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> levers)
+{
+	for (T* t : gameObjects){
+		bool foundCoupling = false;
+		std::string activatesName = t->getActivatesName();
+		for (int i = 0; i < doors.size() && !foundCoupling; i++)
+			if (doors.at(i)->getActivationName() == activatesName){
+				t->setActivatesDoor(doors.at(i));
+				foundCoupling = true;
+			}
+		for (int i = 0; i < levers.size() && !foundCoupling; i++)
+			if (levers.at(i)->getActivationName() == activatesName){
+				t->setActivatesLever(levers.at(i));
+				foundCoupling = true;
+			}
+	}
 }
 
 Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character &character)
@@ -71,7 +89,8 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				Tile* tile = level->getTile(tileCoordX, tileCoordY);
 				if (tile == nullptr)
 				{
-					throw;
+					tile = new Tile();
+					level->setTile(tile, tileCoordX, tileCoordY);
 				}
 				tile->createGameObjectFromUnparsedData(assetManager, &gameObjectTypes, unparsedLine);
 			}
@@ -84,6 +103,46 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 		}
 	}
 
+	vector<Door*> doors;
+	vector<Lever*> levers;
+	vector<PressurePlate*> pressurePlates;
+	vector<Container*> containers;
+
+	vector<vector<Tile*>>* tileGrid = level->getTileGrid();
+	for (int x = 0; x < tileGrid->size(); x++){
+		for (int y = 0; y < tileGrid->at(x).size(); y++) {
+			Tile* tile = tileGrid->at(x).at(y);
+			if (tile != nullptr) {
+				Door* tileDoor = tile->getDoor();
+				Lever* tileLever = tile->getLever();
+				PressurePlate* tilePressurePlate = tile->getPressurePlate();
+				Container* tileShadowContainer = tile->getShadowContainer();
+
+				if (tileDoor != nullptr){
+					if (tileDoor->getDoorType() == Door::doorTypes::START_DOOR)
+						level->setStartDoor(Coord(x,y));
+					if (tileDoor->getDoorType() == Door::doorTypes::END_DOOR)
+						level->setEndDoor(Coord(x, y));
+					doors.push_back(tileDoor);
+				}
+				if (tileLever != nullptr){
+					levers.push_back(tileLever);
+				}
+				if (tilePressurePlate != nullptr){
+					pressurePlates.push_back(tilePressurePlate);
+				}
+				if (tileShadowContainer != nullptr){
+					containers.push_back(tileShadowContainer);
+				}
+			}
+		}
+	}
+
+	bindActuators(containers, doors, levers);
+	bindActuators(pressurePlates, doors, levers);
+	bindActuators(levers, doors, levers);
+
+	level->updateGameObjets();
 	//traverse levelGrid and find start/end pos, bind levers/pressurePlates/containers/doors.
 	//randomize enemy starting rotations
 	return level;
