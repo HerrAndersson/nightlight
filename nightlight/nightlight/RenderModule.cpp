@@ -210,7 +210,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	return true;
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton, bool hasBlendShapes)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -239,26 +239,69 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceV
 
 	//setting the sent in shader texture resource in the pixel shader
 	UINT32 vertexSize;
-	if (hasSkeleton)
-		if (hasBlendShapes)
+	if (renderObject->model->hasSkeleton)
+		if (renderObject->model->hasBlendShapes)
 			vertexSize = sizeof(WeightedBlendVertex);
 		else
 			vertexSize = sizeof(WeightedVertex);
 	else
-		if (hasBlendShapes)
+		if (renderObject->model->hasBlendShapes)
 			vertexSize = sizeof(BlendVertex);
 		else
 			vertexSize = sizeof(Vertex);
 	UINT32 offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
 	//deviceContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 1, &renderObject->diffuseTexture);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+// 	int currentFrame, finalFrame;//todo
+// 	float interpolation;
+// 
+// 	if (renderObject->model->hasSkeleton){
+// 		std::vector<XMMATRIX> boneMatrices;
+// 		std::vector<XMMATRIX> boneLocalMatrices;
+// 		std::vector<XMMATRIX> boneGlobalMatrices;
+// 		std::vector<Bone>* bones = &renderObject->model->skeleton;
+// 		boneMatrices.resize(renderObject->model->skeleton.size());
+// 
+// 
+// 		int test = 0;
+// 		boneLocalMatrices[0] = XMMatrixRotationRollPitchYaw(bones->at(0).frames[currentFrame].rot.x, bones->at(0).frames[currentFrame].rot.y, bones->at(0).frames[currentFrame].rot.z)*XMMatrixTranslation(bones->at(0).frames[currentFrame].trans.x, bones->at(0).frames[currentFrame].trans.y, bones->at(0).frames[currentFrame].trans.z);
+// 		boneGlobalMatrices[0] = boneLocalMatrices[0];
+// 		for (int i = 1; i < 58; i++){
+// 			XMFLOAT3* trans = &bones->at(i).frames[currentFrame].trans;
+// 			XMFLOAT3* rot = &bones->at(i).frames[currentFrame].rot;
+// 
+// 			if (currentFrame < finalFrame){
+// 				if (currentFrame + 1 < finalFrame){
+// 					XMFLOAT3* trans2 = &bones->at(i).frames[currentFrame+1].trans;
+// 					XMFLOAT3* rot2 = &bones->at(i).frames[currentFrame+1].rot;
+// 					boneLocalMatrices[i] = XMMatrixTranslation((float)(trans->x*interpolation) + (float)(trans2->x*(float)(1 - interpolation)), (float)(trans->y*interpolation) + (float)(trans2->y*(float)(1 - interpolation)), (float)(trans->z*interpolation) + (float)(trans2->z*(float)(1 - interpolation)));
+// 					boneLocalMatrices[i] = translate(mat4(1), moves[i].frames[currentframe + 1].trans*interpolation);
+// 					boneLocalMatrices[i] = boneLocalMatrices[i] * mat4_cast(mix(moves[i].frames[currentframe].rot, moves[i].frames[currentframe + 1].rot, interpolation));
+// 					test++;
+// 				}
+// 				else{
+// 					XMMatrixRotationRollPitchYaw(b->frames[currentFrame].rot.x, b->frames[currentFrame].rot.y, b->frames[currentFrame].rot.z)*XMMatrixTranslation(b->frames[currentFrame].trans.x, b->frames[currentFrame].trans.y, b->frames[currentFrame].trans.z);
+// 				}
+// 				test++;
+// 			}
+// 			b.GlobalTx = spooky[b.parent].GlobalTx*b.LocalTx;
+// 		}
+// 		for (int i = 0; i < 58; i++){
+// 			bones[i] = spooky[i].GlobalTx * spooky[i].invBindPose;
+// 		}
+// 
+// 
+// 	}
+// 
+
 
 	return true;
 }
@@ -354,7 +397,7 @@ bool RenderModule::Render(GameObject* gameObject)
 	//result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
 
 
-	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject->diffuseTexture, renderObject->model->vertexBuffer, renderObject->model->hasSkeleton, renderObject->model->hasBlendShapes);
+	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject);
 	if (!result)
 		return false;
 
