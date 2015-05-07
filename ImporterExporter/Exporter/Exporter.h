@@ -224,102 +224,24 @@ struct lightData
 	std::vector<spotLightStruct> spotLights;
 };
 
+struct WeightFrame
+{
+	float weight;
+	int currentFrame;	//Key's frame in the whole animation
+};
+
 struct BlendShapeTarget
 {
 	int MeshTarget;
 	std::vector<vec3> points;
 	std::vector<vec3> normals;
-};
-
-struct WeightFrame
-{
-	float weight;
-	int currentFrame;
-};
-
-struct blendKeys
-{
-	int numKeys;
-	int totalFrames;
-
 	std::vector<WeightFrame> WeightF;
-};
-
-struct TangentData
-{
-	int LERP, SLERP, Ltest, Stest;
-	float ix, iy, ox, oy;
-};
-
-struct KeyFrames
-{
-	//PROBLEM MIXING UP JOINT AND BLENDSHAPE DATA AS WELL AS THE FACT THAT JOINTS/IK HANDLES HAVE MORE THAN JUST TRANSLATE, ROTATE, SCALE!
-
-	MTime keyFrame;					    //Keyframe position on timeline 
-	float AnimValue;					//Not necessary weights, but for morph animation it is
-	MTime currTime;
-};
-
-struct parentData
-{
-	//PROBLEM TAKES THE PARENT DATA OF EACH OBJECT IN THE SCENE!
-
-	int numParents;
-	//Parent ID
-	int numChildren;
-	//Child ID
-};
-
-struct jointTrans
-{
-	//PROBLEM DO NOT JUST GO INTO THE JOINTS BUT EVERY OBJECT IN THE SCENE!
-
-	float tx, ty, tz;			//Translation data
-	float rx, ry, rz, rw;		//Rotation Data
-	float rox, roy, roz, row;	//Joint Orientation Data (People say there may be an issue where you must do Rotation Orientation * rotation * Joint Orientation 
-								//to get this one correctly
-	double scale[3];			//Joint Scale Data
 };
 
 struct skinData
 {
-	//Object influenced by a skeleton ID
 	int points;
 	int influences;
-	//Skin Weight values
-	//Number of weights?
-};
-
-struct JointData
-{
-	std::vector<parentData> parData;
-	std::vector<jointTrans> jointTransformations;
-	std::vector<skinData> skinD;
-};
-
-struct AnimData
-{
-	MTime animationStart;
-	MTime animationEnd;
-	int numKeys;
-
-	//std::vector<TangentData> Tdata;
-	std::vector<KeyFrames> KeyData;
-
-	//Stuff we get out:
-	//Start Animation
-	//End Animation
-	//Num Keyframes
-	//current Frame
-	//Value (such as weight and position)
-	//Current time in seconds
-
-	//Transform values of everything including joints (If we save them in the bind pose we get the bind pose values as well as Quaternions)
-	//Parent/child information as well as how many
-
-	//What are we lacking:
-	//Skin Weights (Cannot tell if you get this correctly)
-	//
 };
 
 struct Keyframe{
@@ -348,8 +270,6 @@ struct SceneData
 	std::vector<Animation> animations;
 	std::vector<Bone> skeleton;
 	lightData lights;
-	std::vector<AnimData> AnimationData;
-	std::vector<blendKeys> blendkeys;
 };
 
 struct MainHeader{
@@ -402,13 +322,10 @@ private:
 	void extractLight(MObject& mObj);
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
-	void extractKeyData(MObject& key);
 	void extractJointData(MDagPath path);
 	void OutputSkinCluster(MObject& obj);
 	void RecursiveJointExtraction(MFnTransform& joint, int parentIndex);
 
-	void outputTransformData(MObject& obj);
-	void outputParentInfo(MObject& obj);
 	void OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base);
 	void outPutTarget(MObject& target, MObject& Base);
 

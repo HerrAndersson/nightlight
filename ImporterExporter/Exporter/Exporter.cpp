@@ -238,7 +238,6 @@ void Exporter::ProcessScene(const char *file_path)
 	scene_.materials.clear();
 	scene_.cameras.clear();
 	scene_.blendShapes.clear();
-	scene_.AnimationData.clear();
 	scene_.lights.ambientLights.clear();
 	scene_.lights.areaLights.clear();
 	scene_.lights.dirLights.clear();
@@ -765,176 +764,47 @@ void Exporter::extractLight(MObject& mObj)
 
 }
 
-
-//Down here lies the pithole of animation, beware thy who dare travels here!
-
-//Short description on how morph animation seem to work:
-//2 Key frames, Keyframe 1 holds target 1, keyframe 2 hold target 2
-//Target 1 includes bunch of vertices, target 2 includes another bunch of vertices (Both got same number of vertices)
-//When Keyframe 1 goes to keyframe 2 it is morphed with the help of a weight ( A value between 0 and 1, where 0 gives target 1 most power!) for each vertex
-//So between keyframe 1 and 2 the value would be 0.5, that means the vertices should be somewhere between the two target shapes
-//When it finally gets to keyframe 2, target 2 is dominant because weight value is 1, the keyframes only hold the values for the blendshapes aka the weight value
-//for our object
-
-void Exporter::outputTransformData(MObject& Trans)
-{
-	jointTrans jt;
-
-	//attach the function set to the object
-	MFnTransform tr(Trans);
-
-	// Gets transform data as a matrix, though quaternions more interesting! :D
-	MMatrix mat = tr.transformation().asMatrix();
-
-	MQuaternion JointOrient(0, 0, 0, 1);
-	MQuaternion Rotation(0, 0, 0, 1);
-
-	//Get the transforms local translation
-	MVector Translation = tr.translation(MSpace::kTransform);
-
-	//Get the transforms scale
-	tr.getScale(jt.scale);
-
-	//Get the transforms rotation as quaternions
-	tr.getRotation(Rotation);
-
-	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
-	if (tr.object().hasFn(MFn::kJoint))
-	{
-		MFnIkJoint IKjoint(tr.object());
-		IKjoint.getOrientation(JointOrient);
-	}
-
-	//Get Translation data
-	jt.tx = Translation.x;
-	jt.ty = Translation.y;
-	jt.tz = Translation.z;
-
-	//Get Rotation Data
-	jt.rx = Rotation.x;
-	jt.ry = Rotation.y;
-	jt.rz = Rotation.z;
-	jt.rw = Rotation.w;
-
-	//Get Joint Orientation Data
-	jt.rox = JointOrient.x;
-	jt.roy = JointOrient.y;
-	jt.roz = JointOrient.z;
-	jt.row = JointOrient.w;
-
-	cout << "translation "
-		<< Translation.x << " "
-		<< Translation.y << " "
-		<< Translation.z << endl;
-	cout << "rotation "
-		<< Rotation.x << " "
-		<< Rotation.y << " "
-		<< Rotation.z << " "
-		<< Rotation.w << endl;
-	cout << "scale "
-		<< jt.scale[0] << " "
-		<< jt.scale[1] << " "
-		<< jt.scale[2] << endl;
-	cout << "jointOrient "
-		<< JointOrient.x << " "
-		<< JointOrient.y << " "
-		<< JointOrient.z << " "
-		<< JointOrient.w << endl << endl;
-
-	//jointData.push_back(jt);
-}
-
-void Exporter::outputParentInfo(MObject& par)
-{
-	parentData pap;
-
-	//attach the function set to the object
-	MFnDagNode dn(par);
-
-	//Output the parent names
-	cout << "numparents " << dn.parentCount() << endl;
-
-	pap.numParents = dn.parentCount();
-
-	//list each parent
-	for (int i = 0; i != dn.parentCount(); ++i)
-	{
-		//Get a handle to the parent
-		MObject parent = dn.parent(i);
-
-		//Attach a function set to the parent object
-		MFnDagNode dnParent(parent);
-
-		cout << dnParent.name().asChar() << endl;
-	}
-
-	//Output child count
-	cout << "numChildren " << dn.childCount() << endl << endl;
-
-	pap.numChildren = dn.childCount();
-
-	// list each child name
-	for (int i = 0; i != dn.childCount(); ++i)
-	{
-		//Get the handle to the child
-		MObject child = dn.child(i);
-
-		//attach a function set to the child object
-		MFnDagNode dnChild(child);
-
-		cout << dnChild.name().asChar() << endl;
-	}
-
-	//jointData.push_back(pap);
-
-	cout << endl;
-}
-
-//Problems:
-//I want one blendshape keydata for each blendshape object, the problem is the matIt while loop
-//I want to extract value and current Frame for each keyframe
-
-void Exporter::extractKeyData(MObject& key)
-{
-	blendKeys temp;
-	WeightFrame frame;
-
-	MAnimControl::animationStartTime();
-	temp.totalFrames = MAnimControl::animationEndTime().value();
-
-	//get Keyframe values
-	MFnAnimCurve AnimCurve(key);
-
-	std::string type = AnimCurve.name().asChar();
-	if (!strcmp(type.substr(0, 5).c_str(), "blend"))
-	{
-		temp.numKeys = AnimCurve.numKeys();
-
-		// Make sure not to do anything if there are no keyframes
-		if (temp.numKeys == 0) return;
-
-		std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
-		std::cout << "NumKeys " << temp.numKeys << std::endl;
-		cout << "Start Time: " << MAnimControl::animationStartTime() << endl;
-		cout << "End TIme: " << temp.totalFrames << endl;
-
-		// get all keyframe times & values
-		for (unsigned int i = 0; i < temp.numKeys; i++)
-		{
-			frame.currentFrame = AnimCurve.time(i).value();
-			frame.weight = AnimCurve.value(i);
-
-			// write keyframe info
-			std::cout << " frame " << AnimCurve.time(i);
-			std::cout << " value " << frame.weight << endl;
-
-			temp.WeightF.push_back(frame);
-		}
-		std::cout << std::endl;
-
-		scene_.blendkeys.push_back(temp);
-	}
-}
+//void Exporter::extractKeyData(MObject& key)
+//{
+//	blendKeys temp;
+//	WeightFrame frame;
+//
+//	temp.startFrame = MAnimControl::animationStartTime().value();
+//	temp.totalFrames = MAnimControl::animationEndTime().value();
+//
+//	//get Keyframe values
+//	MFnAnimCurve AnimCurve(key);
+//
+//	std::string type = AnimCurve.name().asChar();
+//	if (!strcmp(type.substr(0, 5).c_str(), "blend"))
+//	{
+//		temp.numKeys = AnimCurve.numKeys();
+//
+//		// Make sure not to do anything if there are no keyframes
+//		if (temp.numKeys == 0) return;
+//
+//		std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
+//		std::cout << "NumKeys " << temp.numKeys << std::endl;
+//		cout << "Start Time: " << MAnimControl::animationStartTime() << endl;
+//		cout << "End TIme: " << temp.totalFrames << endl;
+//
+//		// get all keyframe times & values
+//		for (unsigned int i = 0; i < temp.numKeys; i++)
+//		{
+//			frame.currentFrame = AnimCurve.time(i).value();
+//			frame.weight = AnimCurve.value(i);
+//
+//			// write keyframe info
+//			std::cout << " frame " << AnimCurve.time(i);
+//			std::cout << " value " << frame.weight << endl;
+//
+//			temp.WeightF.push_back(frame);
+//		}
+//		std::cout << std::endl;
+//
+//		scene_.blendkeys.push_back(temp);
+//	}
+//}
 
 void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base)
 {
@@ -962,9 +832,8 @@ void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base)
 		//cout << "Weight unimportant stuff " << fn.weightIndexList(l) << endl;
 
 		cout << "\tCurrent Target: " << i << endl;
+		//cout << "\tName:" << name().asChar() << endl;
 		cout << "\t\tnumTargets " << targets.length() << endl;
-
-		//cout << "\tTarget Items unimportant stuff " << fn.targetItemIndexList(i, Base, l) << endl;
 
 		//output each target shape
 		for (unsigned int j = 0; j < targets.length(); ++j)
@@ -980,6 +849,7 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 	MItGeometry it(target);
 
 	BlendShapeTarget temp;
+	WeightFrame frame;
 
 	//Write number of points
 	cout << "\t\tNumPoints " << it.count() << endl;
@@ -1007,6 +877,47 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 	}
 	cout << endl;
 
+	MItDependencyNodes matIt(MFn::kAnimCurve);
+	MFnMesh BlendName(target);
+	MFnTransform parent(BlendName.parent(0));
+	while (!matIt.isDone())
+	{
+		MFnAnimCurve AnimCurve(matIt.item());
+		cout << parent.name().asChar() << endl;
+		cout << AnimCurve.name().substring(AnimCurve.name().length() - parent.name().length(), AnimCurve.name().length()).asChar() << endl;
+
+		if (!strcmp(AnimCurve.name().substring(AnimCurve.name().length() - parent.name().length(), AnimCurve.name().length()).asChar(), parent.name().asChar()))
+		{
+
+			//std::string type = AnimCurve.name().substring(BlendName.name().length(), AnimCurve.name().length()).asChar();
+
+			std::string comp = AnimCurve.name().asChar();
+			if (!strcmp(comp.substr(0, 5).c_str(), "blend"))
+			{
+				std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
+				std::cout << "NumKeys " << AnimCurve.numKeys() << std::endl;
+				cout << "Start Time: " << MAnimControl::animationStartTime() << endl;
+				cout << "End TIme: " << MAnimControl::animationEndTime() << endl;
+
+				// Make sure not to do anything if there are no keyframes
+				if (AnimCurve.numKeys() == 0) return;
+
+				temp.WeightF.resize(AnimCurve.numKeys());
+				// get all keyframe times & values
+				for (unsigned int i = 0; i < AnimCurve.numKeys(); i++)
+				{
+					temp.WeightF[i].currentFrame = AnimCurve.time(i).value();
+					temp.WeightF[i].weight = AnimCurve.value(i);
+					// write keyframe info
+					std::cout << " frame " << AnimCurve.time(i);
+					std::cout << " value " << temp.WeightF[i].weight << endl;
+				}
+
+			}
+		}
+		matIt.next();
+	}
+
 	MFnMesh basemfn(Base);
 
 	MDagPath dag_path;
@@ -1028,7 +939,6 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 		dag_iter.next();
 	}
 	scene_.blendShapes.push_back(temp);
-
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -1078,8 +988,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 		matIt.next();
 	}
 
-	AnimData AnimTemp;
-
 	//Turn off or on Blendshapes
 	matIt.reset(MFn::kBlendShape);
 	while (!matIt.isDone())
@@ -1121,18 +1029,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 			OutputBlendShapes(bs, Base);
 		}
 		//Get next blend shapes
-		matIt.next();
-	}
-
-	matIt.reset(MFn::kAnimCurve);
-
-	while (!matIt.isDone())
-	{
-		//Output each curve we find
-		extractKeyData(matIt.item());
-
-		//scene_.AnimationData.push_back(AnimTemp);
-		//get next mesh
 		matIt.next();
 	}
 
@@ -1218,27 +1114,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 				extractJointData(dag_path);
 			}
 		}
-		dag_iter.next();
-	}
-
-	dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
-	while (!dag_iter.isDone())
-	{
-		//Attach the function set to the object
-		MFnTransform fn(dag_iter.item());
-
-		//Only want non-history items
-		if (!fn.isIntermediateObject())
-		{
-			//Print mesh name
-			cout << "Transform " << fn.name().asChar() << endl;
-
-			//Described in the sections below
-			outputTransformData(dag_iter.item());
-			outputParentInfo(dag_iter.item());
-		}
-
-		//Get next transform
 		dag_iter.next();
 	}
 
@@ -1381,7 +1256,6 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 
 	Bone output;
 	output.parent = parentIndex;
-	jointTrans jt;
 
 	output.invBindPose = joint.transformation().asMatrixInverse().matrix;
 	MVector test = joint.translation(MSpace::kWorld);
@@ -1781,6 +1655,12 @@ void Exporter::ExportMeshes()
 		outfile.write((const char*)&scene_.blendShapes[i].MeshTarget, 4);
 		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].points.size());
 		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].normals.size());
+
+		int BlendFrames = scene_.blendShapes[i].WeightF.size();
+
+		outfile.write((const char*)&BlendFrames, 4);
+
+		outfile.write((const char*)scene_.blendShapes[i].WeightF.data(), sizeof(WeightFrame)*BlendFrames);
 	}
 
 	for (int i = 0; i < mainHeader.boneCount; i++){
