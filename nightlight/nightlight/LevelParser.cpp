@@ -20,14 +20,17 @@ LevelParser::~LevelParser()
 
 }
 
-Level LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character &character)
+Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character &character)
 {
-	Level level = Level();
+	Level* level = nullptr;
 
-	if (levelID <= -1 || levelID > (signed)levelNames.size() - 1) {
+	if (levelID <= -1 || levelID > (signed)levelNames.size() - 1)
+	{
 		OutputDebugString("Error on LoadLevel: levelID out of bounds.");
 		return level;
 	}
+
+	level = new Level();
 
 	std::string pathToLevel = "Assets/Levels/" + levelNames.at(levelID);
 	std::vector<std::string> unparsedLevel;
@@ -36,73 +39,52 @@ Level LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character
 	std::vector<std::string> unparsedLine;
 	for (int i = 0; i < (int)(unparsedLevel.size() - 1); i++)
 	{
-		unparsedLine.clear();
-		assetUtility::splitStringToVector(unparsedLevel[i], unparsedLine, ",");
+		try
+		{
+			unparsedLine.clear();
+			assetUtility::splitStringToVector(unparsedLevel[i], unparsedLine, ",");
 
-		GameObject go = CreateGameObjectFromLevelData(unparsedLine);
-		level.PushGameObjectToGrid(go.GetTileXCoord(), go.GetTileYCoord(), go);
+			int gameObjectTypeRef = std::stoi(unparsedLine.at(1));
+			std::string gameObjectType = gameObjectTypes.at(gameObjectTypeRef);
+			
+			if (gameObjectType.find("enemy") != std::string::npos) 
+			{
+				int i = 0;
+				int renderObjectRef = std::stoi(unparsedLine.at(i++));
+				int gameObjectTypeRef = std::stoi(unparsedLine.at(i++));
+				float rotation;
+				XMFLOAT3 position;
+				position.x = std::stof(unparsedLine.at(i++));
+				position.y = std::stof(unparsedLine.at(i++));
+				position.z = std::stof(unparsedLine.at(i++));
+				rotation = std::stof(unparsedLine.at(i++));
+				int tileCoordX = std::stoi(unparsedLine.at(i++));
+				int tileCoordY = std::stoi(unparsedLine.at(i++));
+				int enemyType = std::stoi(unparsedLine.at(i++));
+
+				enemies.push_back(Enemy(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
+			}
+			else
+			{
+				int tileCoordX = std::stoi(unparsedLine.at(6));
+				int tileCoordY = std::stoi(unparsedLine.at(7));
+				Tile* tile = level->getTile(tileCoordX, tileCoordY);
+				if (tile == nullptr)
+				{
+					throw;
+				}
+				tile->createGameObjectFromUnparsedData(assetManager, &gameObjectTypes, unparsedLine);
+			}
+		}
+		catch (...)
+		{
+			cout << "Error in LevelParser::LoadLevel: " + unparsedLevel[i] + " is not a valid gameObject.\n";
+			delete level;
+			return nullptr;
+		}
 	}
+
+	//traverse levelGrid and find start/end pos, bind levers/pressurePlates/containers/doors.
+	//randomize enemy starting rotations
 	return level;
-}
-
-GameObject LevelParser::CreateGameObjectFromLevelData(std::vector<std::string> unparsedData)
-{
-
-	int i = 0;
-	int renderObjectRef = std::stoi(unparsedData.at(i++));
-
-	int gameObjectTypeRef = std::stoi(unparsedData.at(i++));
-
-	float rotation;
-	XMFLOAT3 position;
-	position.x = std::stof(unparsedData.at(i++));
-	position.y = std::stof(unparsedData.at(i++));
-	position.y = 0;
-	position.z = std::stof(unparsedData.at(i++));
-	rotation = std::stof(unparsedData.at(i++));
-
-	int tileCoordX = std::stoi(unparsedData.at(i++));
-	int tileCoordY = std::stoi(unparsedData.at(i++));
-
-	GameObject gameObject(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
-	
-	std::string gameObjectType = gameObjectTypes.at(gameObjectTypeRef);
-	if (gameObjectType == "floor") {
-
-	}
-	else if (gameObjectType == "wall") {
-
-	}
-	else if (gameObjectType == "corner") {
-
-	}
-	else if (gameObjectType == "door") {
-
-	}
-	else if (gameObjectType == "static") {
-
-	}
-	else if (gameObjectType == "movable") {
-
-	}
-	else if (gameObjectType == "lever") {
-
-	}
-	else if (gameObjectType == "pressure") {
-
-	}
-	else if (gameObjectType == "container") {
-
-	}
-	else if (gameObjectType.find("enemy") != std::string::npos) {
-
-	}
-	else if (gameObjectType == "sidec") {
-
-	}
-	else if (gameObjectType == "mainc") {
-
-	}
-
-	return gameObject;
 }

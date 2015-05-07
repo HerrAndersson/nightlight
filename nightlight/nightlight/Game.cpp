@@ -21,39 +21,35 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
 
-	//AI = new AiModule(enemies, grid);
-	AI = new AiModule();
-	//AI->GetPath(currentLevel XMINT2(0, 0), XMINT2(12, 12));
+	//AI = new AiModule(currentLevel->getTileGrid());
 }
 
 void Game::LoadAssets()
 {
 
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
+	if (currentLevel != nullptr){
+		delete currentLevel;
+		currentLevel = nullptr;
+	}
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
-	currentLevel.SetGameObjects();
+	currentLevel->updateGameObjets();
 }
 
 Game::~Game()
 {
+	delete currentLevel;
+
 	delete Logic;
 	delete Renderer;
-	delete camera;
 	delete Assets;
 	delete AI;
 	delete Levels;
 
-
+	delete camera;
 	delete spotLight;
 	delete character;
-
-	//for (auto e : enemies) delete e;
-	//enemies.clear();
-/*
-
-	for (auto g : gameObject) delete g;
-	gameObject.clear();*/
 }
 
 bool Game::Update()
@@ -88,7 +84,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(&currentLevel, character, camera, spotLight);
+	result = Logic->Update(currentLevel, character, camera, spotLight);
 
 	//cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
 
@@ -108,7 +104,7 @@ bool Game::Render()
 
 	Renderer->UseDefaultShader();
 
-	std::vector<GameObject*> toRender = currentLevel.GetGameObjects();
+	std::vector<GameObject*> toRender = currentLevel->GetGameObjects();
 	for (int i = 0; i < toRender.size(); i++){
 		Renderer->Render(toRender[i]);
 	}

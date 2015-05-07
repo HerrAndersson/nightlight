@@ -63,7 +63,7 @@ static Node GetPositionFromCoord(float x, float z, int tileWidth)
 	return Node((int)floor(x / tileWidth), (int)floor(z / tileWidth));
 }
 
-static vector<Node*> aStar(vector< vector<Tile> >* tileGrid, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
+static vector<Node*> aStar(vector<vector<Tile*>> tileGrid, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
 {
 	vector<Node*> path;	
 	Node* start = new Node(startPosXZ.x, startPosXZ.y);
@@ -112,7 +112,7 @@ static vector<Node*> aStar(vector< vector<Tile> >* tileGrid, int tileSize, XMINT
 
 				if (!inOpen || tentativeG < n.g)
 				{
-					if (n.x >= 0 && n.x < (signed)tileGrid->size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid->at(n.x).at(n.y).getTileIsWalkable())
+					if (n.x >= 0 && n.x < (signed)tileGrid.size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid.at(n.x).at(n.y)->getTileIsWalkable())
 					{
 						Node* x = new Node(n.x, n.y);
 						x->parent = current;

@@ -231,6 +231,20 @@ struct BlendShapeTarget
 	std::vector<vec3> normals;
 };
 
+struct WeightFrame
+{
+	float weight;
+	int currentFrame;
+};
+
+struct blendKeys
+{
+	int numKeys;
+	int totalFrames;
+
+	std::vector<WeightFrame> WeightF;
+};
+
 struct TangentData
 {
 	int LERP, SLERP, Ltest, Stest;
@@ -335,6 +349,7 @@ struct SceneData
 	std::vector<Bone> skeleton;
 	lightData lights;
 	std::vector<AnimData> AnimationData;
+	std::vector<blendKeys> blendkeys;
 };
 
 struct MainHeader{
@@ -387,15 +402,15 @@ private:
 	void extractLight(MObject& mObj);
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
-	void extractKeyData(MObject& key, AnimData&);
+	void extractKeyData(MObject& key);
 	void extractJointData(MDagPath path);
 	void OutputSkinCluster(MObject& obj);
 	void RecursiveJointExtraction(MFnTransform& joint, int parentIndex);
 
 	void outputTransformData(MObject& obj);
 	void outputParentInfo(MObject& obj);
-	void OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base, AnimData&);
-	void outPutTarget(MObject& target, AnimData&, MObject& Base);
+	void OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base);
+	void outPutTarget(MObject& target, MObject& Base);
 
 	bool CreateExportFiles(std::string file_path, std::string output_type);
 	void CloseExportFiles();

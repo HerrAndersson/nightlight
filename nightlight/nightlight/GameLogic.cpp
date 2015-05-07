@@ -83,7 +83,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	}
 
 	camera->SetPosition(character->GetPosition().x, -15, character->GetPosition().z );
-	camera->SetLookAt(character->GetPosition().x * 0.9, 0, character->GetPosition().z * 0.9);
+	camera->SetLookAt(character->GetPosition().x * 0.9f, 0.0f, character->GetPosition().z * 0.9f);
 	character->SetPosition(pos);
 
 	UpdateSpotLight ( character, camera, spotlight );
@@ -114,14 +114,14 @@ XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character*
 	float tileOffset = TILE_SIZE / 2;
 
 	XMFLOAT3 currentPos = character->GetPosition();
-	Tile* currentTile = currentLevel->getTile((int)(currentPos.x + tileOffset), (int)(currentPos.z + tileOffset));
+	Tile* currentTile = currentLevel->getTile((int)(-currentPos.x + tileOffset), (int)(-currentPos.z + tileOffset));
 	
-	if (currentTile != nullptr && !currentTile->getTileIsEmpty()) {
+	if (currentTile != nullptr) {
 		
-		int nextTileCoordX = (int)(nextPos.x + tileOffset);
-		int nextTileCoordY = (int)(nextPos.z + tileOffset);
+		int nextTileCoordX = (int)(-nextPos.x + tileOffset);
+		int nextTileCoordY = (int)(-nextPos.z + tileOffset);
 		Tile* nextTile = currentLevel->getTile(nextTileCoordX, nextTileCoordY);
-		if (nextTile != nullptr && !nextTile->getTileIsEmpty())
+		if (nextTile != nullptr)
 		{
 			for (int x = nextTileCoordX - 1; x < nextTileCoordX + 1; x++)
 			{

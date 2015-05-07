@@ -81,7 +81,7 @@ bool Exporter::CreateExportFiles(std::string file_path, std::string output_type)
 
 		export_stream_.open(lvlsave_path.c_str(), std::ios_base::out | std::ios_base::trunc);
 	}
-	
+
 
 	if (!export_stream_.is_open())
 	{
@@ -280,7 +280,7 @@ void Exporter::ProcessLevel(const char *file_path)
 	if (!isAssetListLoaded)
 	{
 		fileToStrings("../Bin/gameObjectTypes.txt", levelGameObjectTypes);
-		
+
 		isAssetListLoaded = true;
 	}
 
@@ -321,7 +321,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 	bool relevantObjectFound = false;
 
 	std::vector<MString> takenNames;
-	
+
 
 	while (!dag_iter.isDone())
 	{
@@ -334,7 +334,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 			std::string nodeNameStr = nodeName.asChar();
 			nodeVec.clear();
 
-			
+
 			bool taken = false;
 			for (int i = 0; i < takenNames.size(); i++){
 				if (strcmp(takenNames[i].asChar(), nodeName.asChar()) == 0)
@@ -342,7 +342,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 					taken = true;
 				}
 			}
-				
+
 			if (taken == false)
 			{
 				takenNames.push_back(nodeName);
@@ -350,9 +350,11 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 				std::transform(nodeNameStr.begin(), nodeNameStr.end(), nodeNameStr.begin(), ::tolower);
 				int gameObjectID = -1;
 
+				splitStringToVector(nodeNameStr, nodeVec, "_");
+
 				for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
 				{
-					if (nodeNameStr.find(levelGameObjectTypes.at(i)) != std::string::npos)
+					if (nodeVec[2].find(levelGameObjectTypes.at(i)) != std::string::npos)
 					{
 						gameObjectID = i;
 						relevantObjectFound = true;
@@ -361,7 +363,6 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 				if (relevantObjectFound)
 				{
 					std::string formattedOutput;
-					splitStringToVector(nodeNameStr, nodeVec, "_");
 
 					std::string goType = levelGameObjectTypes.at(gameObjectID);
 
@@ -384,7 +385,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 					formattedOutput += nodeVec.at(1) + "," +
 						std::to_string(gameObjectID) + "," +
-						std::to_string(-position.x) + "," + std::to_string(-position.y) + "," + std::to_string(-position.z) + "," + 
+						std::to_string(-position.x) + "," + std::to_string(-position.y) + "," + std::to_string(-position.z) + "," +
 						std::to_string(eulerRotation.y) + "," +
 						std::to_string(coordX) + "," + std::to_string(coordY) + ",";
 
@@ -425,7 +426,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 							formattedOutput += "0,";
 						}
 
-						
+
 
 						if (nodeVec.at(4) == "down")
 						{
@@ -541,21 +542,21 @@ void Exporter::extractCamera(MObject& cam)
 	std::cout << "\nUp Vector: " << fn.upDirection()
 		<< std::endl;
 	TempCameraStorage.upVector = fn.upDirection();
-	
+
 	//view direction
 	std::cout << "\nView Direction: " << direction
 		<< std::endl;
 	TempCameraStorage.viewDirection = direction;
 
-/*
-	MQuaternion rotation;
-	MEulerRotation eulerRotation1;
+	/*
+		MQuaternion rotation;
+		MEulerRotation eulerRotation1;
 
-	fs.getRotation(rotation, transform_space);
-	fs.getRotation(eulerRotation1);
-	
-	MEulerRotation eulerRotation2 = rotation.asEulerRotation(); // samma som eulerRotation1
-*/
+		fs.getRotation(rotation, transform_space);
+		fs.getRotation(eulerRotation1);
+
+		MEulerRotation eulerRotation2 = rotation.asEulerRotation(); // samma som eulerRotation1
+		*/
 
 	TempCameraStorage.position = fs.translation(transform_space);
 	//pushback to store everything
@@ -889,62 +890,53 @@ void Exporter::outputParentInfo(MObject& par)
 	cout << endl;
 }
 
-void Exporter::extractKeyData(MObject& key, AnimData& animTemp)
-{
-	//TangentData TD;
-	KeyFrames KD;
+//Problems:
+//I want one blendshape keydata for each blendshape object, the problem is the matIt while loop
+//I want to extract value and current Frame for each keyframe
 
-	animTemp.animationStart = MAnimControl::animationStartTime();
-	animTemp.animationEnd = MAnimControl::animationEndTime();
+void Exporter::extractKeyData(MObject& key)
+{
+	blendKeys temp;
+	WeightFrame frame;
+
+	MAnimControl::animationStartTime();
+	temp.totalFrames = MAnimControl::animationEndTime().value();
 
 	//get Keyframe values
 	MFnAnimCurve AnimCurve(key);
 
-	//TD.LERP = AnimCurve.kTangentLinear;
-	//TD.SLERP = AnimCurve.kTangentSmooth;
-
-	animTemp.numKeys = AnimCurve.numKeys();
-
-	// Make sure not to do anything if there are no keyframes
-	if (animTemp.numKeys == 0) return;
-
-	std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
-	std::cout << "NumKeys " << animTemp.numKeys << std::endl;
-	cout << "Start Time: " << animTemp.animationStart << endl;
-	cout << "End TIme: " << animTemp.animationEnd << endl;
-
-	// get all keyframe times & values
-	for (unsigned int i = 0; i < animTemp.numKeys; i++)
+	std::string type = AnimCurve.name().asChar();
+	if (!strcmp(type.substr(0, 5).c_str(), "blend"))
 	{
-		KD.currTime = AnimCurve.time(i).value();
-		KD.AnimValue = AnimCurve.value(i);
+		temp.numKeys = AnimCurve.numKeys();
 
-		//TD.Ltest = AnimCurve.inTangentType(i);
-		//TD.Stest = AnimCurve.outTangentType(i);
+		// Make sure not to do anything if there are no keyframes
+		if (temp.numKeys == 0) return;
 
-		//AnimCurve.getTangent(i, TD.ix, TD.iy, TRUE);
-		//AnimCurve.getTangent(i, TD.ox, TD.oy, FALSE);
+		std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
+		std::cout << "NumKeys " << temp.numKeys << std::endl;
+		cout << "Start Time: " << MAnimControl::animationStartTime() << endl;
+		cout << "End TIme: " << temp.totalFrames << endl;
 
-		// write keyframe info
-		std::cout << " time " << KD.currTime.as(MTime::kSeconds);
-		std::cout << " frame " << AnimCurve.time(i);
-		std::cout << " value " << KD.AnimValue << endl;
-		//std::cout << " Tangents " << TD.Ltest << " " << TD.Stest;
-		//std::cout << " Tangent In " << TD.ix << " " << TD.iy;
-		//std::cout << " Tangent Out " << TD.ox << " " << TD.oy << std::endl;
+		// get all keyframe times & values
+		for (unsigned int i = 0; i < temp.numKeys; i++)
+		{
+			frame.currentFrame = AnimCurve.time(i).value();
+			frame.weight = AnimCurve.value(i);
 
-		KD.currTime = KD.currTime.as(MTime::kSeconds);
+			// write keyframe info
+			std::cout << " frame " << AnimCurve.time(i);
+			std::cout << " value " << frame.weight << endl;
 
-		if (KD.keyFrame < AnimCurve.time(i))
-			KD.keyFrame = AnimCurve.time(i);
+			temp.WeightF.push_back(frame);
+		}
+		std::cout << std::endl;
 
-		//animTemp.Tdata.push_back(TD);
-		animTemp.KeyData.push_back(KD);
+		scene_.blendkeys.push_back(temp);
 	}
-	std::cout << std::endl;
 }
 
-void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base, AnimData& AnimTemp)
+void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base)
 {
 	//Output info about the base shape
 	MFnDependencyNode fnDep(Base);
@@ -965,7 +957,7 @@ void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base, AnimD
 		//fn.getBaseObjects(targets);
 
 		//Get an array of target shapes
-		fn.getTargets(Base, i+1, targets);
+		fn.getTargets(Base, i + 1, targets);
 
 		//cout << "Weight unimportant stuff " << fn.weightIndexList(l) << endl;
 
@@ -977,12 +969,12 @@ void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base, AnimD
 		//output each target shape
 		for (unsigned int j = 0; j < targets.length(); ++j)
 		{
-			outPutTarget(targets[j], AnimTemp, Base);
+			outPutTarget(targets[j], Base);
 		}
 	}
 }
 
-void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp, MObject& Base)
+void Exporter::outPutTarget(MObject& target, MObject& Base)
 {
 	//Attach the function set to the object
 	MItGeometry it(target);
@@ -1015,7 +1007,6 @@ void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp, MObject& Base)
 	}
 	cout << endl;
 
-
 	MFnMesh basemfn(Base);
 
 	MDagPath dag_path;
@@ -1037,6 +1028,7 @@ void Exporter::outPutTarget(MObject& target, AnimData& AnimTemp, MObject& Base)
 		dag_iter.next();
 	}
 	scene_.blendShapes.push_back(temp);
+
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -1126,7 +1118,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 			MObject Base = base_objects[i];
 
 			//Output all of the target shapes and weights
-			OutputBlendShapes(bs, Base, AnimTemp);
+			OutputBlendShapes(bs, Base);
 		}
 		//Get next blend shapes
 		matIt.next();
@@ -1137,9 +1129,9 @@ bool Exporter::IdentifyAndExtractMeshes()
 	while (!matIt.isDone())
 	{
 		//Output each curve we find
-		extractKeyData(matIt.item(), AnimTemp);
+		extractKeyData(matIt.item());
 
-		scene_.AnimationData.push_back(AnimTemp);
+		//scene_.AnimationData.push_back(AnimTemp);
 		//get next mesh
 		matIt.next();
 	}
@@ -1214,41 +1206,41 @@ bool Exporter::IdentifyAndExtractMeshes()
 		*/
 	}
 
- 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kJoint);
- 	while (!dag_iter.isDone())
- 	{
- 		if (dag_iter.getPath(dag_path))
- 		{
- 			MFnDagNode dag_node = dag_path.node();
- 
- 			if (!dag_node.isIntermediateObject())
- 			{
- 				extractJointData(dag_path);
- 			}
- 		}
- 		dag_iter.next();
- 	}
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kJoint);
+	while (!dag_iter.isDone())
+	{
+		if (dag_iter.getPath(dag_path))
+		{
+			MFnDagNode dag_node = dag_path.node();
 
- 	dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
- 	while (!dag_iter.isDone())
- 	{
- 		//Attach the function set to the object
- 		MFnTransform fn(dag_iter.item());
- 		
- 		//Only want non-history items
- 		if (!fn.isIntermediateObject())
- 		{
- 			//Print mesh name
- 			cout << "Transform " << fn.name().asChar() << endl;
- 
- 			//Described in the sections below
- 			outputTransformData(dag_iter.item());
- 			outputParentInfo(dag_iter.item());
- 		}
- 
- 		//Get next transform
- 		dag_iter.next();
- 	}
+			if (!dag_node.isIntermediateObject())
+			{
+				extractJointData(dag_path);
+			}
+		}
+		dag_iter.next();
+	}
+
+	dag_iter.reset(dag_iter.root(), MItDag::kDepthFirst, MFn::kTransform);
+	while (!dag_iter.isDone())
+	{
+		//Attach the function set to the object
+		MFnTransform fn(dag_iter.item());
+
+		//Only want non-history items
+		if (!fn.isIntermediateObject())
+		{
+			//Print mesh name
+			cout << "Transform " << fn.name().asChar() << endl;
+
+			//Described in the sections below
+			outputTransformData(dag_iter.item());
+			outputParentInfo(dag_iter.item());
+		}
+
+		//Get next transform
+		dag_iter.next();
+	}
 
 	//general purpose iterator, sista argument är filtret
 	/*
@@ -1343,7 +1335,7 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 		mesh.getUVs(Us, Vs, &currentSet);
 		for (int a = 0; a < Us.length(); a++){
 			UVs.u = Us[a];
-			UVs.v = 1.0f-Vs[a];
+			UVs.v = 1.0f - Vs[a];
 			//1-Vs in order to get correct UV angles
 			tempUVSet.UVs.push_back(UVs);
 		}
@@ -1386,7 +1378,7 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 
 
 void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
-	
+
 	Bone output;
 	output.parent = parentIndex;
 	jointTrans jt;
@@ -1409,7 +1401,7 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 
 		if (!strcmp(animCurve.name().substring(0, joint.name().length() - 1).asChar(), joint.name().asChar())){
 
-			std::string type = animCurve.name().substring(joint.name().length(),animCurve.name().length()).asChar();
+			std::string type = animCurve.name().substring(joint.name().length(), animCurve.name().length()).asChar();
 			output.frames.resize(animCurve.numKeys());
 			for (int i = 0; i < animCurve.numKeys(); i++)
 			{
@@ -1457,104 +1449,104 @@ void Exporter::extractJointData(MDagPath path)
 	int childcount = joint.childCount();
 	MFnDagNode rootpath(joint.parent(0));
 
-	if (!strcmp(rootpath.fullPathName().asChar(),""))
-			RecursiveJointExtraction(joint, -1);
+	if (!strcmp(rootpath.fullPathName().asChar(), ""))
+		RecursiveJointExtraction(joint, -1);
 
 
 
 
-// 	MFloatMatrix res;
-// 	cout << path.partialPathName().asChar() << std::endl;
-// 	MMatrix invMat;
-// 
-// 	MStatus status;
-// 	MTransformationMatrix restpose = joint.restPosition(&status);
-// 
-// 	cout << status <<" "<< restpose.asMatrix() << endl;
-// 
-// 
-// 	jointTrans jt;
-// 
-// 	//attach the function set to the object
-// 	MFnTransform tr(path);
-// 
-// 	// Gets transform data as a matrix, though quaternions more interesting! :D
-// 	MMatrix mat = tr.transformation().asMatrix();
-// 
-// 	MQuaternion JointOrient(0, 0, 0, 1);
-// 	MQuaternion Rotation(0, 0, 0, 1);
-// 
-// 	//Get the transforms local translation
-// 	MVector Translation = tr.translation(MSpace::kTransform);
-// 
-// 	//Get the transforms scale
-// 	tr.getScale(jt.scale);
-// 
-// 	//Get the transforms rotation as quaternions
-// 	tr.getRotation(Rotation);
-// 
-// 	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
-// 	if (tr.object().hasFn(MFn::kJoint))
-// 	{
-// 		MFnIkJoint IKjoint(tr.object());
-// 		IKjoint.getOrientation(JointOrient);
-// 	}
-// 
-// 	//Get Translation data
-// 	jt.tx = Translation.x;
-// 	jt.ty = Translation.y;
-// 	jt.tz = Translation.z;
-// 
-// 	//Get Rotation Data
-// 	jt.rx = Rotation.x;
-// 	jt.ry = Rotation.y;
-// 	jt.rz = Rotation.z;
-// 	jt.rw = Rotation.w;
-// 
-// 	//Get Joint Orientation Data
-// 	jt.rox = JointOrient.x;
-// 	jt.roy = JointOrient.y;
-// 	jt.roz = JointOrient.z;
-// 	jt.row = JointOrient.w;
-// 
-// 
-// 	MObject jointNode = path.node();
-// 	MFnDependencyNode fnJoint(jointNode);
-// 	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
-// 
-// 	MPlug plugWorldMatrixArray(jointNode, attrWorldMatrix);
-// 
-// 	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
-// 	{
-// 		MPlug elementPlug = plugWorldMatrixArray[i];
-// 
-// 		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
-// 
-// 		dgIt.disablePruningOnFilter();
-// 
-// 		for (; !dgIt.isDone(); dgIt.next())
-// 		{
-// 			MObject thisNode = dgIt.thisNode();
-// 
-// 			if (thisNode.apiType() == MFn::kSkinClusterFilter)
-// 			{
-// 				MFnSkinCluster skinFn(thisNode);
-// 
-// 				MPlug bindPreMatrixArrayPlug = skinFn.findPlug("bindPreMatrix");
-// 				int logicalIndex = skinFn.indexForInfluenceObject(path);
-// 				MPlug bindPreMatrixPlug = bindPreMatrixArrayPlug.elementByLogicalIndex(logicalIndex);
-// 				MObject dataObject;
-// 				bindPreMatrixArrayPlug.getValue(dataObject);
-// 
-// 				MFnMatrixData matDataFn(dataObject);
-// 
-// 				invMat = matDataFn.matrix().inverse();
-// 				res = invMat.matrix;
-// 				cout << logicalIndex << std::endl;
-// 			}
-// 		}
-// 	}
-// 	std::cout << res << std::endl;
+	// 	MFloatMatrix res;
+	// 	cout << path.partialPathName().asChar() << std::endl;
+	// 	MMatrix invMat;
+	// 
+	// 	MStatus status;
+	// 	MTransformationMatrix restpose = joint.restPosition(&status);
+	// 
+	// 	cout << status <<" "<< restpose.asMatrix() << endl;
+	// 
+	// 
+	// 	jointTrans jt;
+	// 
+	// 	//attach the function set to the object
+	// 	MFnTransform tr(path);
+	// 
+	// 	// Gets transform data as a matrix, though quaternions more interesting! :D
+	// 	MMatrix mat = tr.transformation().asMatrix();
+	// 
+	// 	MQuaternion JointOrient(0, 0, 0, 1);
+	// 	MQuaternion Rotation(0, 0, 0, 1);
+	// 
+	// 	//Get the transforms local translation
+	// 	MVector Translation = tr.translation(MSpace::kTransform);
+	// 
+	// 	//Get the transforms scale
+	// 	tr.getScale(jt.scale);
+	// 
+	// 	//Get the transforms rotation as quaternions
+	// 	tr.getRotation(Rotation);
+	// 
+	// 	//IK joints contains both joint orientations as well as a rotation, therefore I check for the transform of an IK
+	// 	if (tr.object().hasFn(MFn::kJoint))
+	// 	{
+	// 		MFnIkJoint IKjoint(tr.object());
+	// 		IKjoint.getOrientation(JointOrient);
+	// 	}
+	// 
+	// 	//Get Translation data
+	// 	jt.tx = Translation.x;
+	// 	jt.ty = Translation.y;
+	// 	jt.tz = Translation.z;
+	// 
+	// 	//Get Rotation Data
+	// 	jt.rx = Rotation.x;
+	// 	jt.ry = Rotation.y;
+	// 	jt.rz = Rotation.z;
+	// 	jt.rw = Rotation.w;
+	// 
+	// 	//Get Joint Orientation Data
+	// 	jt.rox = JointOrient.x;
+	// 	jt.roy = JointOrient.y;
+	// 	jt.roz = JointOrient.z;
+	// 	jt.row = JointOrient.w;
+	// 
+	// 
+	// 	MObject jointNode = path.node();
+	// 	MFnDependencyNode fnJoint(jointNode);
+	// 	MObject attrWorldMatrix = fnJoint.attribute("worldMatrix");
+	// 
+	// 	MPlug plugWorldMatrixArray(jointNode, attrWorldMatrix);
+	// 
+	// 	for (unsigned i = 0; i < plugWorldMatrixArray.numElements(); i++)
+	// 	{
+	// 		MPlug elementPlug = plugWorldMatrixArray[i];
+	// 
+	// 		MItDependencyGraph dgIt(elementPlug, MFn::kInvalid, MItDependencyGraph::kDownstream, MItDependencyGraph::kDepthFirst, MItDependencyGraph::kPlugLevel);
+	// 
+	// 		dgIt.disablePruningOnFilter();
+	// 
+	// 		for (; !dgIt.isDone(); dgIt.next())
+	// 		{
+	// 			MObject thisNode = dgIt.thisNode();
+	// 
+	// 			if (thisNode.apiType() == MFn::kSkinClusterFilter)
+	// 			{
+	// 				MFnSkinCluster skinFn(thisNode);
+	// 
+	// 				MPlug bindPreMatrixArrayPlug = skinFn.findPlug("bindPreMatrix");
+	// 				int logicalIndex = skinFn.indexForInfluenceObject(path);
+	// 				MPlug bindPreMatrixPlug = bindPreMatrixArrayPlug.elementByLogicalIndex(logicalIndex);
+	// 				MObject dataObject;
+	// 				bindPreMatrixArrayPlug.getValue(dataObject);
+	// 
+	// 				MFnMatrixData matDataFn(dataObject);
+	// 
+	// 				invMat = matDataFn.matrix().inverse();
+	// 				res = invMat.matrix;
+	// 				cout << logicalIndex << std::endl;
+	// 			}
+	// 		}
+	// 	}
+	// 	std::cout << res << std::endl;
 }
 
 void Exporter::OutputSkinCluster(MObject& obj)
@@ -1644,10 +1636,10 @@ void Exporter::OutputSkinCluster(MObject& obj)
 				}
 
 
-				for (int x = 0; x < 4;x++)
+				for (int x = 0; x < 4; x++)
 				{
 					scene_.meshes[currentmesh].points[gIter.index()].boneIndices[x] = outInfs[x];
-					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x]/norm;
+					scene_.meshes[currentmesh].points[gIter.index()].boneWeigths[x] = outWts[x] / norm;
 				}
 				scene_.meshes[currentmesh].hasSkeleton = true;
 			}
@@ -1767,7 +1759,7 @@ void Exporter::ExportMeshes()
 
 		outfile.write((const char*)&scene_.materials[i].specular, 16);
 		outfile.write((const char*)scene_.materials[i].specular.texfileInternal.data(), matHeader.specularNameLength);
-		 
+
 		outfile.write((const char*)&scene_.materials[i].transparency, 16);
 		outfile.write((const char*)scene_.materials[i].transparency.texfileInternal.data(), matHeader.transparencyNameLength);
 

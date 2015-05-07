@@ -11,7 +11,7 @@ private:
 	const int R_MAX = 10;
 	const int R_MIN = 4;
 
-	vector< vector<Tile> >* tileGrid;
+	vector<vector<Tile*>> tileGrid;
 
 	vector< vector<int> > staticPF;
 	vector< vector<int> > dynamicPF;
@@ -25,17 +25,17 @@ private:
 
 public:
 
-	AiModule();
+	AiModule(vector<vector<Tile*>> tileGrid);
 	~AiModule();
 
 	void HandleAI(Enemy* enemy);
 
-	void ChangeTileGrid(vector< vector<Tile> >* tileGrid);
+	void ChangeTileGrid(vector<vector<Tile*>> tileGrid);
 	void Update(vector<GameObject*> dynamicObjects);
 
 	//For use from the outside?
-	vector<Node*> GetPath(vector< vector<Tile> >* tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ);
+	vector<Node*> GetPath(vector<vector<Tile*>> tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
-	vector< vector<int> > GetTotalPF();
+	vector<vector<int>> GetTotalPF();
 };
 
