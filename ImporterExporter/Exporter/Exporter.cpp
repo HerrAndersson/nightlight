@@ -184,8 +184,8 @@ void Exporter::StartExporter(std::string directory_path)
 		}
 		else
 		{
-			ProcessScene(tmp_str);
-			CloseExportFiles();
+			//ProcessScene(tmp_str);
+			//CloseExportFiles();
 		}
 	}
 
@@ -348,9 +348,11 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 				std::transform(nodeNameStr.begin(), nodeNameStr.end(), nodeNameStr.begin(), ::tolower);
 				int gameObjectID = -1;
 
+				splitStringToVector(nodeNameStr, nodeVec, "_");
+
 				for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
 				{
-					if (nodeNameStr.find(levelGameObjectTypes.at(i)) != std::string::npos)
+					if (nodeVec[2].find(levelGameObjectTypes.at(i)) != std::string::npos)
 					{
 						gameObjectID = i;
 						relevantObjectFound = true;
@@ -359,7 +361,6 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 				if (relevantObjectFound)
 				{
 					std::string formattedOutput;
-					splitStringToVector(nodeNameStr, nodeVec, "_");
 
 					std::string goType = levelGameObjectTypes.at(gameObjectID);
 
