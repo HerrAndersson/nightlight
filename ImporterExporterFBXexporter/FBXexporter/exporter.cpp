@@ -3,8 +3,11 @@
 int main(int argc, char** argv) {
 
 	DataHandler dataHandler;
+	std::vector<std::string> binFileList;
 
-	dataHandler.importBinData();
+	dataHandler.getBinFilenamesInDirectory("../", binFileList);
+
+	dataHandler.importBinData(binFileList);
 
 	dataHandler.FBXexport();
 
