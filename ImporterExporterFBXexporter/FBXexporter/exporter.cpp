@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 	//Create an IOSettings object.
 	FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
 	lSdkManager->SetIOSettings(ios);
-
+	                              
 	//Configure the FbxIOSettings object
 	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
 	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
@@ -43,70 +43,116 @@ int main(int argc, char** argv) {
 		return false;
 	}
 
-	// Create a node for our mesh in the scene.
-	FbxNode* lMeshNode = FbxNode::Create(lScene, "meshNode");
+	// Create a cube.
+	typedef double Vector4[4];
+	typedef double Vector2[2];
 
-	// Create a mesh.
-	FbxMesh* lMesh = FbxMesh::Create(lScene, "mesh");
+		// indices of the vertices per each polygon
+		static int vtxId[24] = {
+			0, 1, 2, 3, // front  face  (Z+)
+			1, 5, 6, 2, // right  side  (X+)
+			5, 4, 7, 6, // back   face  (Z-)
+			4, 0, 3, 7, // left   side  (X-)
+			0, 4, 5, 1, // bottom face  (Y-)
+			3, 2, 6, 7  // top    face  (Y+)
+		};
 
-	// Set the node attribute of the mesh node.
-	lMeshNode->SetNodeAttribute(lMesh);
+		// control points
+		static Vector4 lControlPoints[8] = {
+			{ -5.0, 0.0, 5.0, 1.0 }, { 5.0, 0.0, 5.0, 1.0 }, { 5.0, 10.0, 5.0, 1.0 }, { -5.0, 10.0, 5.0, 1.0 },
+			{ -5.0, 0.0, -5.0, 1.0 }, { 5.0, 0.0, -5.0, 1.0 }, { 5.0, 10.0, -5.0, 1.0 }, { -5.0, 10.0, -5.0, 1.0 }
+		};
 
-	// Add the mesh node to the root node in the scene.
-	FbxNode *lRootNode = lScene->GetRootNode();
-	lRootNode->AddChild(lMeshNode);
+		// normals
+		static Vector4 lNormals[8] = {
+			{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+			{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+			{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+			{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+			{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+			{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+			{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
+			{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
+		};
 
-	// Define the eight corners of the cube.
-	// The cube spans from
-	//    -50 to  50 along the X axis
-	//      0 to 100 along the Y axis
-	//    -50 to  50 along the Z axis
-	
-	FbxVector4 vertex0(-50, 0, 50);
-	FbxVector4 vertex1(50, 0, 50);
-	FbxVector4 vertex2(50, 100, 50);
-	FbxVector4 vertex3(-50, 100, 50);
-	FbxVector4 vertex4(-50, 0, -50);
-	FbxVector4 vertex5(50, 0, -50);
-	FbxVector4 vertex6(50, 100, -50);
-	FbxVector4 vertex7(-50, 100, -50);
+		// uvs
+		static Vector2 lUVs[14] = {
+			{ 0.0, 1.0 },
+			{ 1.0, 0.0 },
+			{ 0.0, 0.0 },
+			{ 1.0, 1.0 }
+		};
 
-	// Initialize the control point array of the mesh.
-	lMesh->InitControlPoints(24);
-	FbxVector4* lControlPoints = lMesh->GetControlPoints();
+		// indices of the uvs per each polygon
+		static int uvsId[24] = {
+			0, 1, 3, 2, 2, 3, 5, 4, 4, 5, 7, 6, 6, 7, 9, 8, 1, 10, 11, 3, 12, 0, 2, 13
+		};
 
-	// Define each face of the cube.
-	// Face 1
-	lControlPoints[0] = vertex0;
-	lControlPoints[1] = vertex1;
-	lControlPoints[2] = vertex2;
-	lControlPoints[3] = vertex3;
-	// Face 2
-	lControlPoints[4] = vertex1;
-	lControlPoints[5] = vertex5;
-	lControlPoints[6] = vertex6;
-	lControlPoints[7] = vertex2;
-	// Face 3
-	lControlPoints[8] = vertex5;
-	lControlPoints[9] = vertex4;
-	lControlPoints[10] = vertex7;
-	lControlPoints[11] = vertex6;
-	// Face 4
-	lControlPoints[12] = vertex4;
-	lControlPoints[13] = vertex0;
-	lControlPoints[14] = vertex3;
-	lControlPoints[15] = vertex7;
-	// Face 5
-	lControlPoints[16] = vertex3;
-	lControlPoints[17] = vertex2;
-	lControlPoints[18] = vertex6;
-	lControlPoints[19] = vertex7;
-	// Face 6
-	lControlPoints[20] = vertex1;
-	lControlPoints[21] = vertex0;
-	lControlPoints[22] = vertex4;
-	lControlPoints[23] = vertex5;
-	
+		// create the main structure.
+		FbxMesh* lMesh = FbxMesh::Create(lScene, "");
+
+		// Create control points.
+		lMesh->InitControlPoints(8);
+		FbxVector4* vertex = lMesh->GetControlPoints();
+		memcpy((void*)vertex, (void*)lControlPoints, 8 * sizeof(FbxVector4));
+
+		// create the materials.
+		/* Each polygon face will be assigned a unique material.
+		*/
+		FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
+		lMaterialElement->SetMappingMode(FbxGeometryElement::eAllSame);
+		lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+
+		lMaterialElement->GetIndexArray().Add(0);
+
+		// Create polygons later after FbxGeometryElementMaterial is created. Assign material indices.
+		int vId = 0;
+		for (int f = 0; f<6; f++)
+		{
+			lMesh->BeginPolygon();
+			for (int v = 0; v<4; v++)
+				lMesh->AddPolygon(vtxId[vId++]);
+			lMesh->EndPolygon();
+		}
+
+		// specify normals per control point.
+		FbxGeometryElementNormal* lNormalElement = lMesh->CreateElementNormal();
+		lNormalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		for (int n = 0; n<8; n++)
+			lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
+
+
+		// Create the node containing the mesh
+		FbxNode* lNode = FbxNode::Create(lScene, "notTHEBEEEEEEES!!!");
+		//lNode->LclTranslation.Set(pLclTranslation);
+
+		lNode->SetNodeAttribute(lMesh);
+		lNode->SetShadingMode(FbxNode::eTextureShading);
+
+		// create UVset
+		FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
+		FBX_ASSERT(lUVElement1 != NULL);
+		lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
+		lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+		for (int i = 0; i <4; i++)
+			lUVElement1->GetDirectArray().Add(FbxVector2(lUVs[i][0], lUVs[i][1]));
+
+		for (int i = 0; i<24; i++)
+			lUVElement1->GetIndexArray().Add(uvsId[i % 4]);
+
+		//return lNode;
+		// Create a node for our mesh in the scene.
+		FbxNode* lMeshNode = FbxNode::Create(lScene, "theThing");
+
+		// Set the node attribute of the mesh node.
+		lMeshNode->SetNodeAttribute(lMesh);
+
+		// Add the mesh node to the root node in the scene.
+		FbxNode *lRootNode = lScene->GetRootNode();
+		lRootNode->AddChild(lNode);
+
 	lExporter->Export(lScene);
 
 	//Get rid of objects
