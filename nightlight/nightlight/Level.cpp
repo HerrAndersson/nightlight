@@ -3,8 +3,9 @@
 
 Level::Level ( ) 
 {
+	startDoor = Coord();
+	endDoor = Coord();
 }
-
 
 Level::~Level ( ) 
 {
@@ -51,10 +52,6 @@ Tile* Level::getTile (int x, int y) {
 		cout << "Error in Level::getTile: x=" + std::to_string(x) + ", y=" + std::to_string(y) + " is not a valid coordinate.\n";
 		return tile;
 	}
-	if (tile == nullptr){
-		tile = new Tile();
-		setTile(tile, x, y);
-	}
 	return tile;
 }
 
@@ -76,7 +73,24 @@ void Level::setTile(Tile* tile, int x, int y)
 	tileGrid.at(x).at(y) = tile;
 }
 
-vector<vector<Tile*>> Level::getTileGrid()
+int Level::sizeX()
 {
-	return tileGrid;
+	return tileGrid.size();
+}
+int Level::sizeY(int x)
+{
+	return tileGrid.at(x).size();
+}
+
+bool Level::withinBounds(int x, int y)
+{
+	bool result = false;
+	if (x >= 0 && x < tileGrid.size())
+	{
+		if (y >= 0 && y < tileGrid.at(x).size())
+		{
+			result = true;
+		}
+	}
+	return result;
 }

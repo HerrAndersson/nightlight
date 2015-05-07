@@ -1,8 +1,10 @@
 #include "AiModule.h"
 
-AiModule::AiModule(vector<vector<Tile*>> tileGrid)
+AiModule::AiModule(Level* level)
 {
-	this->tileGrid = tileGrid;
+	this->level = level;
+
+	vector<Node*> v = GetPath(level, XMINT2(0, 0), XMINT2(2, 2));
 }
 
 AiModule::~AiModule()
@@ -16,7 +18,7 @@ void AiModule::HandleAI(Enemy* ai)
 	{
 		XMFLOAT3 p = ai->GetPosition();
 		XMINT2 goal = GetRandomPosition(ai);
-		ai->SetPath(aStar(tileGrid, 10, XMINT2((int)p.x, (int)p.z), goal));
+		ai->SetPath(aStar(level, 1, XMINT2((int)p.x, (int)p.z), goal));
 	}
 	else
 	{
@@ -45,7 +47,7 @@ XMINT2 AiModule::GetRandomPosition(Enemy* ai)
 				{
 					goal.x = rnd;
 
-					int boundsX = tileGrid.size();
+					int boundsX = level->sizeX();
 					if (goal.x >= boundsX)
 						goal.x = boundsX;
 				}
@@ -62,7 +64,7 @@ XMINT2 AiModule::GetRandomPosition(Enemy* ai)
 				{
 					goal.y = rnd;
 
-					int boundsY = tileGrid.at(goal.x).size();
+					int boundsY = level->sizeY(goal.x);
 					if (goal.y >= boundsY)
 						goal.y = boundsY;
 				}
@@ -76,21 +78,21 @@ XMINT2 AiModule::GetRandomPosition(Enemy* ai)
 			}
 		}
 
-		if (tileGrid.at(goal.x).at(goal.y)->getTileIsWalkable())
+		if (level->getTile(goal.x, goal.y)->getTileIsWalkable())
 			found = true;
 	}
 
 	return goal;
 }
 
-vector<Node*> AiModule::GetPath(vector<vector<Tile*>> tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ)
+vector<Node*> AiModule::GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 {
-	return aStar(tileGrid, 10, startPosXZ, endPosXZ);
+	return aStar(level, 1, startPosXZ, endPosXZ);
 }
 
-void AiModule::ChangeTileGrid(vector<vector<Tile*>> tileGrid)
+void AiModule::ChangeLevel(Level* level)
 {
-	this->tileGrid = tileGrid;
+	this->level = level;
 	//GenerateStaticPF()
 }
 

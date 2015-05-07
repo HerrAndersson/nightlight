@@ -14,6 +14,7 @@
 #include "lightObject.h"
 
 using namespace DirectX;
+using std::vector;
 
 class Game
 {
@@ -42,7 +43,7 @@ private:
 
 	Level* currentLevel = nullptr;
 
-	std::vector<Enemy>		enemies;
+	vector<Enemy>		enemies;
 
 	CameraObject*			camera;
 	LightObject*			spotLight;

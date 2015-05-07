@@ -9,6 +9,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
+	spotLight->generateOrthoMatrix(512, 0.1f, 1000);
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
@@ -21,20 +22,24 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
 
-	//AI = new AiModule(currentLevel->getTileGrid());
+	//AI = new AiModule(currentLevel);
 }
 
 void Game::LoadAssets()
 {
+	Enemy e = Enemy(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0, 1);
+	enemies.push_back(e);
 
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
-	if (currentLevel != nullptr){
+	if (currentLevel != nullptr)
+	{
 		delete currentLevel;
 		currentLevel = nullptr;
 	}
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
-	currentLevel->updateGameObjets();
+
+	//AI = new AiModule(currentLevel);
 }
 
 Game::~Game()
@@ -104,65 +109,17 @@ bool Game::Render()
 
 	Renderer->UseDefaultShader();
 
-	std::vector<GameObject*> toRender = currentLevel->GetGameObjects();
-	for (int i = 0; i < toRender.size(); i++){
-		Renderer->Render(toRender[i]);
+	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+	for (int i = 0; i < toRender->size(); i++) {
+		Renderer->Render(toRender->at(i));
 	}
+
+	for (Enemy e : enemies) {
+		Renderer->Render(&e);
+	}
+
 	Renderer->Render(character);
-/*
-	Renderer->Render(gameObject.at(0));
-	Renderer->Render(gameObject.at(1));
-	for (int j = 0; j < 20; j++)
-	{
-		for (int i = 0; i < 20; i++)
-		{
-			gameObject.at(2)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-			Renderer->Render(gameObject.at(2));
 
-			if (i == 0)
-			{
-				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-
-				Renderer->Render(gameObject.at(3));
-			}
-
-			if (j == 0)
-			{
-				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 90, 0));
-				Renderer->Render(gameObject.at(3));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-
-			if (j == 19)
-			{
-				if (!(i >10 && i < 14))
-					gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 270, 0));
-				Renderer->Render(gameObject.at(3));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-
-			if (i == 19)
-			{
-				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
-				Renderer->Render(gameObject.at(3));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-
-			if (i == 19 && j == 5)
-			{
-				gameObject.at(4)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-				gameObject.at(4)->SetRotation(XMFLOAT3(0, 180, 0));
-				Renderer->Render(gameObject.at(4));
-				gameObject.at(4)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-		}
-	}
-*/
 	Renderer->EndScene();
 
 	return result;

@@ -23,9 +23,6 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 
 	//initializing shader files
 	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
-
-	
-
 }
 
 
@@ -353,7 +350,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightDiffuseSpot = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint1 = XMFLOAT3(-3.0f, 2.3f, 4.0f);
+	lightPtr->lightPosPoint1 = XMFLOAT3(-1.0f, -2.4f, -2.0f);
 
 	lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 	lightPtr->lightPosPoint2 = XMFLOAT3(spotlight->getPosition().x, spotlight->getPosition().y+3, spotlight->getPosition().z) ;
@@ -384,33 +381,50 @@ void RenderModule::UseDefaultShader()
 	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
 }
 
+void RenderModule::UseShadowShader()
+{
+	d3d->SetCullingState(2);
+	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
+}
 
 bool RenderModule::Render(GameObject* gameObject)
 {
 	bool result = true;
 
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	RenderObject* renderObject = gameObject->GetRenderObject();
+
+	/////////////////////////////////////////////////////////////////////// Shadow rendering /////////////////////////////////////////////////////////////////////////
+	//UseShadowShader();
+
+	//shadowMap->SetBufferPerObject(deviceContext, gameObject->GetWorldMatrix());
+
+	////Now render the prepared buffers with the shader.
+	//deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
+
+	/////////////////////////////////////////////////////////////////////// Normal rendering /////////////////////////////////////////////////////////////////////////
+	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject);
+
 	UseDefaultShader();
 
-
 	//Set shader parameters, preparing them for render.
-	RenderObject* renderObject = gameObject->GetRenderObject();
-	//result = SetDataPerObject(*gameObject->GetWorldMatrix(), renderObject->diffuseTexture->texturePointer, renderObject->vertexBuffer);
-
-
-	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject);
 	if (!result)
 		return false;
 
 	//Now render the prepared buffers with the shader.
-	d3d->GetDeviceContext()->Draw(renderObject->model->vertexBufferSize, 0);
+	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
 
 	return result;
 }
 
 void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject* spotlight)
 {
-	
 	bool result = SetDataPerFrame(viewMatrix, projectionMatrix, camPos, spotlight);
+
+	XMMATRIX lightView, lightProj;
+	spotlight->getViewMatrix(lightView);
+	spotlight->getOrthoMatrix(lightProj);
+	shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), lightView, lightProj);
 	d3d->BeginScene(red, green, blue, alpha);
 }
 void RenderModule::EndScene()

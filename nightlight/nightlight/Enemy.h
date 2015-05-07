@@ -14,6 +14,8 @@ public:
 	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType);
 	virtual ~Enemy();
 
+	enum EnemyType { SMALL, MEDIUM, LARGE };
+
 	void Update();
 
 	void SetPath(vector<Node*> path);

@@ -60,9 +60,10 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		gameObjects.push_back(corner);
 	}
 	else if (gameObjectType == "door") {
-		int doorStatus = std::stoi(unparsedData.at(i++));
+		bool isOpen = std::stoi(unparsedData.at(i++)) == 1;
 		int doorType = std::stoi(unparsedData.at(i++));
-		door = new Door(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, doorStatus, doorType);
+		std::string activationName = unparsedData.at(i++);
+		door = new Door(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, isOpen, doorType, activationName);
 		gameObjects.push_back(door);
 	}
 	else if (gameObjectType == "static") {
@@ -76,17 +77,21 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		tileIsWalkable = false;
 	}
 	else if (gameObjectType == "lever") {
-		int leverStatus = std::stoi(unparsedData.at(i++));
-		lever = new Lever(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, leverStatus);
+		bool isPowered = std::stoi(unparsedData.at(i++)) == 1;
+		bool isActivated = std::stoi(unparsedData.at(i++)) == 1;
+		std::string activationName = unparsedData.at(i++);
+		std::string activates = unparsedData.at(i++);
+		lever = new Lever(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, isPowered, isActivated, activationName, activates);
 		gameObjects.push_back(lever);
 	}
 	else if (gameObjectType == "pressure") {
-		int plateStatus = std::stoi(unparsedData.at(i++));
-		pressurePlate = new PressurePlate(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, plateStatus);
+		std::string activates = unparsedData.at(i++);
+		pressurePlate = new PressurePlate(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
 		gameObjects.push_back(pressurePlate);
 	}
 	else if (gameObjectType == "container") {
-		shadowContainer = new Container(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
+		std::string activates = unparsedData.at(i++);
+		shadowContainer = new Container(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
 		gameObjects.push_back(shadowContainer);
 		tileIsWalkable = false;
 	}

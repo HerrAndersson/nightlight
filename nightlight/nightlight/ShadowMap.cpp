@@ -52,7 +52,6 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-
 	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "depthVertexShader", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
 
 	if (FAILED(hr))
@@ -66,6 +65,27 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &shadowVS);
 	hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &shadowInputLayout);
 	pVS->Release();
+
+	/////////////////////////////////////////////////////////// Buffers /////////////////////////////////////////////////////////////
+	D3D11_BUFFER_DESC matrixBufferDesc;
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+
+	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
+	hr = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerObject);
+
+	if (FAILED(hr))
+		throw std::runtime_error("Failed to create matrixBufferPerObject");
+
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
+	hr = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerFrame);
+
+	if (FAILED(hr))
+		throw std::runtime_error("Failed to create matrixBufferPerFrame");
 
 	///////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////
 
@@ -113,20 +133,25 @@ void ShadowMap::ActivateShadowRendering(ID3D11DeviceContext* deviceContext)
 	deviceContext->PSSetShader(nullPS, nullptr, 0);
 }
 
-void ShadowMap::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld)
+void ShadowMap::SetBufferPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	hr = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
-	MatrixBuffer* matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
+	MatrixBufferPerObject* matrixDataBuffer = (MatrixBufferPerObject*)mappedResource.pData;
 	XMMATRIX twvp = XMMatrixTranspose(modelWorld);
 	matrixDataBuffer->modelWorld = twvp;
 
-	deviceContext->Unmap(matrixBuffer, 0);
+	deviceContext->Unmap(matrixBufferPerObject, 0);
 
-	deviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 3, &matrixBufferPerObject);
+}
+
+void ShadowMap::SetBufferPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj)
+{
+
 }
 
 ID3D11ShaderResourceView* ShadowMap::GetShadowSRV()

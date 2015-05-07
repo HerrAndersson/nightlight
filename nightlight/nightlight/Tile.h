@@ -50,6 +50,6 @@ public:
 
 	void createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData);
 
-	bool getTileIsWalkable() const { return tileIsWalkable; }
+	bool getTileIsWalkable() { return tileIsWalkable; }
 };
 

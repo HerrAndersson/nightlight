@@ -1,11 +1,14 @@
 #pragma once
-#include "GameObject.h"
-#include <vector>
 #include <d3d11.h>
 #include <DirectXMath.h>
+
+#include <vector>
 #include <deque>
-#include "Tile.h"
 #include <list>
+
+#include "Level.h"
+#include "GameObject.h"
+#include "Tile.h"
 
 using namespace std;
 using DirectX::XMFLOAT2;
@@ -63,7 +66,7 @@ static Node GetPositionFromCoord(float x, float z, int tileWidth)
 	return Node((int)floor(x / tileWidth), (int)floor(z / tileWidth));
 }
 
-static vector<Node*> aStar(vector<vector<Tile*>> tileGrid, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
+static vector<Node*> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
 {
 	vector<Node*> path;	
 	Node* start = new Node(startPosXZ.x, startPosXZ.y);
@@ -80,6 +83,7 @@ static vector<Node*> aStar(vector<vector<Tile*>> tileGrid, int tileSize, XMINT2 
 
 	while (!openset.empty())
 	{
+		cout << openset.size() << endl;
 		current = openset.front();
 		for each (Node* n in openset)
 		{
@@ -112,17 +116,26 @@ static vector<Node*> aStar(vector<vector<Tile*>> tileGrid, int tileSize, XMINT2 
 
 				if (!inOpen || tentativeG < n.g)
 				{
-					if (n.x >= 0 && n.x < (signed)tileGrid.size() && n.y >= 0 && n.y < (signed)tileGrid[n.x].size() && tileGrid.at(n.x).at(n.y)->getTileIsWalkable())
-					{
-						Node* x = new Node(n.x, n.y);
-						x->parent = current;
-						x->g = tentativeG;
-						x->f = x->g + ManhattanDistance(x, end);
+					cout << n.x << " " << n.y << endl;
 
-						if (!inOpen)
-							openset.push_back(x);
-						else
-							delete x;
+					bool w = level->withinBounds(n.x, n.y);
+					Tile* tile = nullptr;
+					
+					if (w)
+						tile = level->getTile(n.x, n.y);
+
+					if (tile != nullptr)
+					{
+						if (tile->getTileIsWalkable())
+						{
+							Node x(n.x, n.y);
+							x.parent = current;
+							x.g = tentativeG;
+							x.f = x.g + ManhattanDistance(&x, end);
+
+							if (!inOpen)
+								openset.push_back(&x);
+						}
 					}
 				}
 			}
@@ -131,7 +144,7 @@ static vector<Node*> aStar(vector<vector<Tile*>> tileGrid, int tileSize, XMINT2 
 
 	while (current != start)
 	{
-		//cout << current->x << " " << current->y << endl;
+		cout << current->x << " " << current->y << endl;
 		path.push_back(current);
 		current = current->parent;
 	}
