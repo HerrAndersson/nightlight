@@ -325,7 +325,7 @@ struct AnimData
 struct Keyframe{
 	float time;
 	MFloatVector trans;
-	MQuaternion rot;
+	MFloatVector rot;
 };
 
 struct Bone{

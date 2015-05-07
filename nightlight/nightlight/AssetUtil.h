@@ -83,7 +83,7 @@ namespace assetUtility {
 	struct Keyframe{
 		float time;
 		XMFLOAT3 trans;
-		XMFLOAT4 rot;
+		XMFLOAT3 rot;
 	};
 
 	struct Bone{
