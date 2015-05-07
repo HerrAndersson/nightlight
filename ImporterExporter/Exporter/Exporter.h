@@ -315,9 +315,10 @@ struct Keyframe{
 };
 
 struct Bone{
-	std::vector<Keyframe> frames;
 	int parent;
-	MMatrix invBindPose;
+	MFloatMatrix BindPose;
+	MFloatMatrix invBindPose;
+	std::vector<Keyframe> frames;
 };
 
 struct Animation{
@@ -337,7 +338,7 @@ struct SceneData
 };
 
 struct MainHeader{
-	int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
+	int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount;
 };
 
 struct MeshHeader

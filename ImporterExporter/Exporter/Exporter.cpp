@@ -244,6 +244,8 @@ void Exporter::ProcessScene(const char *file_path)
 	scene_.lights.dirLights.clear();
 	scene_.lights.spotLights.clear();
 	scene_.lights.pointLights.clear();
+	scene_.animations.clear();
+	scene_.skeleton.clear();
 }
 
 void Exporter::ProcessLevel(const char *file_path)
@@ -1386,8 +1388,18 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 	
 	Bone output;
-
+	output.parent = parentIndex;
 	jointTrans jt;
+
+	output.invBindPose = joint.transformation().asMatrixInverse().matrix;
+	MVector test = joint.translation(MSpace::kWorld);
+
+
+	MPlug tempBindPosePlug = joint.findPlug("bindPose");
+
+	output.BindPose = joint.transformation().asMatrix().matrix;
+	
+
 
 	MItDependencyNodes matIt(MFn::kAnimCurve);
 	while (!matIt.isDone())
@@ -1398,9 +1410,6 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 		if (!strcmp(animCurve.name().substring(0, joint.name().length() - 1).asChar(), joint.name().asChar())){
 
 			std::string type = animCurve.name().substring(joint.name().length(),animCurve.name().length()).asChar();
-			MMatrix mat = joint.transformation().asMatrix();
-
-			output.invBindPose = mat.inverse();
 			output.frames.resize(animCurve.numKeys());
 			for (int i = 0; i < animCurve.numKeys(); i++)
 			{
@@ -1710,6 +1719,7 @@ void Exporter::ExportMeshes()
 	mainHeader.spotLightSize = scene_.lights.spotLights.size();
 	mainHeader.dirLightSize = scene_.lights.dirLights.size();
 	mainHeader.camCount = scene_.cameras.size();
+	mainHeader.boneCount = scene_.skeleton.size();
 
 	outfile.write((const char*)&mainHeader, sizeof(MainHeader));
 
@@ -1779,6 +1789,18 @@ void Exporter::ExportMeshes()
 		outfile.write((const char*)&scene_.blendShapes[i].MeshTarget, 4);
 		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].points.size());
 		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].normals.size());
+	}
+
+	for (int i = 0; i < mainHeader.boneCount; i++){
+		outfile.write((const char*)&scene_.skeleton[i].parent, 4);
+		outfile.write((const char*)&scene_.skeleton[i].BindPose, 64);
+		outfile.write((const char*)&scene_.skeleton[i].invBindPose, 64);
+
+		int frames = scene_.skeleton[i].frames.size();
+
+		outfile.write((const char*)&frames, 4);
+
+		outfile.write((const char*)scene_.skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
 
 	outfile.close();

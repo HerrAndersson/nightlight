@@ -175,6 +175,21 @@ void AssetManager::LoadModel(string file_path){
 		blendShapes.push_back(blendShape);
 	}
 
+	model->skeleton.resize(mainHeader.boneCount);
+
+	for (int i = 0; i < mainHeader.boneCount; i++){
+		infile.read((char*)&model->skeleton[i].parent, 4);
+		infile.read((char*)&model->skeleton[i].BindPose, 64);
+		infile.read((char*)&model->skeleton[i].invBindPose, 64);
+
+		int frames;
+		infile.read((char*)&frames, 4);
+
+		model->skeleton[i].frames.resize(frames);
+
+		infile.read((char*)model->skeleton[i].frames.data(), sizeof(Keyframe)*frames);
+	}
+
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
 

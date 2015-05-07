@@ -10,9 +10,9 @@
 using namespace DirectX;
 
 namespace assetUtility {
-	struct MainHeader 
+	struct MainHeader
 	{
-		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData;
+		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount;
 	};
 
 	struct MeshHeader 
@@ -83,19 +83,18 @@ namespace assetUtility {
 	struct Keyframe{
 		float time;
 		XMFLOAT3 trans;
-		XMVECTOR rot;
+		XMFLOAT4 rot;
 	};
 
-	struct KeyframesPerBone{
+	struct Bone{
+		int parent;
+		XMMATRIX BindPose;
+		XMMATRIX invBindPose;
 		std::vector<Keyframe> frames;
-		int bone;
-		int numframes;
-		float length;
 	};
 
 	struct Animation{
-		std::vector<KeyframesPerBone> bones;
-		int length;
+		int length, startFrame;
 	};
 
 	struct AmbientLightStruct 
@@ -154,6 +153,7 @@ namespace assetUtility {
 		SpotLightStruct spotLight;
 		XMFLOAT4 diffuse;
 		XMFLOAT4 specular;
+		std::vector<Bone> skeleton;
 	};
 
 	struct BlendShape
