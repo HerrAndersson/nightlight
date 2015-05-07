@@ -184,8 +184,8 @@ void Exporter::StartExporter(std::string directory_path)
 		}
 		else
 		{
-			//ProcessScene(tmp_str);
-			//CloseExportFiles();
+			ProcessScene(tmp_str);
+			CloseExportFiles();
 		}
 	}
 
