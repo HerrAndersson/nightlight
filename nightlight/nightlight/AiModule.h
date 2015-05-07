@@ -1,7 +1,6 @@
 #pragma once
 #include "AiUtil.h"
 #include "Enemy.h"
-#include "Tile.h"
 using namespace std;
 
 class AiModule
@@ -11,7 +10,7 @@ private:
 	const int R_MAX = 10;
 	const int R_MIN = 4;
 
-	vector<vector<Tile*>> tileGrid;
+	Level* level;
 
 	vector< vector<int> > staticPF;
 	vector< vector<int> > dynamicPF;
@@ -25,16 +24,16 @@ private:
 
 public:
 
-	AiModule(vector<vector<Tile*>> tileGrid);
+	AiModule(Level* level);
 	~AiModule();
 
 	void HandleAI(Enemy* enemy);
 
-	void ChangeTileGrid(vector<vector<Tile*>> tileGrid);
+	void ChangeLevel(Level* level);
 	void Update(vector<GameObject*> dynamicObjects);
 
 	//For use from the outside?
-	vector<Node*> GetPath(vector<vector<Tile*>> tileGrid, XMINT2 startPosXZ, XMINT2 endPosXZ);
+	vector<Node*> GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
 	vector<vector<int>> GetTotalPF();
 };

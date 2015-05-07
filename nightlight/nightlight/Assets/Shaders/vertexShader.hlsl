@@ -25,7 +25,6 @@ struct vertexOutput
 
 	float3 worldPos : TEXCOORD1;
 	float3 viewDir : POSITION;
-
 };
 
 vertexOutput vertexShader(vertexInputType input)
@@ -47,8 +46,5 @@ vertexOutput vertexShader(vertexInputType input)
 	output.normal = mul(input.normal, worldMatrix);
 	output.normal = normalize(output.normal);
 
-	
-
 	return output;
-
 }

@@ -86,7 +86,7 @@ public:
 	bool SetDataPerObject(XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture, ID3D11Buffer* vertexBuffer, bool hasSkeleton, bool hasBlendShapes);
 
 	void UseDefaultShader();
-	//void UseShadowShader();
+	void UseShadowShader();
 	//void Usesomeothershader() etc.
 
 	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);

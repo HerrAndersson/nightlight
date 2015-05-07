@@ -30,6 +30,7 @@ public:
 	~Level ( );
 	std::vector<GameObject*>* GetGameObjects(){ return &gameObjects; };
 	void updateGameObjets();
+
 	Tile* getTile (int x, int y);
 	void setTile(Tile* tile, int x, int y);
 	Coord getStartDoor() const { return startDoor; }
@@ -37,6 +38,9 @@ public:
 	Coord getEndDoor() const { return endDoor; }
 	void setEndDoor(Coord val) { endDoor = val; }
 
-	vector<vector<Tile*>>* getTileGrid();
+	int sizeX();
+	int sizeY(int x);
+
+	bool withinBounds(int x, int y);
 };
 

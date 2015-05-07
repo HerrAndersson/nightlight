@@ -9,6 +9,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
+	spotLight->generateOrthoMatrix(512, 0.1f, 1000);
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
@@ -21,19 +22,24 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
 
-	//AI = new AiModule(currentLevel->getTileGrid());
+	//AI = new AiModule(currentLevel);
 }
 
 void Game::LoadAssets()
 {
+	Enemy e = Enemy(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0, 1);
+	enemies.push_back(e);
 
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
-	if (currentLevel != nullptr){
+	if (currentLevel != nullptr)
+	{
 		delete currentLevel;
 		currentLevel = nullptr;
 	}
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
+
+	//AI = new AiModule(currentLevel);
 }
 
 Game::~Game()
