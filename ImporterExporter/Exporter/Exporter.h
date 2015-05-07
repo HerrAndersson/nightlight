@@ -234,21 +234,16 @@ struct BlendShapeTarget
 struct WeightFrame
 {
 	float weight;
-	int currentFrame;
+	int currentFrame;	//Key's frame in the whole animation
 };
 
 struct blendKeys
 {
 	int numKeys;
 	int totalFrames;
+	int startFrame;
 
 	std::vector<WeightFrame> WeightF;
-};
-
-struct TangentData
-{
-	int LERP, SLERP, Ltest, Stest;
-	float ix, iy, ox, oy;
 };
 
 struct KeyFrames
@@ -321,6 +316,7 @@ struct AnimData
 	//Skin Weights (Cannot tell if you get this correctly)
 	//
 };
+//Everything above should be removed?
 
 struct Keyframe{
 	float time;

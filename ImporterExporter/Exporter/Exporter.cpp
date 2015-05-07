@@ -890,16 +890,12 @@ void Exporter::outputParentInfo(MObject& par)
 	cout << endl;
 }
 
-//Problems:
-//I want one blendshape keydata for each blendshape object, the problem is the matIt while loop
-//I want to extract value and current Frame for each keyframe
-
 void Exporter::extractKeyData(MObject& key)
 {
 	blendKeys temp;
 	WeightFrame frame;
 
-	MAnimControl::animationStartTime();
+	temp.startFrame = MAnimControl::animationStartTime().value();
 	temp.totalFrames = MAnimControl::animationEndTime().value();
 
 	//get Keyframe values
@@ -962,9 +958,8 @@ void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base)
 		//cout << "Weight unimportant stuff " << fn.weightIndexList(l) << endl;
 
 		cout << "\tCurrent Target: " << i << endl;
+		//cout << "\tName:" << name().asChar() << endl;
 		cout << "\t\tnumTargets " << targets.length() << endl;
-
-		//cout << "\tTarget Items unimportant stuff " << fn.targetItemIndexList(i, Base, l) << endl;
 
 		//output each target shape
 		for (unsigned int j = 0; j < targets.length(); ++j)
@@ -980,6 +975,8 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 	MItGeometry it(target);
 
 	BlendShapeTarget temp;
+	blendKeys BK;
+	WeightFrame frame;
 
 	//Write number of points
 	cout << "\t\tNumPoints " << it.count() << endl;
@@ -1007,6 +1004,51 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 	}
 	cout << endl;
 
+	MItDependencyNodes matIt(MFn::kAnimCurve);
+	MFnTransform BlendName(target);
+	while (!matIt.isDone())
+	{
+		MFnAnimCurve AnimCurve(matIt.item());
+		cout << AnimCurve.name().asChar() << endl;
+		//
+		if (!strcmp(AnimCurve.name().substring(0, BlendName.name().length() - 1).asChar(), BlendName.name().asChar()))
+		{
+
+			std::string type = AnimCurve.name().substring(BlendName.name().length(), AnimCurve.name().length()).asChar();
+			MMatrix mat = BlendName.transformation().asMatrix();
+
+			std::string comp = AnimCurve.name().asChar();
+			if (!strcmp(comp.substr(0, 5).c_str(), "blend"))
+			{
+				BK.startFrame = MAnimControl::animationStartTime().value();
+				BK.totalFrames = MAnimControl::animationEndTime().value();
+				BK.numKeys = AnimCurve.numKeys();
+
+				std::cout << "AnimCurve " << AnimCurve.name().asChar() << std::endl;
+				std::cout << "NumKeys " << BK.numKeys << std::endl;
+				cout << "Start Time: " << MAnimControl::animationStartTime() << endl;
+				cout << "End TIme: " << BK.totalFrames << endl;
+
+				BK.WeightF.resize(AnimCurve.numKeys());
+				if (!strcmp(type.c_str(), "_Enemy")){
+					// Make sure not to do anything if there are no keyframes
+					if (BK.numKeys == 0) return;
+
+					// get all keyframe times & values
+					for (unsigned int i = 0; i < BK.numKeys; i++)
+					{
+						BK.WeightF[i].currentFrame = AnimCurve.time(i).value();
+						BK.WeightF[i].weight = AnimCurve.value(i);
+						// write keyframe info
+						std::cout << " frame " << AnimCurve.time(i);
+						std::cout << " value " << frame.weight << endl;
+					}
+				}
+			}
+		}
+		matIt.next();
+	}
+
 	MFnMesh basemfn(Base);
 
 	MDagPath dag_path;
@@ -1028,7 +1070,6 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 		dag_iter.next();
 	}
 	scene_.blendShapes.push_back(temp);
-
 }
 
 // identifierar alla mesharna i scenen och extraherar data från dem
@@ -1124,17 +1165,17 @@ bool Exporter::IdentifyAndExtractMeshes()
 		matIt.next();
 	}
 
-	matIt.reset(MFn::kAnimCurve);
+	//matIt.reset(MFn::kAnimCurve);
 
-	while (!matIt.isDone())
-	{
-		//Output each curve we find
-		extractKeyData(matIt.item());
+	//while (!matIt.isDone())
+	//{
+	//	//Output each curve we find
+	//	extractKeyData(matIt.item());
 
-		//scene_.AnimationData.push_back(AnimTemp);
-		//get next mesh
-		matIt.next();
-	}
+	//	//scene_.AnimationData.push_back(AnimTemp);
+	//	//get next mesh
+	//	matIt.next();
+	//}
 
 	MDagPath dag_path;
 	MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
