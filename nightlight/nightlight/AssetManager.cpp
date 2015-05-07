@@ -172,6 +172,13 @@ void AssetManager::LoadModel(string file_path){
 		infile.read((char*)blendShape.points.data(), blendShape.points.size()*sizeof(XMFLOAT3));
 		blendShape.normals.resize(normals.size());
 		infile.read((char*)blendShape.normals.data(), blendShape.normals.size()*sizeof(XMFLOAT3));
+		
+
+		int frames;
+		infile.read((char*)&frames, 4);
+		infile.seekg(8*frames,std::ios::cur);
+
+		
 		blendShapes.push_back(blendShape);
 	}
 
