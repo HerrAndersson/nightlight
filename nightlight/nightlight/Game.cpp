@@ -104,64 +104,16 @@ bool Game::Render()
 	Renderer->UseDefaultShader();
 
 	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
-	for (int i = 0; i < toRender->size(); i++){
+	for (int i = 0; i < toRender->size(); i++) {
 		Renderer->Render(toRender->at(i));
 	}
-	Renderer->Render(character);
-/*
-	Renderer->Render(gameObject.at(0));
-	Renderer->Render(gameObject.at(1));
-	for (int j = 0; j < 20; j++)
-	{
-		for (int i = 0; i < 20; i++)
-		{
-			gameObject.at(2)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-			Renderer->Render(gameObject.at(2));
 
-			if (i == 0)
-			{
-				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-
-				Renderer->Render(gameObject.at(3));
-			}
-
-			if (j == 0)
-			{
-				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 90, 0));
-				Renderer->Render(gameObject.at(3));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-
-			if (j == 19)
-			{
-				if (!(i >10 && i < 14))
-					gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 270, 0));
-				Renderer->Render(gameObject.at(3));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-
-			if (i == 19)
-			{
-				gameObject.at(3)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 180, 0));
-				Renderer->Render(gameObject.at(3));
-				gameObject.at(3)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-
-			if (i == 19 && j == 5)
-			{
-				gameObject.at(4)->SetPosition(XMFLOAT3(-15 + i, 0, -15 + j));
-				gameObject.at(4)->SetRotation(XMFLOAT3(0, 180, 0));
-				Renderer->Render(gameObject.at(4));
-				gameObject.at(4)->SetRotation(XMFLOAT3(0, 0, 0));
-			}
-		}
+	for (Enemy e : enemies) {
+		Renderer->Render(&e);
 	}
-*/
+
+	Renderer->Render(character);
+
 	Renderer->EndScene();
 
 	return result;
