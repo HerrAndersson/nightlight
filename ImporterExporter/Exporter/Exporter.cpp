@@ -1655,6 +1655,12 @@ void Exporter::ExportMeshes()
 		outfile.write((const char*)&scene_.blendShapes[i].MeshTarget, 4);
 		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].points.size());
 		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].normals.size());
+
+		int BlendFrames = scene_.blendShapes[i].WeightF.size();
+
+		outfile.write((const char*)&BlendFrames, 4);
+
+		outfile.write((const char*)scene_.blendShapes[i].WeightF.data(), sizeof(WeightFrame)*BlendFrames);
 	}
 
 	for (int i = 0; i < mainHeader.boneCount; i++){
