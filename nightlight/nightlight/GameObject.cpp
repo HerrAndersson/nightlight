@@ -12,7 +12,7 @@ GameObject::GameObject(XMFLOAT3 position, float rotation, RenderObject* renderOb
 
 GameObject::~GameObject()
 {
-	//Should not delete RenderObject, handled from AssetManager
+	renderObject = nullptr;
 }
 
 XMMATRIX GameObject::GetWorldMatrix()

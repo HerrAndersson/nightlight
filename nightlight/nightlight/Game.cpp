@@ -39,23 +39,17 @@ void Game::LoadAssets()
 
 Game::~Game()
 {
+	delete currentLevel;
+
 	delete Logic;
 	delete Renderer;
-	delete camera;
 	delete Assets;
 	delete AI;
 	delete Levels;
 
-
+	delete camera;
 	delete spotLight;
 	delete character;
-
-	//for (auto e : enemies) delete e;
-	//enemies.clear();
-/*
-
-	for (auto g : gameObject) delete g;
-	gameObject.clear();*/
 }
 
 bool Game::Update()

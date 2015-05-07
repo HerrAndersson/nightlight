@@ -1,11 +1,23 @@
 #include "Level.h"
 
 
-Level::Level ( ) {
+Level::Level ( ) 
+{
 }
 
 
-Level::~Level ( ) {
+Level::~Level ( ) 
+{
+	for (auto go : gameObjects) delete go;
+	gameObjects.clear();
+
+	for (auto tg : tileGrid)
+	{
+		for (auto t : tg) delete t;
+
+		tg.clear();
+	}
+	tileGrid.clear();
 }
 
 void Level::updateGameObjets()

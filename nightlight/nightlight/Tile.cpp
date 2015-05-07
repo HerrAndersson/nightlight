@@ -8,24 +8,24 @@ Tile::Tile ( )
 
 Tile::~Tile ( ) 
 {
-	if (floorTile != nullptr)
-		delete floorTile;
-	if (wall != nullptr)
-		delete wall;
-	if (corner != nullptr)
-		delete corner;
-	if (door != nullptr)
-		delete door;
-	if (pressurePlate != nullptr)
-		delete pressurePlate;
-	if (lever != nullptr)
-		delete lever;
-	if (shadowContainer != nullptr)
-		delete shadowContainer;
-	if (movableObject != nullptr)
-		delete movableObject;
-	if (staticObject != nullptr)
-		delete staticObject;
+	//if (floorTile != nullptr)
+	//	delete floorTile;
+	//if (wall != nullptr)
+	//	delete wall;
+	//if (corner != nullptr)
+	//	delete corner;
+	//if (door != nullptr)
+	//	delete door;
+	//if (pressurePlate != nullptr)
+	//	delete pressurePlate;
+	//if (lever != nullptr)
+	//	delete lever;
+	//if (shadowContainer != nullptr)
+	//	delete shadowContainer;
+	//if (movableObject != nullptr)
+	//	delete movableObject;
+	//if (staticObject != nullptr)
+	//	delete staticObject;
 }
 
 void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData)
