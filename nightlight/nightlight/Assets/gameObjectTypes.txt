@@ -12,3 +12,5 @@ smallenemy
 averageenemy
 largeenemy
 corner
+cornerin
+box
