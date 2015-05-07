@@ -1,5 +1,13 @@
 #include "dataHandler.h"
 
+DataHandler::DataHandler()
+{
+	objectData = new AssetManager;
+}
+
+DataHandler::~DataHandler()
+{}
+
 int DataHandler::FBXexport()
 {
 	//Create the FBX SDK manager
@@ -158,9 +166,58 @@ int DataHandler::FBXexport()
 
 }
 
-void DataHandler::importBinData()
+void DataHandler::importBinData(std::vector<std::string> binFileList)
 {
-
+	OutputDebugString("Things are happening");
 
 	return;
+}
+
+bool DataHandler::getBinFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill)
+{
+	WIN32_FIND_DATA fdata;
+	HANDLE dhandle;
+
+	// måste lägga till \* till genvägen
+	{
+		char buf[MAX_PATH];
+		sprintf_s(buf, sizeof(buf), "%s\\*", folder_path);
+		if ((dhandle = FindFirstFile(buf, &fdata)) == INVALID_HANDLE_VALUE) {
+			return false;
+		}
+	}
+
+	while (true)
+	{
+		if (FindNextFile(dhandle, &fdata))
+		{
+			// vi vill endast ha ".bin"-filer
+			if (strlen(fdata.cFileName) > 4)
+			{
+				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == 0)
+				{
+					list_to_fill.push_back(fdata.cFileName);
+				}
+			}
+		}
+		else
+		{
+			if (GetLastError() == ERROR_NO_MORE_FILES)
+			{
+				break;
+			}
+			else
+			{
+				FindClose(dhandle);
+				return false;
+			}
+		}
+	}
+
+	if (!FindClose(dhandle))
+	{
+		return false;
+	}
+
+	return true;
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "AssetManager.h"
 #include <fbxsdk.h>
 #include <fbxsdk\fileio\fbxiosettings.h>
 #include <fstream>
@@ -16,12 +16,12 @@ public:
 	~DataHandler();
 	
 	int FBXexport();
-	void importBinData();
-	
+	void importBinData(std::vector<std::string> binFileList);
+	bool getBinFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill);
+
 private:
 
-	
+	AssetManager*	objectData;
 
 	
 };
-
