@@ -114,12 +114,12 @@ XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character*
 	float tileOffset = TILE_SIZE / 2;
 
 	XMFLOAT3 currentPos = character->GetPosition();
-	Tile* currentTile = currentLevel->getTile((int)(currentPos.x + tileOffset), (int)(currentPos.z + tileOffset));
+	Tile* currentTile = currentLevel->getTile((int)(-currentPos.x + tileOffset), (int)(-currentPos.z + tileOffset));
 	
 	if (currentTile != nullptr) {
 		
-		int nextTileCoordX = (int)(nextPos.x + tileOffset);
-		int nextTileCoordY = (int)(nextPos.z + tileOffset);
+		int nextTileCoordX = (int)(-nextPos.x + tileOffset);
+		int nextTileCoordY = (int)(-nextPos.z + tileOffset);
 		Tile* nextTile = currentLevel->getTile(nextTileCoordX, nextTileCoordY);
 		if (nextTile != nullptr)
 		{
