@@ -64,3 +64,7 @@ void Level::setTile(Tile* tile, int x, int y)
 	tileGrid.at(x).at(y) = tile;
 }
 
+vector<vector<Tile*>> Level::getTileGrid()
+{
+	return tileGrid;
+}

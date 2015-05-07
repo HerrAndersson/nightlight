@@ -3,6 +3,8 @@
 #include "Tile.h"
 #include "AiUtil.h"
 
+using std::vector;
+
 class Level 
 {
 private:
@@ -15,5 +17,7 @@ public:
 	void updateGameObjets();
 	Tile* getTile (int x, int y);
 	void setTile(Tile* tile, int x, int y);
+
+	vector<vector<Tile*>> getTileGrid();
 };
 

@@ -21,9 +21,7 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
 
-	//AI = new AiModule(enemies, grid);
-	AI = new AiModule();
-	//AI->GetPath(currentLevel XMINT2(0, 0), XMINT2(12, 12));
+	//AI = new AiModule(currentLevel->getTileGrid());
 }
 
 void Game::LoadAssets()
