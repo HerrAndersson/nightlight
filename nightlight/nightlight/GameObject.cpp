@@ -46,16 +46,10 @@ XMFLOAT3 GameObject::GetRotation()
 
 XMVECTOR GameObject::GetForwardVector()
 {
-	//forwardVector = XMVector3TransformCoord ( forwardVector, worldMatrix );
-
-	
 	XMMATRIX rotmat = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotation.x), XMConvertToRadians(rotation.y), XMConvertToRadians(rotation.z));
-
 	XMFLOAT4X4 rotationMatrixF;
 	XMStoreFloat4x4(&rotationMatrixF, rotmat);
-
-	forwardVector = XMVectorSet(rotationMatrixF._31, rotationMatrixF._32, rotationMatrixF._33, rotationMatrixF._34);
-
+	forwardVector = -XMVectorSet(rotationMatrixF._11, rotationMatrixF._12, rotationMatrixF._13, rotationMatrixF._14);
 	return XMVector3Normalize ( forwardVector );
 }
 

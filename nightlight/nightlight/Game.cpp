@@ -30,9 +30,13 @@ void Game::LoadAssets()
 {
 
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
+	if (currentLevel != nullptr){
+		delete currentLevel;
+		currentLevel = nullptr;
+	}
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
-	currentLevel.SetGameObjects();
+	currentLevel->updateGameObjets();
 }
 
 Game::~Game()
@@ -88,7 +92,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(&currentLevel, character, camera, spotLight);
+	result = Logic->Update(currentLevel, character, camera, spotLight);
 
 	//cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
 
@@ -108,7 +112,7 @@ bool Game::Render()
 
 	Renderer->UseDefaultShader();
 
-	std::vector<GameObject*> toRender = currentLevel.GetGameObjects();
+	std::vector<GameObject*> toRender = currentLevel->GetGameObjects();
 	for (int i = 0; i < toRender.size(); i++){
 		Renderer->Render(toRender[i]);
 	}

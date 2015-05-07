@@ -38,7 +38,7 @@ private:
 	};
 
 	int activeGameState;
-	Level currentLevel;
+	Level* currentLevel = nullptr;
 
 	int screenWidth, screenHeight;
 

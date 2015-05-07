@@ -6,14 +6,14 @@
 class Level 
 {
 private:
-	std::vector<std::vector<Tile>> tileGrid;
+	std::vector<std::vector<Tile*>> tileGrid;
 	std::vector<GameObject*> gameObjects;
 public:
 	Level ( );
 	~Level ( );
 	std::vector<GameObject*> GetGameObjects(){ return gameObjects; };
-	void PushGameObjectToGrid ( int coordX, int coordY, GameObject& content );
-	void SetGameObjects();
+	void updateGameObjets();
 	Tile* getTile (int x, int y);
+	void setTile(Tile* tile, int x, int y);
 };
 
