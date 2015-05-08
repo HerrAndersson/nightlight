@@ -1,3 +1,4 @@
+
 #include "dataHandler.h"
 
 DataHandler::DataHandler()
@@ -194,7 +195,7 @@ bool DataHandler::getBinFilenamesInDirectory(char *folder_path, std::vector<std:
 			// vi vill endast ha ".bin"-filer
 			if (strlen(fdata.cFileName) > 4)
 			{
-				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == 0)
+				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == 1)
 				{
 					list_to_fill.push_back(fdata.cFileName);
 				}
