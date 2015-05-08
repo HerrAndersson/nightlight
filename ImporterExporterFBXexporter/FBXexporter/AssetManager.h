@@ -12,7 +12,7 @@ public:
 	AssetManager();
 	~AssetManager();
 	RenderObject* GetRenderObject(int id);
-
+	void LoadModel(string file_path, Model& model);
 private:
 
 	ID3D11Device* device;
@@ -20,7 +20,7 @@ private:
 	vector<ID3D11ShaderResourceView*> textures;
 	vector<RenderObject*> renderObjects;
 
-	void LoadModel(string file_path);
+
 	void CreateRenderObject(int modelID, int diffuseID, int specularID);
 	void LoadTexture(string file_path);
 

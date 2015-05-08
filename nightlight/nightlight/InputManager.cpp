@@ -71,6 +71,11 @@ bool InputManager::KeyDown(char key)
 			keyToCheck = 0x44;
 			break;
 		}
+		case 'e':
+		{
+			keyToCheck = 0x45;
+			break;
+		}
 		default:
 			break;
 	}
@@ -91,6 +96,10 @@ bool InputManager::LeftMouse()
 bool InputManager::RightMouse()
 {
 	return GetAsyncKeyState(VK_RBUTTON) != 0;
+}
+bool InputManager::Space()
+{
+	return GetAsyncKeyState(VK_SPACE) != 0;
 }
 
 //bool InputManager::W()

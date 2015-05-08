@@ -11,3 +11,4 @@ enemy_big.bin
 enemy_medium.bin
 enemy_small.bin
 box.bin
+grandpa.bin
