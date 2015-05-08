@@ -153,6 +153,13 @@ namespace assetUtility {
 		XMFLOAT4 diffuse;
 		XMFLOAT4 specular;
 		std::vector<Bone> skeleton;
+
+		//specific FBX part
+		vector<WeightedPoint> points;
+		vector<Point> purePoints;
+		vector<XMFLOAT3> normals;
+		vector<XMFLOAT2> UVs;
+		vector<XMINT3> vertexIndices;
 	};
 
 	struct BlendShape

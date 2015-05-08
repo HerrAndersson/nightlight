@@ -19,6 +19,8 @@ AssetManager::~AssetManager()
 
 void AssetManager::LoadModel(string file_path, Model& model){
 	
+
+
 	ifstream infile;
 	infile.open(file_path.c_str(), ifstream::binary);
 	if (!infile.is_open())
@@ -31,12 +33,7 @@ void AssetManager::LoadModel(string file_path, Model& model){
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
 
 	string name;
-	vector<WeightedPoint> points;
-	vector<Point> purePoints;
-	vector<XMFLOAT3> normals;
-	vector<XMFLOAT2> UVs;
-	vector<XMINT3> vertexIndices;
-
+	
 	for (int i = 0; i < mainHeader.meshCount; i++){
 		if (i == 0){
 			MeshHeader meshHeader;
@@ -45,24 +42,24 @@ void AssetManager::LoadModel(string file_path, Model& model){
 
 			name.resize(meshHeader.nameLength);
 			if (meshHeader.hasSkeleton)
-				points.resize(meshHeader.numberPoints);
+				model.points.resize(meshHeader.numberPoints);
 			else
-				purePoints.resize(meshHeader.numberPoints);
-			normals.resize(meshHeader.numberNormals);
-			UVs.resize(meshHeader.numberCoords);
-			vertexIndices.resize(meshHeader.numberFaces * 3);
+				model.purePoints.resize(meshHeader.numberPoints);
+			model.normals.resize(meshHeader.numberNormals);
+			model.UVs.resize(meshHeader.numberCoords);
+			model.vertexIndices.resize(meshHeader.numberFaces * 3);
 			model.hasSkeleton = meshHeader.hasSkeleton;
 
 
 			infile.read((char*)name.data(), meshHeader.nameLength);
 			model.name = name;
 			if (meshHeader.hasSkeleton)
-				infile.read((char*)points.data(), meshHeader.numberPoints*sizeof(WeightedPoint));
+				infile.read((char*)model.points.data(), meshHeader.numberPoints*sizeof(WeightedPoint));
 			else
-				infile.read((char*)purePoints.data(), meshHeader.numberPoints*sizeof(Point));
-			infile.read((char*)normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
-			infile.read((char*)UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
-			infile.read((char*)vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
+				infile.read((char*)model.purePoints.data(), meshHeader.numberPoints*sizeof(Point));
+			infile.read((char*)model.normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
+			infile.read((char*)model.UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
+			infile.read((char*)model.vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
 		}
 		else{
 			MeshHeader meshHeader;
@@ -149,9 +146,9 @@ void AssetManager::LoadModel(string file_path, Model& model){
 	for (int i = 0; i < mainHeader.blendShapeCount; i++){
 		BlendShape blendShape;
 		infile.read((char*)&blendShape.MeshTarget, 4);
-		blendShape.points.resize(points.size() + purePoints.size());
+		blendShape.points.resize(model.points.size() + model.purePoints.size());
 		infile.read((char*)blendShape.points.data(), blendShape.points.size()*sizeof(XMFLOAT3));
-		blendShape.normals.resize(normals.size());
+		blendShape.normals.resize(model.normals.size());
 		infile.read((char*)blendShape.normals.data(), blendShape.normals.size()*sizeof(XMFLOAT3));
 		blendShapes.push_back(blendShape);
 	}

@@ -37,7 +37,6 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	bool lEmbedMedia = true;
 	(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
 
-
 	FbxScene* lScene = FbxScene::Create(lSdkManager, "newScene");
 
 	//Export the contents of the file.	
@@ -64,16 +63,20 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	typedef double Vector4[4];
 	typedef double Vector2[2];
 
+	if (!modelList.at(i).purePoints.size()>0)
+	{
 	//Create a cube.
 	// indices of the vertices per each polygon
-	static int vtxId[24] = {
-		0, 1, 2, 3, // front  face  (Z+)
-		1, 5, 6, 2, // right  side  (X+)
-		5, 4, 7, 6, // back   face  (Z-)
-		4, 0, 3, 7, // left   side  (X-)
-		0, 4, 5, 1, // bottom face  (Y-)
-		3, 2, 6, 7  // top    face  (Y+)
-	};
+		static int vtxId[24] = {
+			0, 1, 2, 3, // front  face  (Z+)
+			1, 5, 6, 2, // right  side  (X+)
+			5, 4, 7, 6, // back   face  (Z-)
+			4, 0, 3, 7, // left   side  (X-)
+			0, 4, 5, 1, // bottom face  (Y-)
+			3, 2, 6, 7  // top    face  (Y+)
+		};
+	
+
 
 	//control points
 	static Vector4 lControlPoints[8] =
@@ -110,6 +113,10 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	{
 		0, 1, 3, 2, 2, 3, 5, 4, 4, 5, 7, 6, 6, 7, 9, 8, 1, 10, 11, 3, 12, 0, 2, 13
 	};
+
+
+	}
+
 
 	//create the main structure.
 	FbxMesh* lMesh = FbxMesh::Create(lScene, "");
