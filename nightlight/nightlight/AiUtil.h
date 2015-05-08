@@ -140,7 +140,7 @@ static vector<Node*> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2
 
 				if (!inOpen || tentativeG < n->g)
 				{
-					cout << "Node: " << current->x << " " << current->y << " inOpen: " << inOpen << " inClosed " << inClosed << endl;
+					cout << "Node: " << current->x << " " << current->y << " inOpen: " << to_string(inOpen) << " inClosed " << inClosed << endl;
 
 					Tile* tile = nullptr;
 					
