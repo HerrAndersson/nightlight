@@ -47,6 +47,13 @@ private:
 		XMMATRIX world;
 	};
 
+	struct MatrixBufferPerWeightedObject
+	{
+		XMMATRIX world;
+		XMMATRIX bones[30];
+	};
+
+
 	struct MatrixBufferPerFrame
 	{
 		XMMATRIX viewMatrix;

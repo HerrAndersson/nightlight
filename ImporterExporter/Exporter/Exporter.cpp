@@ -1313,7 +1313,7 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 	scene_.skeleton.push_back(output);
 	int children = joint.childCount();
 	for (int i = 0; i < children; i++)
-		RecursiveJointExtraction(MFnTransform(joint.child(i)), scene_.skeleton.size());
+		RecursiveJointExtraction(MFnTransform(joint.child(i)), scene_.skeleton.size()-1);
 
 };
 

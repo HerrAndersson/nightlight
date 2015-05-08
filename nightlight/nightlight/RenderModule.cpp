@@ -212,7 +212,6 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNr;
-	MatrixBufferPerObject* dataPtr;
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	
 	XMMATRIX worldMatrixC;
@@ -220,18 +219,18 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	worldMatrixC = XMMatrixTranspose(worldMatrix);
 	
 	//lock the constant buffer for writing
-	result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result)) { return false; }
-
-	dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
-
-	dataPtr->world = worldMatrixC;
-	deviceContext->Unmap(matrixBufferPerObject, 0);
 
 	bufferNr = 0;
+	if (!renderObject->model->hasSkeleton){
+		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result)) { return false; }
 
-	//setting matrix constant buffer in the VS with its new and updated values
-	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
+		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
+
+		dataPtr->world = worldMatrixC;
+		deviceContext->Unmap(matrixBufferPerObject, 0);
+		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
+	}
 
 
 	//setting the sent in shader texture resource in the pixel shader
@@ -257,10 +256,11 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	int currentFrame=0, finalFrame=0;//todo
-	float interpolation=0;
-
 	if (renderObject->model->hasSkeleton){
+
+		int currentFrame=0, finalFrame=renderObject->model->skeleton[0].frames.size();//todo
+		float interpolation=0;
+
 		std::vector<XMMATRIX> boneLocalMatrices;
 		std::vector<XMMATRIX> boneGlobalMatrices;
 		std::vector<Bone>* bones = &renderObject->model->skeleton;
@@ -268,36 +268,43 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 		boneLocalMatrices.resize(renderObject->model->skeleton.size());
 
 
-		int test = 0;
 		boneLocalMatrices[0] = XMMatrixRotationRollPitchYaw(bones->at(0).frames[currentFrame].rot.x, bones->at(0).frames[currentFrame].rot.y, bones->at(0).frames[currentFrame].rot.z)*XMMatrixTranslation(bones->at(0).frames[currentFrame].trans.x, bones->at(0).frames[currentFrame].trans.y, bones->at(0).frames[currentFrame].trans.z);
 		boneGlobalMatrices[0] = boneLocalMatrices[0];
-		for (int i = 1; i < 58; i++){
-			XMFLOAT3* trans = &bones->at(i).frames[currentFrame].trans;
-			XMFLOAT3* rot = &bones->at(i).frames[currentFrame].rot;
+		for (int i = 1; i < boneGlobalMatrices.size(); i++){
+			XMVECTOR trans = XMLoadFloat3(&bones->at(i).frames[currentFrame].trans);
+			XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame].rot));
 
 			if (currentFrame < finalFrame){
 				if (currentFrame + 1 < finalFrame){
-					XMFLOAT3* trans2 = &bones->at(i).frames[currentFrame+1].trans;
-					XMFLOAT3* rot2 = &bones->at(i).frames[currentFrame+1].rot;
-					boneLocalMatrices[i] = XMMatrixTranslation((float)(trans->x*interpolation) + (float)(trans2->x*(float)(1 - interpolation)), (float)(trans->y*interpolation) + (float)(trans2->y*(float)(1 - interpolation)), (float)(trans->z*interpolation) + (float)(trans2->z*(float)(1 - interpolation)));
-					boneLocalMatrices[i] = boneLocalMatrices[i] * XMMatrixRotationQuaternion(XMQuaternionSlerp(XMQuaternionRotationRollPitchYaw(rot->x, rot->y, rot->z), XMQuaternionRotationRollPitchYaw(rot2->x, rot2->y, rot2->z), interpolation));
-					test++;
+					XMVECTOR trans2 = XMLoadFloat3(&bones->at(i).frames[currentFrame + 1].trans);
+					XMVECTOR rot2 = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame + 1].rot));
+					
+					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans*interpolation + (trans2*(1-interpolation)));
+					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans*interpolation + (trans2*(1 - interpolation))) * XMMatrixRotationQuaternion(XMQuaternionSlerp(rot, rot2, interpolation));
 				}
 				else{
-					XMMatrixRotationRollPitchYaw(rot->x, rot->y, rot->z)*XMMatrixTranslation(trans->x, trans->y, trans->z);
+					XMMatrixRotationRollPitchYawFromVector(rot)*XMMatrixTranslationFromVector(trans);
 				}
-				test++;
 			}
-			boneGlobalMatrices[i] = boneGlobalMatrices[bones->at(i).parent] * boneLocalMatrices[i];
+			
+			boneGlobalMatrices[i] = (XMMATRIX)boneGlobalMatrices[bones->at(i).parent] * (XMMATRIX)boneLocalMatrices[i];
 		}
-		for (int i = 0; i < 58; i++){
-			boneGlobalMatrices[i] = boneGlobalMatrices[i] * bones->at(i).invBindPose;
-		}
-		
-		//Skicka bonGlobalMatrices till gpu
-		
-	}
 
+		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		if (FAILED(result)) { return false; }
+
+		MatrixBufferPerWeightedObject* dataPtr = (MatrixBufferPerWeightedObject*)mappedResource.pData;
+
+		dataPtr->world = worldMatrixC;
+
+		for (int i = 0; i < boneGlobalMatrices.size(); i++){
+			dataPtr->bones[i] = (XMMATRIX)boneGlobalMatrices[i] * (XMMATRIX)bones->at(i).invBindPose;
+		}
+
+		deviceContext->Unmap(matrixBufferPerObject, 0);
+
+		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
+	}
 
 
 	return true;
