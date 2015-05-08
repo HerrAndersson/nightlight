@@ -271,22 +271,19 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 		boneLocalMatrices[0] = XMMatrixRotationRollPitchYaw(bones->at(0).frames[currentFrame].rot.x, bones->at(0).frames[currentFrame].rot.y, bones->at(0).frames[currentFrame].rot.z)*XMMatrixTranslation(bones->at(0).frames[currentFrame].trans.x, bones->at(0).frames[currentFrame].trans.y, bones->at(0).frames[currentFrame].trans.z);
 		boneGlobalMatrices[0] = boneLocalMatrices[0];
 		for (int i = 1; i < boneGlobalMatrices.size(); i++){
-			XMVECTOR trans = XMLoadFloat3(&bones->at(i).frames[currentFrame].trans);
-			XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame].rot));
-
 			if (currentFrame < finalFrame){
+				XMVECTOR trans = XMLoadFloat3(&bones->at(i).frames[currentFrame].trans);
+				XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame].rot));
 				if (currentFrame + 1 < finalFrame){
 					XMVECTOR trans2 = XMLoadFloat3(&bones->at(i).frames[currentFrame + 1].trans);
 					XMVECTOR rot2 = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame + 1].rot));
 					
-					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans*interpolation + (trans2*(1-interpolation)));
 					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans*interpolation + (trans2*(1 - interpolation))) * XMMatrixRotationQuaternion(XMQuaternionSlerp(rot, rot2, interpolation));
 				}
 				else{
-					XMMatrixRotationRollPitchYawFromVector(rot)*XMMatrixTranslationFromVector(trans);
+					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans)*XMMatrixRotationRollPitchYawFromVector(rot);
 				}
 			}
-			
 			boneGlobalMatrices[i] = (XMMATRIX)boneGlobalMatrices[bones->at(i).parent] * (XMMATRIX)boneLocalMatrices[i];
 		}
 
@@ -299,6 +296,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 		for (int i = 0; i < boneGlobalMatrices.size(); i++){
 			dataPtr->bones[i] = (XMMATRIX)boneGlobalMatrices[i] * (XMMATRIX)bones->at(i).invBindPose;
+			int stop = 0;
 		}
 
 		deviceContext->Unmap(matrixBufferPerObject, 0);

@@ -252,7 +252,6 @@ struct Keyframe{
 
 struct Bone{
 	int parent;
-	MFloatMatrix BindPose;
 	MFloatMatrix invBindPose;
 	std::vector<Keyframe> frames;
 };
