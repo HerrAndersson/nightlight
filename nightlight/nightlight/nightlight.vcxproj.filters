@@ -238,10 +238,8 @@
     <None Include="depthPixelShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="SkeletalVertexShader.hlsl">
+    <None Include="skeletalVertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
 </Project>

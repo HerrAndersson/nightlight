@@ -30,7 +30,7 @@ struct vertexOutput
 	float3 viewDir : POSITION;
 };
 
-vertexOutput vertexShader(vertexInputType input)
+vertexOutput skeletalVertexShader(vertexInputType input)
 {
 	vertexOutput output;
 

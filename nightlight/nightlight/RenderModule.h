@@ -44,13 +44,13 @@ private:
 
 	struct MatrixBufferPerObject
 	{
-		XMMATRIX world;
+		XMFLOAT4X4 world;
 	};
 
 	struct MatrixBufferPerWeightedObject
 	{
-		XMMATRIX world;
-		XMMATRIX bones[30];
+		XMFLOAT4X4 world;
+		XMFLOAT4X4 bones[30];
 	};
 
 
@@ -66,6 +66,7 @@ private:
 
 	//Vertex shaders
 	ID3D11VertexShader*		vertexShader;
+	ID3D11VertexShader*		skeletalVertexShader;
 
 	//Pixel shaders
 	ID3D11PixelShader*		pixelShader;
@@ -76,7 +77,9 @@ private:
 
 	//Other
 	ID3D11InputLayout*		layoutPosUvNorm;
+	ID3D11InputLayout*		layoutPosUvNormIdxWei;
 	ID3D11Buffer*			matrixBufferPerObject;
+	ID3D11Buffer*			matrixBufferPerWeightedObject;
 	ID3D11Buffer*			matrixBufferPerFrame;
 	ID3D11Buffer*			lightBuffer;
 	HWND					hwnd;
@@ -89,11 +92,13 @@ public:
 	~RenderModule();
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
+	bool InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename);
 
 	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject);
 
 	void UseDefaultShader();
 	void UseShadowShader();
+	void UseSkeletalShader();
 	//void Usesomeothershader() etc.
 
 	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
