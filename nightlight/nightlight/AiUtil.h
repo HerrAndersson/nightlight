@@ -68,73 +68,95 @@ static Node GetPositionFromCoord(float x, float z, int tileWidth)
 
 static vector<Node*> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
 {
-	vector<Node*> path;	
+	vector<Node*> path;
 	Node* start = new Node(startPosXZ.x, startPosXZ.y);
 	Node* end = new Node(endPosXZ.x, endPosXZ.y);
-	Node* current = nullptr;
+	Node* current = start;
 
 	vector<Node*> closedset;
 	list<Node*> openset;
 	openset.push_back(start);
 
-	vector<Node> adjList;
+	vector<Node*> adjList;
 
 	start->f = start->g + ManhattanDistance(start, end);
 
 	while (!openset.empty())
 	{
-		cout << openset.size() << endl;
-		current = openset.front();
+		cout << "openset size : " << openset.size() << endl;
+		cout << "closedset size : " << closedset.size() << endl;
+
 		for each (Node* n in openset)
 		{
 			if (n->f < current->f)
 				current = n;
 		}
 
-		if (current == end)
+		cout << "Current: " << current->x << " " << current->y << endl;
+
+		if (current->x == end->x && current->y == end->y)
 			break;
 
 		closedset.push_back(current);
 		openset.remove(current);
 
 		adjList.clear();
-		adjList.push_back(Node(current->x - 1, current->y - 1));
-		adjList.push_back(Node(current->x - 1, current->y));
-		adjList.push_back(Node(current->x - 1, current->y + 1));
-		adjList.push_back(Node(current->x + 1, current->y - 1));
-		adjList.push_back(Node(current->x + 1, current->y));
-		adjList.push_back(Node(current->x + 1, current->y + 1));
-		adjList.push_back(Node(current->x, current->y + 1));
-		adjList.push_back(Node(current->x, current->y - 1));
+		adjList.push_back(new Node(current->x - 1, current->y - 1));
+		adjList.push_back(new Node(current->x - 1, current->y));
+		adjList.push_back(new Node(current->x - 1, current->y + 1));
+		adjList.push_back(new Node(current->x + 1, current->y - 1));
+		adjList.push_back(new Node(current->x + 1, current->y));
+		adjList.push_back(new Node(current->x + 1, current->y + 1));
+		adjList.push_back(new Node(current->x, current->y + 1));
+		adjList.push_back(new Node(current->x, current->y - 1));
 
-		for each (Node n in adjList)
+		for each (Node* n in adjList)
 		{
-			if (!(find(closedset.begin(), closedset.end(), &n) != closedset.end()))
+			bool inOpen = false;
+			bool inClosed = false;
+
+			for each (Node* x in closedset)
+			{
+				if (n->x == x->x && n->y == x->y)
+				{
+					inClosed = true;
+					break;
+				}
+			}
+
+			for each (Node* x in openset)
+			{
+				if (n->x == x->x && n->y == x->y)
+				{
+					inOpen = true;
+					break;
+				}
+			}
+
+			//if (!(find(closedset.begin(), closedset.end(), &n) != closedset.end()))
+			if (!inClosed)
 			{
 				int tentativeG = current->g + 1;
-				bool inOpen = find(openset.begin(), openset.end(), &n) != openset.end();
 
-				if (!inOpen || tentativeG < n.g)
+				if (!inOpen || tentativeG < n->g)
 				{
-					cout << n.x << " " << n.y << endl;
+					cout << "Node: " << current->x << " " << current->y << " inOpen: " << inOpen << " inClosed " << inClosed << endl;
 
-					bool w = level->withinBounds(n.x, n.y);
 					Tile* tile = nullptr;
 					
-					if (w)
-						tile = level->getTile(n.x, n.y);
+					if (level->withinBounds(n->x, n->y))
+						tile = level->getTile(n->x, n->y);
 
 					if (tile != nullptr)
 					{
 						if (tile->getTileIsWalkable())
 						{
-							Node x(n.x, n.y);
-							x.parent = current;
-							x.g = tentativeG;
-							x.f = x.g + ManhattanDistance(&x, end);
+							n->parent = current;
+							n->g = tentativeG;
+							n->f = n->g + ManhattanDistance(n, end);
 
 							if (!inOpen)
-								openset.push_back(&x);
+								openset.push_back(n);
 						}
 					}
 				}

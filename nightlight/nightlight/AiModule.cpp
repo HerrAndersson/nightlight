@@ -4,7 +4,8 @@ AiModule::AiModule(Level* level)
 {
 	this->level = level;
 
-	vector<Node*> v = GetPath(level, XMINT2(0, 0), XMINT2(2, 2));
+	vector<Node*> v = GetPath(level, XMINT2(5, 5), XMINT2(1, 1));
+	for (auto n : v) delete n;
 }
 
 AiModule::~AiModule()
