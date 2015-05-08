@@ -107,7 +107,7 @@ bool Game::Render()
 	Renderer->UseDefaultShader();
 
 	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
-	for (int i = 0; i < toRender->size(); i++) {
+	for (int i = 0; i < (signed)toRender->size(); i++) {
 		Renderer->Render(toRender->at(i));
 	}
 

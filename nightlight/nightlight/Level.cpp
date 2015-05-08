@@ -30,7 +30,7 @@ void Level::updateGameObjets()
 			{
 				if (tileGrid[x][y] != nullptr){
 					std::vector<GameObject*>* tileGameObjects = tileGrid[x][y]->getAllGameObjects();
-					for (int i = 0; i < tileGameObjects->size(); i++)
+					for (int i = 0; i < (signed)tileGameObjects->size(); i++)
 					{
 						gameObjects.push_back(tileGameObjects->at(i));
 					}
@@ -85,9 +85,9 @@ int Level::sizeY(int x)
 bool Level::withinBounds(int x, int y)
 {
 	bool result = false;
-	if (x >= 0 && x < tileGrid.size())
+	if (x >= 0 && x < (signed)tileGrid.size())
 	{
-		if (y >= 0 && y < tileGrid.at(x).size())
+		if (y >= 0 && y < (signed)tileGrid.at(x).size())
 		{
 			result = true;
 		}

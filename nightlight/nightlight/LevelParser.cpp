@@ -25,12 +25,12 @@ void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> l
 	for (T* t : gameObjects){
 		bool foundCoupling = false;
 		std::string activatesName = t->getActivatesName();
-		for (int i = 0; i < doors.size() && !foundCoupling; i++)
+		for (int i = 0; i < (signed)doors.size() && !foundCoupling; i++)
 			if (doors.at(i)->getActivationName() == activatesName){
 				t->setActivatesDoor(doors.at(i));
 				foundCoupling = true;
 			}
-		for (int i = 0; i < levers.size() && !foundCoupling; i++)
+		for (int i = 0; i < (signed)levers.size() && !foundCoupling; i++)
 			if (levers.at(i)->getActivationName() == activatesName){
 				t->setActivatesLever(levers.at(i));
 				foundCoupling = true;
@@ -109,8 +109,8 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 	vector<Container*> containers;
 
 	vector<vector<Tile*>>* tileGrid = level->getTileGrid();
-	for (int x = 0; x < tileGrid->size(); x++){
-		for (int y = 0; y < tileGrid->at(x).size(); y++) {
+	for (int x = 0; x < (signed)tileGrid->size(); x++){
+		for (int y = 0; y < (signed)tileGrid->at(x).size(); y++) {
 			Tile* tile = tileGrid->at(x).at(y);
 			if (tile != nullptr) {
 				Door* tileDoor = tile->getDoor();

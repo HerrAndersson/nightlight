@@ -21,6 +21,10 @@ void AiModule::HandleAI(Enemy* ai)
 		XMINT2 goal = GetRandomPosition(ai);
 		ai->SetPath(aStar(level, 1, XMINT2((int)p.x, (int)p.z), goal));
 	}
+	else if (ai->IsFollowingPlayer())
+	{
+		//Get path towards player (only if PFs are not used
+	}
 	else
 	{
 		//Do something else?
