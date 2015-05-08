@@ -45,7 +45,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
 
 		//convert string to char* for filename
-		char * fileName = new char[binFileList.at(i).length() + 1];
+		char * fileName = new char[binFileList.at(i).length()];
 		std::strcpy(fileName, binFileList.at(i).c_str());
 
 		//filename of the file to which the scene will be exported.
