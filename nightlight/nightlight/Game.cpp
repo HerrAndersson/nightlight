@@ -27,9 +27,6 @@ void Game::InitManagers(HWND hwnd, bool fullscreen)
 
 void Game::LoadAssets()
 {
-	Enemy e = Enemy(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0, 1);
-	enemies.push_back(e);
-
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 	if (currentLevel != nullptr)
 	{

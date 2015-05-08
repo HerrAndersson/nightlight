@@ -38,6 +38,8 @@ public:
 	Coord getEndDoor() const { return endDoor; }
 	void setEndDoor(Coord val) { endDoor = val; }
 
+	vector<vector<Tile*>>* getTileGrid() { return &tileGrid; }
+
 	int sizeX();
 	int sizeY(int x);
 

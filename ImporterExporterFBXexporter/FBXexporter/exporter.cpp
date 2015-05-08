@@ -1,11 +1,11 @@
-#include "DataHandler.cpp"
+#include "DataHandler.h"
 
 int main(int argc, char** argv) {
 
 	DataHandler dataHandler;
 	std::vector<std::string> binFileList;
 
-	dataHandler.getBinFilenamesInDirectory("../", binFileList);
+	dataHandler.getBinFilenamesInDirectory("../Bin/", binFileList);
 
 	dataHandler.importBinData(binFileList);
 
