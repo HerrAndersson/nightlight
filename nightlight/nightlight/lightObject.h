@@ -11,6 +11,7 @@ private:
 
 	XMMATRIX viewMatrix;
 	XMMATRIX orthoMatrix;
+	XMMATRIX projMatrix;
 
 	XMFLOAT4 ambientColor;
 	XMFLOAT4 diffuseColor;
@@ -39,6 +40,9 @@ public:
 
 	void generateViewMatrix();
 	void getViewMatrix(XMMATRIX& viewMatrix);
+
+	void generateProjMatrix(float screenDepth, float screenNear);
+	void getProjMatrix(XMMATRIX& projMatrix);
 
 	void generateOrthoMatrix(float width, float screenDepth, float screenNear);
 	void getOrthoMatrix(XMMATRIX& orthoMatrix);

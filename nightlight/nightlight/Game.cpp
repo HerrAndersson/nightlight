@@ -9,7 +9,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
-	spotLight->generateOrthoMatrix(512, 0.1f, 1000);
+	spotLight->generateProjMatrix(0.1f, 1000);
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
@@ -97,16 +97,26 @@ bool Game::Render()
 {
 	bool result = true;
 
+	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	Renderer->BeginScene(1.0f, 0.0f, 0.0f, 1.0f, viewMatrix, projectionMatrix, camera->GetPosition() ,spotLight);
+	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight);
+
+	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
+	//
+	//for (int i = 0; i < toRender->size(); i++) {
+	//		Renderer->RenderShadow(toRender->at(i));
+	//	}
+
+	Renderer->BeginScene(1.0f, 0.0f, 0.0f, 1.0f);
 
 	Renderer->UseDefaultShader();
 
-	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+	
 	for (int i = 0; i < (signed)toRender->size(); i++) {
 		Renderer->Render(toRender->at(i));
 	}
