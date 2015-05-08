@@ -87,34 +87,48 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//};
 
 	//control points
-	static Vector4 lControlPoints[8] =
-	{
-		{ -5.0, 0.0, 5.0, 1.0 }, { 5.0, 0.0, 5.0, 1.0 }, { 5.0, 10.0, 5.0, 1.0 }, { -5.0, 10.0, 5.0, 1.0 },
-		{ -5.0, 0.0, -5.0, 1.0 }, { 5.0, 0.0, -5.0, 1.0 }, { 5.0, 10.0, -5.0, 1.0 }, { -5.0, 10.0, -5.0, 1.0 }
-	};
+		int sizePoints = modelList.at(i).purePoints.size();
+		vector<float> lControlPoints;
+		for (int j = 0; j < sizePoints; j++)
+		{
+			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.x);
+			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.y);
+			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.z);
+			//w coordinaste
+			lControlPoints.push_back(1.0f);
+		}
+		
+	
+	//static Vector4 lControlPoints[8] =
+	//{
+	//	{ -5.0, 0.0, 5.0, 1.0 }, { 5.0, 0.0, 5.0, 1.0 }, { 5.0, 10.0, 5.0, 1.0 }, { -5.0, 10.0, 5.0, 1.0 },
+	//	{ -5.0, 0.0, -5.0, 1.0 }, { 5.0, 0.0, -5.0, 1.0 }, { 5.0, 10.0, -5.0, 1.0 }, { -5.0, 10.0, -5.0, 1.0 }
+	//};
 
-
-	/////////////////////////////////////// normals vertices per each polygon 
-	/////////////////////////////////////int size = modelList.at(i).normals.size();
-	/////////////////////////////////////vector<XMFLOAT3> lNormals;
-	/////////////////////////////////////for (int i; i < size; i++)
-	/////////////////////////////////////{
-	/////////////////////////////////////	lNormals.push_back(modelList.at(i).normals[i]);
-	/////////////////////////////////////}
-
-	//normals
-	//int size = modelList.at(i).normals.size();
-	static Vector4 lNormals[8]=
-	{
-		{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-		{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-		{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-		{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-		{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-		{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-		{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
-		{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
-	};
+			
+			// normals vertices per each polygon 
+			int sizeNormals = modelList.at(i).normals.size();
+			vector<float> lNormals;
+			
+			for (int j = 0; j < sizeNormals; j++)
+			{
+				lNormals.push_back(modelList.at(i).normals[j].x);
+				lNormals.push_back(modelList.at(i).normals[j].y);
+				lNormals.push_back(modelList.at(i).normals[j].z);
+			}
+			
+			
+	//static Vector4 lNormals[8]=
+	//{
+	//	{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+	//	{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+	//	{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+	//	{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+	//	{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+	//	{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+	//	{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
+	//	{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
+	//};
 
 	//////////////////////////////////////////uvs
 	////////////////////////////////////////
@@ -145,9 +159,10 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	FbxMesh* lMesh = FbxMesh::Create(lScene, "");
 
 	//initiate control points.
-	lMesh->InitControlPoints(8);
+	lMesh->InitControlPoints(sizePoints);
+
 	FbxVector4* vertex = lMesh->GetControlPoints();
-	memcpy((void*)vertex, (void*)lControlPoints, 8 * sizeof(FbxVector4));
+	memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
 
 	//create the materials
 	FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
@@ -175,8 +190,11 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	lNormalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 	lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-	for (int n = 0; n<8; n++)
-		lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
+	for (int n = 0; n<sizeNormals; n++)
+		lNormalElement->GetDirectArray().Add(FbxVector4(lNormals.at(n), lNormals.at(n), lNormals.at(n)));
+	
+	//for (int n = 0; n<8; n++)
+	//	lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
 
 
 	//Create the node containing the mesh
