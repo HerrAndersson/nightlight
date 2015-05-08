@@ -4,12 +4,16 @@ int main(int argc, char** argv) {
 
 	DataHandler dataHandler;
 	std::vector<std::string> binFileList;
+	std::vector<Model>modelList;
 
+	//get all the bin files
 	dataHandler.getBinFilenamesInDirectory("../Bin/", binFileList);
 
-	dataHandler.importBinData(binFileList);
+	//import all the data using our import functions from nightlight
+	dataHandler.importBinData(binFileList, modelList);
 
-	dataHandler.FBXexport();
+	//export using FBX sdk
+	dataHandler.FBXexport(binFileList, modelList);
 
 	return 0;
 }

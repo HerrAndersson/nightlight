@@ -146,7 +146,9 @@ void ShadowMap::SetBufferPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX&
 
 	deviceContext->Unmap(matrixBufferPerObject, 0);
 
-	deviceContext->VSSetConstantBuffers(0, 3, &matrixBufferPerObject);
+	//vi har bara 2 constant buffers i vs, så ändrar numbuffers från 3 till 2
+	//deviceContext->VSSetConstantBuffers(0, 3, &matrixBufferPerObject);
+	deviceContext->VSSetConstantBuffers(0, 2, &matrixBufferPerObject);
 }
 
 void ShadowMap::SetBufferPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj)

@@ -48,7 +48,8 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		playerMoved = true;
 	}
 
-	if (playerMoved) {
+	if (playerMoved) 
+	{
 		pos = ManageStaticPlayerCollisions(currentLevel, character, pos);
 	}
 
@@ -110,14 +111,15 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 
 }
 
-XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) {
+XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) 
+{
 	float tileOffset = TILE_SIZE / 2;
 
 	XMFLOAT3 currentPos = character->GetPosition();
 	Tile* currentTile = currentLevel->getTile((int)(-currentPos.x + tileOffset), (int)(-currentPos.z + tileOffset));
 	
-	if (currentTile != nullptr) {
-		
+	if (currentTile != nullptr) 
+	{
 		int nextTileCoordX = (int)(-nextPos.x + tileOffset);
 		int nextTileCoordY = (int)(-nextPos.z + tileOffset);
 		Tile* nextTile = currentLevel->getTile(nextTileCoordX, nextTileCoordY);
@@ -125,22 +127,29 @@ XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character*
 		{
 			for (int x = nextTileCoordX - 1; x < nextTileCoordX + 1; x++)
 			{
-				for (int y = nextTileCoordY - 1; y < nextTileCoordY + 1; y++) 
+				for (int y = nextTileCoordY - 1; y < nextTileCoordY + 1; y++)
 				{
-					if (x != nextTileCoordX && y != nextTileCoordY) {
+					if (x != nextTileCoordX && y != nextTileCoordY)
+					{
 
 
 					}
 				}
 			}
 
+			//if (nextTile->getTileIsWalkable() && nextTile->getWall() == nullptr && nextTile->getCorner() == nullptr)
+			//{
+			//	return nextPos;
+			//}
+			//else
+			//{
+			//	return currentPos;
+			//}
 
 
 			cout << to_string(nextPos.x + tileOffset) + " " + to_string(nextPos.z + tileOffset) + "\n";
 		}
 	}
-
-
 
 	return nextPos;
 }
