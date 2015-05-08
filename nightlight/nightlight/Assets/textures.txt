@@ -6,3 +6,4 @@ Big_Shadow.png
 Armless_Shadow.png
 Boy_Shadow.png
 childtexture.png
+grandpa.png
