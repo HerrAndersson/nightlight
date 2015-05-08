@@ -24,5 +24,6 @@ public:
 	bool Esc();
 	bool LeftMouse();
 	bool RightMouse();
+	bool Space();
 };
 
