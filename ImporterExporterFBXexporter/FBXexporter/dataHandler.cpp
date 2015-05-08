@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "dataHandler.h"
 
 DataHandler::DataHandler()
@@ -8,60 +12,79 @@ DataHandler::DataHandler()
 DataHandler::~DataHandler()
 {}
 
-int DataHandler::FBXexport()
+int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
 {
-	//Create the FBX SDK manager
-	FbxManager* lSdkManager = FbxManager::Create();
 
-	//Create an IOSettings object.
-	FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
-	lSdkManager->SetIOSettings(ios);
+	for (int i = 0; binFileList.size(); i++)
+	{
 
-	//Configure the FbxIOSettings object
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_LINK, false);
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_SHAPE, true);
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GOBO, false);
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
+		//Create the FBX SDK manager
+		FbxManager* lSdkManager = FbxManager::Create();
 
-	bool lEmbedMedia = true;
-	(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
+		//Create an IOSettings object.
+		FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
+		lSdkManager->SetIOSettings(ios);
+
+		//Configure the FbxIOSettings object
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_LINK, false);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_SHAPE, true);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GOBO, false);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
+
+		bool lEmbedMedia = true;
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
+
+		FbxScene* lScene = FbxScene::Create(lSdkManager, "newScene");
+
+		//Export the contents of the file.	
+
+		//Create an exporter.
+		FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
+
+		//convert string to char* for filename
+		char * fileName = new char[binFileList.at(i).length() + 1];
+		std::strcpy(fileName, binFileList.at(i).c_str());
+
+		//filename of the file to which the scene will be exported.
+		char* lFilenameOut = fileName;
+
+		//Initialize the exporter.
+		bool lExportStatus = lExporter->Initialize(lFilenameOut, -1, lSdkManager->GetIOSettings());
+
+		if (!lExportStatus) {
+			printf("Call to FbxExporter::Initialize() failed.\n");
+			printf("Error returned: %s\n\n", lExporter->GetStatus().GetErrorString());
+			return false;
+		}
+		//vectors
+		typedef double Vector4[4];
+		typedef double Vector2[2];
 
 
-	FbxScene* lScene = FbxScene::Create(lSdkManager, "newScene");
 
-	//Export the contents of the file.	
+		// indices of the vertices per each polygon 
+		int size = modelList.at(i).vertexIndices.size();
+		vector<int> vtxId;
+		for (int j=0; j < size; j++)
+		{
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).y);
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).z);
+		}
 
-	//Create an exporter.
-	FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
-
-	//filename of the file to which the scene will be exported.
-	const char* lFilenameOut = "file.fbx";
-
-	//Initialize the exporter.
-	bool lExportStatus = lExporter->Initialize(lFilenameOut, -1, lSdkManager->GetIOSettings());
-
-	if (!lExportStatus) {
-		printf("Call to FbxExporter::Initialize() failed.\n");
-		printf("Error returned: %s\n\n", lExporter->GetStatus().GetErrorString());
-		return false;
-	}
-	//vectors
-	typedef double Vector4[4];
-	typedef double Vector2[2];
-
-	//Create a cube.
-	// indices of the vertices per each polygon
-	static int vtxId[24] = {
-		0, 1, 2, 3, // front  face  (Z+)
-		1, 5, 6, 2, // right  side  (X+)
-		5, 4, 7, 6, // back   face  (Z-)
-		4, 0, 3, 7, // left   side  (X-)
-		0, 4, 5, 1, // bottom face  (Y-)
-		3, 2, 6, 7  // top    face  (Y+)
-	};
+	
+		// indices of the vertices per each polygon
+		//int vtxId[24] = {
+		//0, 1, 2, 3, // front  face  (Z+)
+		//1, 5, 6, 2, // right  side  (X+)
+		//5, 4, 7, 6, // back   face  (Z-)
+		//4, 0, 3, 7, // left   side  (X-)
+		//0, 4, 5, 1, // bottom face  (Y-)
+		//3, 2, 6, 7  // top    face  (Y+)
+		//};
 
 	//control points
 	static Vector4 lControlPoints[8] =
@@ -71,8 +94,17 @@ int DataHandler::FBXexport()
 	};
 
 
+	/////////////////////////////////////// normals vertices per each polygon 
+	/////////////////////////////////////int size = modelList.at(i).normals.size();
+	/////////////////////////////////////vector<XMFLOAT3> lNormals;
+	/////////////////////////////////////for (int i; i < size; i++)
+	/////////////////////////////////////{
+	/////////////////////////////////////	lNormals.push_back(modelList.at(i).normals[i]);
+	/////////////////////////////////////}
+
 	//normals
-	static Vector4 lNormals[8] =
+	//int size = modelList.at(i).normals.size();
+	static Vector4 lNormals[8]=
 	{
 		{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
 		{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
@@ -84,8 +116,18 @@ int DataHandler::FBXexport()
 		{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
 	};
 
-	//uvs
-	static Vector2 lUVs[14] =
+	//////////////////////////////////////////uvs
+	////////////////////////////////////////
+	////////////////////////////////////////// normals vertices per each polygon 
+	////////////////////////////////////////int size = modelList.at(i).UVs.size();
+	////////////////////////////////////////vector<XMFLOAT2> lUVs;
+	////////////////////////////////////////for (int i; i < size; i++)
+	////////////////////////////////////////{
+	////////////////////////////////////////	lUVs.push_back(modelList.at(i).UVs[i]);
+	////////////////////////////////////////}
+
+//	int size = modelList.at(i).UVs.size();
+	static Vector2 lUVs[14]=
 	{
 		{ 0.0, 1.0 },
 		{ 1.0, 0.0 },
@@ -114,13 +156,17 @@ int DataHandler::FBXexport()
 
 	lMaterialElement->GetIndexArray().Add(0);
 
-	//Create polygons later after FbxGeometryElementMaterial is created. Assign material indices.
+	//Create polygons later after FbxGeometryElementMaterial is created. Assign material indices. Needs number of faces.
 	int vId = 0;
-	for (int f = 0; f<6; f++)
+
+	int numFaces = (vtxId.size() / 3);
+
+
+	for (int f = 0; f<numFaces; f++)
 	{
 		lMesh->BeginPolygon();
-		for (int v = 0; v<4; v++)
-			lMesh->AddPolygon(vtxId[vId++]);
+		for (int v = 0; v<3; v++)
+			lMesh->AddPolygon(vtxId.at(vId++));
 		lMesh->EndPolygon();
 	}
 
@@ -162,15 +208,27 @@ int DataHandler::FBXexport()
 	//Get rid of objects
 	lExporter->Destroy();
 
+
+}
 	return 0;
 
 }
 
-void DataHandler::importBinData(std::vector<std::string> binFileList)
+void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
 {
-	OutputDebugString("Things are happening");
+	Model model;
 
-	return;
+	for (int i = 0; i < binFileList.size(); i++)
+	{
+
+
+
+		objectData->LoadModel("../Bin/" + binFileList.at(i), model);
+		
+		
+		modelList.push_back(model);
+	}
+	
 }
 
 bool DataHandler::getBinFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill)
@@ -194,7 +252,7 @@ bool DataHandler::getBinFilenamesInDirectory(char *folder_path, std::vector<std:
 			// vi vill endast ha ".bin"-filer
 			if (strlen(fdata.cFileName) > 4)
 			{
-				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == 0)
+				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == 1)
 				{
 					list_to_fill.push_back(fdata.cFileName);
 				}
