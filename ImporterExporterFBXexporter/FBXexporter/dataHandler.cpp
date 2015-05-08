@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "dataHandler.h"
 
@@ -9,8 +12,12 @@ DataHandler::DataHandler()
 DataHandler::~DataHandler()
 {}
 
-int DataHandler::FBXexport()
+int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
 {
+
+	for (int i = 0; binFileList.size(); i++)
+	{ 
+
 	//Create the FBX SDK manager
 	FbxManager* lSdkManager = FbxManager::Create();
 
@@ -38,8 +45,12 @@ int DataHandler::FBXexport()
 	//Create an exporter.
 	FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
 
+	//convert string to char* for filename
+	char * fileName = new char[binFileList.at(i).length() + 1];
+	std::strcpy(fileName, binFileList.at(i).c_str());
+
 	//filename of the file to which the scene will be exported.
-	const char* lFilenameOut = "file.fbx";
+	char* lFilenameOut = fileName;
 
 	//Initialize the exporter.
 	bool lExportStatus = lExporter->Initialize(lFilenameOut, -1, lSdkManager->GetIOSettings());
@@ -163,15 +174,27 @@ int DataHandler::FBXexport()
 	//Get rid of objects
 	lExporter->Destroy();
 
+
+}
 	return 0;
 
 }
 
-void DataHandler::importBinData(std::vector<std::string> binFileList)
+void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
 {
-	OutputDebugString("Things are happening");
+	Model model;
 
-	return;
+	for (int i = 0; i < binFileList.size(); i++)
+	{
+
+
+
+		objectData->LoadModel("../Bin/" + binFileList.at(i), model);
+		
+		
+		modelList.push_back(model);
+	}
+	
 }
 
 bool DataHandler::getBinFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill)

@@ -140,7 +140,7 @@ namespace assetUtility {
 	struct Model
 	{
 		~Model() {
-			vertexBuffer->Release();
+			
 			pointLights.clear();
 		}
 		std::string name;
