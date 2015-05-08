@@ -15,7 +15,7 @@ DataHandler::~DataHandler()
 int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
 {
 
-	for (int i = 0; binFileList.size(); i++)
+	for (int i = 0; i < binFileList.size(); i++)
 	{
 
 		//Create the FBX SDK manager
@@ -45,7 +45,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
 
 		//convert string to char* for filename
-		char * fileName = new char[binFileList.at(i).length()];
+		char * fileName = new char[binFileList.at(i).length() + 1];
 		std::strcpy(fileName, binFileList.at(i).c_str());
 
 		//filename of the file to which the scene will be exported.
@@ -241,10 +241,7 @@ void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vect
 	for (int i = 0; i < binFileList.size(); i++)
 	{
 
-
-
 		objectData->LoadModel("../Bin/" + binFileList.at(i), model);
-		
 		
 		modelList.push_back(model);
 	}
