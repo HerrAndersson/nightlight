@@ -3,6 +3,7 @@
 
 LightObject::LightObject()
 {
+
 }
 
 
@@ -83,9 +84,25 @@ void LightObject::generateOrthoMatrix(float width, float screenDepth, float scre
 	orthoMatrix = XMMatrixOrthographicLH(width, width, screenNear, screenDepth);
 }
 
+void LightObject::generateProjMatrix(float screenDepth, float screenNear)
+{
+	float fieldOfView, screenAspect;
+
+	fieldOfView = (float)XM_PI / 2.0f;
+	screenAspect = 1.0f;
+
+	projMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
+
+}
+
+void LightObject::getProjMatrix(XMMATRIX& projMatrix)
+{
+	projMatrix = this->projMatrix;
+}
+
 void LightObject::getViewMatrix(XMMATRIX& viewMatrix)
 {
-	viewMatrix = viewMatrix;
+	viewMatrix = this->viewMatrix;
 }
 
 void LightObject::getOrthoMatrix(XMMATRIX& projectionMatrix)

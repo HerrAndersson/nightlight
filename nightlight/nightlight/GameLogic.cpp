@@ -97,6 +97,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	XMFLOAT3 pForward;
 	XMStoreFloat3 ( &pForward, player->GetForwardVector ( ) );
 	spotlight->setDirection ( pForward.x, pForward.y, pForward.z );
+
 	
 	/*XMFLOAT3 lightDirFinal;
 	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());*/
@@ -107,6 +108,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	pPos.z += pForward.z/100;
 	pPos.y -= 0.7f;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
+	spotlight->generateViewMatrix();
 	return true;
 
 }
