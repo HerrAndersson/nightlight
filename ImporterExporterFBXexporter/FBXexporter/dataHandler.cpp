@@ -67,10 +67,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		// indices of the vertices per each polygon 
 		int size = modelList.at(i).vertexIndices.size();
-		vector<XMINT3> vtxId;
-		for (int i; i < size; i++)
+		vector<int> vtxId;
+		for (int j=0; j < size; j++)
 		{
-			vtxId.push_back(modelList.at(i).vertexIndices[i]);
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).y);
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).z);
 		}
 
 	
@@ -92,50 +94,46 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	};
 
 
-	// normals vertices per each polygon 
-	int size = modelList.at(i).normals.size();
-	vector<XMFLOAT3> lNormals;
-	for (int i; i < size; i++)
-	{
-		lNormals.push_back(modelList.at(i).normals[i]);
-	}
+	/////////////////////////////////////// normals vertices per each polygon 
+	/////////////////////////////////////int size = modelList.at(i).normals.size();
+	/////////////////////////////////////vector<XMFLOAT3> lNormals;
+	/////////////////////////////////////for (int i; i < size; i++)
+	/////////////////////////////////////{
+	/////////////////////////////////////	lNormals.push_back(modelList.at(i).normals[i]);
+	/////////////////////////////////////}
 
-	////normals
+	//normals
 	//int size = modelList.at(i).normals.size();
-	//static Vector4 lNormals[size];
-		
-	//=
-	//{
-	//	{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
-	//	{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
-	//};
-
-	//uvs
-
-	// normals vertices per each polygon 
-	int size = modelList.at(i).UVs.size();
-	vector<XMFLOAT2> lUVs;
-	for (int i; i < size; i++)
+	static Vector4 lNormals[8]=
 	{
-		lUVs.push_back(modelList.at(i).UVs[i]);
-	}
+		{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+		{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+		{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+		{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+		{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+		{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+		{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
+		{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
+	};
 
-	//int size = modelList.at(i).UVs.size();
-	//static Vector2 lUVs[size];
-	//	
-	//	=
-	//{
-	//	{ 0.0, 1.0 },
-	//	{ 1.0, 0.0 },
-	//	{ 0.0, 0.0 },
-	//	{ 1.0, 1.0 }
-	//};
+	//////////////////////////////////////////uvs
+	////////////////////////////////////////
+	////////////////////////////////////////// normals vertices per each polygon 
+	////////////////////////////////////////int size = modelList.at(i).UVs.size();
+	////////////////////////////////////////vector<XMFLOAT2> lUVs;
+	////////////////////////////////////////for (int i; i < size; i++)
+	////////////////////////////////////////{
+	////////////////////////////////////////	lUVs.push_back(modelList.at(i).UVs[i]);
+	////////////////////////////////////////}
+
+//	int size = modelList.at(i).UVs.size();
+	static Vector2 lUVs[14]=
+	{
+		{ 0.0, 1.0 },
+		{ 1.0, 0.0 },
+		{ 0.0, 0.0 },
+		{ 1.0, 1.0 }
+	};
 
 	//indices of the uvs per each polygon
 	static int uvsId[24] =
@@ -158,13 +156,17 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 	lMaterialElement->GetIndexArray().Add(0);
 
-	//Create polygons later after FbxGeometryElementMaterial is created. Assign material indices.
+	//Create polygons later after FbxGeometryElementMaterial is created. Assign material indices. Needs number of faces.
 	int vId = 0;
-	for (int f = 0; f<6; f++)
+
+	int numFaces = (vtxId.size() / 3);
+
+
+	for (int f = 0; f<numFaces; f++)
 	{
 		lMesh->BeginPolygon();
-		for (int v = 0; v<4; v++)
-			lMesh->AddPolygon(vtxId[vId++]);
+		for (int v = 0; v<3; v++)
+			lMesh->AddPolygon(vtxId.at(vId++));
 		lMesh->EndPolygon();
 	}
 
