@@ -65,14 +65,16 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 
 
-		// indices of the vertices per each polygon 
+		// indices of the vertices per each polygon (faceIds)
 		int size = modelList.at(i).vertexIndices.size();
 		vector<int> vtxId;
+		vector<int> normId;
+		vector<int> uvId;
 		for (int j=0; j < size; j++)
 		{
 			vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
-			vtxId.push_back(modelList.at(i).vertexIndices.at(j).y);
-			vtxId.push_back(modelList.at(i).vertexIndices.at(j).z);
+			normId.push_back(modelList.at(i).vertexIndices.at(j).y);
+			uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
 		}
 
 	
