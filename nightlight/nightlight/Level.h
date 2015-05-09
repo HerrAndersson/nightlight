@@ -3,20 +3,6 @@
 
 using std::vector;
 
-struct Coord
-{
-	Coord(){
-		x = -1;
-		y = -1;
-	}
-	Coord(int x, int y){
-		this->x = x;
-		this->y = y;
-	}
-	int x;
-	int y;
-};
-
 class Level 
 {
 private:
