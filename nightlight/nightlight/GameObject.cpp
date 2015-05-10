@@ -5,8 +5,7 @@ GameObject::GameObject(XMFLOAT3 position, float rotation, RenderObject* renderOb
 	this->position = position;
 	this->rotation.y = XMConvertToDegrees(rotation);
 	this->renderObject = renderObject;
-	this->tileCoordX = coordX;
-	this->tileCoordY = coordY;
+	this->tileCoord = Coord(coordX, coordY);
 	forwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }
 
@@ -24,9 +23,16 @@ RenderObject* GameObject::GetRenderObject()
 	return renderObject;
 }
 
-void GameObject::SetPosition(XMFLOAT3 pos)
-{
+void GameObject::SetPosition(XMFLOAT3 pos) {
 	position = pos;
+	tileCoord.x = (int)(-position.x + TILE_SIZE / 2);
+	tileCoord.y = (int)(-position.z + TILE_SIZE / 2);
+}
+
+void GameObject::SetTilePosition(Coord coord) {
+	tileCoord = coord;
+	position.x = -coord.x - TILE_SIZE / 2;
+	position.z = -coord.y - TILE_SIZE / 2;
 }
 
 XMFLOAT3 GameObject::GetPosition()

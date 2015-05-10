@@ -9,7 +9,6 @@ public:
 	float getCharacterRadius() const { return characterRadius; }
 
 private:
-	float characterRadius = 1.0f;
-	
+	float characterRadius = 0.5f;
 };
 

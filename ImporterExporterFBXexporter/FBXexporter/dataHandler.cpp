@@ -116,6 +116,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.x);
 			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.y);
 			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.z);
+			
 			//w coordinaste
 			lControlPoints.push_back(1.0f);
 		}
@@ -184,7 +185,11 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	lMesh->InitControlPoints(sizePoints);
 
 	FbxVector4* vertex = lMesh->GetControlPoints();
-	memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
+	//Maybe kanske this but probably not
+	//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
+	//Maybe kanske this but probably not
+	memcpy((void*)vertex, (void*)&lControlPoints, sizeof(lControlPoints));
+
 
 	//create the materials
 	FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();

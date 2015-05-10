@@ -37,9 +37,11 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 
 	float rotation;
 	XMFLOAT3 position;
-	position.x = std::stof(unparsedData.at(i++));
+	position.x = std::stof(unparsedData.at(i++)) - TILE_SIZE / 2;
+	//position.x = std::stof(unparsedData.at(i++));
 	position.y = std::stof(unparsedData.at(i++));
-	position.z = std::stof(unparsedData.at(i++));
+	position.z = std::stof(unparsedData.at(i++)) - TILE_SIZE / 2;
+	//position.z = std::stof(unparsedData.at(i++));
 	rotation = std::stof(unparsedData.at(i++));
 
 	int tileCoordX = std::stoi(unparsedData.at(i++));

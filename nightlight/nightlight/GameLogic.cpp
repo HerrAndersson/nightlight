@@ -1,6 +1,4 @@
 #include "GameLogic.h"
-#include <iostream>
-#include <math.h>
 
 GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight)
 {
@@ -105,40 +103,69 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 
 }
 
-XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) 
-{
+XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) {
 	float tileOffset = TILE_SIZE / 2;
 
 	XMFLOAT3 currentPos = character->GetPosition();
-	Tile* currentTile = currentLevel->getTile((int)(-currentPos.x + tileOffset), (int)(-currentPos.z + tileOffset));
-	
-	if (currentTile != nullptr) 
-	{
-		int nextTileCoordX = (int)(-nextPos.x + tileOffset);
-		int nextTileCoordY = (int)(-nextPos.z + tileOffset);
+
+	Tile* currentTile = currentLevel->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
+	if (currentTile != nullptr) {
+
+		int nextTileCoordX = (int)(abs(nextPos.x));
+		int nextTileCoordY = (int)(abs(nextPos.z));
 		Tile* nextTile = currentLevel->getTile(nextTileCoordX, nextTileCoordY);
-		if (nextTile != nullptr)
-		{
-			for (int x = nextTileCoordX - 1; x < nextTileCoordX + 1; x++)
-			{
-				for (int y = nextTileCoordY - 1; y < nextTileCoordY + 1; y++)
-				{
-					if (x != nextTileCoordX && y != nextTileCoordY)
-					{
-
-
+		if (nextTile != nullptr) {
+			for (int x = nextTileCoordX - 1; x <= nextTileCoordX + 1; x++) {
+				for (int y = nextTileCoordY - 1; y <= nextTileCoordY + 1; y++) {
+					Tile* tile = currentLevel->getTile(x, y);
+					if (!IsTileWalkable(tile)) {
+						nextPos = NextPositionFromCollision(nextPos, character->getCharacterRadius(), Coord(x, y));
+					}
+					else {
+						Door* door = tile->getDoor();
+						if (door != nullptr && !door->getIsOpen()) {
+							XMFLOAT3 doorRot = door->GetRotation();
+							//TODO: some voodo to enable door collisions
+						}
 					}
 				}
 			}
-
-			if (nextTile->getTileIsWalkable())
-				return nextPos;
-			else
-				return currentPos;
-
-			cout << to_string(nextPos.x + tileOffset) + " " + to_string(nextPos.z + tileOffset) + "\n";
 		}
 	}
+	return nextPos;
+}
 
+bool GameLogic::IsTileWalkable(Tile* tile) {
+	if (tile == nullptr ||
+		tile->getMovableObject() != nullptr ||
+		tile->getShadowContainer() != nullptr ||
+		tile->getStaticObject() != nullptr ||
+		tile->getFloorTile() == nullptr) {
+		return false;
+	}
+	return true;
+}
+
+XMFLOAT3 GameLogic::NextPositionFromCollision(XMFLOAT3 nextPos, float radius, Coord tileCoord) {
+	//Calculate the tiles edge coordinates.
+	float xMin = -(tileCoord.x + TILE_SIZE);
+	float xMax = -tileCoord.x;
+	float yMin = -(tileCoord.y + TILE_SIZE);
+	float yMax = -tileCoord.y;
+
+	//Find the closest point to the character on the perimiter of the tile.
+	float closestX = Clamp(nextPos.x, xMin, xMax);
+	float closestY = Clamp(nextPos.z, yMin, yMax);
+
+	float distanceX = nextPos.x - closestX;
+	float distanceY = nextPos.z - closestY;
+	float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+
+	if (distanceSquared < (radius * radius)) {
+		float length = sqrt(distanceSquared);
+
+		nextPos.x = (distanceX / length) * radius + closestX;
+		nextPos.z = (distanceY / length) * radius + closestY;
+	}
 	return nextPos;
 }
