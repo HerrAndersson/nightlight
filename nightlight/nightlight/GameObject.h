@@ -16,6 +16,11 @@ struct Coord {
 		this->x = x;
 		this->y = y;
 	}
+	bool operator==(const Coord& other) {
+		if (x == other.x && y == other.y)
+			return true;
+		return false;
+	}
 	int x;
 	int y;
 };
