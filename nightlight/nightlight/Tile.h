@@ -14,6 +14,7 @@
 class Tile 
 {
 private:
+
 	Floor* floorTile = nullptr;
 	Wall* wall = nullptr;
 	Corner* corner = nullptr;
@@ -27,8 +28,7 @@ private:
 	std::vector<GameObject*> gameObjects;
 
 	bool tileIsWalkable = false;
-	
-	
+		
 public:
 
 	Tile ( );

@@ -13,20 +13,20 @@ cbuffer matrixBufferPerFrame : register(cb1)
 
 struct vertexInputType
 {
-	float4 position : POSITION;
-	float2 tex : TEXCOORD0;
-	float3 normal : NORMAL;
+	float4 position		: POSITION;
+	float2 tex			: TEXCOORD0;
+	float3 normal		: NORMAL;
 };
 
 struct vertexOutput
 {
-	float4 position : SV_POSITION0;
-	float2 tex : TEXCOORD0;
-	float3 normal : NORMAL;
+	float4 position		: SV_POSITION0;
+	float2 tex			: TEXCOORD0;
+	float3 normal		: NORMAL;
 
-	float3 worldPos : TEXCOORD1;
-	float3 viewDir : POSITION;
-	int    isSelected : SELECTED;
+	float3 worldPos		: TEXCOORD1;
+	float3 viewDir		: POSITION;
+	int    isSelected   : SELECTED;
 };
 
 vertexOutput vertexShader(vertexInputType input)

@@ -1,13 +1,13 @@
 #include "Level.h"
 
 
-Level::Level ( ) 
+Level::Level()
 {
 	startDoor = Coord();
 	endDoor = Coord();
 }
 
-Level::~Level ( ) 
+Level::~Level()
 {
 	for (auto go : gameObjects) delete go;
 	gameObjects.clear();
@@ -25,7 +25,8 @@ void Level::updateGameObjets()
 {
 	gameObjects.clear();
 	for (int x = 0; x < (signed)tileGrid.size(); x++)
-		for (int y = 0; y < (signed)tileGrid[x].size(); y++){
+		for (int y = 0; y < (signed)tileGrid[x].size(); y++)
+		{
 			try
 			{
 				if (tileGrid[x][y] != nullptr){
@@ -40,15 +41,19 @@ void Level::updateGameObjets()
 		}
 }
 
-Tile* Level::getTile (int x, int y) {
+Tile* Level::getTile (int x, int y) 
+{
 	Tile* tile = nullptr;
-	if (x >= 0 && y >= 0){
-		try {
+	if (x >= 0 && y >= 0)
+	{
+		try 
+		{
 			tile = tileGrid.at(x).at(y);
 		}
 		catch (...) {}
 	}
-	else{
+	else
+	{
 		cout << "Error in Level::getTile: x=" + std::to_string(x) + ", y=" + std::to_string(y) + " is not a valid coordinate.\n";
 		return tile;
 	}
@@ -64,10 +69,12 @@ void Level::setTile(Tile* tile, int x, int y)
 	}
 	catch (...) {}
 
-	if (x > (int)(tileGrid.size() - 1)) {
+	if (x > (int)(tileGrid.size() - 1)) 
+	{
 		tileGrid.resize(x + 1);
 	}
-	if (y > (int)(tileGrid.at(x).size() - 1)) {
+	if (y > (int)(tileGrid.at(x).size() - 1)) 
+	{
 		tileGrid.at(x).resize(y + 1);
 	}
 	tileGrid.at(x).at(y) = tile;

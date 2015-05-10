@@ -7,6 +7,7 @@ using namespace DirectX;
 class CameraObject
 {
 private:
+
 	float positionX, positionY, positionZ;
 	float rotationX, rotationY, rotationZ;
 	float aspectRatioWbyH;
@@ -19,6 +20,7 @@ private:
 	XMVECTOR camLookAt;
 
 public:
+
 	CameraObject(float fovAngleY, int width, int height, float viewNear, float viewFar);
 	~CameraObject();
 	void SetPosition(float x, float y, float z);

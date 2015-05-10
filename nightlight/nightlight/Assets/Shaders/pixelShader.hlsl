@@ -38,20 +38,15 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 {
 	input.normal = normalize(input.normal);
 	
-	//initialize variables
 	float3 reflection;
 	float4 specular = float4(0.0f, 1.0f, 0.0f, 1.0f);
 	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
-	
-	//normalize normals
-	input.normal = normalize(input.normal);
 
-	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
 	//sample the texture for diffuse
+	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
 	if (input.isSelected == 1)
 		diffuse += float4(0.0f, 1.0f, 0.0f, 1.0f);
 
-	//use this to create ambient light
 	float3 finalAmbient = diffuse * lightAmbientSpot;
 	
 	//calculate the point lights directions
@@ -60,9 +55,8 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	
 	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
 	float diffuseLighting2 = saturate(dot(input.normal, -pointLightDir2));
-	//add the two point lights
-	
 
+	//add the two point lights
 	//calculate fallof for point lights. 
 	diffuseLighting *= (3) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
 	diffuseLighting2 *= (0.9) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
@@ -70,7 +64,6 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//calculate light to pixel vector for spotlight
 	float3 lightToPixelVec = lightPosSpot - input.worldPos;
 
-	//calculate vector lenght;
 	float d = length(lightToPixelVec);
 
 	lightToPixelVec /= d;
@@ -90,16 +83,12 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDirSpot), 0.0f), lightConeSpot);
 	}
 
-	//make sure the values are between 1 and 0, and add the ambient
-	finalColor = saturate(finalColor + finalAmbient);
 
+	finalColor = saturate(finalColor + finalAmbient);
 	finalColor += (diffuseLighting *  lightDiffusePoint);
-	//add second pointlight
-	//finalColor += (diffuseLighting2 *  lightDiffusePoint2);
 
 	if (diffuseLighting > 0)
 	{
-
 		reflection = normalize(2 * diffuseLighting * input.normal + pointLightDir);
 		reflection *= normalize(2 * diffuseLighting * input.normal + lightDirSpot);
 		

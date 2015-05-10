@@ -214,13 +214,29 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	unsigned int bufferNr;
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	
+	//setting the sent in shader texture resource in the pixel shader
+	UINT32 vertexSize;
+	if (renderObject->model->hasSkeleton)
+		if (renderObject->model->hasBlendShapes)
+			vertexSize = sizeof(WeightedBlendVertex);
+		else
+			vertexSize = sizeof(WeightedVertex);
+	else
+		if (renderObject->model->hasBlendShapes)
+			vertexSize = sizeof(BlendVertex);
+		else
+			vertexSize = sizeof(Vertex);
+
+	UINT32 offset = 0;
+
+	deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
+	deviceContext->PSSetShaderResources(0, 1, &renderObject->diffuseTexture);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	XMMATRIX worldMatrixC;
-
 	worldMatrixC = XMMatrixTranspose(worldMatrix);
-	
-	//lock the constant buffer for writing
-
 	bufferNr = 0;
+	//Setting constant-buffer for models WITHOUT skeleton and animation
 	if (!renderObject->model->hasSkeleton)
 	{
 		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -235,33 +251,9 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
 	}
-
-
-	//setting the sent in shader texture resource in the pixel shader
-	UINT32 vertexSize;
-	if (renderObject->model->hasSkeleton)
-		if (renderObject->model->hasBlendShapes)
-			vertexSize = sizeof(WeightedBlendVertex);
-		else
-			vertexSize = sizeof(WeightedVertex);
-	else
-		if (renderObject->model->hasBlendShapes)
-			vertexSize = sizeof(BlendVertex);
-		else
-			vertexSize = sizeof(Vertex);
-	UINT32 offset = 0;
-
-	deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
-
-	// Set the index buffer to active in the input assembler so it can be rendered.
-	//deviceContext->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->PSSetShaderResources(0, 1, &renderObject->diffuseTexture);
-
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	if (renderObject->model->hasSkeleton){
-
+	//Setting constant-buffer for models WITH skeleton and animation
+	else if (renderObject->model->hasSkeleton)
+	{
 		int currentFrame=0, finalFrame=renderObject->model->skeleton[0].frames.size();//todo
 		float interpolation=0;
 
@@ -274,7 +266,9 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 		boneLocalMatrices[0] = XMMatrixRotationRollPitchYaw(bones->at(0).frames[currentFrame].rot.x, bones->at(0).frames[currentFrame].rot.y, bones->at(0).frames[currentFrame].rot.z)*XMMatrixTranslation(bones->at(0).frames[currentFrame].trans.x, bones->at(0).frames[currentFrame].trans.y, bones->at(0).frames[currentFrame].trans.z);
 		boneGlobalMatrices[0] = boneLocalMatrices[0];
-		for (int i = 1; i < boneGlobalMatrices.size(); i++){
+
+		for (int i = 1; i < (signed)boneGlobalMatrices.size(); i++)
+		{
 			if (currentFrame < finalFrame){
 				XMVECTOR trans = XMLoadFloat3(&bones->at(i).frames[currentFrame].trans);
 				XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame].rot));
@@ -284,13 +278,16 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 					
 					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans*interpolation + (trans2*(1 - interpolation))) * XMMatrixRotationQuaternion(XMQuaternionSlerp(rot, rot2, interpolation));
 				}
-				else{
+				else
+				{
 					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans)*XMMatrixRotationRollPitchYawFromVector(rot);
 				}
 			}
+
 			boneGlobalMatrices[i] = (XMMATRIX)boneGlobalMatrices[bones->at(i).parent] * (XMMATRIX)boneLocalMatrices[i];
 		}
 
+		//Setting constant-buffer
 		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result)) { return false; }
 
@@ -298,16 +295,15 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 		dataPtr->world = worldMatrixC;
 
-		for (int i = 0; i < boneGlobalMatrices.size(); i++){
+		for (int i = 0; i < (signed)boneGlobalMatrices.size(); i++)
+		{
 			dataPtr->bones[i] = (XMMATRIX)boneGlobalMatrices[i] * (XMMATRIX)bones->at(i).invBindPose;
 			int stop = 0;
 		}
 
 		deviceContext->Unmap(matrixBufferPerObject, 0);
-
 		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
 	}
-
 
 	return true;
 }
@@ -449,7 +445,6 @@ bool RenderModule::RenderShadow(GameObject* gameObject)
 
 void RenderModule::BeginScene(float red, float green, float blue, float alpha)
 {
-
 	d3d->BeginScene(red, green, blue, alpha);
 }
 void RenderModule::EndScene()

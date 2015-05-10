@@ -88,8 +88,6 @@ bool Game::Update()
 
 	result = Logic->Update(currentLevel, character, camera, spotLight);
 
-	//cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
-
 	return result;
 }
 
@@ -108,7 +106,8 @@ bool Game::Render()
 
 	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
 	//
-	//for (int i = 0; i < toRender->size(); i++) {
+	//for (int i = 0; i < toRender->size(); i++) 
+	//{
 	//		Renderer->RenderShadow(toRender->at(i));
 	//	}
 
@@ -117,11 +116,13 @@ bool Game::Render()
 	Renderer->UseDefaultShader();
 
 	
-	for (int i = 0; i < (signed)toRender->size(); i++) {
+	for (int i = 0; i < (signed)toRender->size(); i++) 
+	{
 		Renderer->Render(toRender->at(i));
 	}
 
-	for (Enemy e : enemies) {
+	for (Enemy e : enemies) 
+	{
 		Renderer->Render(&e);
 	}
 

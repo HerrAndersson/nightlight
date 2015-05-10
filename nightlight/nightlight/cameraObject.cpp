@@ -19,14 +19,12 @@ CameraObject::CameraObject(float fovAngleY, int width, int height, float viewNea
 	//Set where the camera is looking by default.
 	camLookAt = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 
-	//Ugly aspect ratio fix (2/1.33333)
 	projectionMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatioWbyH, viewNear, viewFar);
 	UpdateCamera();
 }
 
 CameraObject::~CameraObject()
 {}
-
 
 void CameraObject::SetPosition(float x, float y, float z)
 {
@@ -62,39 +60,27 @@ XMFLOAT3 CameraObject::GetRotation()
 
 void CameraObject::UpdateCamera()
 {
-	XMVECTOR up, position, lookAt;
+	XMVECTOR up, position;
 	XMMATRIX rotationMatrix;
 	XMMATRIX translationMatrix;
-	
-	//Set the default up vector.
 
-	up = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
-
-	//Set the default world position.
 	position = XMVectorSet(positionX, positionY, positionZ, 1.0f);
 
-	//Create the rotation matrix from the above values.
 	rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotationX), XMConvertToRadians(rotationY), XMConvertToRadians(rotationZ));
 	
-	//Transfoorm the lookAt and upp vector by the rotation matrix.
-	//camLookAt = XMVector3TransformCoord(camLookAt, rotationMatrix);
-	
+	up = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
 	up = XMVector3TransformCoord(up, rotationMatrix);
 
 	camUp = up;
 
 	//Create the view matrix from the updated vectors.
 	viewMatrix = XMMatrixLookAtLH(position, camLookAt, up);
-
-
 }
 
 void CameraObject::SetLookAt(float x, float y, float z)
 {
 	camLookAt = XMVectorSet(x, y, z, 1);
-
 }
-
 
 XMVECTOR CameraObject::GetCamUp()
 {
@@ -111,6 +97,11 @@ void CameraObject::GetViewMatrix(XMMATRIX& viewMatrixIn)
 	viewMatrixIn = viewMatrix;
 }
 
+const float CameraObject::GetAspectRatio()
+{
+	return aspectRatioWbyH;
+}
+
 void* CameraObject::operator new(size_t i)
 {
 	return _mm_malloc(i, 16);
@@ -121,7 +112,3 @@ void CameraObject::operator delete(void* p)
 	_mm_free(p);
 }
 
-const float CameraObject::GetAspectRatio()
-{
-	return aspectRatioWbyH;
-}
