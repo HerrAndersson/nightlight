@@ -133,6 +133,8 @@ static vector<Node*> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2
 				}
 			}
 
+			cout << "Node: " << current->x << " " << current->y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
+
 			//if (!(find(closedset.begin(), closedset.end(), &n) != closedset.end()))
 			if (!inClosed)
 			{
@@ -140,8 +142,6 @@ static vector<Node*> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2
 
 				if (!inOpen || tentativeG < n->g)
 				{
-					cout << "Node: " << current->x << " " << current->y << " inOpen: " << to_string(inOpen) << " inClosed " << inClosed << endl;
-
 					Tile* tile = nullptr;
 					
 					if (level->withinBounds(n->x, n->y))
