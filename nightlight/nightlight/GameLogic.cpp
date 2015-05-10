@@ -50,12 +50,30 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 
 	if (playerMoved) 
 	{
-		pos = ManageStaticPlayerCollisions(currentLevel, character, pos);
+		pos = ManagePlayerCollisions(currentLevel, character, pos);
 	}
 
-	if (Input->LeftMouse())
+	if (Input->LeftMouse() && leftMouseLastState == false)
 	{
-		//Check for possible interactions on current tile.
+		leftMouseLastState = true;
+
+		if (selectedObject != nullptr) {
+			Lever* lever = dynamic_cast<Lever*>(selectedObject);
+			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
+
+			if (movable != nullptr) {
+				//TODO: Enable move mode.
+			}
+			if (lever != nullptr) {
+				if (lever->getIsActivated()) {
+					lever->DeactivateLever();
+				} else {
+					lever->ActivateLever();
+				}
+			}
+		}
+	} else if (!Input->LeftMouse() && leftMouseLastState == true) {
+		leftMouseLastState = false;
 	}
 
 	//Only update if mouse or player moved
@@ -88,69 +106,90 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	return !Input->Esc();
 }
 
-bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightObject* spotlight)
 {
 	XMFLOAT3 pForward;
-	XMStoreFloat3(&pForward, player->GetForwardVector());
-	spotlight->setDirection(pForward.x, pForward.y, pForward.z);
+	XMStoreFloat3 ( &pForward, player->GetForwardVector ( ) );
+	spotlight->setDirection ( pForward.x, pForward.y, pForward.z );
 
-	XMFLOAT3 pPos = player->GetPosition();
-
+	
+	/*XMFLOAT3 lightDirFinal;
+	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());*/
+	
+	XMFLOAT3 pPos = player->GetPosition ( );
 	//offset light
-	pPos.x += pForward.x / 100;
-	pPos.z += pForward.z / 100;
+	pPos.x += pForward.x/100;
+	pPos.z += pForward.z/100;
 	pPos.y -= 0.7f;
-	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
+	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	spotlight->generateViewMatrix();
 	return true;
+
 }
 
-XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos)
-{
+XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) {
 	float tileOffset = TILE_SIZE / 2;
 	bool result = false;
 
 	XMFLOAT3 currentPos = character->GetPosition();
 
 	Tile* currentTile = currentLevel->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
-	if (currentTile != nullptr) 
-	{
+	if (currentTile != nullptr) {
 
 		Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
 		Tile* nextTile = currentLevel->getTile(nextTileCoord.x, nextTileCoord.y);
-		if (nextTile != nullptr) 
-		{
+		if (nextTile != nullptr) {
 
-			for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++) 
-			{
-				for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++) 
-				{
+			for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++) {
+				for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++) {
 					Tile* tile = currentLevel->getTile(x, y);
 					Coord iteratorTileCoord = Coord(x, y);
 
-					if (!IsTileWalkable(tile)) 
-					{
-						nextPos = NextPositionFromCollision(result, nextPos, character->getRadius(), iteratorTileCoord);
-						//TODO: Check movable object and flag as selectedObject
+					if (tile != nullptr && tile->getPressurePlate() != nullptr) {
+						if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord) {
+							if (!tile->getPressurePlate()->getIsActivated()) {
+								tile->getPressurePlate()->ActivatePressurePlate();
+							}
+						}
+						else {
+							if (tile->getPressurePlate()->getIsActivated()) {
+								tile->getPressurePlate()->DeactivatePressurePlate();
+							}
+						}
 					}
-					else 
-					{
+
+					if (!IsTileWalkable(tile)) {
+						nextPos = NextPositionFromCollision(result, nextPos, character->getRadius(), iteratorTileCoord);
+						
+						if (result && tile != nullptr && tile->getMovableObject() != nullptr) {
+							if (selectedObject != nullptr) {
+								selectedObject->SetSelected(false);
+							}
+							selectedObject = tile->getMovableObject();
+							if (!selectedObject->IsSelected())
+								selectedObject->SetSelected((true));
+
+						} else if (!result && tile != nullptr && tile->getMovableObject() != nullptr) {
+							if (selectedObject != nullptr) {
+								selectedObject->SetSelected(false);
+								selectedObject = nullptr;
+							}
+						}
+					}
+					else {
 						Door* door = tile->getDoor();
 						nextPos = NextPositionFromDoorCollision(result, nextPos, character->getRadius(), iteratorTileCoord, nextTileCoord, door);
 						if (tile->getLever() != nullptr){
-							nextPos = NextPositionFromCollision(result, nextPos, 0.2f, iteratorTileCoord);
+							nextPos = NextPositionFromCollision(result, nextPos, 0.15f, iteratorTileCoord);
 
 							if (result)
 							{
 								selectedObject = tile->getLever();
 								if (!selectedObject->IsSelected())
 									selectedObject->SetSelected((true));
-								whereObjectWasSelected = nextTileCoord;
 							}
-							else
-							{
-								if (selectedObject != nullptr)
-								{
+							else{
+								if (selectedObject != nullptr){
 									selectedObject->SetSelected(false);
 									selectedObject = nullptr;
 								}
@@ -164,35 +203,30 @@ XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character*
 	return nextPos;
 }
 
-bool GameLogic::IsTileWalkable(Tile* tile)
-{
-	if (tile == nullptr)
-	{
+bool GameLogic::IsTileWalkable(Tile* tile) {
+	if (tile == nullptr){
 		return false;
 	}
 
-	if (tile->getPressurePlate() != nullptr)
-	{
+	if (tile->getPressurePlate() != nullptr){
 		return true;
 	}
 	
 	if (tile->getMovableObject() != nullptr ||
 		tile->getShadowContainer() != nullptr ||
 		tile->getStaticObject() != nullptr ||
-		tile->getFloorTile() == nullptr) 
-	{
+		tile->getFloorTile() == nullptr) {
 		return false;
 	}
 	return true;
 }
 
-XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord)
-{
+XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord) {
 	//Calculate the tiles edge coordinates.
 	float xMin = -(tileCoord.x + TILE_SIZE);
-	float xMax = (float)-tileCoord.x;
+	float xMax = -tileCoord.x;
 	float yMin = -(tileCoord.y + TILE_SIZE);
-	float yMax = (float)-tileCoord.y;
+	float yMax = -tileCoord.y;
 
 	//Find the closest point to the character on the perimiter of the tile.
 	float closestX = Clamp(nextPos.x, xMin, xMax);
@@ -202,8 +236,7 @@ XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, fl
 	float distanceY = nextPos.z - closestY;
 	float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
 
-	if (distanceSquared < (radius * radius)) 
-	{
+	if (distanceSquared < (radius * radius)) {
 		float length = sqrt(distanceSquared);
 
 		nextPos.x = (distanceX / length) * radius + closestX;
@@ -211,8 +244,7 @@ XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, fl
 
 		result = true;
 	}
-	else
-	{
+	else{
 		result = false;
 	}
 	return nextPos;
@@ -220,62 +252,46 @@ XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, fl
 
 XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door)
 {
-	if (door != nullptr && !door->getIsOpen()) 
-	{
+	if (door != nullptr && !door->getIsOpen()) {
 		XMFLOAT3 doorRot = door->GetRotationRad();
 		int doorRotX = (int)round(cos(doorRot.y));
 		int doorRotY = (int)round(sin(doorRot.y));
 
-		//Positive and negative Y-axis
-		if (iteratorTileCoord.y == nextTileCoord.y)
-		{
-			if (doorRotY < 0)
-			{
+		if (iteratorTileCoord.y == nextTileCoord.y){
+			if (doorRotY < 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y - 1));
 			}
-			else if (doorRotY > 0)
-			{
+			else if (doorRotY > 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y + 1));
 			}
 		}
-		else if (iteratorTileCoord.y < nextTileCoord.y)
-		{
-			if (doorRotY > 0)
-			{
+		else if (iteratorTileCoord.y < nextTileCoord.y){
+			if (doorRotY > 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
-		else if (iteratorTileCoord.y > nextTileCoord.y)
-		{
-			if (doorRotY < 0)
-			{
+		else if (iteratorTileCoord.y > nextTileCoord.y){
+			if (doorRotY < 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
 
-		//Positive and negative Y-axis
-		if (iteratorTileCoord.x == nextTileCoord.x)
-		{
-			if (doorRotX > 0)
-			{
+
+		if (iteratorTileCoord.x == nextTileCoord.x){
+			if (doorRotX > 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x - 1, iteratorTileCoord.y));
 			}
-			else if (doorRotX < 0)
-			{
+			else if (doorRotX < 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x + 1, iteratorTileCoord.y));
 			}
 		}
-		else if (iteratorTileCoord.x < nextTileCoord.x)
-		{
-			if (doorRotX < 0)
-			{
+		else if (iteratorTileCoord.x < nextTileCoord.x){
+			if (doorRotX < 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
-		else if (iteratorTileCoord.x > nextTileCoord.x)
-		{
-			if (doorRotX > 0)
-			{
+		else if (iteratorTileCoord.x > nextTileCoord.x){
+			if (doorRotX > 0){
 				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
