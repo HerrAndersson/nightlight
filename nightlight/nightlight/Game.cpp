@@ -112,7 +112,7 @@ bool Game::Render()
 	//		Renderer->RenderShadow(toRender->at(i));
 	//	}
 
-	Renderer->BeginScene(1.0f, 0.0f, 0.0f, 1.0f);
+	Renderer->BeginScene(0.0f, 0.3f, 0.05f, 1.0f);
 
 	Renderer->UseDefaultShader();
 

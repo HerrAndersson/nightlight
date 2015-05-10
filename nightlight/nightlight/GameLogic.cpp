@@ -47,13 +47,15 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		pos = XMFLOAT3 (pos.x - 0.1f, pos.y, pos.z);
 		playerMoved = true;
 	}
-	if (Input->LeftMouse())
-	{
-		//Check for possible interactions on current tile.
-	}
+
 	if (playerMoved) 
 	{
 		pos = ManageStaticPlayerCollisions(currentLevel, character, pos);
+	}
+
+	if (Input->LeftMouse())
+	{
+		//Check for possible interactions on current tile.
 	}
 
 	//Only update if mouse or player moved
@@ -109,25 +111,46 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 
 XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 nextPos) {
 	float tileOffset = TILE_SIZE / 2;
+	bool result = false;
 
 	XMFLOAT3 currentPos = character->GetPosition();
 
 	Tile* currentTile = currentLevel->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
 	if (currentTile != nullptr) {
 
-		int nextTileCoordX = (int)(abs(nextPos.x));
-		int nextTileCoordY = (int)(abs(nextPos.z));
-		Tile* nextTile = currentLevel->getTile(nextTileCoordX, nextTileCoordY);
+		Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
+		Tile* nextTile = currentLevel->getTile(nextTileCoord.x, nextTileCoord.y);
 		if (nextTile != nullptr) {
-			for (int x = nextTileCoordX - 1; x <= nextTileCoordX + 1; x++) {
-				for (int y = nextTileCoordY - 1; y <= nextTileCoordY + 1; y++) {
+
+			for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++) {
+				for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++) {
 					Tile* tile = currentLevel->getTile(x, y);
+					Coord iteratorTileCoord = Coord(x, y);
+
 					if (!IsTileWalkable(tile)) {
-						nextPos = NextPositionFromCollision(nextPos, character->getRadius(), Coord(x, y));
+						nextPos = NextPositionFromCollision(result, nextPos, character->getRadius(), iteratorTileCoord);
+						//TODO: Check movable object and flag as selectedObject
 					}
 					else {
 						Door* door = tile->getDoor();
-						nextPos = NextPositionFromDoorCollision(nextPos, character->getRadius(), Coord(x, y), Coord(nextTileCoordX, nextTileCoordY), door);
+						nextPos = NextPositionFromDoorCollision(result, nextPos, character->getRadius(), iteratorTileCoord, nextTileCoord, door);
+						if (tile->getLever() != nullptr){
+							nextPos = NextPositionFromCollision(result, nextPos, 0.2f, iteratorTileCoord);
+
+							if (result)
+							{
+								selectedObject = tile->getLever();
+								if (!selectedObject->IsSelected())
+									selectedObject->SetSelected((true));
+								whereObjectWasSelected = nextTileCoord;
+							}
+							else{
+								if (selectedObject != nullptr){
+									selectedObject->SetSelected(false);
+									selectedObject = nullptr;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -154,7 +177,7 @@ bool GameLogic::IsTileWalkable(Tile* tile) {
 	return true;
 }
 
-XMFLOAT3 GameLogic::NextPositionFromCollision(XMFLOAT3 nextPos, float radius, Coord tileCoord) {
+XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord) {
 	//Calculate the tiles edge coordinates.
 	float xMin = -(tileCoord.x + TILE_SIZE);
 	float xMax = -tileCoord.x;
@@ -174,11 +197,16 @@ XMFLOAT3 GameLogic::NextPositionFromCollision(XMFLOAT3 nextPos, float radius, Co
 
 		nextPos.x = (distanceX / length) * radius + closestX;
 		nextPos.z = (distanceY / length) * radius + closestY;
+
+		result = true;
+	}
+	else{
+		result = false;
 	}
 	return nextPos;
 }
 
-XMFLOAT3 GameLogic::NextPositionFromDoorCollision(XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door)
+XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door)
 {
 	if (door != nullptr && !door->getIsOpen()) {
 		XMFLOAT3 doorRot = door->GetRotationRad();
@@ -187,40 +215,40 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(XMFLOAT3 nextPos, float radius
 
 		if (iteratorTileCoord.y == nextTileCoord.y){
 			if (doorRotY < 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y - 1));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y - 1));
 			}
 			else if (doorRotY > 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y + 1));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y + 1));
 			}
 		}
 		else if (iteratorTileCoord.y < nextTileCoord.y){
 			if (doorRotY > 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
 		else if (iteratorTileCoord.y > nextTileCoord.y){
 			if (doorRotY < 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
 
 
 		if (iteratorTileCoord.x == nextTileCoord.x){
 			if (doorRotX > 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x - 1, iteratorTileCoord.y));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x - 1, iteratorTileCoord.y));
 			}
 			else if (doorRotX < 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x + 1, iteratorTileCoord.y));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x + 1, iteratorTileCoord.y));
 			}
 		}
 		else if (iteratorTileCoord.x < nextTileCoord.x){
 			if (doorRotX < 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
 		else if (iteratorTileCoord.x > nextTileCoord.x){
 			if (doorRotX > 0){
-				nextPos = NextPositionFromCollision(nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
+				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
 			}
 		}
 	}

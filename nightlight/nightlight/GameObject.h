@@ -30,6 +30,7 @@ private:
 	XMFLOAT3		rotation;
 	XMVECTOR		forwardVector;
 	RenderObject*	renderObject;
+	bool			isSelected	= false;
 
 public:
 
@@ -38,6 +39,9 @@ public:
 
 	XMMATRIX GetWorldMatrix();
 	RenderObject* GetRenderObject();
+
+	bool IsSelected();
+	void SetSelected(bool selected);
 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotationDeg();

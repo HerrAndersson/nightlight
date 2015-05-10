@@ -207,7 +207,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	return true;
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -221,14 +221,18 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	//lock the constant buffer for writing
 
 	bufferNr = 0;
-	if (!renderObject->model->hasSkeleton){
+	if (!renderObject->model->hasSkeleton)
+	{
 		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result)) { return false; }
 
 		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
 		dataPtr->world = worldMatrixC;
+		dataPtr->isSelected = isSelected;
+
 		deviceContext->Unmap(matrixBufferPerObject, 0);
+
 		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
 	}
 
@@ -414,7 +418,7 @@ bool RenderModule::Render(GameObject* gameObject)
 	/////////////////////////////////////////////////////////////////////// Normal rendering /////////////////////////////////////////////////////////////////////////
 	//d3d->BeginScene(0, 1, 0, 1);
 
-	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject);
+	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
 
 	//UseDefaultShader();
 

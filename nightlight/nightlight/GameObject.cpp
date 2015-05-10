@@ -75,6 +75,16 @@ ID3D11ShaderResourceView* GameObject::GetSpecularTexture()
 	return renderObject->specularTexture;
 }
 
+bool GameObject::IsSelected()
+{
+	return isSelected;
+}
+
+void GameObject::SetSelected(bool selected)
+{
+	isSelected = selected;
+}
+
 void* GameObject::operator new(size_t i)
 {
 	return _mm_malloc(i, 16);

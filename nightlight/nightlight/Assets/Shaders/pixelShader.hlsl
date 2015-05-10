@@ -1,7 +1,7 @@
 Texture2D AssetTexture;
 SamplerState AssetSamplerState;
 
-cbuffer lightBuffer
+cbuffer lightBuffer : register(cb0)
 {
 	float3 lightPosSpot;
 	float  lightRangeSpot;
@@ -22,23 +22,15 @@ cbuffer lightBuffer
 
 };
 
-
-cbuffer matrixBufferPerFrame
-{
-	matrix viewMatrix;
-	matrix projectionMatrix;
-};
-
 struct pixelInputType
 {
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
-	float3 worldPos : TEXCOORD1;
-	
-	
-	float3 viewDir : POSITION;
 
+	float3 worldPos : TEXCOORD1;
+	float3 viewDir : POSITION;
+	int    isSelected : SELECTED;
 };
 
 
@@ -54,8 +46,11 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//normalize normals
 	input.normal = normalize(input.normal);
 
-	//sample the texture for diffuse
 	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
+	//sample the texture for diffuse
+	if (input.isSelected == 1)
+		diffuse += float4(0.0f, 1.0f, 0.0f, 1.0f);
+
 	//use this to create ambient light
 	float3 finalAmbient = diffuse * lightAmbientSpot;
 	
