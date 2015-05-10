@@ -40,14 +40,20 @@ XMFLOAT3 GameObject::GetPosition()
 	return position;
 }
 
-void GameObject::SetRotation(XMFLOAT3 rot)
+void GameObject::SetRotationDeg(XMFLOAT3 rot)
 {
 	rotation = rot;
 }
 
-XMFLOAT3 GameObject::GetRotation()
+XMFLOAT3 GameObject::GetRotationDeg()
 {
 	return rotation;
+}
+
+XMFLOAT3 GameObject::GetRotationRad()
+{
+	float degToRad = XM_PI / 180.0f;
+	return XMFLOAT3(rotation.x * degToRad, rotation.y * degToRad, rotation.z * degToRad);
 }
 
 XMVECTOR GameObject::GetForwardVector()

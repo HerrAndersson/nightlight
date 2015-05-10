@@ -40,7 +40,8 @@ public:
 	RenderObject* GetRenderObject();
 
 	XMFLOAT3 GetPosition();
-	XMFLOAT3 GetRotation();
+	XMFLOAT3 GetRotationDeg();
+	XMFLOAT3 GetRotationRad();
 	Coord GetTileCoord() { return tileCoord; };
 	XMVECTOR GetForwardVector();
 	ID3D11ShaderResourceView* GetDiffuseTexture();
@@ -48,7 +49,7 @@ public:
 
 	void SetPosition(XMFLOAT3 pos);
 	void SetTilePosition(Coord coord);
-	void SetRotation(XMFLOAT3 rot);
+	void SetRotationDeg(XMFLOAT3 rot);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
