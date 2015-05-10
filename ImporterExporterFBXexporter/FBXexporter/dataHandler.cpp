@@ -28,9 +28,9 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Configure the FbxIOSettings object
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_LINK, false);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_LINK, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_SHAPE, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GOBO, false);
+		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GOBO, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
 
@@ -153,15 +153,15 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	//	{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
 	//};
 
-	//////////////////////////////////////////uvs
-	////////////////////////////////////////
-	////////////////////////////////////////// normals vertices per each polygon 
-	////////////////////////////////////////int size = modelList.at(i).UVs.size();
-	////////////////////////////////////////vector<XMFLOAT2> lUVs;
-	////////////////////////////////////////for (int i; i < size; i++)
-	////////////////////////////////////////{
-	////////////////////////////////////////	lUVs.push_back(modelList.at(i).UVs[i]);
-	////////////////////////////////////////}
+	////uvs
+	//
+	//// normals vertices per each polygon 
+	//int size = modelList.at(i).UVs.size();
+	//vector<XMFLOAT2> lUVs;
+	//for (int i; i < size; i++)
+	//{
+	//	lUVs.push_back(modelList.at(i).UVs[i]);
+	//}
 
 //	int size = modelList.at(i).UVs.size();
 	static Vector2 lUVs[14]=
