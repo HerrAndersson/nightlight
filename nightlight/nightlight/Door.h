@@ -17,7 +17,7 @@ public:
 
 	int getDoorType() const { return doorType; }
 	bool getIsOpen() const { return isOpen; }
-	void setIsOpen(bool val) { isOpen = val; }
+	void setIsOpen(bool val);
 	std::string getActivationName() const { return activationName; }
 };
 
