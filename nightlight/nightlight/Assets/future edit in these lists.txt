@@ -1,0 +1,34 @@
+If we are to change our lists, this will be the different changes in our files.
+
+	Maya filenames:
+		
+		p_01_Floor1
+		p_02_Wall1
+		p_03_Corner1
+		P_04_CornerIn1
+		p_05_Door1
+		
+		
+		
+	models.txt:
+		mainchar.bin
+		floor.bin
+		wall.bin
+		corner.bin
+		cornerin.bin
+		door.bin
+		container.bin
+		lever.bin
+		pressurep.bin
+		box.bin
+		enemy_big.bin
+		enemy_medium.bin
+		enemy_small.bin
+		grandpa.bin
+		
+		
+	renderObjects.txt:
+		
+		
+		
+		
