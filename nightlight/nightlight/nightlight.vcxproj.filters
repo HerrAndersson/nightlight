@@ -45,9 +45,6 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Core\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>AssetManager</Filter>
     </ClCompile>
