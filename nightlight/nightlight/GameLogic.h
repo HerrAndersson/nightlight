@@ -22,6 +22,8 @@ private:
 	XMFLOAT3 ManageStaticPlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 pos);
 	bool IsTileWalkable(Tile* tile);
 	XMFLOAT3 NextPositionFromCollision(XMFLOAT3 nextPos, float radius, Coord tileCoord);
+	XMFLOAT3 NextPositionFromDoorCollision(XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door);
+
 	float Clamp(float x, float a, float b) {return x < a ? a : (x > b ? b : x);}
 
 public:
