@@ -12,6 +12,7 @@ GameObject-typ Flaggor:
 	Spak: (bool) power on/off, (int) activation ID, (bool) activated on/off, (int) activates object reference ID
 	Pressure plate: (int) activates object reference ID
 	Shadow container: (int) activates object reference ID
+	Static/Movable objects: (int) static/movable
 	
 	
 **I spakens fall, står power-bool för om möjlighet ATT aktivera spaken finns. Activated-boolen beskriver om den använts för att aktivera övrigt gameobject.

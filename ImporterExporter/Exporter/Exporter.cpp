@@ -351,6 +351,18 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 				splitStringToVector(nodeNameStr, nodeVec, "_");
 
+				if (nodeVec.size() > 3)
+				{
+					if (nodeVec.at(3) == "movable")
+					{
+						nodeVec.at(2) = "movable";
+					}
+					else if (nodeVec.at(3) == "static")
+					{
+						nodeVec.at(2) = "static";
+					}
+				}
+
 				for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
 				{
 					if (nodeVec[2].find(levelGameObjectTypes.at(i)) != std::string::npos)
