@@ -102,7 +102,3 @@ bool InputManager::Space()
 	return GetAsyncKeyState(VK_SPACE) != 0;
 }
 
-//bool InputManager::W()
-//{
-//	return KeyDown(0x57);
-//}

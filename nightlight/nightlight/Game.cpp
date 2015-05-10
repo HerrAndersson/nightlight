@@ -36,7 +36,7 @@ void Game::LoadAssets()
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
 
-	AI = new AiModule(currentLevel);
+	//AI = new AiModule(currentLevel);
 }
 
 Game::~Game()

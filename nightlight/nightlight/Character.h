@@ -6,9 +6,9 @@ public:
 	Character ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
 	~Character ( );
 
-	float getCharacterRadius() const { return characterRadius; }
+	float getRadius() const { return radius; }
 
 private:
-	float characterRadius = 0.5f;
+	float radius = 0.5f;
 };
 
