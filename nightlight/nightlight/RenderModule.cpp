@@ -395,9 +395,9 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	unsigned int bufferNr;
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	
-	XMFLOAT4X4 worldMatrixC;
+	XMMATRIX worldMatrixC;
 
-	XMStoreFloat4x4(&worldMatrixC,XMMatrixTranspose(worldMatrix));
+	worldMatrixC = XMMatrixTranspose(worldMatrix);
 	
 	//lock the constant buffer for writing
 
@@ -568,10 +568,14 @@ void RenderModule::UseDefaultShader()
 	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
 }
 
-void RenderModule::UseShadowShader()
+void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
 	d3d->SetCullingState(2);
 	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
+	XMMATRIX view, proj;
+	//spotLight->getViewMatrix(view);
+	//spotLight->getProjMatrix(proj);
+	shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
 }
 
 void RenderModule::UseSkeletalShader()
@@ -606,6 +610,8 @@ bool RenderModule::Render(GameObject* gameObject)
 	//deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
 
 	/////////////////////////////////////////////////////////////////////// Normal rendering /////////////////////////////////////////////////////////////////////////
+	//d3d->BeginScene(0, 1, 0, 1);
+
 	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject);
 	if (renderObject->model->hasSkeleton)
 		UseSkeletalShader();
@@ -622,14 +628,24 @@ bool RenderModule::Render(GameObject* gameObject)
 	return result;
 }
 
-void RenderModule::BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject* spotlight)
+bool RenderModule::RenderShadow(GameObject* gameObject)
 {
-	bool result = SetDataPerFrame(viewMatrix, projectionMatrix, camPos, spotlight);
+	bool result = true;
 
-	XMMATRIX lightView, lightProj;
-	spotlight->getViewMatrix(lightView);
-	spotlight->getOrthoMatrix(lightProj);
-	shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), lightView, lightProj);
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	RenderObject* renderObject = gameObject->GetRenderObject();
+
+	shadowMap->SetBufferPerObject(deviceContext, gameObject->GetWorldMatrix());
+
+	//Now render the prepared buffers with the shader.
+	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
+	return result;
+
+}
+
+void RenderModule::BeginScene(float red, float green, float blue, float alpha)
+{
+
 	d3d->BeginScene(red, green, blue, alpha);
 }
 void RenderModule::EndScene()

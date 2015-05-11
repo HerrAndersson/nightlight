@@ -37,22 +37,42 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		bool lEmbedMedia = true;
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
 
-		FbxScene* lScene = FbxScene::Create(lSdkManager, "newScene");
+
+		string sceneNameStr = binFileList.at(i);
+		//get rid of .bin
+		for (int j=0; j < 4; j++)
+		{
+			sceneNameStr.pop_back();
+		}
+		sceneNameStr += "Scene";
+		char * sceneName = new char[binFileList.at(i).length()];
+		std::strcpy(sceneName, sceneNameStr.c_str());
+
+
+
+		FbxScene* lScene = FbxScene::Create(lSdkManager, sceneName);
 
 		//Export the contents of the file.	
 
 		//Create an exporter.
 		FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
 
-		//convert string to char* for filename
-		char * fileName = new char[binFileList.at(i).length() + 1];
-		std::strcpy(fileName, binFileList.at(i).c_str());
-
 		//filename of the file to which the scene will be exported.
+		string fileNameStr = binFileList.at(i);
+		
+		//get rid of .bin
+		for (int j=0; j < 4; j++)
+		{
+			fileNameStr.pop_back();
+		}
+		//convert to char*
+		char * fileName = new char[binFileList.at(i).length()];
+		std::strcpy(fileName, fileNameStr.c_str());
+		
 		char* lFilenameOut = fileName;
 
 		//Initialize the exporter.
-		bool lExportStatus = lExporter->Initialize(lFilenameOut, -1, lSdkManager->GetIOSettings());
+		bool lExportStatus = lExporter->Initialize(lFilenameOut, -4, lSdkManager->GetIOSettings());
 
 		if (!lExportStatus) {
 			printf("Call to FbxExporter::Initialize() failed.\n");
@@ -96,6 +116,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.x);
 			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.y);
 			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.z);
+			
 			//w coordinaste
 			lControlPoints.push_back(1.0f);
 		}
@@ -164,7 +185,11 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	lMesh->InitControlPoints(sizePoints);
 
 	FbxVector4* vertex = lMesh->GetControlPoints();
-	memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
+	//Maybe kanske this but probably not
+	//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
+	//Maybe kanske this but probably not
+	memcpy((void*)vertex, (void*)&lControlPoints, sizeof(lControlPoints));
+
 
 	//create the materials
 	FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
@@ -198,9 +223,18 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	//for (int n = 0; n<8; n++)
 	//	lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
 
+	//create nodeName from file name
+	string meshNameStr = binFileList.at(i);
+	//get rid of .bin
+	for (int j=0; j < 4; j++)
+	{
+		meshNameStr.pop_back();
+	}
+	char * meshName = new char[binFileList.at(i).length()];
+	std::strcpy(meshName, meshNameStr.c_str());
 
 	//Create the node containing the mesh
-	FbxNode* lNode = FbxNode::Create(lScene, "notTHEBEEEEEEES");
+	FbxNode* lNode = FbxNode::Create(lScene, meshName);
 
 	//Find the translation of object and add here
 	//lNode->LclTranslation.Set(pLclTranslation);

@@ -28,22 +28,23 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 
 	bool playerMoved = false;
 
-	if ( Input->KeyDown ('w') ) {
+	if ( Input->KeyDown ('w') ) 
+	{
 		pos = XMFLOAT3 (pos.x, pos.y, pos.z + 0.1f);
 		playerMoved = true;
 	}
-
-	if ( Input->KeyDown ('s') ) {
+	if ( Input->KeyDown ('s') )
+	{
 		pos = XMFLOAT3 (pos.x, pos.y, pos.z - 0.1f);
 		playerMoved = true;
 	}
-
-	if ( Input->KeyDown ('a') ) {
+	if ( Input->KeyDown ('a') )
+	{
 		pos = XMFLOAT3 (pos.x + 0.1f, pos.y, pos.z);
 		playerMoved = true;
 	}
-
-	if ( Input->KeyDown ('d') ) {
+	if ( Input->KeyDown ('d') )
+	{
 		pos = XMFLOAT3 (pos.x - 0.1f, pos.y, pos.z);
 		playerMoved = true;
 	}
@@ -72,15 +73,6 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
 		character->SetRotation(rot);
-		
-		//std::cout << "Player pos:        " << "X: " << pos.x << " Y: " << pos.y << " Z: " << pos.z << std::endl;
-		//std::cout << "Mouse pos:         " << "X: " << newP.x << " Y: " << newP.y << std::endl;
-		//std::cout << "Mouse screenspace: " << msp.x << " " << msp.y << std::endl;
-		//std::cout << "ScreenSpacePos:   " << "SX: " << screenSpacePos.x << " SY: " << screenSpacePos.y << " SZ: " << screenSpacePos.z << std::endl;
-		//std::cout << "angle:            " << angle << std::endl;
-		//std::cout << "roty:             " << rot.y << std::endl;
-		//std::cout << std::endl;
-
 	}
 
 	camera->SetPosition(character->GetPosition().x, -15, character->GetPosition().z );
@@ -97,6 +89,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	XMFLOAT3 pForward;
 	XMStoreFloat3 ( &pForward, player->GetForwardVector ( ) );
 	spotlight->setDirection ( pForward.x, pForward.y, pForward.z );
+
 	
 	/*XMFLOAT3 lightDirFinal;
 	XMStoreFloat3(&lightDirFinal, player->GetForwardVector());*/
@@ -107,6 +100,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	pPos.z += pForward.z/100;
 	pPos.y -= 0.7f;
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
+	spotlight->generateViewMatrix();
 	return true;
 
 }
@@ -137,15 +131,10 @@ XMFLOAT3 GameLogic::ManageStaticPlayerCollisions(Level* currentLevel, Character*
 				}
 			}
 
-			//if (nextTile->getTileIsWalkable() && nextTile->getWall() == nullptr && nextTile->getCorner() == nullptr)
-			//{
-			//	return nextPos;
-			//}
-			//else
-			//{
-			//	return currentPos;
-			//}
-
+			if (nextTile->getTileIsWalkable())
+				return nextPos;
+			else
+				return currentPos;
 
 			cout << to_string(nextPos.x + tileOffset) + " " + to_string(nextPos.z + tileOffset) + "\n";
 		}

@@ -44,13 +44,13 @@ private:
 
 	struct MatrixBufferPerObject
 	{
-		XMFLOAT4X4 world;
+		XMMATRIX world;
 	};
 
 	struct MatrixBufferPerWeightedObject
 	{
-		XMFLOAT4X4 world;
-		XMFLOAT4X4 bones[30];
+		XMMATRIX world;
+		XMMATRIX bones[30];
 	};
 
 
@@ -84,9 +84,9 @@ private:
 	ID3D11Buffer*			lightBuffer;
 	HWND					hwnd;
 
-	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
 
 public:
+	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
 
 	RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
 	~RenderModule();
@@ -97,13 +97,14 @@ public:
 	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject);
 
 	void UseDefaultShader();
-	void UseShadowShader();
+	void ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 	void UseSkeletalShader();
 	//void Usesomeothershader() etc.
 
-	void BeginScene(float red, float green, float blue, float alpha, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
+	void BeginScene(float red, float green, float blue, float alpha);
 
 	bool Render(GameObject* gameObject);
+	bool RenderShadow(GameObject* gameObject);
 
 	void EndScene();
 

@@ -145,15 +145,25 @@ void ShadowMap::SetBufferPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX&
 	matrixDataBuffer->modelWorld = twvp;
 
 	deviceContext->Unmap(matrixBufferPerObject, 0);
-
-	//vi har bara 2 constant buffers i vs, så ändrar numbuffers från 3 till 2
-	//deviceContext->VSSetConstantBuffers(0, 3, &matrixBufferPerObject);
-	deviceContext->VSSetConstantBuffers(0, 2, &matrixBufferPerObject);
+	deviceContext->VSSetConstantBuffers(0, 1, &matrixBufferPerObject);
 }
 
 void ShadowMap::SetBufferPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj)
 {
+	HRESULT hr;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
+	hr = deviceContext->Map(matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	MatrixBufferPerFrame* matrixDataBuffer = (MatrixBufferPerFrame*)mappedResource.pData;
+	XMMATRIX lvt = XMMatrixTranspose(lightView);
+	matrixDataBuffer->lightView = lvt;
+	XMMATRIX lpt = XMMatrixTranspose(lightProj);
+	matrixDataBuffer->lightProj = lpt;
+
+
+	deviceContext->Unmap(matrixBufferPerFrame, 0);
+	deviceContext->VSSetConstantBuffers(1, 1, &matrixBufferPerFrame);
 }
 
 ID3D11ShaderResourceView* ShadowMap::GetShadowSRV()

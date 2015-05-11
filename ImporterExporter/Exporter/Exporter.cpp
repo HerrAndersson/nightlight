@@ -886,7 +886,7 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 		cout << parent.name().asChar() << endl;
 		cout << AnimCurve.name().substring(AnimCurve.name().length() - parent.name().length(), AnimCurve.name().length()).asChar() << endl;
 
-		if (!strcmp(AnimCurve.name().substring(AnimCurve.name().length() - parent.name().length(), AnimCurve.name().length()).asChar(), parent.name().asChar()))
+		if (!strcmp(AnimCurve.name().substring(AnimCurve.name().length() - parent.name().length()+6, AnimCurve.name().length()).asChar(), parent.name().asChar()+6))
 		{
 
 			//std::string type = AnimCurve.name().substring(BlendName.name().length(), AnimCurve.name().length()).asChar();
@@ -908,6 +908,7 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 				{
 					temp.WeightF[i].currentFrame = AnimCurve.time(i).value();
 					temp.WeightF[i].weight = AnimCurve.value(i);
+
 					// write keyframe info
 					std::cout << " frame " << AnimCurve.time(i);
 					std::cout << " value " << temp.WeightF[i].weight << endl;
