@@ -10,3 +10,6 @@ grandpa.png
 lamp.png
 pressurep.png
 box_movable.png
+menText.png
+menBox.png
+Shelf_texture.png

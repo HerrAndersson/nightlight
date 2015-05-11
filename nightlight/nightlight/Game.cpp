@@ -17,12 +17,11 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	Logic = new GameLogic(hwnd, screenWidth, screenHeight);
+	AI = new AiModule(currentLevel);
+	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
-
-	//AI = new AiModule(currentLevel);
 }
 
 void Game::LoadAssets()
@@ -35,8 +34,6 @@ void Game::LoadAssets()
 	}
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
-
-	//AI = new AiModule(currentLevel);
 }
 
 Game::~Game()
@@ -86,7 +83,7 @@ bool Game::Update()
 	//		break;
 	//}
 
-	result = Logic->Update(currentLevel, character, camera, spotLight);
+	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies);
 
 	return result;
 }

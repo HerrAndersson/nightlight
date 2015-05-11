@@ -7,12 +7,15 @@
 #include "lightObject.h"
 #include "Character.h"
 #include "Level.h"
+#include "AiModule.h"
 
 class GameLogic
 {
 private:
 
-	InputManager* Input;
+	InputManager*  Input;
+	AiModule*      AI;
+
 	int screenWidth;
 	int screenHeight;
 
@@ -21,7 +24,10 @@ private:
 	GameObject* selectedObject = nullptr;
 
 	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight);
-	bool UpdateSpotLight (Character* player, CameraObject* camera, LightObject* spotlight);
+	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
+	bool UpdateAI(vector<Enemy>* enemies);
+
+	bool inLight(LightObject* spotlight, GameObject* enemyObject);
 	
 	XMFLOAT3 ManagePlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 pos);
 	bool IsTileWalkable(Tile* tile);
@@ -32,10 +38,10 @@ private:
 
 public:
 
-	GameLogic(HWND hwnd, int screenWidth, int screenHeight);
+	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
 	~GameLogic();
 
-	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight);
+	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
 	
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)

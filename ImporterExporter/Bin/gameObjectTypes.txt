@@ -13,3 +13,11 @@ averageenemy
 largeenemy
 corner
 cornerin
+starttext
+startcube
+continuetext
+continuecube
+exittext
+exitcube
+pipes
+shelf
