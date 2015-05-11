@@ -19,7 +19,8 @@ private:
 	XMFLOAT3 direction;
 	XMFLOAT3 lookAt;
 
-
+	float spotRange;
+	float spotCone;
 public:
 
 	LightObject();
@@ -29,6 +30,11 @@ public:
 	void setDiffuseColor(float r, float g, float b, float a);
 	void setDirection(float x, float y, float z);
 	void setPosition(float x, float y, float z);
+
+	void setRange(float range);
+	void setCone(float cone);
+	float getRange();
+	float getCone();
 
 	XMFLOAT4 getAmbientColor();
 	XMFLOAT4 getDiffuseColor();

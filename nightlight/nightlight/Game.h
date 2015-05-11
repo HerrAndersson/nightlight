@@ -20,30 +20,14 @@ class Game
 {
 private:
 
-	enum ObjectIDs
-	{
-		PLAYER		= 1,
-		ENEMY		= 2,
-		TILE_FLOOR	= 3,
-		TILE_WALL   = 4,
-		TILE_DOOR   = 5
-		//ETC?
-	};
-
-	enum GameStates
-	{
-		QUIT		= 0,
-		MENU		= 1,
-		GAME		= 2,
-		GAME_OVER	= 3
-	};
+	enum GameStates { QUIT, MENU, GAME, GAME_OVER };
 
 	int activeGameState;
 	int screenWidth, screenHeight;
 
 	Level* currentLevel = nullptr;
 
-	vector<Enemy>		enemies;
+	vector<Enemy>		    enemies;
 
 	CameraObject*			camera;
 	LightObject*			spotLight;
