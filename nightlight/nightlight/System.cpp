@@ -14,7 +14,7 @@ System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeig
 	timer = new Timer();
 	cpuUsage = new Cpu();
 
-	game = new Game ( hinstance, hwnd, windowWidth, windowHeight, fullscreen );
+	game = new Game(hinstance, hwnd, windowWidth, windowHeight, fullscreen);
 }
 
 
@@ -67,18 +67,21 @@ bool System::Update()
 
 	if (timer->GetGameTime() > MS_PER_FRAME)
 	{
-		result = game->Update();
-		if (!result) { return false; }
+		if (GetFocus() == hwnd)
+		{
+			result = game->Update();
+			if (!result) { return false; }
+		}
 
 		result = game->Render();
 		if (!result) { return false; }
 
-		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime()) 
-			         + " msPerFrame: " + std::to_string(timer->GetGameTime()) 
-					 + " SystemUpdatePerSecond : " + std::to_string(timer->GetFPS()) 
-					 + " CPU% : " + std::to_string(cpuUsage->GetCpuPercentage());
-
-		SetWindowText ( hwnd, s.c_str ( ) );
+		std::string s = "nightlight - msPerSystemUpdate: " + std::to_string(timer->GetFrameTime())
+			+ " msPerFrame: " + std::to_string(timer->GetGameTime())
+			+ " SystemUpdatePerSecond : " + std::to_string(timer->GetFPS())
+			+ " CPU% : " + std::to_string(cpuUsage->GetCpuPercentage());
+	
+		SetWindowText(hwnd, s.c_str());
 
 		timer->Reset();
 	}

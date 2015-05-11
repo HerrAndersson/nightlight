@@ -36,7 +36,7 @@ void Game::LoadAssets()
 
 	currentLevel = Levels->LoadLevel(0, enemies, *character);
 
-	AI = new AiModule(currentLevel);
+	//AI = new AiModule(currentLevel);
 }
 
 Game::~Game()
@@ -88,8 +88,6 @@ bool Game::Update()
 
 	result = Logic->Update(currentLevel, character, camera, spotLight);
 
-	//cout << character->GetPosition().x << " " << character->GetPosition().z << endl;
-
 	return result;
 }
 
@@ -108,20 +106,23 @@ bool Game::Render()
 
 	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
 	//
-	//for (int i = 0; i < toRender->size(); i++) {
+	//for (int i = 0; i < toRender->size(); i++) 
+	//{
 	//		Renderer->RenderShadow(toRender->at(i));
 	//	}
 
-	Renderer->BeginScene(1.0f, 0.0f, 0.0f, 1.0f);
+	Renderer->BeginScene(0.0f, 0.3f, 0.05f, 1.0f);
 
 	Renderer->UseDefaultShader();
 
 	
-	for (int i = 0; i < (signed)toRender->size(); i++) {
+	for (int i = 0; i < (signed)toRender->size(); i++) 
+	{
 		Renderer->Render(toRender->at(i));
 	}
 
-	for (Enemy e : enemies) {
+	for (Enemy e : enemies) 
+	{
 		Renderer->Render(&e);
 	}
 

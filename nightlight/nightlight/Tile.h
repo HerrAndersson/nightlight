@@ -11,11 +11,10 @@
 #include "Wall.h"
 #include "AssetManager.h"
 
-#define TILE_SIZE 1.0f
-
 class Tile 
 {
 private:
+
 	Floor* floorTile = nullptr;
 	Wall* wall = nullptr;
 	Corner* corner = nullptr;
@@ -29,8 +28,7 @@ private:
 	std::vector<GameObject*> gameObjects;
 
 	bool tileIsWalkable = false;
-	
-	
+		
 public:
 
 	Tile ( );

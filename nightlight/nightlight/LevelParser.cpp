@@ -22,16 +22,19 @@ LevelParser::~LevelParser()
 template<typename T>
 void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> levers)
 {
-	for (T* t : gameObjects){
+	for (T* t : gameObjects)
+	{
 		bool foundCoupling = false;
 		std::string activatesName = t->getActivatesName();
 		for (int i = 0; i < (signed)doors.size() && !foundCoupling; i++)
-			if (doors.at(i)->getActivationName() == activatesName){
+			if (doors.at(i)->getActivationName() == activatesName)
+			{
 				t->setActivatesDoor(doors.at(i));
 				foundCoupling = true;
 			}
 		for (int i = 0; i < (signed)levers.size() && !foundCoupling; i++)
-			if (levers.at(i)->getActivationName() == activatesName){
+			if (levers.at(i)->getActivationName() == activatesName)
+			{
 				t->setActivatesLever(levers.at(i));
 				foundCoupling = true;
 			}
@@ -72,9 +75,9 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				int gameObjectTypeRef = std::stoi(unparsedLine.at(i++));
 				float rotation;
 				XMFLOAT3 position;
-				position.x = std::stof(unparsedLine.at(i++));
+				position.x = std::stof(unparsedLine.at(i++)) - TILE_SIZE / 2;
 				position.y = std::stof(unparsedLine.at(i++));
-				position.z = std::stof(unparsedLine.at(i++));
+				position.z = std::stof(unparsedLine.at(i++)) - TILE_SIZE / 2;
 				rotation = std::stof(unparsedLine.at(i++));
 				int tileCoordX = std::stoi(unparsedLine.at(i++));
 				int tileCoordY = std::stoi(unparsedLine.at(i++));
@@ -107,10 +110,12 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 	vector<Lever*> levers;
 	vector<PressurePlate*> pressurePlates;
 	vector<Container*> containers;
+	Coord startDoor = Coord();
 
 	vector<vector<Tile*>>* tileGrid = level->getTileGrid();
 	for (int x = 0; x < (signed)tileGrid->size(); x++){
-		for (int y = 0; y < (signed)tileGrid->at(x).size(); y++) {
+		for (int y = 0; y < (signed)tileGrid->at(x).size(); y++) 
+		{
 			Tile* tile = tileGrid->at(x).at(y);
 			if (tile != nullptr) {
 				Door* tileDoor = tile->getDoor();
@@ -118,20 +123,27 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				PressurePlate* tilePressurePlate = tile->getPressurePlate();
 				Container* tileShadowContainer = tile->getShadowContainer();
 
-				if (tileDoor != nullptr){
-					if (tileDoor->getDoorType() == Door::doorTypes::START_DOOR)
-						level->setStartDoor(Coord(x,y));
+				if (tileDoor != nullptr)
+				{
+					if (tileDoor->getDoorType() == Door::doorTypes::START_DOOR) 
+					{
+						startDoor = Coord(x, y);
+						level->setStartDoor(startDoor);
+					}
 					if (tileDoor->getDoorType() == Door::doorTypes::END_DOOR)
 						level->setEndDoor(Coord(x, y));
 					doors.push_back(tileDoor);
 				}
-				if (tileLever != nullptr){
+				if (tileLever != nullptr)
+				{
 					levers.push_back(tileLever);
 				}
-				if (tilePressurePlate != nullptr){
+				if (tilePressurePlate != nullptr)
+				{
 					pressurePlates.push_back(tilePressurePlate);
 				}
-				if (tileShadowContainer != nullptr){
+				if (tileShadowContainer != nullptr)
+				{
 					containers.push_back(tileShadowContainer);
 				}
 			}
@@ -141,6 +153,11 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 	bindActuators(containers, doors, levers);
 	bindActuators(pressurePlates, doors, levers);
 	bindActuators(levers, doors, levers);
+
+
+	if (startDoor.x != -1 && startDoor.y != -1) {
+		character.SetTilePosition(startDoor);
+	}
 
 	level->updateGameObjets();
 	//traverse levelGrid and find start/end pos, bind levers/pressurePlates/containers/doors.

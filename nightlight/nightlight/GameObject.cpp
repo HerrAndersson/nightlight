@@ -5,8 +5,7 @@ GameObject::GameObject(XMFLOAT3 position, float rotation, RenderObject* renderOb
 	this->position = position;
 	this->rotation.y = XMConvertToDegrees(rotation);
 	this->renderObject = renderObject;
-	this->tileCoordX = coordX;
-	this->tileCoordY = coordY;
+	this->tileCoord = Coord(coordX, coordY);
 	forwardVector = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 }
 
@@ -24,9 +23,16 @@ RenderObject* GameObject::GetRenderObject()
 	return renderObject;
 }
 
-void GameObject::SetPosition(XMFLOAT3 pos)
-{
+void GameObject::SetPosition(XMFLOAT3 pos) {
 	position = pos;
+	tileCoord.x = (int)(-position.x + TILE_SIZE / 2);
+	tileCoord.y = (int)(-position.z + TILE_SIZE / 2);
+}
+
+void GameObject::SetTilePosition(Coord coord) {
+	tileCoord = coord;
+	position.x = -coord.x - TILE_SIZE / 2;
+	position.z = -coord.y - TILE_SIZE / 2;
 }
 
 XMFLOAT3 GameObject::GetPosition()
@@ -34,14 +40,20 @@ XMFLOAT3 GameObject::GetPosition()
 	return position;
 }
 
-void GameObject::SetRotation(XMFLOAT3 rot)
+void GameObject::SetRotationDeg(XMFLOAT3 rot)
 {
 	rotation = rot;
 }
 
-XMFLOAT3 GameObject::GetRotation()
+XMFLOAT3 GameObject::GetRotationDeg()
 {
 	return rotation;
+}
+
+XMFLOAT3 GameObject::GetRotationRad()
+{
+	float degToRad = XM_PI / 180.0f;
+	return XMFLOAT3(rotation.x * degToRad, rotation.y * degToRad, rotation.z * degToRad);
 }
 
 XMVECTOR GameObject::GetForwardVector()
@@ -61,6 +73,16 @@ ID3D11ShaderResourceView* GameObject::GetDiffuseTexture()
 ID3D11ShaderResourceView* GameObject::GetSpecularTexture()
 {
 	return renderObject->specularTexture;
+}
+
+bool GameObject::IsSelected()
+{
+	return isSelected;
+}
+
+void GameObject::SetSelected(bool selected)
+{
+	isSelected = selected;
 }
 
 void* GameObject::operator new(size_t i)

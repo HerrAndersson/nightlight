@@ -13,4 +13,3 @@ averageenemy
 largeenemy
 corner
 cornerin
-box

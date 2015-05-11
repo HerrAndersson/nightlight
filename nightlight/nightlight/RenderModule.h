@@ -45,6 +45,7 @@ private:
 	struct MatrixBufferPerObject
 	{
 		XMMATRIX world;
+		int isSelected;
 	};
 
 	struct MatrixBufferPerWeightedObject
@@ -94,7 +95,7 @@ public:
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename);
 
-	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject);
+	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected);
 
 	void UseDefaultShader();
 	void ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);

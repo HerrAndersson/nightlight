@@ -1,9 +1,11 @@
 #pragma once
 #include "GameObject.h"
-class Corner :
-	public GameObject {
+class Corner : public GameObject 
+{
+private:
+
 public:
-	Corner ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
+	Corner(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	~Corner ( );
 };
 

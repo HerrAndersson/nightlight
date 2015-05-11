@@ -12,3 +12,38 @@ Lever::Lever(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 
 Lever::~Lever ( ) {
 }
+
+void Lever::ActivateLever() {
+	if (isPowered) {
+		isActivated = true;
+
+		XMFLOAT3 rot = this->GetRotationDeg();
+		rot.y += 90.0f;
+		this->SetRotationDeg(rot);
+
+		if (activatesLever != nullptr) {
+			activatesLever->setIsPowered(true);
+		}
+		if (activatesDoor != nullptr) {
+			activatesDoor->setIsOpen(true);
+		}
+	}
+}
+
+void Lever::DeactivateLever() {
+	if (isPowered) {
+		isActivated = false;
+
+		XMFLOAT3 rot = this->GetRotationDeg();
+		rot.y -= 90.0f;
+		this->SetRotationDeg(rot);
+
+		if (activatesLever != nullptr) {
+			activatesLever->DeactivateLever();
+			activatesLever->setIsPowered(false);
+		}
+		if (activatesDoor != nullptr) {
+			activatesDoor->setIsOpen(false);
+		}
+	}
+}

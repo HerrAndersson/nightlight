@@ -46,6 +46,12 @@ Naming convention:
 			activates object reference   - the name of the component you wish to activate
 			
 			full example: p_03_Container1_01Lever1
+			
+		Box/any other static/movable object:
+		[must have its main name in the title]
+			movable/static
+			
+			full example: p_12_Box1_movable
 
 ***If the object is not referring to any other component,
 ***or if an additional naming part is missing, add "_NULL"
@@ -59,7 +65,7 @@ Current base names:
 		p_04_Wall1
 		p_05_Corner1
 		p_06_Floor1
-		p_07_Box1
+		p_12_Box1
 		p_08_CornerIn1
 		
 ** The base name is also used as the activation ID at the end of for example lever and pressure. See above examples.
