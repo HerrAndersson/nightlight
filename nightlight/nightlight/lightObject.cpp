@@ -3,7 +3,8 @@
 
 LightObject::LightObject()
 {
-
+	spotRange = 15.0f;
+	spotCone = 30.0f;
 }
 
 
@@ -33,6 +34,28 @@ void LightObject::setPosition(float x, float y, float z)
 {
 	position = XMFLOAT3(x, y, z);
 }
+
+void LightObject::setRange(float range)
+{
+	spotRange = range;
+}
+
+float LightObject::getRange()
+{
+	return spotRange;
+}
+
+
+void LightObject::setCone(float cone)
+{
+	spotCone = cone;
+}
+
+float LightObject::getCone()
+{
+	return spotCone;
+}
+
 
 
 //Getters
