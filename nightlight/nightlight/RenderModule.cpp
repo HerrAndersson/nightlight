@@ -388,7 +388,7 @@ bool RenderModule::InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename
 	
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
