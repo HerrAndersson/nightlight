@@ -110,6 +110,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 	vector<Lever*> levers;
 	vector<PressurePlate*> pressurePlates;
 	vector<Container*> containers;
+	vector<Exit*> exit;
 	Coord startDoor = Coord();
 
 	vector<vector<Tile*>>* tileGrid = level->getTileGrid();
@@ -122,6 +123,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				Lever* tileLever = tile->getLever();
 				PressurePlate* tilePressurePlate = tile->getPressurePlate();
 				Container* tileShadowContainer = tile->getShadowContainer();
+				Exit* tileExit = tile->getExit();
 
 				if (tileDoor != nullptr)
 				{
@@ -145,6 +147,10 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				if (tileShadowContainer != nullptr)
 				{
 					containers.push_back(tileShadowContainer);
+				}
+				if (tileExit != nullptr)
+				{
+					exit.push_back(tileExit);
 				}
 			}
 		}

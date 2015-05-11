@@ -158,6 +158,19 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 						}
 					}
 
+					if (tile != nullptr && tile->getExit() != nullptr) {
+						if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord) {
+							if (!tile->getExit()->getIsActivated()) {
+								tile->getExit()->ActivateExit();
+							}
+						}
+						else {
+							if (tile->getExit()->getIsActivated()) {
+								tile->getExit()->DeactivateExit();
+							}
+						}
+					}
+
 					if (!IsTileWalkable(tile)) {
 						nextPos = NextPositionFromCollision(result, nextPos, character->getRadius(), iteratorTileCoord);
 						
@@ -209,6 +222,10 @@ bool GameLogic::IsTileWalkable(Tile* tile) {
 	}
 
 	if (tile->getPressurePlate() != nullptr){
+		return true;
+	}
+	if (tile->getExit() != nullptr)
+	{
 		return true;
 	}
 	
