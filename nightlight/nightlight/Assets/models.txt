@@ -19,3 +19,5 @@ continueCube.bin
 exitText.bin
 exitCube.bin
 grandpa.bin
+pipes.bin
+shelf.bin

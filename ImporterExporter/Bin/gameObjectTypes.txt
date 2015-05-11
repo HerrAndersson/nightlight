@@ -19,3 +19,5 @@ continuetext
 continuecube
 exittext
 exitcube
+pipes
+shelf
