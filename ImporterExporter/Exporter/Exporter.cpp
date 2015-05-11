@@ -1281,33 +1281,35 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 
 			cout << animCurve.name().asChar() << endl;
 			std::string type = animCurve.name().substring(joint.name().length(), animCurve.name().length()).asChar();
-			output.frames.resize(animCurve.numKeys());
-			for (int i = 0; i < animCurve.numKeys(); i++)
+			output.frames.resize(animCurve.time(animCurve.numKeys() - 1).value());
+			for (int i = 0; i < output.frames.size(); i++)
 			{
-				output.frames[i].time = animCurve.time(i).value();
+				MTime time;
+				time.setValue(i);
+				output.frames[i].time = time.value();
 				if (!strcmp(type.c_str(), "_translateX")){
-					cout << animCurve.value(i) << endl;
-					output.frames[i].trans.x = animCurve.value(i);
+					cout << animCurve.evaluate(time) << endl;
+					output.frames[i].trans.x = animCurve.evaluate(time);
 				}
 				if (!strcmp(type.c_str(), "_translateY")){
-					cout << animCurve.value(i) << endl;
-					output.frames[i].trans.y = animCurve.value(i);
+					cout << animCurve.evaluate(time) << endl;
+					output.frames[i].trans.y = animCurve.evaluate(time);
 				}
 				if (!strcmp(type.c_str(), "_translateZ")){
-					cout << animCurve.value(i) << endl;
-					output.frames[i].trans.z = animCurve.value(i);
+					cout << animCurve.evaluate(time) << endl;
+					output.frames[i].trans.z = animCurve.evaluate(time);
 				}
 				if (!strcmp(type.c_str(), "_rotateX")){
-					cout << animCurve.value(i) << endl;
-					output.frames[i].rot.x = animCurve.value(i);
+					cout << animCurve.evaluate(time) << endl;
+					output.frames[i].rot.x = animCurve.evaluate(time);
 				}
 				if (!strcmp(type.c_str(), "_rotateY")){
-					cout << animCurve.value(i) << endl;
-					output.frames[i].rot.y = animCurve.value(i);
+					cout << animCurve.evaluate(time) << endl;
+					output.frames[i].rot.y = animCurve.evaluate(time);
 				}
 				if (!strcmp(type.c_str(), "_rotateZ")){
-					cout << animCurve.value(i) << endl;
-					output.frames[i].rot.z = animCurve.value(i);
+					cout << animCurve.evaluate(time) << endl;
+					output.frames[i].rot.z = animCurve.evaluate(time);
 				}
 			}
 		}
@@ -1317,8 +1319,9 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 
 	scene_.skeleton.push_back(output);
 	int children = joint.childCount();
+	int parent = scene_.skeleton.size() - 1;
 	for (int i = 0; i < children; i++)
-		RecursiveJointExtraction(MFnTransform(joint.child(i)), scene_.skeleton.size()-1);
+		RecursiveJointExtraction(MFnTransform(joint.child(i)), parent);
 
 };
 

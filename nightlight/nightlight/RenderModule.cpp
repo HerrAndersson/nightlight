@@ -494,7 +494,8 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 		for (int i = 0; i < (signed)boneGlobalMatrices.size(); i++)
 		{
-			dataPtr->bones[i] = (XMMATRIX)boneGlobalMatrices[i] * (XMMATRIX)bones->at(i).invBindPose;
+			//dataPtr->bones[i] = (XMMATRIX)boneGlobalMatrices[i] * (XMMATRIX)bones->at(i).invBindPose;
+			dataPtr->bones[i] = XMMatrixIdentity();
 			int stop = 0;
 		}
 
