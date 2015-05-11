@@ -88,7 +88,7 @@ namespace assetUtility {
 
 	struct Bone{
 		int parent;
-		XMMATRIX invBindPose;
+		XMFLOAT4X4 invBindPose;
 		std::vector<Keyframe> frames;
 	};
 

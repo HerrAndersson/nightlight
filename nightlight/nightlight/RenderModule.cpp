@@ -456,47 +456,72 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 		int currentFrame=0, finalFrame=renderObject->model->skeleton[0].frames.size();//todo
 		float interpolation=0;
 
-		std::vector<XMMATRIX> boneLocalMatrices;
-		std::vector<XMMATRIX> boneGlobalMatrices;
+		std::vector<XMFLOAT4X4> boneLocalMatrices;
+		std::vector<XMFLOAT4X4> boneGlobalMatrices;
+		std::vector<XMFLOAT4X4> boneInvPose;
 		std::vector<Bone>* bones = &renderObject->model->skeleton;
 		boneGlobalMatrices.resize(renderObject->model->skeleton.size());
 		boneLocalMatrices.resize(renderObject->model->skeleton.size());
+		boneInvPose.resize(renderObject->model->skeleton.size());
+		XMFLOAT3 idnt(1, 1, 1);
+		XMVECTOR S = XMLoadFloat3(&idnt);
+		XMVECTOR P = XMLoadFloat3(&bones->at(0).frames[currentFrame].trans);
+		XMVECTOR Q = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(0).frames[currentFrame].rot));
 
+		XMVECTOR zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		XMStoreFloat4x4(&boneLocalMatrices[0], XMMatrixAffineTransformation(S, zero, Q, P));
 
-		boneLocalMatrices[0] = XMMatrixRotationRollPitchYaw(bones->at(0).frames[currentFrame].rot.x, bones->at(0).frames[currentFrame].rot.y, bones->at(0).frames[currentFrame].rot.z)*XMMatrixTranslation(bones->at(0).frames[currentFrame].trans.x, bones->at(0).frames[currentFrame].trans.y, bones->at(0).frames[currentFrame].trans.z);
 		boneGlobalMatrices[0] = boneLocalMatrices[0];
-
 		for (int i = 1; i < (signed)boneGlobalMatrices.size(); i++)
 		{
 			if (currentFrame < finalFrame){
+
+				XMVECTOR s0 = XMLoadFloat3(&idnt);
 				XMVECTOR trans = XMLoadFloat3(&bones->at(i).frames[currentFrame].trans);
 				XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame].rot));
+
 				if (currentFrame + 1 < finalFrame){
+
+					XMVECTOR s1 = XMLoadFloat3(&idnt);
 					XMVECTOR trans2 = XMLoadFloat3(&bones->at(i).frames[currentFrame + 1].trans);
 					XMVECTOR rot2 = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame + 1].rot));
-					
-					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans*interpolation + (trans2*(1 - interpolation))) * XMMatrixRotationQuaternion(XMQuaternionSlerp(rot, rot2, interpolation));
+
+					S = XMVectorLerp(s0, s1, interpolation);
+					P = XMVectorLerp(trans, trans2, interpolation);
+					Q = XMQuaternionSlerp(rot, rot2, interpolation);
+
+					XMStoreFloat4x4(&boneLocalMatrices[i], XMMatrixAffineTransformation(S, zero, Q, P));
 				}
 				else
 				{
-					boneLocalMatrices[i] = XMMatrixTranslationFromVector(trans)*XMMatrixRotationRollPitchYawFromVector(rot);
+					XMStoreFloat4x4(&boneLocalMatrices[i], XMMatrixAffineTransformation(S, zero, rot, trans));
 				}
 			}
-			boneGlobalMatrices[i] = (XMMATRIX)boneLocalMatrices[i] * (XMMATRIX)boneGlobalMatrices[bones->at(i).parent] ;
+			XMMATRIX local = XMLoadFloat4x4(&boneLocalMatrices[i]);
+			XMMATRIX global = XMLoadFloat4x4(&boneGlobalMatrices[bones->at(i).parent]);
+			XMMATRIX toRoot = XMMatrixMultiply(local, global);
+
+			XMStoreFloat4x4(&boneGlobalMatrices[i], toRoot);
 		}
+
+
 
 		result = deviceContext->Map(matrixBufferPerWeightedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result)) { return false; }
-
 		MatrixBufferPerWeightedObject* dataPtr = (MatrixBufferPerWeightedObject*)mappedResource.pData;
-
 		dataPtr->world = worldMatrixC;
 
+		std::vector<XMFLOAT4X4> finalTransforms;
+		finalTransforms.resize(boneGlobalMatrices.size());
 		for (int i = 0; i < (signed)boneGlobalMatrices.size(); i++)
 		{
-			//dataPtr->bones[i] = (XMMATRIX)boneGlobalMatrices[i] * (XMMATRIX)bones->at(i).invBindPose;
-			dataPtr->bones[i] = XMMatrixIdentity();
-			int stop = 0;
+			XMMATRIX offset = XMLoadFloat4x4(&bones->at(i).invBindPose);
+			XMMATRIX toRoot = XMLoadFloat4x4(&boneGlobalMatrices[i]);
+
+			XMStoreFloat4x4(&finalTransforms[i], XMMatrixTranspose(XMMatrixMultiply(offset, toRoot)));
+
+			dataPtr->bones[i] = finalTransforms[i];
+			XMStoreFloat4x4(&dataPtr->bones[i], XMMatrixTranslation(0,0.2,0));
 		}
 
 		deviceContext->Unmap(matrixBufferPerWeightedObject, 0);
