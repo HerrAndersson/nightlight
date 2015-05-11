@@ -11,4 +11,13 @@ enemy_big.bin
 enemy_medium.bin
 enemy_small.bin
 box.bin
+pillar.bin
+startText.bin
+startCube.bin
+continueText.bin
+continueCube.bin
+exitText.bin
+exitCube.bin
 grandpa.bin
+pipes.bin
+shelf.bin
