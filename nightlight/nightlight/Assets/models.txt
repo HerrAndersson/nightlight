@@ -12,10 +12,10 @@ enemy_medium.bin
 enemy_small.bin
 box.bin
 pillar.bin
-grandpa.bin
 startText.bin
 startCube.bin
 continueText.bin
 continueCube.bin
 exitText.bin
 exitCube.bin
+grandpa.bin
