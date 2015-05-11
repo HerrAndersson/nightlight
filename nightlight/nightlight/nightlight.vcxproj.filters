@@ -33,6 +33,9 @@
     <Filter Include="Game\Level">
       <UniqueIdentifier>{e4e6b5e4-50a5-48ed-af4b-dc766853f2a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Menu">
+      <UniqueIdentifier>{8878eee0-8a19-4c2f-a5ff-a96ceb2c46af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -122,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Exit.cpp">
+      <Filter>Game\Menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Exit.h">
+      <Filter>Game\Menu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
