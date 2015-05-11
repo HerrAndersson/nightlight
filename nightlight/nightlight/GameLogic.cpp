@@ -337,3 +337,15 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 
 	return nextPos;
 }
+
+
+bool GameLogic::inLight(LightObject* spotlight, GameObject* enemyObject)
+{
+
+	
+
+
+
+	return true;
+
+}

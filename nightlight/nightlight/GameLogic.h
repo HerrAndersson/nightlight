@@ -26,6 +26,8 @@ private:
 	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight);
 	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
 	bool UpdateAI(vector<Enemy>* enemies);
+
+	bool inLight(LightObject* spotlight, GameObject* enemyObject);
 	
 	XMFLOAT3 ManagePlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 pos);
 	bool IsTileWalkable(Tile* tile);
