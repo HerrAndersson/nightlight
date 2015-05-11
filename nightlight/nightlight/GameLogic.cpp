@@ -135,6 +135,7 @@ bool GameLogic::UpdateSpotLight (Character* player, CameraObject* camera, LightO
 	pPos.x += pForward.x/100;
 	pPos.z += pForward.z/100;
 	pPos.y -= 0.7f;
+
 	spotlight->setPosition ( pPos.x, pPos.y, pPos.z );
 	spotlight->generateViewMatrix();
 	return true;
@@ -362,7 +363,25 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 bool GameLogic::inLight(LightObject* spotlight, GameObject* enemyObject)
 {
 
+	XMFLOAT3 lightEnemyVec = XMFLOAT3((spotlight->getPosition().x - enemyObject->GetPosition().x), (spotlight->getPosition().y - enemyObject->GetPosition().y), (spotlight->getPosition().z - enemyObject->GetPosition().z));
 	
+	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
+
+	if (spotlight->getRange() < vecLenght)
+	{
+		return false;
+	}
+
+	
+	XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
+	XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
+
+
+
+	//if (spotlight->getCone() < XMVector3AngleBetweenVectors(spotDirection, lightEnemyVector))
+	//{
+	//	return false;
+	//}
 
 
 
