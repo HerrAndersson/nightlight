@@ -51,7 +51,7 @@ private:
 	struct MatrixBufferPerWeightedObject
 	{
 		XMMATRIX world;
-		XMMATRIX bones[30];
+		XMFLOAT4X4 bones[30];
 	};
 
 
