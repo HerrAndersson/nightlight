@@ -15,6 +15,7 @@ private:
 
 	InputManager*  Input;
 	AiModule*      AI;
+	bool end = true;
 
 	int screenWidth;
 	int screenHeight;
@@ -23,11 +24,11 @@ private:
 
 	GameObject* selectedObject = nullptr;
 
-	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight);
+	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight, int& currentLevelNr);
 	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
 	bool UpdateAI(vector<Enemy>* enemies);
 
-	bool inLight(LightObject* spotlight, GameObject* enemyObject);
+	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
 	
 	XMFLOAT3 ManagePlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 pos);
 	bool IsTileWalkable(Tile* tile);
@@ -41,8 +42,8 @@ public:
 	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
 	~GameLogic();
 
-	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
-	
+	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& currentLevelNr);
+	int currentLevelNr;
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
 	//Etc

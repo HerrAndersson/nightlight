@@ -11,13 +11,17 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	spotLight = new LightObject();
 	spotLight->generateProjMatrix(0.1f, 1000);
 
+	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
+
+	//AI = new AiModule(currentLevel);
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	AI = new AiModule(currentLevel);
 	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
@@ -82,10 +86,23 @@ bool Game::Update()
 	//	default:
 	//		break;
 	//}
+	if (currentLevelNr == 1)
+	{
+		currentLevel = UpdateLevel(currentLevelNr);
+		currentLevelNr = 0;
+	}
+	//currentLevel = UpdateLevel(currentLevelNr);
+	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, currentLevelNr);
+	
 
-	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies);
 
 	return result;
+}
+
+Level* Game::UpdateLevel(int currentLevelNr)
+{
+	Level* newLevel = Levels->LoadLevel(currentLevelNr, enemies, *character);
+	return newLevel;
 }
 
 bool Game::Render()
@@ -108,7 +125,7 @@ bool Game::Render()
 	//		Renderer->RenderShadow(toRender->at(i));
 	//	}
 
-	Renderer->BeginScene(0.0f, 0.3f, 0.05f, 1.0f);
+	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
 	Renderer->UseDefaultShader();
 

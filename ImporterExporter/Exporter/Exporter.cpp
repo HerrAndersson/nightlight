@@ -457,6 +457,11 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 					{
 						formattedOutput += nodeVec.at(3);
 					}
+					if (goType == "button")
+					{
+						formattedOutput += nodeVec.at(3) + ",";
+						formattedOutput += nodeVec.at(4);
+					}
 
 					formattedLevelData.push_back(formattedOutput);
 

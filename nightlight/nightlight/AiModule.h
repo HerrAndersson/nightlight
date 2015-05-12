@@ -33,7 +33,7 @@ public:
 	void Update(vector<GameObject*> dynamicObjects);
 
 	//For use from the outside?
-	vector<Node*> GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ);
+	vector<XMFLOAT3> GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
 	vector<vector<int>> GetTotalPF();
 };

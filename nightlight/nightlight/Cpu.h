@@ -11,7 +11,7 @@ private:
 	HQUERY queryHandle;
 	HCOUNTER counterHandle;
 
-	unsigned long lastSampleTime;
+	ULONGLONG lastSampleTime;
 	long cpu;
 
 public:

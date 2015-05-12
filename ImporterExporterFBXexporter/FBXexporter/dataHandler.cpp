@@ -40,7 +40,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		string sceneNameStr = binFileList.at(i);
 		//get rid of .bin
-		for (int j=0; j < 4; j++)
+		for (int j = 0; j < 4; j++)
 		{
 			sceneNameStr.pop_back();
 		}
@@ -59,16 +59,16 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		//filename of the file to which the scene will be exported.
 		string fileNameStr = binFileList.at(i);
-		
+
 		//get rid of .bin
-		for (int j=0; j < 4; j++)
+		for (int j = 0; j < 4; j++)
 		{
 			fileNameStr.pop_back();
 		}
 		//convert to char*
 		char * fileName = new char[binFileList.at(i).length()];
 		std::strcpy(fileName, fileNameStr.c_str());
-		
+
 		char* lFilenameOut = fileName;
 
 		//Initialize the exporter.
@@ -83,189 +83,212 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		typedef double Vector4[4];
 		typedef double Vector2[2];
 
-
-
 		// indices of the vertices per each polygon (faceIds)
 		int size = modelList.at(i).vertexIndices.size();
 		vector<int> vtxId;
 		vector<int> normId;
 		vector<int> uvId;
-		for (int j=0; j < size; j++)
+		for (int j = 0; j < size; j++)
 		{
-			vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
-			normId.push_back(modelList.at(i).vertexIndices.at(j).y);
-			uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
-		}
+			if (j % 3 == 0)
+			{
+				vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
 
-	
-		// indices of the vertices per each polygon
-		//int vtxId[24] = {
-		//0, 1, 2, 3, // front  face  (Z+)
-		//1, 5, 6, 2, // right  side  (X+)
-		//5, 4, 7, 6, // back   face  (Z-)
-		//4, 0, 3, 7, // left   side  (X-)
-		//0, 4, 5, 1, // bottom face  (Y-)
-		//3, 2, 6, 7  // top    face  (Y+)
-		//};
+				normId.push_back(modelList.at(i).vertexIndices.at(j).y);
+				uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
+			}
 
-	//control points
-		int sizePoints = modelList.at(i).purePoints.size();
-		vector<float> lControlPoints;
-		for (int j = 0; j < sizePoints; j++)
-		{
-			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.x);
-			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.y);
-			lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.z);
-			
-			//w coordinaste
-			lControlPoints.push_back(1.0f);
-		}
-		
-	
-	//static Vector4 lControlPoints[8] =
-	//{
-	//	{ -5.0, 0.0, 5.0, 1.0 }, { 5.0, 0.0, 5.0, 1.0 }, { 5.0, 10.0, 5.0, 1.0 }, { -5.0, 10.0, 5.0, 1.0 },
-	//	{ -5.0, 0.0, -5.0, 1.0 }, { 5.0, 0.0, -5.0, 1.0 }, { 5.0, 10.0, -5.0, 1.0 }, { -5.0, 10.0, -5.0, 1.0 }
-	//};
+			// indices of the vertices per each polygon
+			static int vtxId2[24] = {
+				vtxId.at(0), vtxId.at(1), vtxId.at(2), vtxId.at(3),
+				vtxId.at(4), vtxId.at(5), vtxId.at(6), vtxId.at(7),
+				vtxId.at(8), vtxId.at(9), vtxId.at(10), vtxId.at(11),
+				vtxId.at(12), vtxId.at(13), vtxId.at(14), vtxId.at(15),
+				vtxId.at(16), vtxId.at(17), vtxId.at(18), vtxId.at(19),
+				vtxId.at(20), vtxId.at(21), vtxId.at(22), vtxId.at(23)
 
-			
+
+				//0, 1, 2, 3, // front  face  (Z+)
+				//1, 5, 6, 2, // right  side  (X+)
+				//5, 4, 7, 6, // back   face  (Z-)
+				//4, 0, 3, 7, // left   side  (X-)
+				//0, 4, 5, 1, // bottom face  (Y-)
+				//3, 2, 6, 7  // top    face  (Y+)
+
+				//0, 1, 2, 3, // front  face  (Z+)
+				//1, 5, 6, 2, // right  side  (X+)
+				//5, 4, 7, 6, // back   face  (Z-)
+				//4, 0, 3, 7, // left   side  (X-)
+				//0, 4, 5, 1, // bottom face  (Y-)
+				//3, 2, 6, 7  // top    face  (Y+)
+			};
+
+			// control points
+			static Vector4 lControlPoints[8] = {
+				{ modelList.at(0).purePoints.at(0).position.x, modelList.at(0).purePoints.at(0).position.y, modelList.at(1).purePoints.at(0).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(1).position.x, modelList.at(0).purePoints.at(1).position.y, modelList.at(1).purePoints.at(1).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(2).position.x, modelList.at(0).purePoints.at(2).position.y, modelList.at(1).purePoints.at(2).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(3).position.x, modelList.at(0).purePoints.at(3).position.y, modelList.at(1).purePoints.at(3).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(4).position.x, modelList.at(0).purePoints.at(4).position.y, modelList.at(1).purePoints.at(4).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(5).position.x, modelList.at(0).purePoints.at(5).position.y, modelList.at(1).purePoints.at(5).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(6).position.x, modelList.at(0).purePoints.at(6).position.y, modelList.at(1).purePoints.at(6).position.z, 1.0 },
+				{ modelList.at(0).purePoints.at(7).position.x, modelList.at(0).purePoints.at(7).position.y, modelList.at(1).purePoints.at(7).position.z, 1.0 },
+			};
+
+			////control points
+			//	int sizePoints = modelList.at(i).purePoints.size();
+			//	vector<Vector4> lControlPoints;
+			//	for (int j = 0; j < sizePoints; j++)
+			//	{
+			//		lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.x);
+			//		lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.y);
+			//		lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.z);
+			//		
+			//		//w coordinaste
+			//		lControlPoints.push_back(1.0f);
+			//	}
+
+
+
 			// normals vertices per each polygon 
 			int sizeNormals = modelList.at(i).normals.size();
 			vector<float> lNormals;
-			
+
 			for (int j = 0; j < sizeNormals; j++)
 			{
 				lNormals.push_back(modelList.at(i).normals[j].x);
 				lNormals.push_back(modelList.at(i).normals[j].y);
 				lNormals.push_back(modelList.at(i).normals[j].z);
 			}
-			
-			
-	//static Vector4 lNormals[8]=
-	//{
-	//	{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-	//	{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-	//	{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
-	//	{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
-	//};
-
-	////uvs
-	//
-	//// normals vertices per each polygon 
-	//int size = modelList.at(i).UVs.size();
-	//vector<XMFLOAT2> lUVs;
-	//for (int i; i < size; i++)
-	//{
-	//	lUVs.push_back(modelList.at(i).UVs[i]);
-	//}
-
-//	int size = modelList.at(i).UVs.size();
-	static Vector2 lUVs[14]=
-	{
-		{ 0.0, 1.0 },
-		{ 1.0, 0.0 },
-		{ 0.0, 0.0 },
-		{ 1.0, 1.0 }
-	};
-
-	//indices of the uvs per each polygon
-	static int uvsId[24] =
-	{
-		0, 1, 3, 2, 2, 3, 5, 4, 4, 5, 7, 6, 6, 7, 9, 8, 1, 10, 11, 3, 12, 0, 2, 13
-	};
-
-	//create the main structure.
-	FbxMesh* lMesh = FbxMesh::Create(lScene, "");
-
-	//initiate control points.
-	lMesh->InitControlPoints(sizePoints);
-
-	FbxVector4* vertex = lMesh->GetControlPoints();
-	//Maybe kanske this but probably not
-	//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
-	//Maybe kanske this but probably not
-	memcpy((void*)vertex, (void*)&lControlPoints, sizeof(lControlPoints));
 
 
-	//create the materials
-	FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
-	lMaterialElement->SetMappingMode(FbxGeometryElement::eAllSame);
-	lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+			//static Vector4 lNormals[8]=
+			//{
+			//	{ -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+			//	{ 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
+			//	{ 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+			//	{ -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
+			//	{ -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+			//	{ 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
+			//	{ 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
+			//	{ -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
+			//};
 
-	lMaterialElement->GetIndexArray().Add(0);
+			////uvs
+			//
+			//// normals vertices per each polygon 
+			//int size = modelList.at(i).UVs.size();
+			//vector<XMFLOAT2> lUVs;
+			//for (int i; i < size; i++)
+			//{
+			//	lUVs.push_back(modelList.at(i).UVs[i]);
+			//}
 
-	//Create polygons later after FbxGeometryElementMaterial is created. Assign material indices. Needs number of faces.
-	int vId = 0;
+			//	int size = modelList.at(i).UVs.size();
+			static Vector2 lUVs[14] =
+			{
+				{ 0.0, 1.0 },
+				{ 1.0, 0.0 },
+				{ 0.0, 0.0 },
+				{ 1.0, 1.0 }
+			};
 
-	int numFaces = (vtxId.size() / 3);
+			//indices of the uvs per each polygon
+			static int uvsId[24] =
+			{
+				0, 1, 3, 2, 2, 3, 5, 4, 4, 5, 7, 6, 6, 7, 9, 8, 1, 10, 11, 3, 12, 0, 2, 13
+			};
+
+			//create the main structure.
+			FbxMesh* lMesh = FbxMesh::Create(lScene, "");
+
+			// Create control points.
+			lMesh->InitControlPoints(8);
+
+			FbxVector4* vertex = lMesh->GetControlPoints();
+			//Maybe kanske this but probably not
+			//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
+			//Maybe kanske this but probably not
+			memcpy((void*)vertex, (void*)&lControlPoints, sizeof(lControlPoints));
 
 
-	for (int f = 0; f<numFaces; f++)
-	{
-		lMesh->BeginPolygon();
-		for (int v = 0; v<3; v++)
-			lMesh->AddPolygon(vtxId.at(vId++));
-		lMesh->EndPolygon();
+			//create the materials
+			FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
+			lMaterialElement->SetMappingMode(FbxGeometryElement::eAllSame);
+			lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+
+			lMaterialElement->GetIndexArray().Add(0);
+
+
+
+			//int numFaces = (vtxId.size() / 3);
+
+			// Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
+			int vId = 0;
+			for (int f = 0; f < 6; f++)
+			{
+				lMesh->BeginPolygon();
+				for (int v = 0; v < 4; v++)
+					lMesh->AddPolygon(vtxId2[vId++]);
+				lMesh->EndPolygon();
+			}
+
+
+			//specify normals per control point.
+			FbxGeometryElementNormal* lNormalElement = lMesh->CreateElementNormal();
+			lNormalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+			lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
+
+			for (int n = 0; n < sizeNormals; n++)
+				lNormalElement->GetDirectArray().Add(FbxVector4(lNormals.at(n), lNormals.at(n), lNormals.at(n)));
+
+			//for (int n = 0; n<8; n++)
+			//	lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
+
+			//create nodeName from file name
+			string meshNameStr = binFileList.at(i);
+			//get rid of .bin
+			for (int j = 0; j < 4; j++)
+			{
+				meshNameStr.pop_back();
+			}
+			char * meshName = new char[binFileList.at(i).length()];
+			std::strcpy(meshName, meshNameStr.c_str());
+
+			//Create the node containing the mesh
+			FbxNode* lNode = FbxNode::Create(lScene, meshName);
+
+			//Find the translation of object and add here
+			//lNode->LclTranslation.Set(pLclTranslation);
+
+			lNode->SetNodeAttribute(lMesh);
+			lNode->SetShadingMode(FbxNode::eTextureShading);
+
+			//create UVset
+			FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
+			FBX_ASSERT(lUVElement1 != NULL);
+			lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
+			lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+			for (int i = 0; i < 4; i++)
+				lUVElement1->GetDirectArray().Add(FbxVector2(lUVs[i][0], lUVs[i][1]));
+
+			for (int i = 0; i < 24; i++)
+				lUVElement1->GetIndexArray().Add(uvsId[i % 4]);
+
+			// Add the mesh node to the root node in the scene.
+			FbxNode *lRootNode = lScene->GetRootNode();
+			lRootNode->AddChild(lNode);
+
+			lExporter->Export(lScene);
+
+			//Get rid of objects
+			lExporter->Destroy();
+
+
+		}
+		return 0;
+
 	}
-
-	//specify normals per control point.
-	FbxGeometryElementNormal* lNormalElement = lMesh->CreateElementNormal();
-	lNormalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
-	lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
-
-	for (int n = 0; n<sizeNormals; n++)
-		lNormalElement->GetDirectArray().Add(FbxVector4(lNormals.at(n), lNormals.at(n), lNormals.at(n)));
-	
-	//for (int n = 0; n<8; n++)
-	//	lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
-
-	//create nodeName from file name
-	string meshNameStr = binFileList.at(i);
-	//get rid of .bin
-	for (int j=0; j < 4; j++)
-	{
-		meshNameStr.pop_back();
-	}
-	char * meshName = new char[binFileList.at(i).length()];
-	std::strcpy(meshName, meshNameStr.c_str());
-
-	//Create the node containing the mesh
-	FbxNode* lNode = FbxNode::Create(lScene, meshName);
-
-	//Find the translation of object and add here
-	//lNode->LclTranslation.Set(pLclTranslation);
-
-	lNode->SetNodeAttribute(lMesh);
-	lNode->SetShadingMode(FbxNode::eTextureShading);
-
-	//create UVset
-	FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
-	FBX_ASSERT(lUVElement1 != NULL);
-	lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
-	lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
-	for (int i = 0; i <4; i++)
-		lUVElement1->GetDirectArray().Add(FbxVector2(lUVs[i][0], lUVs[i][1]));
-
-	for (int i = 0; i<24; i++)
-		lUVElement1->GetIndexArray().Add(uvsId[i % 4]);
-
-	// Add the mesh node to the root node in the scene.
-	FbxNode *lRootNode = lScene->GetRootNode();
-	lRootNode->AddChild(lNode);
-
-	lExporter->Export(lScene);
-
-	//Get rid of objects
-	lExporter->Destroy();
-
-
-}
-	return 0;
-
 }
 
 void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList)

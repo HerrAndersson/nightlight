@@ -15,7 +15,7 @@ Cpu::Cpu()
 	if (status != ERROR_SUCCESS)
 		canReadCpu = false;
 
-	lastSampleTime = GetTickCount();
+	lastSampleTime = GetTickCount64();
 	cpu = 0;
 }
 
@@ -41,9 +41,9 @@ void Cpu::Update()
 
 	if (canReadCpu)
 	{
-		if ((lastSampleTime + 1000) < GetTickCount())
+		if ((lastSampleTime + 1000) < GetTickCount64())
 		{
-			lastSampleTime = GetTickCount();
+			lastSampleTime = GetTickCount64();
 
 			PdhCollectQueryData(queryHandle);
 
