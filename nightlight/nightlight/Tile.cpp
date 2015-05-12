@@ -47,6 +47,8 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 	int tileCoordX = std::stoi(unparsedData.at(i++));
 	int tileCoordY = std::stoi(unparsedData.at(i++));
 
+	tileCoord = XMINT2(tileCoordX, tileCoordY);
+
 	std::string gameObjectType = gameObjectTypes->at(gameObjectTypeRef);
 	if (gameObjectType == "floor") 
 	{

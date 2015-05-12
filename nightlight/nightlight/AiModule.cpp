@@ -4,8 +4,13 @@ AiModule::AiModule(Level* level)
 {
 	this->level = level;
 
-	//vector<Node*> v = GetPath(level, XMINT2(1, 1), XMINT2(3, 5));
-	//for (auto n : v) delete n;
+	vector<XMFLOAT3> v = GetPath(level, XMINT2(1, 5), XMINT2(1, 2));
+
+	cout << "Path: " << endl;
+	for (auto x : v)
+	{
+		cout << "X: " << x.x << " Y: " << x.z << endl;
+	}
 }
 
 AiModule::~AiModule()
@@ -83,14 +88,14 @@ XMINT2 AiModule::GetRandomPosition(Enemy* ai)
 			}
 		}
 
-		if (level->getTile(goal.x, goal.y)->getTileIsWalkable())
+		if (level->getTile(goal.x, goal.y)->IsWalkable())
 			found = true;
 	}
 
 	return goal;
 }
 
-vector<Node*> AiModule::GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
+vector<XMFLOAT3> AiModule::GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 {
 	return aStar(level, 1, startPosXZ, endPosXZ);
 }

@@ -16,11 +16,12 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
+
+	//AI = new AiModule(currentLevel);
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	AI = new AiModule(currentLevel);
 	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
