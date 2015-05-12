@@ -15,7 +15,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	matrixBufferPerWeightedObject = NULL;
 	matrixBufferPerFrame = NULL;
 	lightBuffer = NULL;
-	hwnd = hwnd;
+	this->hwnd = hwnd;
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
 	//initialize shadowmap
