@@ -1,10 +1,10 @@
 #include "GameLogic.h"
 
-GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI)
+GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel)
 {
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	this->AI = AI;
-	currentLevelNr = 0;
+	this->menuLevel = menuLevel;
 }
 
 GameLogic::~GameLogic()
@@ -12,11 +12,13 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& currentLevelNr)
+bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad)
 {
+	//TODO: Handle buttons!
+
 	bool result = false;
 
-	result = UpdatePlayer(currentLevel, character, camera, spotLight, currentLevelNr);
+	result = UpdatePlayer(currentLevel, character, camera, spotLight, levelNumberToLoad);
 	if (!result) return result;
 
 	result = UpdateAI(enemies);
@@ -38,7 +40,7 @@ bool GameLogic::UpdateAI(vector<Enemy>* enemies)
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight, int& currentLevelNr)
+bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight, int& levelNumberToLoad)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
@@ -79,7 +81,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	{
 		leftMouseLastState = true;
 
-					currentLevelNr = 1;
+		levelNumberToLoad = 1;
 					
 		if (selectedObject != nullptr) {
 			Lever* lever = dynamic_cast<Lever*>(selectedObject);

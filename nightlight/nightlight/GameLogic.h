@@ -15,6 +15,7 @@ private:
 
 	InputManager*  Input;
 	AiModule*      AI;
+	Level* menuLevel;
 	bool end = true;
 
 	int screenWidth;
@@ -39,11 +40,10 @@ private:
 
 public:
 
-	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
+	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel);
 	~GameLogic();
 
-	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& currentLevelNr);
-	int currentLevelNr;
+	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad);
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
 	//Etc

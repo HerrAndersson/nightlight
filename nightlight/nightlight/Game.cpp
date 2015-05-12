@@ -22,7 +22,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
+	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI, menuLevel);
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
 	Levels = new LevelParser(Assets);
@@ -37,7 +37,8 @@ void Game::LoadAssets()
 		currentLevel = nullptr;
 	}
 
-	currentLevel = Levels->LoadLevel(0, enemies, *character);
+	menuLevel = Levels->LoadLevel(1, enemies, *character);
+	currentLevel = menuLevel;
 }
 
 Game::~Game()
@@ -86,23 +87,32 @@ bool Game::Update()
 	//	default:
 	//		break;
 	//}
-	if (currentLevelNr == 1)
+	if (levelNumberToLoad != currentLevelNr)
 	{
-		currentLevel = UpdateLevel(currentLevelNr);
-		currentLevelNr = 0;
+		SwitchLevel(loadedLevel, levelNumberToLoad);
+		currentLevelNr = levelNumberToLoad;
 	}
 	//currentLevel = UpdateLevel(currentLevelNr);
-	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, currentLevelNr);
+	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, levelNumberToLoad);
 	
 
 
 	return result;
 }
 
-Level* Game::UpdateLevel(int currentLevelNr)
+void Game::SwitchLevel(Level* newlevel, int newLevelNr =- 1 )
 {
-	Level* newLevel = Levels->LoadLevel(currentLevelNr, enemies, *character);
-	return newLevel;
+	if (newlevel == nullptr)
+	{
+		if (newLevelNr != -1)
+		{
+			currentLevel = Levels->LoadLevel(newLevelNr, enemies, *character);
+		}
+	}
+	else
+	{
+		currentLevel = newlevel;
+	}
 }
 
 bool Game::Render()
