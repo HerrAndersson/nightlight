@@ -142,10 +142,16 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	XMStoreFloat3(&pForward, player->GetForwardVector());
 	spotlight->setDirection(pForward.x, pForward.y, pForward.z);
 
+	float length = sqrt((pForward.x*pForward.x) + (pForward.y*pForward.y) + (pForward.z*pForward.z));
+
+	pForward.x = pForward.x / length;
+	pForward.y = pForward.y / length;
+	pForward.z = pForward.z / length;
+
 	XMFLOAT3 pPos = player->GetPosition();
 	//offset light
-	pPos.x += pForward.x / 100;
-	pPos.z += pForward.z / 100;
+	pPos.x -= pForward.x/2;
+	pPos.z -= pForward.z/2;
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 	
