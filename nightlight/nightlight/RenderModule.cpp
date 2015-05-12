@@ -453,23 +453,28 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	//Setting constant-buffer for models WITH skeleton and animation
 	else if (renderObject->model->hasSkeleton)
 	{
-		int currentFrame=0, finalFrame=renderObject->model->skeleton[0].frames.size();//todo
-		float interpolation=0;
+		int currentFrame=frame, finalFrame=renderObject->model->skeleton[0].frames.size();//todo
+		float interpolation=framefloat-(float)frame;
+		framefloat += 0.1f;
+		frame = (int)framefloat;
+		if (framefloat >= 15)
+			framefloat = 0;
 
 		std::vector<XMFLOAT4X4> boneLocalMatrices;
 		std::vector<XMFLOAT4X4> boneGlobalMatrices;
-		std::vector<XMFLOAT4X4> boneInvPose;
 		std::vector<Bone>* bones = &renderObject->model->skeleton;
 		boneGlobalMatrices.resize(renderObject->model->skeleton.size());
 		boneLocalMatrices.resize(renderObject->model->skeleton.size());
-		boneInvPose.resize(renderObject->model->skeleton.size());
 		XMFLOAT3 idnt(1, 1, 1);
+		XMVECTOR det;
 		XMVECTOR S = XMLoadFloat3(&idnt);
 		XMVECTOR P = XMLoadFloat3(&bones->at(0).frames[currentFrame].trans);
 		XMVECTOR Q = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(0).frames[currentFrame].rot));
 
 		XMVECTOR zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		XMStoreFloat4x4(&boneLocalMatrices[0], XMMatrixAffineTransformation(S, zero, Q, P));
+
+		XMStoreFloat4x4(&boneLocalMatrices[0], XMMatrixRotationQuaternion(Q)*XMMatrixTranslationFromVector(P));
 
 		boneGlobalMatrices[0] = boneLocalMatrices[0];
 		for (int i = 1; i < (signed)boneGlobalMatrices.size(); i++)
@@ -504,8 +509,6 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 			XMStoreFloat4x4(&boneGlobalMatrices[i], toRoot);
 		}
 
-
-
 		result = deviceContext->Map(matrixBufferPerWeightedObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(result)) { return false; }
 		MatrixBufferPerWeightedObject* dataPtr = (MatrixBufferPerWeightedObject*)mappedResource.pData;
@@ -518,14 +521,20 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 			XMMATRIX offset = XMLoadFloat4x4(&bones->at(i).invBindPose);
 			XMMATRIX toRoot = XMLoadFloat4x4(&boneGlobalMatrices[i]);
 
-			XMStoreFloat4x4(&finalTransforms[i], XMMatrixTranspose(XMMatrixMultiply(offset, toRoot)));
+			XMStoreFloat4x4(&finalTransforms[i], XMMatrixMultiply(offset, toRoot));
 
 			dataPtr->bones[i] = finalTransforms[i];
-			XMStoreFloat4x4(&dataPtr->bones[i], XMMatrixTranslation(0,0.2,0));
+			//XMStoreFloat4x4(&dataPtr->bones[i], XMMatrixTranslation(0, 0, 0));
+			//XMStoreFloat4x4(&dataPtr->bones[i], XMMatrixTranslation(0, -1, 0));
 		}
 
 		deviceContext->Unmap(matrixBufferPerWeightedObject, 0);
 		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerWeightedObject);
+	}
+
+	if (renderObject->model->hasBlendShapes)
+	{
+
 	}
 
 	return true;

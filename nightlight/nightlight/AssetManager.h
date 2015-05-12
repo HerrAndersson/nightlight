@@ -25,5 +25,6 @@ private:
 	void LoadTexture(string file_path);
 
 	ID3D11Buffer* CreateVertexBuffer(vector<WeightedPoint> *points, vector<Point> *purePoints, vector<XMFLOAT3> *normals, vector<XMFLOAT2> *UVs, vector<XMINT3> *vertexIndices, bool hasSkeleton, vector<BlendShape> *blendShapes);
+	void setUpBones(Model* model);
 };
 

@@ -103,7 +103,6 @@ void AssetManager::LoadModel(string file_path){
 				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
 			}
 		}
-
 	}
 
 
@@ -195,6 +194,9 @@ void AssetManager::LoadModel(string file_path){
 
 		infile.read((char*)model->skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
+
+	if (mainHeader.boneCount)
+		setUpBones(model);
 
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();
@@ -354,4 +356,44 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedPoint> *points, ve
 RenderObject* AssetManager::GetRenderObject(int id)
 {
 	return renderObjects[id];
+}
+
+void AssetManager::setUpBones(Model* model)
+{
+	int currentFrame = 0, finalFrame = model->skeleton[0].frames.size();
+
+	std::vector<XMFLOAT4X4> boneLocalMatrices;
+	std::vector<XMFLOAT4X4> boneGlobalMatrices;
+	std::vector<Bone>* bones = &model->skeleton;
+	boneGlobalMatrices.resize(model->skeleton.size());
+	boneLocalMatrices.resize(model->skeleton.size());
+	XMFLOAT3 idnt(1, 1, 1);
+	XMVECTOR det;
+	XMVECTOR S = XMLoadFloat3(&idnt);
+	XMVECTOR P = XMLoadFloat3(&bones->at(0).frames[currentFrame].trans);
+	XMVECTOR Q = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(0).frames[currentFrame].rot));
+
+	XMVECTOR zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	XMStoreFloat4x4(&boneLocalMatrices[0], XMMatrixAffineTransformation(S, zero, Q, P));
+
+	boneGlobalMatrices[0] = boneLocalMatrices[0];
+	XMStoreFloat4x4(&bones->at(0).invBindPose, XMMatrixInverse(&det, XMLoadFloat4x4(&boneGlobalMatrices[0])));
+	for (int i = 1; i < (signed)boneGlobalMatrices.size(); i++)
+	{
+		if (currentFrame < finalFrame){
+
+			XMVECTOR s0 = XMLoadFloat3(&idnt);
+			XMVECTOR trans = XMLoadFloat3(&bones->at(i).frames[currentFrame].trans);
+			XMVECTOR rot = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(i).frames[currentFrame].rot));
+
+			XMStoreFloat4x4(&boneLocalMatrices[i], XMMatrixAffineTransformation(S, zero, rot, trans));
+			
+		}
+		XMMATRIX local = XMLoadFloat4x4(&boneLocalMatrices[i]);
+		XMMATRIX global = XMLoadFloat4x4(&boneGlobalMatrices[bones->at(i).parent]);
+		XMMATRIX toRoot = XMMatrixMultiply(local, global);
+
+		XMStoreFloat4x4(&bones->at(i).invBindPose, XMMatrixInverse(&det, toRoot));
+		XMStoreFloat4x4(&boneGlobalMatrices[i], toRoot);
+	}
 }

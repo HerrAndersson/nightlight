@@ -1265,13 +1265,14 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 }
 
 
-void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
+void Exporter::RecursiveJointExtraction(MFnIkJoint& joint, int parentIndex){
 
 	Bone output;
 	output.parent = parentIndex;
+	MStatus stat;
 
 	output.invBindPose = joint.transformation().asMatrixInverse().matrix;
-
+	
 	MItDependencyNodes matIt(MFn::kAnimCurve);
 	while (!matIt.isDone())
 	{
@@ -1321,13 +1322,13 @@ void Exporter::RecursiveJointExtraction(MFnTransform& joint, int parentIndex){
 	int children = joint.childCount();
 	int parent = scene_.skeleton.size() - 1;
 	for (int i = 0; i < children; i++)
-		RecursiveJointExtraction(MFnTransform(joint.child(i)), parent);
+		RecursiveJointExtraction(MFnIkJoint(joint.child(i)), parent);
 
 };
 
 void Exporter::extractJointData(MDagPath path)
 {
-	MFnTransform joint(path);
+	MFnIkJoint joint(path);
 	int childcount = joint.childCount();
 	MFnDagNode rootpath(joint.parent(0));
 

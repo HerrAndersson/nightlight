@@ -85,6 +85,8 @@ private:
 	ID3D11Buffer*			lightBuffer;
 	HWND					hwnd;
 
+	int frame=0;
+	float framefloat=0;
 
 public:
 	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);

@@ -323,7 +323,7 @@ private:
 	void extractCamera(MObject& obj);
 	void extractJointData(MDagPath path);
 	void OutputSkinCluster(MObject& obj);
-	void RecursiveJointExtraction(MFnTransform& joint, int parentIndex);
+	void RecursiveJointExtraction(MFnIkJoint& joint, int parentIndex);
 
 	void OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base);
 	void outPutTarget(MObject& target, MObject& Base);
