@@ -9,7 +9,7 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 
 Enemy::~Enemy()
 {
-	for (auto p : path) delete p;
+	//for (auto p : path) delete p;
 	path.clear();
 }
 
@@ -43,7 +43,7 @@ bool Enemy::HasValidPath()
 	return true;
 }
 
-void Enemy::SetPath(vector<Node*> path)
+void Enemy::SetPath(vector<XMFLOAT3> path)
 {
 	this->path = path;
 }
