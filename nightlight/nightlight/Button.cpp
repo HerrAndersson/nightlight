@@ -9,6 +9,7 @@ Button::Button(XMFLOAT3 position, float rotation, RenderObject* renderObject, in
 	this->coordY = coordY;
 	this->clickID = clickID;
 	this->clicked = clicked;
+	this->endgame = endgame;
 }
 
 Button::~Button()
@@ -120,10 +121,6 @@ void Button::ClickedStart()
 	XMFLOAT3 rot = this->GetRotationDeg();
 	rot.y += 5.0f;
 	this->SetRotationDeg(rot);
-
-	//if (activatesStartButton != nullptr) {
-	//	activatesStartButton->setIsStartActivated(false);
-	//}
 }
 
 void Button::ClickedContinue()
@@ -133,21 +130,4 @@ void Button::ClickedContinue()
 	XMFLOAT3 rot = this->GetRotationDeg();
 	rot.y += 90.0f;
 	this->SetRotationDeg(rot);
-
-	//if (activatesStartButton != nullptr) {
-	//	activatesStartButton->setIsStartActivated(false);
-	//}
-}
-
-void Button::ClickedEnd()
-{
-	clicked = true;
-
-	XMFLOAT3 rot = this->GetRotationDeg();
-	rot.y += 50.0f;
-	this->SetRotationDeg(rot);
-
-	//if (activatesStartButton != nullptr) {
-	//	activatesStartButton->setIsStartActivated(false);
-	//}
 }

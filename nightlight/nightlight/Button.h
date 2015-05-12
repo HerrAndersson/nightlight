@@ -33,10 +33,13 @@ public:
 
 	void ClickedStart();
 	void ClickedContinue();
-	void ClickedEnd();
+	bool ClickedEnd();
 
 	void setClickID(int ID) { clickID = ID; }
 	int getClickID()const { return clickID; }
+
+	void setEndGame(bool end) { endgame = end; }
+	bool getEndGame()const { return endgame; }
 
 	void setMouseClicked(bool choice){ clicked = choice; }
 	bool getMouseclicked()const { return isActivated;  }
@@ -54,4 +57,5 @@ private:
 	Button* activatesExitButton = nullptr;
 	Button* mouseclickedd = nullptr;
 	int coordX, coordY, clickID;
+	bool endgame;
 };

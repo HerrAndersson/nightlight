@@ -23,6 +23,11 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 
 	if (Input->Esc()) return false;
 
+	if (end == false)
+	{
+		result = end;
+	}
+
 	return result;
 }
 
@@ -89,7 +94,8 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 				}
 				else if (button->getClickID() == 3)
 				{
-					button->ClickedEnd();
+					button->setEndGame(false);
+					end = button->getEndGame();
 				}
 				else
 				{

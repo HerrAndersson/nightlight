@@ -15,6 +15,7 @@ private:
 
 	InputManager*  Input;
 	AiModule*      AI;
+	bool end = true;
 
 	int screenWidth;
 	int screenHeight;
