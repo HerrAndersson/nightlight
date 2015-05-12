@@ -124,6 +124,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		double angle = atan2(dy, dx) * (180 / XM_PI);
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
+		
 		character->SetRotationDeg(rot);
 	}
 
@@ -159,11 +160,13 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	
 	if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
 	{
-		spotlight->setDiffuseColor(1, 0, 0, 1);
+		spotlight->setDiffuseColor(0, 1, 0, 1);
+		spotlight->setAmbientColor(0.2, 0.01, 0.8, 1);
 	}
 	else
 	{
-	spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+		spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+		spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
 	}
 	
 		spotlight->generateViewMatrix();
@@ -471,20 +474,7 @@ bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 				return false;
 			}
 			return true;
-	//XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
-	//XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
-	//XMVECTOR angle = XMVector3AngleBetweenVectors(lightEnemyVector, -spotDirection);
-	//XMFLOAT3 angleCompare;
-	//XMStoreFloat3(&angleCompare, angle);
-	//
-	//float radianConvert = (180 / XM_PI) * angleCompare.x;
-	//
-	//if (spotlight->getCone() < radianConvert)
-	//{
-	//	return false;
-	//}
-	//return true;
-			
+				
 }
 
 
