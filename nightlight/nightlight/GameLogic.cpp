@@ -156,15 +156,15 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 	
 
-	//Test if inside spot
-	//if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
-	//{
-	//	spotlight->setDiffuseColor(1, 0, 0, 1);
-	//}
-	//else
-	//{
-		spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
-	//}
+	
+	if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
+	{
+		spotlight->setDiffuseColor(1, 0, 0, 1);
+	}
+	else
+	{
+	spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+	}
 	
 		spotlight->generateViewMatrix();
 	return true;
@@ -447,7 +447,7 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 {
 
-	XMFLOAT3 lightEnemyVec = XMFLOAT3((spotlight->getPosition().x - enemy.x), (spotlight->getPosition().y - enemy.y), (spotlight->getPosition().z - enemy.z));
+	XMFLOAT3 lightEnemyVec = XMFLOAT3((enemy.x - spotlight->getPosition().x), (enemy.y - spotlight->getPosition().y), (enemy.z - spotlight->getPosition().z));
 
 	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
 	
@@ -455,20 +455,35 @@ bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 	if ((spotlight->getRange()/2) > vecLenght)
 	{
 
+
+		XMFLOAT3 spotDirection = spotlight->getDirection();
 		
-		XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
-		XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
-		XMVECTOR angle = XMVector3AngleBetweenVectors(lightEnemyVector, -spotDirection);
-		XMFLOAT3 angleCompare;
-		XMStoreFloat3(&angleCompare, angle);
+		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
+		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
+		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
+		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
 
-		float radianConvert = (180 / XM_PI) * angleCompare.x;
+		float angleInRads = (180 / XM_PI) * angle;
 
-		if (spotlight->getCone() < radianConvert)
-		{
-			return false;
-		}
-		return true;
+
+		if (spotlight->getCone() < angleInRads)
+			{
+				return false;
+			}
+			return true;
+	//XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
+	//XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
+	//XMVECTOR angle = XMVector3AngleBetweenVectors(lightEnemyVector, -spotDirection);
+	//XMFLOAT3 angleCompare;
+	//XMStoreFloat3(&angleCompare, angle);
+	//
+	//float radianConvert = (180 / XM_PI) * angleCompare.x;
+	//
+	//if (spotlight->getCone() < radianConvert)
+	//{
+	//	return false;
+	//}
+	//return true;
 			
 }
 
