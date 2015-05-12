@@ -73,6 +73,30 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	{
 		leftMouseLastState = true;
 
+		Button* button = dynamic_cast<Button*>(selectedObject);
+
+		if (button != nullptr)
+		{
+			if (button->getMouseclicked())
+			{
+				if (button->getClickID() == 1)
+				{
+					button->ClickedStart();
+				}
+				else if (button->getClickID() == 2)
+				{
+					button->ClickedContinue();
+				}
+				else if (button->getClickID() == 3)
+				{
+					button->ClickedEnd();
+				}
+				else
+				{
+				}
+			}
+		}
+
 		if (selectedObject != nullptr) {
 			Lever* lever = dynamic_cast<Lever*>(selectedObject);
 			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
@@ -113,6 +137,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		double angle = atan2(dy, dx) * (180 / XM_PI);
 
 		rot = XMFLOAT3(0.0f, (float)angle, 0.0f);
+		
 		character->SetRotationDeg(rot);
 	}
 
@@ -131,14 +156,33 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	XMStoreFloat3(&pForward, player->GetForwardVector());
 	spotlight->setDirection(pForward.x, pForward.y, pForward.z);
 
+	float length = sqrt((pForward.x*pForward.x) + (pForward.y*pForward.y) + (pForward.z*pForward.z));
+
+	pForward.x = pForward.x / length;
+	pForward.y = pForward.y / length;
+	pForward.z = pForward.z / length;
+
 	XMFLOAT3 pPos = player->GetPosition();
 	//offset light
-	pPos.x += pForward.x / 100;
-	pPos.z += pForward.z / 100;
+	pPos.x -= pForward.x/2;
+	pPos.z -= pForward.z/2;
 	pPos.y -= 0.7f;
-
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
-	spotlight->generateViewMatrix();
+	
+
+	
+	if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
+	{
+		spotlight->setDiffuseColor(0, 1, 0, 1);
+		spotlight->setAmbientColor(0.2, 0.01, 0.8, 1);
+	}
+	else
+	{
+		spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+		spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+	}
+	
+		spotlight->generateViewMatrix();
 	return true;
 
 }
@@ -183,6 +227,126 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 							}
 						}
 					}
+
+					//for when walking on the "buttons" in the menu
+					if (tile != nullptr && tile->getButton() != nullptr)
+					{
+						if ((tile->getButton()->getCoordX() == 6) && (tile->getButton()->getCoordY() <= 4) && (tile->getButton()->getCoordY() >= 3))
+						{
+							//start button
+
+							if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+							{
+								if (!tile->getButton()->getIsStartActivated())
+								{
+									tile->getButton()->ActivateStartButton();
+
+									if (tile->getButton()->getIsStartActivated() == true)
+									{
+										selectedObject = tile->getButton();
+										if (!selectedObject->IsSelected())
+											selectedObject->SetSelected((true));
+										else
+										{
+											if (selectedObject != nullptr)
+											{
+												selectedObject->SetSelected(false);
+												selectedObject = nullptr;
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								if (tile->getButton()->getIsStartActivated())
+								{
+									tile->getButton()->DeactivateStartButton();
+								}
+							}
+						}
+					
+					}
+
+					if (tile != nullptr && tile->getButton() != nullptr)
+					{
+						if ((tile->getButton()->getCoordX() == 6) && (tile->getButton()->getCoordY() > 4) && (tile->getButton()->getCoordY() <= 6))
+						{
+							//continue button
+
+							if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+							{
+								if (!tile->getButton()->getIsContinueActivated())
+								{
+									tile->getButton()->ActivateContinueButton();
+
+									if (tile->getButton()->getIsContinueActivated() == true)
+									{
+										selectedObject = tile->getButton();
+
+										if (!selectedObject->IsSelected())
+											selectedObject->SetSelected((true));
+										else
+										{
+											if (selectedObject != nullptr)
+											{
+												selectedObject->SetSelected(false);
+												selectedObject = nullptr;
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								if (tile->getButton()->getIsContinueActivated())
+								{
+									tile->getButton()->DeactivateContinueButton();
+								}
+							}
+						}
+
+					}
+
+					if (tile != nullptr && tile->getButton() != nullptr)
+					{
+						if ((tile->getButton()->getCoordX() == 6) && (tile->getButton()->getCoordY() > 6) && (tile->getButton()->getCoordY() <= 7))
+						{
+							//exit button
+
+							if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+							{
+								if (!tile->getButton()->getIsExitActivated())
+								{
+									tile->getButton()->ActivateExitButton();
+
+									if (tile->getButton()->getIsExitActivated() == true)
+									{
+										selectedObject = tile->getButton();
+										if (!selectedObject->IsSelected())
+											selectedObject->SetSelected((true));
+										else
+										{
+											if (selectedObject != nullptr)
+											{
+												selectedObject->SetSelected(false);
+												selectedObject = nullptr;
+											}
+										}
+									}
+								}
+							}
+							else
+							{
+								if (tile->getButton()->getIsExitActivated())
+								{
+									tile->getButton()->DeactivateExitButton();
+								}
+							}
+						}
+
+					}
+
 
 					if (!IsTileWalkable(tile))
 					{
@@ -230,6 +394,24 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 								}
 							}
 						}
+						//else if (tile->getButton() != nullptr)
+						//{
+						//	nextPos = NextPositionFromCollision(result, nextPos, 0.15f, iteratorTileCoord);
+						//	if (result)
+						//	{
+						//		selectedObject = tile->getButton();
+						//		if (!selectedObject->IsSelected())
+						//			selectedObject->SetSelected((true));
+						//		else
+						//		{
+						//			if (selectedObject != nullptr)
+						//			{
+						//				selectedObject->SetSelected(false);
+						//				selectedObject = nullptr;
+						//			}
+						//		}
+						//	}
+						//}
 					}
 				}
 			}
@@ -245,6 +427,11 @@ bool GameLogic::IsTileWalkable(Tile* tile)
 	}
 
 	if (tile->getPressurePlate() != nullptr)
+	{
+		return true;
+	}
+
+	if (tile->getButton() != nullptr)
 	{
 		return true;
 	}
@@ -342,31 +529,37 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 }
 
 
-bool GameLogic::inLight(LightObject* spotlight, GameObject* enemyObject)
+bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 {
 
-	XMFLOAT3 lightEnemyVec = XMFLOAT3((spotlight->getPosition().x - enemyObject->GetPosition().x), (spotlight->getPosition().y - enemyObject->GetPosition().y), (spotlight->getPosition().z - enemyObject->GetPosition().z));
+	XMFLOAT3 lightEnemyVec = XMFLOAT3((enemy.x - spotlight->getPosition().x), (enemy.y - spotlight->getPosition().y), (enemy.z - spotlight->getPosition().z));
 
 	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
-	if (spotlight->getRange() < vecLenght)
+	
+	
+	if ((spotlight->getRange()/2) > vecLenght)
 	{
-		return false;
-	}
 
 
-	XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
-	XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
+		XMFLOAT3 spotDirection = spotlight->getDirection();
+		
+		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
+		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
+		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
+		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
+
+		float angleInRads = (180 / XM_PI) * angle;
 
 
+		if (spotlight->getCone() < angleInRads)
+			{
+				return false;
+			}
+			return true;
+				
+}
 
-	//if (spotlight->getCone() < XMVector3AngleBetweenVectors(spotDirection, lightEnemyVector))
-	//{
-	//	return false;
-	//}
 
-
-
-	return true;
+	return false;
 
 }
