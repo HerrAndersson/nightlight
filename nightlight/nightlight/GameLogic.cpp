@@ -73,6 +73,30 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	{
 		leftMouseLastState = true;
 
+		Button* button = dynamic_cast<Button*>(selectedObject);
+
+		if (button != nullptr)
+		{
+			if (button->getMouseclicked())
+			{
+				if (button->getClickID() == 1)
+				{
+					button->ClickedStart();
+				}
+				else if (button->getClickID() == 2)
+				{
+					button->ClickedContinue();
+				}
+				else if (button->getClickID() == 3)
+				{
+					button->ClickedEnd();
+				}
+				else
+				{
+				}
+			}
+		}
+
 		if (selectedObject != nullptr) {
 			Lever* lever = dynamic_cast<Lever*>(selectedObject);
 			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
@@ -89,17 +113,6 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 				}
 			}
 		}
-		/*if (selectedObject != nullptr)
-		{
-			Button* button = dynamic_cast<Button*>(selectedObject);
-			
-			if (button != nullptr)
-			{
-				if (button->getIsActivated()) { button->DeactivateButton(); }
-
-				else{ button->ActivateButton(); }
-			}
-		}*/
 	}
 	else if (!Input->LeftMouse() && leftMouseLastState == true)
 	{
@@ -227,6 +240,21 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 								if (!tile->getButton()->getIsStartActivated())
 								{
 									tile->getButton()->ActivateStartButton();
+
+									if (tile->getButton()->getIsStartActivated() == true)
+									{
+										selectedObject = tile->getButton();
+										if (!selectedObject->IsSelected())
+											selectedObject->SetSelected((true));
+										else
+										{
+											if (selectedObject != nullptr)
+											{
+												selectedObject->SetSelected(false);
+												selectedObject = nullptr;
+											}
+										}
+									}
 								}
 							}
 							else
@@ -251,6 +279,22 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 								if (!tile->getButton()->getIsContinueActivated())
 								{
 									tile->getButton()->ActivateContinueButton();
+
+									if (tile->getButton()->getIsContinueActivated() == true)
+									{
+										selectedObject = tile->getButton();
+
+										if (!selectedObject->IsSelected())
+											selectedObject->SetSelected((true));
+										else
+										{
+											if (selectedObject != nullptr)
+											{
+												selectedObject->SetSelected(false);
+												selectedObject = nullptr;
+											}
+										}
+									}
 								}
 							}
 							else
@@ -275,6 +319,21 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 								if (!tile->getButton()->getIsExitActivated())
 								{
 									tile->getButton()->ActivateExitButton();
+
+									if (tile->getButton()->getIsExitActivated() == true)
+									{
+										selectedObject = tile->getButton();
+										if (!selectedObject->IsSelected())
+											selectedObject->SetSelected((true));
+										else
+										{
+											if (selectedObject != nullptr)
+											{
+												selectedObject->SetSelected(false);
+												selectedObject = nullptr;
+											}
+										}
+									}
 								}
 							}
 							else
@@ -335,6 +394,24 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 								}
 							}
 						}
+						//else if (tile->getButton() != nullptr)
+						//{
+						//	nextPos = NextPositionFromCollision(result, nextPos, 0.15f, iteratorTileCoord);
+						//	if (result)
+						//	{
+						//		selectedObject = tile->getButton();
+						//		if (!selectedObject->IsSelected())
+						//			selectedObject->SetSelected((true));
+						//		else
+						//		{
+						//			if (selectedObject != nullptr)
+						//			{
+						//				selectedObject->SetSelected(false);
+						//				selectedObject = nullptr;
+						//			}
+						//		}
+						//	}
+						//}
 					}
 				}
 			}
@@ -350,6 +427,11 @@ bool GameLogic::IsTileWalkable(Tile* tile)
 	}
 
 	if (tile->getPressurePlate() != nullptr)
+	{
+		return true;
+	}
+
+	if (tile->getButton() != nullptr)
 	{
 		return true;
 	}

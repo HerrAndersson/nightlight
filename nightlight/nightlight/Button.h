@@ -31,6 +31,16 @@ public:
 	void setIsExitActivated(bool choice){ isActivated = choice; }
 	bool getIsExitActivated()const { return isActivated; }
 
+	void ClickedStart();
+	void ClickedContinue();
+	void ClickedEnd();
+
+	void setClickID(int ID) { clickID = ID; }
+	int getClickID()const { return clickID; }
+
+	void setMouseClicked(bool choice){ clicked = choice; }
+	bool getMouseclicked()const { return isActivated;  }
+
 
 	int getCoordX() { return coordX; }
 	int getCoordY() { return coordY; }
@@ -38,8 +48,10 @@ public:
 private:
 	std::string activatesName = "";
 	bool isActivated = false;
+	bool clicked = false;
 	Button* activatesStartButton = nullptr;
 	Button* activatesContinueButton = nullptr;
 	Button* activatesExitButton = nullptr;
-	int coordX, coordY;
+	Button* mouseclickedd = nullptr;
+	int coordX, coordY, clickID;
 };
