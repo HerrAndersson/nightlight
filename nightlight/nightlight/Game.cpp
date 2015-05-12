@@ -11,6 +11,9 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	spotLight = new LightObject();
 	spotLight->generateProjMatrix(0.1f, 1000);
 
+	spotLight->setAmbientColor(0.35f, 0.35f, 0.35f, 1.0f);
+	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
 }

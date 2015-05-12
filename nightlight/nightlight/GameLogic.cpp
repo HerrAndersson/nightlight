@@ -147,9 +147,20 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	pPos.x += pForward.x / 100;
 	pPos.z += pForward.z / 100;
 	pPos.y -= 0.7f;
-
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
-	spotlight->generateViewMatrix();
+	
+
+	//Test if inside spot
+	//if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
+	//{
+	//	spotlight->setDiffuseColor(1, 0, 0, 1);
+	//}
+	//else
+	//{
+		spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+	//}
+	
+		spotlight->generateViewMatrix();
 	return true;
 
 }
@@ -427,31 +438,35 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 }
 
 
-bool GameLogic::inLight(LightObject* spotlight, GameObject* enemyObject)
+bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 {
 
-	XMFLOAT3 lightEnemyVec = XMFLOAT3((spotlight->getPosition().x - enemyObject->GetPosition().x), (spotlight->getPosition().y - enemyObject->GetPosition().y), (spotlight->getPosition().z - enemyObject->GetPosition().z));
+	XMFLOAT3 lightEnemyVec = XMFLOAT3((spotlight->getPosition().x - enemy.x), (spotlight->getPosition().y - enemy.y), (spotlight->getPosition().z - enemy.z));
 
 	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
-	if (spotlight->getRange() < vecLenght)
+	
+	
+	if ((spotlight->getRange()/2) > vecLenght)
 	{
-		return false;
-	}
+
+		
+		XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
+		XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
+		XMVECTOR angle = XMVector3AngleBetweenVectors(lightEnemyVector, -spotDirection);
+		XMFLOAT3 angleCompare;
+		XMStoreFloat3(&angleCompare, angle);
+
+		float radianConvert = (180 / XM_PI) * angleCompare.x;
+
+		if (spotlight->getCone() < radianConvert)
+		{
+			return false;
+		}
+		return true;
+			
+}
 
 
-	XMVECTOR spotDirection = XMLoadFloat3(&spotlight->getDirection());
-	XMVECTOR lightEnemyVector = XMLoadFloat3(&lightEnemyVec);
-
-
-
-	//if (spotlight->getCone() < XMVector3AngleBetweenVectors(spotDirection, lightEnemyVector))
-	//{
-	//	return false;
-	//}
-
-
-
-	return true;
+	return false;
 
 }
