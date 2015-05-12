@@ -86,10 +86,23 @@ bool Game::Update()
 	//	default:
 	//		break;
 	//}
+	if (currentLevelNr == 1)
+	{
+		currentLevel = UpdateLevel(currentLevelNr);
+		currentLevelNr = 0;
+	}
+	//currentLevel = UpdateLevel(currentLevelNr);
+	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, currentLevelNr);
+	
 
-	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies);
 
 	return result;
+}
+
+Level* Game::UpdateLevel(int currentLevelNr)
+{
+	Level* newLevel = Levels->LoadLevel(currentLevelNr, enemies, *character);
+	return newLevel;
 }
 
 bool Game::Render()
