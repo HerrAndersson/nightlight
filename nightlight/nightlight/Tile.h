@@ -10,7 +10,7 @@
 #include "StaticObject.h"
 #include "Wall.h"
 #include "AssetManager.h"
-#include "Exit.h"
+#include "Button.h"
 
 class Tile 
 {
@@ -25,7 +25,7 @@ private:
 	Container* shadowContainer = nullptr;
 	MovableObject* movableObject = nullptr;
 	StaticObject* staticObject = nullptr;
-	Exit* exit = nullptr;
+	Button* button = nullptr;
 
 	std::vector<GameObject*> gameObjects;
 
@@ -45,7 +45,7 @@ public:
 	Container* getShadowContainer() const { return shadowContainer; }
 	MovableObject* getMovableObject() const { return movableObject; }
 	StaticObject* getStaticObject() const { return staticObject; }
-	Exit* getExit() const { return exit; }
+	Button* getButton() const { return button; }
 
 	std::vector<GameObject*>* getAllGameObjects(){ return &gameObjects; }
 

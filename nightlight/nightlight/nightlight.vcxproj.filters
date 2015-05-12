@@ -126,7 +126,7 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Exit.cpp">
+    <ClCompile Include="Button.cpp">
       <Filter>Game\Menu</Filter>
     </ClCompile>
   </ItemGroup>
@@ -227,7 +227,7 @@
     <ClInclude Include="Enemy.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
-    <ClInclude Include="Exit.h">
+    <ClInclude Include="Button.h">
       <Filter>Game\Menu</Filter>
     </ClInclude>
   </ItemGroup>

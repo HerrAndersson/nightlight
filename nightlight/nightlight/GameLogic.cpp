@@ -89,6 +89,17 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 				}
 			}
 		}
+		/*if (selectedObject != nullptr)
+		{
+			Button* button = dynamic_cast<Button*>(selectedObject);
+			
+			if (button != nullptr)
+			{
+				if (button->getIsActivated()) { button->DeactivateButton(); }
+
+				else{ button->ActivateButton(); }
+			}
+		}*/
 	}
 	else if (!Input->LeftMouse() && leftMouseLastState == true)
 	{
@@ -183,6 +194,80 @@ XMFLOAT3 GameLogic::ManagePlayerCollisions(Level* currentLevel, Character* chara
 							}
 						}
 					}
+
+					//for when walking on the "buttons" in the menu
+					if (tile != nullptr && tile->getButton() != nullptr)
+					{
+						if ((tile->getButton()->getCoordX() == 6) && (tile->getButton()->getCoordY() <= 4) && (tile->getButton()->getCoordY() >= 3))
+						{
+							//start button
+
+							if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+							{
+								if (!tile->getButton()->getIsStartActivated())
+								{
+									tile->getButton()->ActivateStartButton();
+								}
+							}
+							else
+							{
+								if (tile->getButton()->getIsStartActivated())
+								{
+									tile->getButton()->DeactivateStartButton();
+								}
+							}
+						}
+					
+					}
+
+					if (tile != nullptr && tile->getButton() != nullptr)
+					{
+						if ((tile->getButton()->getCoordX() == 6) && (tile->getButton()->getCoordY() > 4) && (tile->getButton()->getCoordY() <= 6))
+						{
+							//continue button
+
+							if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+							{
+								if (!tile->getButton()->getIsContinueActivated())
+								{
+									tile->getButton()->ActivateContinueButton();
+								}
+							}
+							else
+							{
+								if (tile->getButton()->getIsContinueActivated())
+								{
+									tile->getButton()->DeactivateContinueButton();
+								}
+							}
+						}
+
+					}
+
+					if (tile != nullptr && tile->getButton() != nullptr)
+					{
+						if ((tile->getButton()->getCoordX() == 6) && (tile->getButton()->getCoordY() > 6) && (tile->getButton()->getCoordY() <= 7))
+						{
+							//exit button
+
+							if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+							{
+								if (!tile->getButton()->getIsExitActivated())
+								{
+									tile->getButton()->ActivateExitButton();
+								}
+							}
+							else
+							{
+								if (tile->getButton()->getIsExitActivated())
+								{
+									tile->getButton()->DeactivateExitButton();
+								}
+							}
+						}
+
+					}
+
 
 					if (!IsTileWalkable(tile))
 					{
