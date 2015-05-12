@@ -150,8 +150,8 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		character->SetRotationDeg(rot);
 	}
 
-	camera->SetPosition(character->GetPosition().x, -15, character->GetPosition().z);
-	camera->SetLookAt(character->GetPosition().x * 0.9f, 0.0f, character->GetPosition().z * 0.9f);
+	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z-3.5f);
+	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005);
 	character->SetPosition(pos);
 
 	UpdateSpotLight(character, camera, spotlight);
