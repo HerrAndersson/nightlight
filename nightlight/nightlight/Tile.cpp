@@ -108,7 +108,7 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		gameObjects.push_back(shadowContainer);
 		tileIsWalkable = false;
 	}
-	else if (gameObjectType == "startcube" || gameObjectType == "exitcube" || gameObjectType == "exitcube")
+	else if (gameObjectType == "startcube" || gameObjectType == "continuecube" || gameObjectType == "exitcube")
 	{
 		std::string buttonType = unparsedData.at(i++);
 		int buttonWidth = stoi(unparsedData.at(i++));
