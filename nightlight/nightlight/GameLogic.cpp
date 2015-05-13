@@ -384,7 +384,7 @@ XMFLOAT3 GameLogic::ManageCollisions(Level* currentLevel, GameObject* gameObject
 					//		}
 					//	}
 					//}
-					if (!tile->IsWalkable())
+					//if (!tile->IsWalkable())
 				}
 			}
 		}
@@ -514,129 +514,129 @@ XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTile
 {
 	bool result = false;
 
-	if (iteratorTile != nullptr)
-	{
-		//for when walking on the "buttons" in the menu
-		if (iteratorTile->getButton() != nullptr)
-		{
-			if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() <= 4) && (iteratorTile->getButton()->getCoordY() >= 3))
-			{
-				//start button
+	//if (iteratorTile != nullptr)
+	//{
+	//	//for when walking on the "buttons" in the menu
+	//	if (iteratorTile->getButton() != nullptr)
+	//	{
+	//		if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() <= 4) && (iteratorTile->getButton()->getCoordY() >= 3))
+	//		{
+	//			//start button
 
-				if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-				{
-					if (!iteratorTile->getButton()->getIsStartActivated())
-					{
-						iteratorTile->getButton()->ActivateStartButton();
+	//			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+	//			{
+	//				if (!iteratorTile->getButton()->getIsStartActivated())
+	//				{
+	//					iteratorTile->getButton()->ActivateStartButton();
 
-						if (iteratorTile->getButton()->getIsStartActivated() == true)
-						{
-							selectedObject = iteratorTile->getButton();
-							if (!selectedObject->IsSelected())
-								selectedObject->SetSelected((true));
-							else
-							{
-								if (selectedObject != nullptr)
-								{
-									selectedObject->SetSelected(false);
-									selectedObject = nullptr;
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					if (iteratorTile->getButton()->getIsStartActivated())
-					{
-						iteratorTile->getButton()->DeactivateStartButton();
-					}
-				}
-			}
+	//					if (iteratorTile->getButton()->getIsStartActivated() == true)
+	//					{
+	//						selectedObject = iteratorTile->getButton();
+	//						if (!selectedObject->IsSelected())
+	//							selectedObject->SetSelected((true));
+	//						else
+	//						{
+	//							if (selectedObject != nullptr)
+	//							{
+	//								selectedObject->SetSelected(false);
+	//								selectedObject = nullptr;
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//			else
+	//			{
+	//				if (iteratorTile->getButton()->getIsStartActivated())
+	//				{
+	//					iteratorTile->getButton()->DeactivateStartButton();
+	//				}
+	//			}
+	//		}
 
-		}
+	//	}
 
-		if (iteratorTile->getButton() != nullptr)
-		{
-			if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() > 4) && (iteratorTile->getButton()->getCoordY() <= 6))
-			{
-				//continue button
+	//	if (iteratorTile->getButton() != nullptr)
+	//	{
+	//		if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() > 4) && (iteratorTile->getButton()->getCoordY() <= 6))
+	//		{
+	//			//continue button
 
-				if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-				{
-					if (!iteratorTile->getButton()->getIsContinueActivated())
-					{
-						iteratorTile->getButton()->ActivateContinueButton();
+	//			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+	//			{
+	//				if (!iteratorTile->getButton()->getIsContinueActivated())
+	//				{
+	//					iteratorTile->getButton()->ActivateContinueButton();
 
-						if (iteratorTile->getButton()->getIsContinueActivated() == true)
-						{
-							selectedObject = iteratorTile->getButton();
+	//					if (iteratorTile->getButton()->getIsContinueActivated() == true)
+	//					{
+	//						selectedObject = iteratorTile->getButton();
 
-							if (!selectedObject->IsSelected())
-								selectedObject->SetSelected((true));
-							else
-							{
-								if (selectedObject != nullptr)
-								{
-									selectedObject->SetSelected(false);
-									selectedObject = nullptr;
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					if (iteratorTile->getButton()->getIsContinueActivated())
-					{
-						iteratorTile->getButton()->DeactivateContinueButton();
-					}
-				}
-			}
+	//						if (!selectedObject->IsSelected())
+	//							selectedObject->SetSelected((true));
+	//						else
+	//						{
+	//							if (selectedObject != nullptr)
+	//							{
+	//								selectedObject->SetSelected(false);
+	//								selectedObject = nullptr;
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//			else
+	//			{
+	//				if (iteratorTile->getButton()->getIsContinueActivated())
+	//				{
+	//					iteratorTile->getButton()->DeactivateContinueButton();
+	//				}
+	//			}
+	//		}
 
-		}
+	//	}
 
-		if (iteratorTile->getButton() != nullptr)
-		{
-			if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() > 6) && (iteratorTile->getButton()->getCoordY() <= 7))
-			{
-				//exit button
+	//	if (iteratorTile->getButton() != nullptr)
+	//	{
+	//		if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() > 6) && (iteratorTile->getButton()->getCoordY() <= 7))
+	//		{
+	//			//exit button
 
-				if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-				{
-					if (!iteratorTile->getButton()->getIsExitActivated())
-					{
-						iteratorTile->getButton()->ActivateExitButton();
+	//			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+	//			{
+	//				if (!iteratorTile->getButton()->getIsExitActivated())
+	//				{
+	//					iteratorTile->getButton()->ActivateExitButton();
 
-						if (iteratorTile->getButton()->getIsExitActivated() == true)
-						{
-							selectedObject = iteratorTile->getButton();
-							if (!selectedObject->IsSelected())
-								selectedObject->SetSelected((true));
-							else
-							{
-								if (selectedObject != nullptr)
-								{
-									selectedObject->SetSelected(false);
-									selectedObject = nullptr;
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					if (iteratorTile->getButton()->getIsExitActivated())
-					{
-						iteratorTile->getButton()->DeactivateExitButton();
-					}
-				}
-			}
-		}
-	}
+	//					if (iteratorTile->getButton()->getIsExitActivated() == true)
+	//					{
+	//						selectedObject = iteratorTile->getButton();
+	//						if (!selectedObject->IsSelected())
+	//							selectedObject->SetSelected((true));
+	//						else
+	//						{
+	//							if (selectedObject != nullptr)
+	//							{
+	//								selectedObject->SetSelected(false);
+	//								selectedObject = nullptr;
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//			else
+	//			{
+	//				if (iteratorTile->getButton()->getIsExitActivated())
+	//				{
+	//					iteratorTile->getButton()->DeactivateExitButton();
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 
-	if (!IsTileWalkable(iteratorTile))
+	if (!iteratorTile->IsWalkable())
 	{
 		nextPos = NextPositionFromCollision(result, nextPos, characterRadius, iteratorTileCoord);
 		if (iteratorTile != nullptr)
@@ -660,7 +660,7 @@ XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTile
 	{
 		Door* door = iteratorTile->getDoor();
 		nextPos = NextPositionFromDoorCollision(result, nextPos, characterRadius, iteratorTileCoord, nextTileCoord, door);
-		
+
 		Lever* lever = iteratorTile->getLever();
 		if (lever != nullptr)
 		{
