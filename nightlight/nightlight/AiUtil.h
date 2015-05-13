@@ -211,6 +211,11 @@ static bool Equals(XMINT2 f1, XMINT2 f2)
 		return false;
 }
 
+static int GenerateF(Tile* child, Tile* end)
+{
+	return child->GetG() + ManhattanDistance(child, end);
+}
+
 static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ)
 {
 	vector<XMFLOAT3> path;
@@ -269,21 +274,32 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 						bool inClosed = child->InClosed();
 						bool inOpen = child->InOpen();
 
+						//Do not use when paths are generated each frame!
 						//cout << "Node: " << childTileCoord.x << " " << childTileCoord.y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
 
 						if (!inClosed && child->IsWalkable())
 						{
-							//Check for corners
-							//XMINT2 currentCoord = current->GetTileCoord();
-							//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + 1);
-							//Tile* nextX = level->getTile(currentCoord.x + 1, currentCoord.y);
+							//Check for corners 
+							//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
 
-							//if (nextY !=nullptr)
-							//	if (!nextY->IsWalkable())
+							//XMINT2 currentCoord = current->GetTileCoord();
+
+							//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+							//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+							////Tile* nextY = nullptr;
+							////Tile* nextX = nullptr;
+							////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
+							////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+							////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
+							////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+							//if (nextY != nullptr)
+							//	if (!nextY->IsWalkable() || nextY->InClosed())
 							//		continue;
 
 							//if (nextX != nullptr)
-							//	if (!nextX->IsWalkable())
+							//	if (!nextX->IsWalkable() || nextX->InClosed())
 							//		continue;
 						
 							int tentativeG = current->GetG() + 1;
@@ -295,20 +311,17 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 								{
 									child->SetParent(current);
 									child->SetG(tentativeG);
-									child->SetF(child->GetG() + ManhattanDistance(child, end));
+									child->SetF(GenerateF(child, end));
 								}
 							}
-
-							if (!inOpen && current->GetParent() != child)
+							else if (current->GetParent() != child)
 							{
 								openList.push_back(child);
 								child->SetInOpen(true);
 
 								child->SetParent(current);
 								child->SetG(tentativeG);
-								child->SetF(child->GetG() + ManhattanDistance(child, end));
-								//child->SetF(child->GetG() + EuclideanDistance(child, end));
-								//child->SetF(child->GetG() + ChebyshevDistance(child, end));
+								child->SetF(GenerateF(child, end));
 							}
 						}
 					}
