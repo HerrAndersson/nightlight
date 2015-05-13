@@ -15,6 +15,9 @@ GameLogic::~GameLogic()
 bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad)
 {
 	//TODO: Handle buttons!
+	//Make it so that our code only cares about buttons if level if menu
+	//Make tile sized boundingboxes thingis
+	//Make functions happen (start game always on level 1, continue the game and exit, which is already done but just need to be redone to work for the thingis above
 
 	bool result = false;
 
@@ -161,27 +164,27 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 					lever->ActivateLever();
 				}
 			}
-			//Button* button = dynamic_cast<Button*>(selectedObject);
+			Button* button = dynamic_cast<Button*>(selectedObject);
 
-			//if (button != nullptr)
-			//{
-			//	if (button->getMouseclicked())
-			//	{
-			//		if (button->getClickID() == 1)
-			//		{
-			//			button->ClickedStart();
-			//		}
-			//		else if (button->getClickID() == 2)
-			//		{
-			//			button->ClickedContinue();
-			//		}
-			//		else if (button->getClickID() == 3)
-			//		{
-			//			button->setEndGame(false);
-			//			end = button->getEndGame();
-			//		}
-			//	}
-			//}
+			if (button != nullptr)
+			{
+				//if (button->getMouseclicked())
+				//{
+					if (button->getClickID() == 1)
+					{
+						button->ClickedStart();
+					}
+					else if (button->getClickID() == 2)
+					{
+						button->ClickedContinue();
+					}
+					else if (button->getClickID() == 3)
+					{
+						button->setEndGame(false);
+						end = button->getEndGame();
+					}
+				//}
+			}
 		}
 	}
 	else if (!Input->LeftMouse() && leftMouseLastState == true)
