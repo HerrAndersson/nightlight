@@ -39,7 +39,7 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 
 bool GameLogic::UpdateAI(vector<Enemy>* enemies)
 {
-	//TOFO: Update enemies here
+	//TODO: Update enemies here
 	return true;
 }
 
