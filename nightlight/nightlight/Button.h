@@ -8,10 +8,10 @@ public:
 	~Button();
 
 	std::string getButtonType()  const { return buttonType; }
+	int getButtonWidth() const { return buttonWidth; }
 
 	void ActivateButton();
 	void DeactivateButton();
-
 
 	void ActivateStartButton();
 	void DeactivateStartButton();
