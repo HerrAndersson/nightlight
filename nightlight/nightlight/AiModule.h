@@ -1,6 +1,7 @@
 #pragma once
 #include "AiUtil.h"
 #include "Enemy.h"
+#include "Character.h"
 using namespace std;
 
 class AiModule
@@ -27,13 +28,13 @@ public:
 	AiModule(Level* level);
 	~AiModule();
 
-	void HandleAI(Enemy* enemy);
+	void HandleAI(Enemy* enemy, Character* player);
 
 	void ChangeLevel(Level* level);
 	void Update(vector<GameObject*> dynamicObjects);
 
 	//For use from the outside?
-	vector<XMFLOAT3> GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ);
+	vector<XMINT2> GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
 	vector<vector<int>> GetTotalPF();
 };

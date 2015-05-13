@@ -14,170 +14,7 @@ using namespace std;
 using DirectX::XMFLOAT2;
 using DirectX::XMINT2;
 
-//struct Node
-//{
-//	int x, y;
-//
-//	//f = g + h, g = sum of all costs to get here, h = heuristic
-//	int f, g;
-//
-//	Node* parent;
-//
-//	Node(int x, int y)
-//	{
-//		this->x = x;
-//		this->y = y;
-//		f, g = 0;
-//		parent = nullptr;
-//	}
-//
-//	Node()
-//	{
-//		x, y, f, g  = 0;
-//		parent = nullptr;
-//	}
-//
-//	bool operator==(const Node* n)
-//	{
-//		if (this->x == n->x && this->y == n->y)
-//			return true;
-//		else 
-//			return false;
-//	}
-//};
-
-//static int ManhattanDistance(Node* n1, Node* n2) //Cheap, less accurate
-//{
-//	return (abs(n1->x - n2->x) + abs(n1->y - n2->y));
-//}
-
-//static int EuclideanDistance(Node* n1, Node* n2) //Expensive, more accurate
-//{
-//	return (int)sqrt((pow((n1->x - n2->x), 2) + pow((n1->y - n2->y), 2)));
-//}
-//
-//static int ChebyshevDistance(Node* n1, Node* n2)
-//{
-//	return max(abs(n1->x - n2->x), abs(n1->y - n2->y));
-//}
-
-//static Node GetPositionFromCoord(float x, float z, int tileWidth)
-//{
-//	return Node((int)floor(x / tileWidth), (int)floor(z / tileWidth));
-//}
-
-//static vector<Node*> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ) //Start and end are tile positions in the grid.
-//{
-//	vector<Node*> path;
-//	Node* start = new Node(startPosXZ.x, startPosXZ.y);
-//	Node* end = new Node(endPosXZ.x, endPosXZ.y);
-//	Node* current = start;
-//
-//	vector<Node*> closedset;
-//	list<Node*> openset;
-//	openset.push_back(start);
-//
-//	vector<Node*> adjList;
-//
-//	start->f = start->g + ManhattanDistance(start, end);
-//
-//	while (!openset.empty())
-//	{
-//		cout << "openset size : " << openset.size() << endl;
-//		cout << "closedset size : " << closedset.size() << endl;
-//
-//		for each (Node* n in openset)
-//		{
-//			if (n->f < current->f)
-//				current = n;
-//		}
-//
-//		cout << "Current: " << current->x << " " << current->y << endl;
-//
-//		if (current->x == end->x && current->y == end->y)
-//			break;
-//
-//		closedset.push_back(current);
-//		openset.remove(current);
-//
-//		adjList.clear();
-//		adjList.push_back(new Node(current->x - 1, current->y - 1));
-//		adjList.push_back(new Node(current->x - 1, current->y));
-//		adjList.push_back(new Node(current->x - 1, current->y + 1));
-//		adjList.push_back(new Node(current->x + 1, current->y - 1));
-//		adjList.push_back(new Node(current->x + 1, current->y));
-//		adjList.push_back(new Node(current->x + 1, current->y + 1));
-//		adjList.push_back(new Node(current->x, current->y + 1));
-//		adjList.push_back(new Node(current->x, current->y - 1));
-//
-//		for each (Node* n in adjList)
-//		{
-//			bool inOpen = false;
-//			bool inClosed = false;
-//
-//			for each (Node* x in closedset)
-//			{
-//				if (n->x == x->x && n->y == x->y)
-//				{
-//					inClosed = true;
-//					break;
-//				}
-//			}
-//
-//			for each (Node* x in openset)
-//			{
-//				if (n->x == x->x && n->y == x->y)
-//				{
-//					inOpen = true;
-//					break;
-//				}
-//			}
-//
-//			cout << "Node: " << current->x << " " << current->y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
-//
-//			//if (!(find(closedset.begin(), closedset.end(), &n) != closedset.end()))
-//			if (!inClosed)
-//			{
-//				int tentativeG = current->g + 1;
-//
-//				if (!inOpen || tentativeG < n->g)
-//				{
-//					Tile* tile = nullptr;
-//					
-//					if (level->withinBounds(n->x, n->y))
-//						tile = level->getTile(n->x, n->y);
-//
-//					if (tile != nullptr)
-//					{
-//						if (tile->IsWalkable())
-//						{
-//							n->parent = current;
-//							n->g = tentativeG;
-//							n->f = n->g + ManhattanDistance(n, end);
-//
-//							if (!inOpen)
-//								openset.push_back(n);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	while (current != start)
-//	{
-//		cout << current->x << " " << current->y << endl;
-//		path.push_back(current);
-//		current = current->parent;
-//	}
-//
-//	return path;
-//}
-
-
-
-
-
+static bool AiUtil_ShowDebugPath = true;
 
 static int ManhattanDistance(Tile* n1, Tile* n2) //Cheap, less accurate
 {
@@ -216,9 +53,9 @@ static int GenerateF(Tile* child, Tile* end)
 	return child->GetG() + ManhattanDistance(child, end);
 }
 
-static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMINT2 endPosXZ)
+static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 {
-	vector<XMFLOAT3> path;
+	vector<XMINT2> path;
 
 	Tile* start = level->getTile(startPosXZ.x, startPosXZ.y);
 	Tile* end = level->getTile(endPosXZ.x, endPosXZ.y);
@@ -230,138 +67,149 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 
 	list<Tile*>::iterator i;
 
-	//Counter to limit path length
-	int n = 0;
-	int limit = 100;
-
-	openList.push_back(start);
-	start->SetInOpen(true);
-	start->SetParent(nullptr);
-
-	while (n == 0 || (current != end && n < limit))
+	if (start != nullptr && end != nullptr)
 	{
-		//Find the smallest F value in openList and make it the current tile
-		for (i = openList.begin(); i != openList.end(); ++i)
-			if (i == openList.begin() || (*i)->GetF() <= current->GetF())
-				current = (*i);
+		//Counter to limit path length
+		int n = 0;
+		int limit = 50;
 
-		//Stop if it reached the end
-		if (current == end)
-			break;
+		openList.push_back(start);
+		start->SetInOpen(true);
+		start->SetParent(nullptr);
 
-		openList.remove(current);
-		current->SetInOpen(false);
-
-		closedList.push_back(current);
-		current->SetInClosed(true);
-
-		//Get all adjacent tiles
-		for (int x = -1; x <= 1; x++)
+		while (n == 0 || (current != end && n < limit))
 		{
-			for (int y = -1; y <= 1; y++)
+			//Find the smallest F value in openList and make it the current tile
+			for (i = openList.begin(); i != openList.end(); ++i)
+				if (i == openList.begin() || (*i)->GetF() <= current->GetF())
+					current = (*i);
+
+			//Stop if it reached the end or the current tile holds a closed door
+			Door* d = current->getDoor();
+			if (current == end || (d != nullptr && !d->getIsOpen()))
+				break;
+
+			openList.remove(current);
+			current->SetInOpen(false);
+
+			closedList.push_back(current);
+			current->SetInClosed(true);
+
+			//Get all adjacent tiles
+			for (int x = -1; x <= 1; x++)
 			{
-				XMINT2 currentTileCoord = current->GetTileCoord();
-				if (!(x == 0 && y == 0) && level->withinBounds(currentTileCoord.x + x, currentTileCoord.y + y))
+				for (int y = -1; y <= 1; y++)
 				{
-					int xc = currentTileCoord.x + x;
-					int yc = currentTileCoord.y + y;
-					child = level->getTile(xc, yc);
-
-					if (child != nullptr && child != current)
+					XMINT2 currentTileCoord = current->GetTileCoord();
+					if (!(x == 0 && y == 0) && level->withinBounds(currentTileCoord.x + x, currentTileCoord.y + y))
 					{
-						XMINT2 childTileCoord = child->GetTileCoord();
+						int xc = currentTileCoord.x + x;
+						int yc = currentTileCoord.y + y;
+						child = level->getTile(xc, yc);
 
-						bool inClosed = child->InClosed();
-						bool inOpen = child->InOpen();
-
-						//Do not use when paths are generated each frame!
-						//cout << "Node: " << childTileCoord.x << " " << childTileCoord.y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
-
-						if (!inClosed && child->IsWalkable())
+						if (child != nullptr && child != current)
 						{
-							//Check for corners 
-							//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+							XMINT2 childTileCoord = child->GetTileCoord();
 
-							//XMINT2 currentCoord = current->GetTileCoord();
+							bool inClosed = child->InClosed();
+							bool inOpen = child->InOpen();
 
-							//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-							//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+							//Do not use when paths are generated each frame!
+							//cout << "Node: " << childTileCoord.x << " " << childTileCoord.y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
 
-							////Tile* nextY = nullptr;
-							////Tile* nextX = nullptr;
-							////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
-							////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-							////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
-							////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
-
-							//if (nextY != nullptr)
-							//	if (!nextY->IsWalkable() || nextY->InClosed())
-							//		continue;
-
-							//if (nextX != nullptr)
-							//	if (!nextX->IsWalkable() || nextX->InClosed())
-							//		continue;
-						
-							int tentativeG = current->GetG() + 1;
-
-							//Already in open but a better solution found, update it
-							if (inOpen)
+							Lever* l = child->getLever();
+							if (!inClosed && child->IsWalkable() && l == nullptr)
 							{
-								if (child->GetG() > tentativeG)
+								//Check for corners 
+								//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+
+								//XMINT2 currentCoord = current->GetTileCoord();
+
+								//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+								//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+								////Tile* nextY = nullptr;
+								////Tile* nextX = nullptr;
+								////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
+								////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+								////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
+								////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+								//if (nextY != nullptr)
+								//	if (!nextY->IsWalkable() || nextY->InClosed())
+								//		continue;
+
+								//if (nextX != nullptr)
+								//	if (!nextX->IsWalkable() || nextX->InClosed())
+								//		continue;
+
+								int tentativeG = current->GetG() + 1;
+
+								//Already in open but a better solution found, update it
+								if (inOpen)
 								{
+									if (child->GetG() > tentativeG)
+									{
+										child->SetParent(current);
+										child->SetG(tentativeG);
+										child->SetF(GenerateF(child, end));
+									}
+								}
+								else if (current->GetParent() != child)
+								{
+									openList.push_back(child);
+									child->SetInOpen(true);
+
 									child->SetParent(current);
 									child->SetG(tentativeG);
 									child->SetF(GenerateF(child, end));
 								}
 							}
-							else if (current->GetParent() != child)
-							{
-								openList.push_back(child);
-								child->SetInOpen(true);
-
-								child->SetParent(current);
-								child->SetG(tentativeG);
-								child->SetF(GenerateF(child, end));
-							}
 						}
 					}
-				}
-				else
-				{
-					//Utanför eller current själv?
-					continue;
+					else
+					{
+						//Utanför eller current själv?
+						continue;
+					}
 				}
 			}
+
+			//Add to the counter
+			n++;
 		}
 
-		//Add to the counter
-		n++;
-	}
+		//Reset open/closed in tiles
+		for (i = openList.begin(); i != openList.end(); ++i)
+		{
+			(*i)->SetInOpen(false);
+		}
+		for (i = closedList.begin(); i != closedList.end(); ++i)
+		{
+			(*i)->SetInClosed(false);
+		}
 
-	//Reset open/closed in tiles
-	for (i = openList.begin(); i != openList.end(); ++i)
-	{
-		(*i)->SetInOpen(false);
-	}
-	for (i = closedList.begin(); i != closedList.end(); ++i)
-	{
-		(*i)->SetInClosed(false);
-	}
+		if (AiUtil_ShowDebugPath)
+			start->getFloorTile()->SetSelected(true);
 
-	start->getFloorTile()->SetSelected(true);
-	//Retrace the path from the end to start
-	while (current->GetParent() != NULL && current != start)
-	{
-		XMINT2 currentCoord = current->GetTileCoord();
-		path.push_back(XMFLOAT3((float)currentCoord.x, 0.0f, (float)currentCoord.y));
+		//Retrace the path from the end to start
+		while (current->GetParent() != nullptr && current != start)
+		{
+			XMINT2 currentCoord = current->GetTileCoord();
+			path.push_back(XMINT2(currentCoord.x,currentCoord.y));
 
-		if (current->getFloorTile())
-			current->getFloorTile()->SetSelected(true);
-		if (current->getPressurePlate())
-			current->getPressurePlate()->SetSelected(true);
+			if (AiUtil_ShowDebugPath)
+			{
+				if (current->getFloorTile())
+					current->getFloorTile()->SetSelected(true);
+				if (current->getPressurePlate())
+					current->getPressurePlate()->SetSelected(true);
+			}
 
-		current = current->GetParent();
-		n++;
+
+			current = current->GetParent();
+			n++;
+		}
 	}
 
 	return path;

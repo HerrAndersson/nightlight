@@ -4,7 +4,9 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 	 : GameObject(position, rotation,  renderObject, coordX, coordY)
 {
 	this->enemyType = enemyType;
-	bool followPlayer = false;
+
+	followingPlayer = true;
+	hasValidPath = false;
 }
 
 Enemy::~Enemy()
@@ -19,7 +21,18 @@ void Enemy::Update()
 	{
 		if (HasValidPath())
 		{
-			//follow path here
+			Coord aiCoord = GetTileCoord();
+			XMINT2 p = path.at(path.size() - 1);
+			path.pop_back();
+
+			Coord pathCoord = Coord(p.x, p.y);
+
+			SetTilePosition(pathCoord);
+
+			if (aiCoord == pathCoord)
+			{
+				hasValidPath = false;
+			}
 		}
 		else
 		{
@@ -40,10 +53,10 @@ bool Enemy::IsFollowingPlayer()
 bool Enemy::HasValidPath()
 {
 	//Check the path for validity
-	return true;
+	return hasValidPath;
 }
 
-void Enemy::SetPath(vector<XMFLOAT3> path)
+void Enemy::SetPath(vector<XMINT2> path)
 {
 	this->path = path;
 }

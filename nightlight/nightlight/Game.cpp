@@ -42,7 +42,7 @@ void Game::LoadAssets()
 
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
+	//character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 }
 
@@ -126,9 +126,14 @@ bool Game::Render()
 
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	Coord c = character->GetTileCoord();
-	vector<XMFLOAT3> p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
-	vector<XMFLOAT3> p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
+	vector<XMINT2> p1;
+	vector<XMINT2> p2;
+	if (AiUtil_ShowDebugPath)
+	{
+		Coord c = character->GetTileCoord();
+		//p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
+		p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
+	}
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 
 
@@ -169,27 +174,30 @@ bool Game::Render()
 
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	for (auto x : p1)
+	if (AiUtil_ShowDebugPath)
 	{
-		Tile* t = currentLevel->getTile((int)x.x, (int)x.z);
-		if (t)
+		for (auto x : p1)
 		{
-			if (t->getFloorTile())
-				t->getFloorTile()->SetSelected(false);
-			if (t->getPressurePlate())
-				t->getPressurePlate()->SetSelected(false);
-		}	
-	}
+			Tile* t = currentLevel->getTile((int)x.x, (int)x.y);
+			if (t)
+			{
+				if (t->getFloorTile())
+					t->getFloorTile()->SetSelected(false);
+				if (t->getPressurePlate())
+					t->getPressurePlate()->SetSelected(false);
+			}
+		}
 
-	for (auto x : p2)
-	{
-		Tile* t = currentLevel->getTile((int)x.x,(int)x.z);
-		if (t)
+		for (auto x : p2)
 		{
-			if (t->getFloorTile())
-				t->getFloorTile()->SetSelected(false);
-			if (t->getPressurePlate())
-				t->getPressurePlate()->SetSelected(false);
+			Tile* t = currentLevel->getTile((int)x.x, (int)x.y);
+			if (t)
+			{
+				if (t->getFloorTile())
+					t->getFloorTile()->SetSelected(false);
+				if (t->getPressurePlate())
+					t->getPressurePlate()->SetSelected(false);
+			}
 		}
 	}
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////

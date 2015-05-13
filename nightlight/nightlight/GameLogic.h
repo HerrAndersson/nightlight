@@ -33,7 +33,7 @@ private:
 
 	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight, int& currentLevelNr);
 	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
-	bool UpdateAI(vector<Enemy>* enemies);
+	bool UpdateAI(vector<Enemy>* enemies, Character* player);
 
 	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
 	

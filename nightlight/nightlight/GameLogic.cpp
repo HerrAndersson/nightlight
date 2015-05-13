@@ -24,7 +24,7 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 	result = UpdatePlayer(currentLevel, character, camera, spotLight, levelNumberToLoad);
 	if (!result) return result;
 
-	result = UpdateAI(enemies);
+	result = UpdateAI(enemies, character);
 	if (!result) return result;
 
 	if (Input->Esc()) return false;
@@ -37,9 +37,12 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 	return result;
 }
 
-bool GameLogic::UpdateAI(vector<Enemy>* enemies)
+bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
 {
-	//TODO: Update enemies here
+	for each (Enemy e in *enemies)
+	{
+		AI->HandleAI(&e, player);
+	}
 	return true;
 }
 
@@ -96,6 +99,14 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	if (playerMoved)
 	{
 		pos = ManageCollisions(currentLevel, character, pos, CollisionTypes::CHARACTER);
+
+		//if (selectedObject != nullptr)
+		//{
+		//	XMFLOAT3 movablePos = selectedObject->GetPosition();
+		//	movablePos.x += movementOffsetCoord.x;
+		//	movablePos.y += movementOffsetCoord.y;
+		//	movablePos = ManageCollisions(currentLevel, selectedObject, movablePos, CollisionTypes::MOVABLEOBJECT);
+		//}
 	}
 
 	if (Input->LeftMouse() && leftMouseLastState == false)
