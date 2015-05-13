@@ -64,6 +64,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//vectors
 		typedef double Vector4[4];
 		typedef double Vector2[2];
+		vector <double> point;
 		// indices of the vertices per each polygon (faceIds)
 		int size = modelList.at(i).vertexIndices.size();
 		vector<int> vtxId;
@@ -77,45 +78,41 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
 		}
 		// indices of the vertices per each polygon
-		static int vtxId2[24] = {
-			//        vtxId.at(0), vtxId.at(1), vtxId.at(2), vtxId.at(3),
-			//        vtxId.at(4), vtxId.at(5), vtxId.at(6), vtxId.at(7),
-			//        vtxId.at(8), vtxId.at(9), vtxId.at(10), vtxId.at(11),
-			//        vtxId.at(12), vtxId.at(13), vtxId.at(14), vtxId.at(15),
-			//        vtxId.at(16), vtxId.at(17), vtxId.at(18), vtxId.at(19),
-			//        vtxId.at(20), vtxId.at(21), vtxId.at(22), vtxId.at(23)
+	//static int vtxId2[24] = {
+	//	       vtxId.at(0), vtxId.at(1), vtxId.at(2), vtxId.at(3),
+	//	       vtxId.at(4), vtxId.at(5), vtxId.at(6), vtxId.at(7),
+	//	       vtxId.at(8), vtxId.at(9), vtxId.at(10), vtxId.at(11),
+	//	       vtxId.at(12), vtxId.at(13), vtxId.at(14), vtxId.at(15),
+	//	       vtxId.at(16), vtxId.at(17), vtxId.at(18), vtxId.at(19),
+	//	       vtxId.at(20), vtxId.at(21), vtxId.at(22), vtxId.at(23)
 
-			0, 1, 2, 3, // front  face  (Z+)
-			1, 5, 6, 2, // right  side  (X+)
-			5, 4, 7, 6, // back   face  (Z-)
-			4, 0, 3, 7, // left   side  (X-)
-			0, 4, 5, 1, // bottom face  (Y-)
-			3, 2, 6, 7  // top    face  (Y+)
 			//0, 1, 2, 3, // front  face  (Z+)
 			//1, 5, 6, 2, // right  side  (X+)
 			//5, 4, 7, 6, // back   face  (Z-)
 			//4, 0, 3, 7, // left   side  (X-)
 			//0, 4, 5, 1, // bottom face  (Y-)
 			//3, 2, 6, 7  // top    face  (Y+)
-		};
-		// control points
-		static Vector4 lControlPoints[8] = {
-			{ modelList.at(i).purePoints.at(0).position.x, modelList.at(i).purePoints.at(0).position.y, modelList.at(i).purePoints.at(0).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(1).position.x, modelList.at(i).purePoints.at(1).position.y, modelList.at(i).purePoints.at(1).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(2).position.x, modelList.at(i).purePoints.at(2).position.y, modelList.at(i).purePoints.at(2).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(3).position.x, modelList.at(i).purePoints.at(3).position.y, modelList.at(i).purePoints.at(3).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(4).position.x, modelList.at(i).purePoints.at(4).position.y, modelList.at(i).purePoints.at(4).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(5).position.x, modelList.at(i).purePoints.at(5).position.y, modelList.at(i).purePoints.at(5).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(6).position.x, modelList.at(i).purePoints.at(6).position.y, modelList.at(i).purePoints.at(6).position.z, 1.0 },
-			{ modelList.at(i).purePoints.at(7).position.x, modelList.at(i).purePoints.at(7).position.y, modelList.at(i).purePoints.at(7).position.z, 1.0 },
-		};
+			//0, 1, 2, 3, // front  face  (Z+)
+			//1, 5, 6, 2, // right  side  (X+)
+			//5, 4, 7, 6, // back   face  (Z-)
+			//4, 0, 3, 7, // left   side  (X-)
+			//0, 4, 5, 1, // bottom face  (Y-)
+			//3, 2, 6, 7  // top    face  (Y+)
+		//};
+//		// control points
+//		static Vector4 lControlPoints[8] = {
+//			{ modelList.at(i).purePoints.at(0).position.x, modelList.at(i).purePoints.at(0).position.y, modelList.at(i).purePoints.at(0).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(1).position.x, modelList.at(i).purePoints.at(1).position.y, modelList.at(i).purePoints.at(1).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(2).position.x, modelList.at(i).purePoints.at(2).position.y, modelList.at(i).purePoints.at(2).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(3).position.x, modelList.at(i).purePoints.at(3).position.y, modelList.at(i).purePoints.at(3).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(4).position.x, modelList.at(i).purePoints.at(4).position.y, modelList.at(i).purePoints.at(4).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(5).position.x, modelList.at(i).purePoints.at(5).position.y, modelList.at(i).purePoints.at(5).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(6).position.x, modelList.at(i).purePoints.at(6).position.y, modelList.at(i).purePoints.at(6).position.z, 1.0 },
+//			{ modelList.at(i).purePoints.at(7).position.x, modelList.at(i).purePoints.at(7).position.y, modelList.at(i).purePoints.at(7).position.z, 1.0 },
+//		};
 
-		float sizeTest = modelList.at(i).purePoints.size();
-		for (int q = 0; q < modelList.at(i).purePoints.size(); q++)
-	{
-	XMFLOAT3 PosTest = modelList.at(i).purePoints.at(q).position;
-	}
-		XMFLOAT3 PosTest = modelList.at(i).purePoints.at(0).position;
+	
+		
 //		static Vector4 lControlPoints[8] = {
 //			{ modelList.at(i).purePoints.at(0).position.x, modelList.at(i).purePoints.at(0).position.y, modelList.at(i).purePoints.at(0).position.z, 1.0 },
 //			{ modelList.at(i).purePoints.at(3).position.x, modelList.at(i).purePoints.at(3).position.y, modelList.at(i).purePoints.at(3).position.z, 1.0 },
@@ -127,17 +124,21 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 //			{ modelList.at(i).purePoints.at(21).position.x, modelList.at(i).purePoints.at(21).position.y, modelList.at(i).purePoints.at(21).position.z, 1.0 },
 //		};
 		////control points
-		//    int sizePoints = modelList.at(i).purePoints.size();
-		//    vector<Vector4> lControlPoints;
-		//    for (int j = 0; j < sizePoints; j++)
-		//    {
-		//        lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.x);
-		//        lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.y);
-		//        lControlPoints.push_back(modelList.at(i).purePoints.at(j).position.z);
-		//        
-		//        //w coordinaste
-		//        lControlPoints.push_back(1.0f);
-		//    }
+   
+		
+		int sizePoints = modelList.at(i).purePoints.size();
+    vector<vector<double>> lControlPoints;
+    for (int j = 0; j < sizePoints; j++)
+    {
+		{
+			point.push_back(modelList.at(i).purePoints.at(j).position.x);
+			point.push_back(modelList.at(i).purePoints.at(j).position.y);
+			point.push_back(modelList.at(i).purePoints.at(j).position.z);
+			point.push_back(1.0f);
+			lControlPoints.push_back(point);
+
+		}
+    }
 
 		// normals vertices per each polygon 
 		int sizeNormals = modelList.at(i).normals.size();
@@ -201,11 +202,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//int numFaces = (vtxId.size() / 3);
 		// Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
 		int vId = 0;
-		for (int f = 0; f < 6; f++)
+		for (int f = 0; f < sizePoints/3; f++)
 		{
 			lMesh->BeginPolygon();
 			for (int v = 0; v < 3; v++)
-				lMesh->AddPolygon(vtxId2[vId++]);
+				//	lMesh->AddPolygon(vtxId[vId++]);
+				lMesh->AddPolygon(vtxId.at(vId++));
 			lMesh->EndPolygon();
 		}
 

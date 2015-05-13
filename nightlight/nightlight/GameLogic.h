@@ -20,7 +20,7 @@ private:
 	InputManager*  Input;
 	AiModule*      AI;
 	Level* menuLevel;
-	bool end = true;
+	bool quitGame = true;
 
 	int screenWidth;
 	int screenHeight;
