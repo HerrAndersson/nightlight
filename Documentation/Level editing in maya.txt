@@ -53,6 +53,12 @@ Naming convention:
 			
 			full example: p_12_Box1_movable
 
+		Button:
+		[must have 'button' in the title]
+			buttonType, buttonWidth
+
+			full example: p_16_Button1_Start_3
+
 ***If the object is not referring to any other component,
 ***or if an additional naming part is missing, add "_NULL"
 

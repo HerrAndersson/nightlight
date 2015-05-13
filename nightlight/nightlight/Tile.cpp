@@ -108,22 +108,11 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		gameObjects.push_back(shadowContainer);
 		tileIsWalkable = false;
 	}
-	else if (gameObjectType == "exitcube")
+	else if (gameObjectType == "startcube" || gameObjectType == "continuecube" || gameObjectType == "exitcube")
 	{
-		std::string activates = unparsedData.at(i++);
-		button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
-		gameObjects.push_back(button);
-	}
-	else if (gameObjectType == "continuecube")
-	{
-		std::string activates = unparsedData.at(i++);
-		button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
-		gameObjects.push_back(button);
-	}
-	else if (gameObjectType == "startcube")
-	{
-		std::string activates = unparsedData.at(i++);
-		button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
+		std::string buttonType = unparsedData.at(i++);
+		int buttonWidth = stoi(unparsedData.at(i++));
+		button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, buttonType, buttonWidth);
 		gameObjects.push_back(button);
 	}
 }

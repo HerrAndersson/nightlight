@@ -1,14 +1,10 @@
 #include "Button.h"
 
-Button::Button(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName)
+Button::Button(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string buttonType, int buttonWidth)
 	: GameObject(position, rotation, renderObject, coordX, coordY)
 {
-	this->activatesName = activatesName;
-	this->isActivated = isActivated;
-	this->coordX = coordX;
-	this->coordY = coordY;
-	this->clickID = clickID;
-	this->clicked = clicked;
+	this->buttonType = buttonType;
+	this->buttonWidth = buttonWidth;
 }
 
 Button::~Button()
@@ -115,39 +111,14 @@ void Button::DeactivateExitButton()
 
 void Button::ClickedStart()
 {
-	clicked = true;
-
 	XMFLOAT3 rot = this->GetRotationDeg();
 	rot.y += 5.0f;
 	this->SetRotationDeg(rot);
-
-	//if (activatesStartButton != nullptr) {
-	//	activatesStartButton->setIsStartActivated(false);
-	//}
 }
 
 void Button::ClickedContinue()
 {
-	clicked = true;
-
 	XMFLOAT3 rot = this->GetRotationDeg();
 	rot.y += 90.0f;
 	this->SetRotationDeg(rot);
-
-	//if (activatesStartButton != nullptr) {
-	//	activatesStartButton->setIsStartActivated(false);
-	//}
-}
-
-void Button::ClickedEnd()
-{
-	clicked = true;
-
-	XMFLOAT3 rot = this->GetRotationDeg();
-	rot.y += 50.0f;
-	this->SetRotationDeg(rot);
-
-	//if (activatesStartButton != nullptr) {
-	//	activatesStartButton->setIsStartActivated(false);
-	//}
 }

@@ -43,6 +43,8 @@ void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> l
 
 Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character &character)
 {
+	//TODO: Handle button reading from menu level
+
 	Level* level = nullptr;
 
 	if (levelID <= -1 || levelID > (signed)levelNames.size() - 1)

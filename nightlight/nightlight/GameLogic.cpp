@@ -1,9 +1,10 @@
 #include "GameLogic.h"
 
-GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI)
+GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel)
 {
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	this->AI = AI;
+	this->menuLevel = menuLevel;
 }
 
 GameLogic::~GameLogic()
@@ -11,17 +12,24 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies)
+bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad)
 {
+	//TODO: Handle buttons!
+
 	bool result = false;
 
-	result = UpdatePlayer(currentLevel, character, camera, spotLight);
+	result = UpdatePlayer(currentLevel, character, camera, spotLight, levelNumberToLoad);
 	if (!result) return result;
 
 	result = UpdateAI(enemies);
 	if (!result) return result;
 
 	if (Input->Esc()) return false;
+
+	if (end == false)
+	{
+		result = end;
+	}
 
 	return result;
 }
@@ -32,7 +40,7 @@ bool GameLogic::UpdateAI(vector<Enemy>* enemies)
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight, int& levelNumberToLoad)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
@@ -91,6 +99,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	{
 		leftMouseLastState = true;
 
+		levelNumberToLoad = 1;
 		if (!moveObjectMode)
 		{
 			Lever* lever = dynamic_cast<Lever*>(selectedObject);
@@ -136,30 +145,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		}
 	
 
-		Button* button = dynamic_cast<Button*>(selectedObject);
-
-		if (button != nullptr)
-		{
-			if (button->getMouseclicked())
-			{
-				if (button->getClickID() == 1)
-				{
-					button->ClickedStart();
-				}
-				else if (button->getClickID() == 2)
-				{
-					button->ClickedContinue();
-				}
-				else if (button->getClickID() == 3)
-				{
-					button->ClickedEnd();
-				}
-				else
-				{
-				}
-			}
-		}
-
+					
 		if (selectedObject != nullptr) {
 			Lever* lever = dynamic_cast<Lever*>(selectedObject);
 			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
@@ -175,6 +161,27 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 					lever->ActivateLever();
 				}
 			}
+			//Button* button = dynamic_cast<Button*>(selectedObject);
+
+			//if (button != nullptr)
+			//{
+			//	if (button->getMouseclicked())
+			//	{
+			//		if (button->getClickID() == 1)
+			//		{
+			//			button->ClickedStart();
+			//		}
+			//		else if (button->getClickID() == 2)
+			//		{
+			//			button->ClickedContinue();
+			//		}
+			//		else if (button->getClickID() == 3)
+			//		{
+			//			button->setEndGame(false);
+			//			end = button->getEndGame();
+			//		}
+			//	}
+			//}
 		}
 	}
 	else if (!Input->LeftMouse() && leftMouseLastState == true)
@@ -207,8 +214,8 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		}
 	}
 
-	camera->SetPosition(character->GetPosition().x, -15, character->GetPosition().z);
-	camera->SetLookAt(character->GetPosition().x * 0.9f, 0.0f, character->GetPosition().z * 0.9f);
+	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z-3.5f);
+	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005);
 	character->SetPosition(pos);
 
 	UpdateSpotLight(character, camera, spotlight);
@@ -275,6 +282,108 @@ XMFLOAT3 GameLogic::ManageCollisions(Level* currentLevel, GameObject* gameObject
 					Tile* iteratorTile = currentLevel->getTile(x, y);
 					Coord iteratorTileCoord = Coord(x, y);
 					nextPos = ManagePlayerCollision(iteratorTile, iteratorTileCoord, nextTileCoord, gameObject->GetTileCoord(), characterRadius, nextPos);
+					////for when walking on the "buttons" in the menu
+					//if (tile != nullptr && tile->getButton() != nullptr)
+					//{
+					//		//start button
+
+					//		if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+					//		{
+					//			if (!tile->getButton()->getIsStartActivated())
+					//			{
+					//				tile->getButton()->ActivateStartButton();
+					//				if (tile->getButton()->getIsStartActivated() == true)
+					//				{
+					//					selectedObject = tile->getButton();
+					//					if (!selectedObject->IsSelected())
+					//						selectedObject->SetSelected((true));
+					//					else
+					//					{
+					//						if (selectedObject != nullptr)
+					//						{
+					//							selectedObject->SetSelected(false);
+					//							selectedObject = nullptr;
+					//						}
+					//					}
+					//				}
+					//			}
+					//		}
+					//		else
+					//		{
+					//			if (tile->getButton()->getIsStartActivated())
+					//			{
+					//				tile->getButton()->DeactivateStartButton();
+					//			}
+					//		}
+					//	}
+					//
+					//
+					//if (tile != nullptr && tile->getButton() != nullptr)
+					//{
+					//		//continue button
+					//		if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+					//		{
+					//			if (!tile->getButton()->getIsContinueActivated())
+					//			{
+					//				tile->getButton()->ActivateContinueButton();
+					//				if (tile->getButton()->getIsContinueActivated() == true)
+					//				{
+					//					selectedObject = tile->getButton();
+					//					if (!selectedObject->IsSelected())
+					//						selectedObject->SetSelected((true));
+					//					else
+					//					{
+					//						if (selectedObject != nullptr)
+					//						{
+					//							selectedObject->SetSelected(false);
+					//							selectedObject = nullptr;
+					//						}
+					//					}
+					//				}
+					//			}
+					//		}
+					//		else
+					//		{
+					//			if (tile->getButton()->getIsContinueActivated())
+					//			{
+					//				tile->getButton()->DeactivateContinueButton();
+					//			}
+					//		}
+					//	}
+					//
+					//if (tile != nullptr && tile->getButton() != nullptr)
+					//{
+					//		//exit button
+					//		if (tile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+					//		{
+					//			if (!tile->getButton()->getIsExitActivated())
+					//			{
+					//				tile->getButton()->ActivateExitButton();
+					//				if (tile->getButton()->getIsExitActivated() == true)
+					//				{
+					//					selectedObject = tile->getButton();
+					//					if (!selectedObject->IsSelected())
+					//						selectedObject->SetSelected((true));
+					//					else
+					//					{
+					//						if (selectedObject != nullptr)
+					//						{
+					//							selectedObject->SetSelected(false);
+					//							selectedObject = nullptr;
+					//						}
+					//					}
+					//				}
+					//			}
+					//		}
+					//		else
+					//		{
+					//			if (tile->getButton()->getIsExitActivated())
+					//			{
+					//				tile->getButton()->DeactivateExitButton();
+					//			}
+					//		}
+					//	}
+					//}
 				}
 			}
 		}

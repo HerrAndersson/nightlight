@@ -19,6 +19,8 @@ private:
 
 	InputManager*  Input;
 	AiModule*      AI;
+	Level* menuLevel;
+	bool end = true;
 
 	int screenWidth;
 	int screenHeight;
@@ -29,7 +31,7 @@ private:
 
 	GameObject* selectedObject = nullptr;
 
-	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight);
+	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight, int& currentLevelNr);
 	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
 	bool UpdateAI(vector<Enemy>* enemies);
 
@@ -48,11 +50,11 @@ private:
 
 public:
 
-	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
+	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel);
 	~GameLogic();
 
-	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
-
+	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad);
+	
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
 	//Etc
