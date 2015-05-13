@@ -4,13 +4,13 @@ AiModule::AiModule(Level* level)
 {
 	this->level = level;
 
-	vector<XMFLOAT3> v = GetPath(level, XMINT2(1, 5), XMINT2(1, 2));
+	//vector<XMFLOAT3> v = GetPath(level, XMINT2(1, 2), XMINT2(4, 7));
 
-	cout << "Path: " << endl;
-	for (auto x : v)
-	{
-		cout << "X: " << x.x << " Y: " << x.z << endl;
-	}
+	//cout << "Path: " << endl;
+	//for (auto x : v)
+	//{
+	//	cout << "X: " << x.x << " Y: " << x.z << endl;
+	//}
 }
 
 AiModule::~AiModule()

@@ -240,12 +240,9 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 			if (i == openList.begin() || (*i)->GetF() <= current->GetF())
 				current = (*i);
 
-		////Stop if it reached the end
-		//if (current == end)
-		//	break;
-
-		//if (Equals(current->GetTileCoord(), endPosXZ))
-		//	break;
+		//Stop if it reached the end
+		if (current == end)
+			break;
 
 		openList.remove(current);
 		current->SetInOpen(false);
@@ -269,30 +266,38 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 					{
 						XMINT2 childTileCoord = child->GetTileCoord();
 
-						bool inClosed = current->InClosed();
-						bool inOpen = current->InOpen();
+						bool inClosed = child->InClosed();
+						bool inOpen = child->InOpen();
 
-						cout << "Node: " << childTileCoord.x << " " << childTileCoord.y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
+						//cout << "Node: " << childTileCoord.x << " " << childTileCoord.y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
 
 						if (!inClosed && child->IsWalkable())
 						{
 							//Check for corners
-							//Next vertical not walkable, skip
-							//Next horizontal not walkable, skip
+							//XMINT2 currentCoord = current->GetTileCoord();
+							//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + 1);
+							//Tile* nextX = level->getTile(currentCoord.x + 1, currentCoord.y);
 
+							//if (nextY !=nullptr)
+							//	if (!nextY->IsWalkable())
+							//		continue;
 
+							//if (nextX != nullptr)
+							//	if (!nextX->IsWalkable())
+							//		continue;
+						
 							int tentativeG = current->GetG() + 1;
 
-							////Already in open but a better solution found, update it
-							//if (inOpen)
-							//{
-							//	if (child->GetG() > tentativeG)
-							//	{
-							//		child->SetParent(current);
-							//		child->SetG(tentativeG);
-							//		child->SetF(child->GetG() + ManhattanDistance(child, end));
-							//	}
-							//}
+							//Already in open but a better solution found, update it
+							if (inOpen)
+							{
+								if (child->GetG() > tentativeG)
+								{
+									child->SetParent(current);
+									child->SetG(tentativeG);
+									child->SetF(child->GetG() + ManhattanDistance(child, end));
+								}
+							}
 
 							if (!inOpen && current->GetParent() != child)
 							{
@@ -311,7 +316,7 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 				else
 				{
 					//Utanför eller current själv?
-					break;
+					continue;
 				}
 			}
 		}
@@ -330,11 +335,18 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 		(*i)->SetInClosed(false);
 	}
 
+	start->getFloorTile()->SetSelected(true);
 	//Retrace the path from the end to start
 	while (current->GetParent() != NULL && current != start)
 	{
 		XMINT2 currentCoord = current->GetTileCoord();
 		path.push_back(XMFLOAT3((float)currentCoord.x, 0.0f, (float)currentCoord.y));
+
+		if (current->getFloorTile())
+			current->getFloorTile()->SetSelected(true);
+		if (current->getPressurePlate())
+			current->getPressurePlate()->SetSelected(true);
+
 		current = current->GetParent();
 		n++;
 	}

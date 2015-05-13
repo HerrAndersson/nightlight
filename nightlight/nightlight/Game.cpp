@@ -17,7 +17,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	InitManagers(hwnd, fullscreen);
 	LoadAssets();
 
-	//AI = new AiModule(currentLevel);
+	AI = new AiModule(currentLevel);
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
@@ -39,6 +39,8 @@ void Game::LoadAssets()
 
 	menuLevel = Levels->LoadLevel(1, enemies, *character);
 	currentLevel = menuLevel;
+
+	character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
 }
 
 Game::~Game()
@@ -94,8 +96,6 @@ bool Game::Update()
 	}
 	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, levelNumberToLoad);
 	
-
-
 	return result;
 }
 
@@ -119,6 +119,15 @@ bool Game::Render()
 	bool result = true;
 
 	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+
+
+
+	//DEBUG for pathfinding 
+	Coord c = character->GetTileCoord();
+	vector<XMFLOAT3> v = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
+	//DEBUG for pathfinding 
+
+
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
@@ -152,6 +161,24 @@ bool Game::Render()
 	Renderer->Render(character);
 
 	Renderer->EndScene();
+
+
+
+	//DEBUG for pathfinding 
+	for (auto x : v)
+	{
+		Tile* t = currentLevel->getTile(x.x, x.z);
+		if (t)
+		{
+			if (t->getFloorTile())
+				t->getFloorTile()->SetSelected(false);
+			if (t->getPressurePlate())
+				t->getPressurePlate()->SetSelected(false);
+		}	
+	}
+	//DEBUG for pathfinding 
+
+
 
 	return result;
 }
