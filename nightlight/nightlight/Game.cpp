@@ -37,7 +37,7 @@ void Game::LoadAssets()
 		currentLevel = nullptr;
 	}
 
-	menuLevel = Levels->LoadLevel(0, enemies, *character);
+	menuLevel = Levels->LoadLevel(1, enemies, *character);
 	currentLevel = menuLevel;
 }
 

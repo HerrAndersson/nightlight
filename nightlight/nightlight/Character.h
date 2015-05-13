@@ -5,6 +5,8 @@ class Character : public GameObject
 private:
 
 	float radius = 0.5f;
+	float speed = 0.1f;
+	float dragSpeed = 0.08f;
 
 public:
 
@@ -12,5 +14,8 @@ public:
 	~Character ( );
 
 	float getRadius() const { return radius; }
+
+	float GetSpeed() const { return speed; }
+	void SetSpeed(float val) { speed = val; }
 };
 

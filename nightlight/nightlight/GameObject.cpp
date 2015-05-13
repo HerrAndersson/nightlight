@@ -25,8 +25,8 @@ RenderObject* GameObject::GetRenderObject()
 
 void GameObject::SetPosition(XMFLOAT3 pos) {
 	position = pos;
-	tileCoord.x = (int)(-position.x + TILE_SIZE / 2);
-	tileCoord.y = (int)(-position.z + TILE_SIZE / 2);
+	tileCoord.x = (int)(-position.x);
+	tileCoord.y = (int)(-position.z);
 }
 
 void GameObject::SetTilePosition(Coord coord) {
