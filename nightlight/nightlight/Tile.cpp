@@ -104,13 +104,12 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		shadowContainer = new Container(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
 		gameObjects.push_back(shadowContainer);
 	}
-	else if (gameObjectType == "button")
-	{
-		std::string buttonType = unparsedData.at(i++);
-		int buttonWidth = stoi(unparsedData.at(i++));
-		button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, buttonType, buttonWidth);
-		gameObjects.push_back(button);
-	}
+}
+
+void Tile::setButton(Button* button) 
+{
+	this->button = button; 
+	gameObjects.push_back(button);
 }
 
 bool Tile::IsWalkable()

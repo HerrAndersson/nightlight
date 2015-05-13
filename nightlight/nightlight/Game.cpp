@@ -14,32 +14,25 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
 	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
 
-	InitManagers(hwnd, fullscreen);
-	LoadAssets();
+	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
+	Assets = new AssetManager(Renderer->GetDevice());
+	Levels = new LevelParser(Assets);
 
+	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
+	menuLevel = Levels->LoadLevel(0, enemies, *character);
+	currentLevel = menuLevel;
 	AI = new AiModule(currentLevel);
+	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI, menuLevel);
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI, menuLevel);
-	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
-	Assets = new AssetManager(Renderer->GetDevice());
-	Levels = new LevelParser(Assets);
+	
 }
 
 void Game::LoadAssets()
 {
-	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
-	if (currentLevel != nullptr)
-	{
-		delete currentLevel;
-		currentLevel = nullptr;
-	}
-
-	menuLevel = Levels->LoadLevel(1, enemies, *character);
-	currentLevel = menuLevel;
-
+	
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 	//character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
@@ -131,8 +124,8 @@ bool Game::Render()
 	if (AiUtil_ShowDebugPath)
 	{
 		Coord c = character->GetTileCoord();
-		//p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
-		p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
+//	vector<XMFLOAT3> p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
+//	vector<XMFLOAT3> p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
 	}
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 
@@ -173,33 +166,30 @@ bool Game::Render()
 
 
 
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	if (AiUtil_ShowDebugPath)
-	{
-		for (auto x : p1)
-		{
-			Tile* t = currentLevel->getTile((int)x.x, (int)x.y);
-			if (t)
-			{
-				if (t->getFloorTile())
-					t->getFloorTile()->SetSelected(false);
-				if (t->getPressurePlate())
-					t->getPressurePlate()->SetSelected(false);
-			}
-		}
-
-		for (auto x : p2)
-		{
-			Tile* t = currentLevel->getTile((int)x.x, (int)x.y);
-			if (t)
-			{
-				if (t->getFloorTile())
-					t->getFloorTile()->SetSelected(false);
-				if (t->getPressurePlate())
-					t->getPressurePlate()->SetSelected(false);
-			}
-		}
-	}
+//	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+//	for (auto x : p1)
+//	{
+//		Tile* t = currentLevel->getTile((int)x.x, (int)x.z);
+//		if (t)
+//		{
+//			if (t->getFloorTile())
+//				t->getFloorTile()->SetSelected(false);
+//			if (t->getPressurePlate())
+//				t->getPressurePlate()->SetSelected(false);
+//		}	
+//	}
+//
+//	for (auto x : p2)
+//	{
+//		Tile* t = currentLevel->getTile((int)x.x,(int)x.z);
+//		if (t)
+//		{
+//			if (t->getFloorTile())
+//				t->getFloorTile()->SetSelected(false);
+//			if (t->getPressurePlate())
+//				t->getPressurePlate()->SetSelected(false);
+//		}
+//	}
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 
 

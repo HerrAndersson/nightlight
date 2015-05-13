@@ -25,14 +25,21 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 	if (!result) return result;
 
 	result = UpdateAI(enemies, character);
-	if (!result) return result;
+	if (menuLevel != nullptr && menuLevel == currentLevel){
 
-	if (Input->Esc()) return false;
-
-	if (!quitGame)
-	{
-		return false;
 	}
+	else
+	{
+		result = UpdateAI(enemies);
+		if (!result) return result;
+
+		//if (Input->Esc()) return false;
+	}
+
+	//if (!quitGame)
+	//{
+	//	return false;
+	//}
 
 	return result;
 }
@@ -113,91 +120,97 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	{
 		leftMouseLastState = true;
 
-		levelNumberToLoad = 1;
-		if (!moveObjectMode)
-		{
-			Lever* lever = dynamic_cast<Lever*>(selectedObject);
-			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
-
-			if (movable != nullptr) 
+		//levelNumberToLoad = 1;
+		if (currentLevel == menuLevel){
+			Coord characterTileCoord = character->GetTileCoord();
+			Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
+			Button* button = currentTile->getButton();
+			if (button != nullptr)
 			{
-				moveObjectMode = true;
-				Coord movableCoord = selectedObject->GetTileCoord();
-				Coord characterCoord = character->GetTileCoord();
-				XMFLOAT3 characterRot = character->GetRotationDeg();
+				int buttonType = button->getButtonType();
+				switch (buttonType)
+				{
+				case Button::ButtonTypes::START:
 
-				pos = XMFLOAT3(-characterCoord.x - TILE_SIZE / 2, 0.0f, -characterCoord.y - TILE_SIZE / 2);
+					break;
+				case Button::ButtonTypes::CONTINUE:
 
-				if (movableCoord.y > characterCoord.y)
-				{
-					characterRot.y = -90.0f;
-					moveObjectModeAxis = Axis::Y;	
+					break;
+				case Button::ButtonTypes::EXIT:
+					return false;
+					break;
+				default:
+					break;
 				}
-				else if (movableCoord.y < characterCoord.y)
-				{
-					characterRot.y = 90.0f;
-					moveObjectModeAxis = Axis::Y;
-				}
-				else if (movableCoord.x > characterCoord.x)
-				{
-					characterRot.y = 0.0f;
-					moveObjectModeAxis = Axis::X;
-				}
-				else if (movableCoord.x < characterCoord.x)
-				{
-					characterRot.y = 180.0f;
-					moveObjectModeAxis = Axis::X;
-				}
-				character->SetRotationDeg(characterRot);
-
-				
 			}
 		}
 		else
 		{
-			moveObjectMode = false;
-		}
-	
-
-					
-		if (selectedObject != nullptr) {
-			Lever* lever = dynamic_cast<Lever*>(selectedObject);
-			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
-
-			if (movable != nullptr) {
-				//TODO: Enable move mode.
-			}
-			if (lever != nullptr) {
-				if (lever->getIsActivated()) {
-					lever->DeactivateLever();
-				}
-				else {
-					lever->ActivateLever();
-				}
-			}
-			Button* button = dynamic_cast<Button*>(selectedObject);
-
-			if (button != nullptr)
+			if (!moveObjectMode)
 			{
-				//if (button->getMouseclicked())
-				//{
-					if (button->getClickID() == 1)
+				Lever* lever = dynamic_cast<Lever*>(selectedObject);
+				MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
+
+				if (movable != nullptr)
+				{
+					moveObjectMode = true;
+					Coord movableCoord = selectedObject->GetTileCoord();
+					Coord characterCoord = character->GetTileCoord();
+					XMFLOAT3 characterRot = character->GetRotationDeg();
+
+					pos = XMFLOAT3(-characterCoord.x - TILE_SIZE / 2, 0.0f, -characterCoord.y - TILE_SIZE / 2);
+
+					if (movableCoord.y > characterCoord.y)
 					{
-						button->ClickedStart();
+						characterRot.y = -90.0f;
+						moveObjectModeAxis = Axis::Y;
 					}
-					else if (button->getClickID() == 2)
+					else if (movableCoord.y < characterCoord.y)
 					{
-						button->ClickedContinue();
+						characterRot.y = 90.0f;
+						moveObjectModeAxis = Axis::Y;
 					}
-					else if (button->getClickID() == 3)
+					else if (movableCoord.x > characterCoord.x)
 					{
-						quitGame = false;
+						characterRot.y = 0.0f;
+						moveObjectModeAxis = Axis::X;
 					}
-				//}
+					else if (movableCoord.x < characterCoord.x)
+					{
+						characterRot.y = 180.0f;
+						moveObjectModeAxis = Axis::X;
+					}
+					character->SetRotationDeg(characterRot);
+
+
+				}
+			}
+			else
+			{
+				moveObjectMode = false;
+			}
+
+
+
+			if (selectedObject != nullptr) {
+				Lever* lever = dynamic_cast<Lever*>(selectedObject);
+				MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
+
+				if (movable != nullptr) {
+					//TODO: Enable move mode.
+				}
+				if (lever != nullptr) {
+					if (lever->getIsActivated()) {
+						lever->DeactivateLever();
+					}
+					else {
+						lever->ActivateLever();
+					}
+				}
 			}
 		}
 	}
-	else if (!Input->LeftMouse() && leftMouseLastState == true)
+	if (!Input->LeftMouse() && leftMouseLastState == true)
 	{
 		leftMouseLastState = false;
 	}
@@ -227,7 +240,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 		}
 	}
 
-	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z-3.5f);
+	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z - 3.5f);
 	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005f);
 	character->SetPosition(pos);
 
@@ -250,13 +263,13 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 
 	XMFLOAT3 pPos = player->GetPosition();
 	//offset light
-	pPos.x -= pForward.x/2;
-	pPos.z -= pForward.z/2;
+	pPos.x -= pForward.x / 2;
+	pPos.z -= pForward.z / 2;
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
-	
 
-	
+
+
 	if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
 	{
 		spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
@@ -267,8 +280,8 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 		spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
 		spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
 	}
-	
-		spotlight->generateViewMatrix();
+
+	spotlight->generateViewMatrix();
 	return true;
 
 }
@@ -391,14 +404,14 @@ bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 	XMFLOAT3 lightEnemyVec = XMFLOAT3((enemy.x - spotlight->getPosition().x), (enemy.y - spotlight->getPosition().y), (enemy.z - spotlight->getPosition().z));
 
 	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-	
-	
-	if ((spotlight->getRange()/2) > vecLenght)
+
+
+	if ((spotlight->getRange() / 2) > vecLenght)
 	{
 
 
 		XMFLOAT3 spotDirection = spotlight->getDirection();
-		
+
 		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
 		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
 		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
@@ -408,12 +421,12 @@ bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 
 
 		if (spotlight->getCone() < angleInRads)
-			{
-				return false;
-			}
-			return true;
-				
-}
+		{
+			return false;
+		}
+		return true;
+
+	}
 
 
 	return false;

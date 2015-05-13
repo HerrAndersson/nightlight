@@ -51,6 +51,7 @@ public:
 	MovableObject* getMovableObject()	const { return movableObject; }
 	StaticObject* getStaticObject()		const { return staticObject; }
 	Button* getButton()					const { return button; }
+	void setButton(Button* button);
 
 	bool IsWalkable();
 

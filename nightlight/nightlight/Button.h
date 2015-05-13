@@ -4,10 +4,12 @@
 class Button : public GameObject
 {
 public:
+	enum ButtonTypes {START,CONTINUE,EXIT};
+
 	Button(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string buttonType, int buttonWidth);
 	~Button();
 
-	std::string getButtonType()  const { return buttonType; }
+	int getButtonType()  const { return buttonType; }
 	int getButtonWidth() const { return buttonWidth; }
 
 	void ActivateButton();
@@ -49,7 +51,7 @@ public:
 	//int getCoordY() { return coordY; }
 
 private:
-	std::string buttonType = "";
+	int buttonType = -1;
 	bool isActivated = false;
 	Button* activatesStartButton = nullptr;
 	Button* activatesContinueButton = nullptr;
