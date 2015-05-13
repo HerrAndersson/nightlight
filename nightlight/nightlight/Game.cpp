@@ -37,7 +37,7 @@ void Game::LoadAssets()
 		currentLevel = nullptr;
 	}
 
-	menuLevel = Levels->LoadLevel(1, enemies, *character);
+	menuLevel = Levels->LoadLevel(0, enemies, *character);
 	currentLevel = menuLevel;
 }
 
@@ -92,7 +92,6 @@ bool Game::Update()
 		SwitchLevel(loadedLevel, levelNumberToLoad);
 		currentLevelNr = levelNumberToLoad;
 	}
-	//currentLevel = UpdateLevel(currentLevelNr);
 	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, levelNumberToLoad);
 	
 
