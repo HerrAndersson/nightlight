@@ -54,7 +54,6 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 	{
 		floorTile = new Floor(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
 		gameObjects.push_back(floorTile);
-		tileIsWalkable = true;
 	}
 	else if (gameObjectType == "wall") 
 	{
@@ -78,13 +77,11 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 	{
 		staticObject = new StaticObject(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
 		gameObjects.push_back(staticObject);
-		tileIsWalkable = false;
 	}
 	else if (gameObjectType == "movable") 
 	{
 		movableObject = new MovableObject(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY);
 		gameObjects.push_back(movableObject);
-		tileIsWalkable = false;
 	}
 	else if (gameObjectType == "lever") 
 	{
@@ -106,7 +103,6 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		std::string activates = unparsedData.at(i++);
 		shadowContainer = new Container(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
 		gameObjects.push_back(shadowContainer);
-		tileIsWalkable = false;
 	}
 	else if (gameObjectType == "startcube" || gameObjectType == "exitcube" || gameObjectType == "exitcube")
 	{
@@ -115,4 +111,28 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, buttonType, buttonWidth);
 		gameObjects.push_back(button);
 	}
+}
+
+bool Tile::IsWalkable()
+{
+	if (this == nullptr)
+	{
+		return false;
+	}
+
+	if (this->getPressurePlate() != nullptr)
+	{
+		return true;
+	}
+
+	if (this->getButton() != nullptr)
+	{
+		return true;
+	}
+
+	if (this->getMovableObject() != nullptr || this->getShadowContainer() != nullptr || this->getStaticObject() != nullptr || this->getFloorTile() == nullptr)
+	{
+		return false;
+	}
+	return true;
 }

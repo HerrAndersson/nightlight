@@ -301,9 +301,9 @@ static vector<XMFLOAT3> aStar(Level* level, int tileSize, XMINT2 startPosXZ, XMI
 
 								child->SetParent(current);
 								child->SetG(tentativeG);
-								//child->SetF(child->GetG() + ManhattanDistance(child, end));
+								child->SetF(child->GetG() + ManhattanDistance(child, end));
 								//child->SetF(child->GetG() + EuclideanDistance(child, end));
-								child->SetF(child->GetG() + ChebyshevDistance(child, end));
+								//child->SetF(child->GetG() + ChebyshevDistance(child, end));
 							}
 						}
 					}

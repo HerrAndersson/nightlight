@@ -32,7 +32,6 @@ private:
 	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
 	
 	XMFLOAT3 ManagePlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 pos);
-	bool IsTileWalkable(Tile* tile);
 	XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord);
 	XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door);
 
