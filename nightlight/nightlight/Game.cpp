@@ -37,10 +37,13 @@ void Game::LoadAssets()
 		currentLevel = nullptr;
 	}
 
-	menuLevel = Levels->LoadLevel(0, enemies, *character);
+	menuLevel = Levels->LoadLevel(1, enemies, *character);
 	currentLevel = menuLevel;
 
+
+	//DEBUG for pathfinding 
 	character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
+	//DEBUG for pathfinding 
 }
 
 Game::~Game()
@@ -124,7 +127,8 @@ bool Game::Render()
 
 	//DEBUG for pathfinding 
 	Coord c = character->GetTileCoord();
-	vector<XMFLOAT3> v = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
+	vector<XMFLOAT3> p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
+	vector<XMFLOAT3> p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
 	//DEBUG for pathfinding 
 
 
@@ -165,9 +169,9 @@ bool Game::Render()
 
 
 	//DEBUG for pathfinding 
-	for (auto x : v)
+	for (auto x : p1)
 	{
-		Tile* t = currentLevel->getTile(x.x, x.z);
+		Tile* t = currentLevel->getTile((int)x.x, (int)x.z);
 		if (t)
 		{
 			if (t->getFloorTile())
@@ -175,6 +179,18 @@ bool Game::Render()
 			if (t->getPressurePlate())
 				t->getPressurePlate()->SetSelected(false);
 		}	
+	}
+
+	for (auto x : p2)
+	{
+		Tile* t = currentLevel->getTile((int)x.x,(int)x.z);
+		if (t)
+		{
+			if (t->getFloorTile())
+				t->getFloorTile()->SetSelected(false);
+			if (t->getPressurePlate())
+				t->getPressurePlate()->SetSelected(false);
+		}
 	}
 	//DEBUG for pathfinding 
 

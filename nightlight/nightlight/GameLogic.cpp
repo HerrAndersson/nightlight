@@ -215,7 +215,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	}
 
 	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z-3.5f);
-	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005);
+	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005f);
 	character->SetPosition(pos);
 
 	UpdateSpotLight(character, camera, spotlight);
@@ -246,8 +246,8 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	
 	if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
 	{
-		spotlight->setDiffuseColor(0, 1, 0, 1);
-		spotlight->setAmbientColor(0.2, 0.01, 0.8, 1);
+		spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+		spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
 	}
 	else
 	{
