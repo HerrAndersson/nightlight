@@ -9,10 +9,12 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	vertexShader = NULL;
 	pixelShader = NULL;
 	skeletalVertexShader = NULL;
+	blendVertexShader = NULL;
 	sampleStateWrap = NULL;
 	sampleStateClamp = NULL;
 	matrixBufferPerObject = NULL;
 	matrixBufferPerWeightedObject = NULL;
+	matrixBufferPerBlendObject = NULL;
 	matrixBufferPerFrame = NULL;
 	lightBuffer = NULL;
 	this->hwnd = hwnd;
@@ -33,7 +35,6 @@ RenderModule::~RenderModule()
 {
 	delete d3d;
 	delete shadowMap;
-
 	layoutPosUvNorm->Release();
 	layoutPosUvNormIdxWei->Release();
 	layoutPosUvNorm3PosNorm->Release();
@@ -442,7 +443,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	if (SUCCEEDED(result))
 		OutputDebugString("\nPixelshader created");
 
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &skeletalVertexShader);
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &blendVertexShader);
 	if (FAILED(result))
 		return false;
 
@@ -452,7 +453,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 
 	/////////////////////////////////////////////////////////////////////// Input layout /////////////////////////////////////////////////////////////////////////
 	// Create the layout description for input into the vertex shader.
-	polygonLayout[0].SemanticName = "POSITION0";
+	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[0].InputSlot = 0;
@@ -468,7 +469,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
-	polygonLayout[2].SemanticName = "NORMAL0";
+	polygonLayout[2].SemanticName = "NORMAL";
 	polygonLayout[2].SemanticIndex = 0;
 	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[2].InputSlot = 0;
@@ -476,48 +477,48 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[2].InstanceDataStepRate = 0;
 
-	polygonLayout[3].SemanticName = "POSITIO1N";
-	polygonLayout[3].SemanticIndex = 0;
+	polygonLayout[3].SemanticName = "POSITION";
+	polygonLayout[3].SemanticIndex = 1;
 	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[3].InputSlot = 0;
-	polygonLayout[3].AlignedByteOffset = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[3].InstanceDataStepRate = 0;
 
-	polygonLayout[4].SemanticName = "POSITION2";
-	polygonLayout[4].SemanticIndex = 0;
+	polygonLayout[4].SemanticName = "POSITION";
+	polygonLayout[4].SemanticIndex = 2;
 	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[4].InputSlot = 0;
-	polygonLayout[4].AlignedByteOffset = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[4].InstanceDataStepRate = 0;
 
-	polygonLayout[5].SemanticName = "POSITION3";
-	polygonLayout[5].SemanticIndex = 0;
+	polygonLayout[5].SemanticName = "POSITION";
+	polygonLayout[5].SemanticIndex = 3;
 	polygonLayout[5].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[5].InputSlot = 0;
-	polygonLayout[5].AlignedByteOffset = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[5].InstanceDataStepRate = 0;
 
-	polygonLayout[6].SemanticName = "NORMAL1";
-	polygonLayout[6].SemanticIndex = 0;
+	polygonLayout[6].SemanticName = "NORMAL";
+	polygonLayout[6].SemanticIndex = 1;
 	polygonLayout[6].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[6].InputSlot = 0;
 	polygonLayout[6].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[6].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[6].InstanceDataStepRate = 0;
 
-	polygonLayout[7].SemanticName = "NORMAL2";
-	polygonLayout[7].SemanticIndex = 0;
+	polygonLayout[7].SemanticName = "NORMAL";
+	polygonLayout[7].SemanticIndex = 2;
 	polygonLayout[7].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[7].InputSlot = 0;
 	polygonLayout[7].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[7].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[7].InstanceDataStepRate = 0;
 
-	polygonLayout[8].SemanticName = "NORMAL3";
-	polygonLayout[8].SemanticIndex = 0;
+	polygonLayout[8].SemanticName = "NORMAL";
+	polygonLayout[8].SemanticIndex = 3;
 	polygonLayout[8].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[8].InputSlot = 0;
 	polygonLayout[8].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
@@ -527,7 +528,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	//count of elements in the layout
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layoutPosUvNormIdxWei);
+	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layoutPosUvNorm3PosNorm);
 	if (FAILED(result)){ return false; }
 
 	//we no longer need the shader buffers, so release them
@@ -580,8 +581,8 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	matrixBufferDesc.StructureByteStride = 0;
 
 	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerWeightedObject);
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerWeightedObject);
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerBlendObject);
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerBlendObject);
 
 	if (FAILED(result))
 		throw std::runtime_error("\nFailed to create matrix buffer");
