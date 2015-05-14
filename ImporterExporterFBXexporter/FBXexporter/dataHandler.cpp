@@ -25,7 +25,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create an IOSettings object.
 		FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
 		lSdkManager->SetIOSettings(ios);
-
+			(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
 		//Configure the FbxIOSettings object. What to export and so on
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
@@ -188,18 +188,29 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//    lUVs.push_back(modelList.at(i).UVs[i]);
 		//}
 		//    int size = modelList.at(i).UVs.size();
-		static Vector2 lUVs[14] =
+
+
+		vector<FbxVector2> lUVs;
+		for (int j = 0; j < modelList.at(i).UVs.size(); j++)
 		{
-			{ 0.0, 1.0 },
-			{ 1.0, 0.0 },
-			{ 0.0, 0.0 },
-			{ 1.0, 1.0 }
-		};
-		//indices of the uvs per each polygon
-		static int uvsId[24] =
-		{
-			0, 1, 3, 2, 2, 3, 5, 4, 4, 5, 7, 6, 6, 7, 9, 8, 1, 10, 11, 3, 12, 0, 2, 13
-		};
+			
+			FbxVector2 UVs = { (double)(modelList.at(i).UVs.at(j).x), (double)(modelList.at(i).UVs.at(j).y) };
+			lUVs.push_back(UVs);
+		}
+
+
+		//static Vector2 lUVs[14] =
+		//{
+		//	{ 0.0, 1.0 },
+		//	{ 1.0, 0.0 },
+		//	{ 0.0, 0.0 },
+		//	{ 1.0, 1.0 }
+		//};
+
+
+	
+
+		
 		//create the main structure.
 		FbxMesh* lMesh = FbxMesh::Create(lScene, "");
 		
@@ -236,7 +247,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		//specify normals per control point.
 		FbxGeometryElementNormal* lNormalElement = lMesh->CreateElementNormal();
-		lNormalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lNormalElement->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
 		lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
 		//set normals
@@ -272,10 +283,10 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		FBX_ASSERT(lUVElement1 != NULL);
 		lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
 		lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
-		for (int i = 0; i < 4; i++)
-			lUVElement1->GetDirectArray().Add(FbxVector2(lUVs[i][0], lUVs[i][1]));
-		for (int i = 0; i < 24; i++)
-			lUVElement1->GetIndexArray().Add(uvsId[i % 4]);
+		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
+			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
+		for (int u = 0; u < modelList.at(i).UVs.size() * 6; u++)
+			lUVElement1->GetIndexArray().Add(uvId.at(u % 4));
 		
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
