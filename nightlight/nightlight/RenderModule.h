@@ -57,7 +57,6 @@ private:
 	struct MatrixBufferPerBlendObject
 	{
 		XMMATRIX world;
-		int isSelected;
 		float weight[4];
 	};
 

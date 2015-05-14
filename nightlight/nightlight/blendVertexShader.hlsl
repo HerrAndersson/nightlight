@@ -1,8 +1,7 @@
 cbuffer matrixBufferPerBlendObject : register(cb0)
 {
 	matrix worldMatrix;
-	int isSelected;
-	float weight[4];
+	float4 weight;
 };
 
 cbuffer matrixBufferPerFrame : register(cb1)
@@ -40,15 +39,17 @@ vertexOutput blendVertexShader(vertexInputType input)
 {
 	vertexOutput output;
 
-	input.position0 *= weight[0];
-	input.normal0 *= weight[0];
+	input.position0 *= weight.x;
+	input.normal0 *= weight.x;
+	input.position1 *= weight.y;
+	input.normal1 *= weight.y;
+	input.position2 *= weight.z;
+	input.normal2 *= weight.z;
+	input.position3 *= weight.w;
+	input.normal3 *= weight.w;
 
-	input.position0.xyz += input.position1.xyz * weight[1];
-	input.normal0 += input.normal1 * weight[1];
-	input.position0.xyz += input.position2.xyz * weight[2];
-	input.normal0 += input.normal2 * weight[2];
-	input.position0.xyz += input.position3.xyz * weight[3];
-	input.normal0 += input.normal3 * weight[3];
+	input.position0.xyz += input.position1 + input.position2 + input.position3;
+	input.normal0 += input.normal1 + input.normal2 + input.normal3;
 
 	input.position0.w = 1.0f;
 
@@ -66,7 +67,6 @@ vertexOutput blendVertexShader(vertexInputType input)
 	output.normal = mul(input.normal0, worldMatrix);
 	output.normal = normalize(output.normal);
 
-	output.isSelected = isSelected;
 
 	return output;
 }

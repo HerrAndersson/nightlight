@@ -244,10 +244,8 @@
     <None Include="skeletalVertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="blendVertexShader.hlsl">
+    <None Include="blendVertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
-    </FxCompile>
+    </None>
   </ItemGroup>
 </Project>

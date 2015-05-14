@@ -2,6 +2,12 @@
 
 Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
 {
+	srand(1);
+	weights[0] = 1;//todo
+	weights[1] = 0;
+	weights[2] = 0;
+	weights[3] = 0;
+
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
@@ -170,7 +176,32 @@ bool Game::Render()
 		Renderer->Render(&e);
 	}
 
-	Renderer->Render(character);
+
+	int weightchange[4] = { rand() % 100, rand() % 100, rand() % 100, rand() % 100 };//todo
+	int totalweightchange = weightchange[0] + weightchange[1] + weightchange[2] + weightchange[3];
+	float finalweightchange[4];
+	finalweightchange[0] = (float)(weightchange[0]) / totalweightchange * 4 - 1;
+	finalweightchange[1] = (float)(weightchange[1]) / totalweightchange * 4 - 1;
+	finalweightchange[2] = (float)(weightchange[2]) / totalweightchange * 4 - 1;
+	finalweightchange[3] = (float)(weightchange[3]) / totalweightchange * 4 - 1;
+	float totalweight=0;
+	for (int i = 0; i < 4; i++){
+		weights[i] += (finalweightchange[i]/80);
+		totalweight += weights[i];
+		if (weights[i] < 0)
+			weights[i] =0;
+		if (weights[i] > 1)
+			weights[i] =1;
+	}
+	weights[0] /= totalweight;
+	weights[1] /= totalweight;
+	weights[2] /= totalweight;
+	weights[3] /= totalweight;
+	system("CLS");
+	cout << weights[0] << endl << weights[1] << endl << weights[2] << endl << weights[3] << endl << totalweight;
+	
+	
+	Renderer->Render(character, weights);
 
 	Renderer->EndScene();
 

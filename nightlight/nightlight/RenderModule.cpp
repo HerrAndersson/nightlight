@@ -481,7 +481,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	polygonLayout[3].SemanticIndex = 1;
 	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[3].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[3].InstanceDataStepRate = 0;
 
@@ -489,7 +489,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	polygonLayout[4].SemanticIndex = 2;
 	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[4].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[4].InstanceDataStepRate = 0;
 
@@ -497,7 +497,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	polygonLayout[5].SemanticIndex = 3;
 	polygonLayout[5].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	polygonLayout[5].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[5].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[5].InstanceDataStepRate = 0;
 
@@ -679,15 +679,14 @@ bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* re
 	MatrixBufferPerBlendObject* dataPtr = (MatrixBufferPerBlendObject*)mappedResource.pData;
 
 	dataPtr->world = worldMatrixC;
-	dataPtr->isSelected = isSelected;
 	dataPtr->weight[0] = weights[0];
 	dataPtr->weight[1] = weights[1];
 	dataPtr->weight[2] = weights[2];
 	dataPtr->weight[3] = weights[3];
 
-	deviceContext->Unmap(matrixBufferPerObject, 0);
+	deviceContext->Unmap(matrixBufferPerBlendObject, 0);
 
-	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
+	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerBlendObject);
 	return true;
 }
 
@@ -927,12 +926,12 @@ bool RenderModule::Render(GameObject* gameObject)
 		}
 		else
 		{
-			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float frame");
+			throw std::runtime_error(string("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame"));
 		}
 	else
 		if (renderObject->model->hasBlendShapes)
 		{
-			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float weights[4]");
+			throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float weights[4]");
 		}
 		else
 		{
@@ -970,7 +969,7 @@ bool RenderModule::Render(GameObject* gameObject, float frame)
 	else
 		if (renderObject->model->hasBlendShapes)
 		{
-			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float weights[4]");
+			throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float weights[4]");
 		}
 		else
 		{
@@ -1002,7 +1001,7 @@ bool RenderModule::Render(GameObject* gameObject, float weights[4])
 		}
 		else
 		{
-			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float frame");
+			throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
 		}
 	else
 		if (renderObject->model->hasBlendShapes)

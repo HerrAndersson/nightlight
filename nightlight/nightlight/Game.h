@@ -51,6 +51,8 @@ private:
 
 	*/
 
+	float weights[4];//todo
+
 public:
 
 	Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
