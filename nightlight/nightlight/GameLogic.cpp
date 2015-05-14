@@ -12,7 +12,7 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad)
+bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies)
 {
 	//TODO: Handle buttons!
 	//Make it so that our code only cares about buttons if level if menu
@@ -21,7 +21,7 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 
 	bool result = false;
 
-	result = UpdatePlayer(currentLevel, character, camera, spotLight, levelNumberToLoad);
+	result = UpdatePlayer(currentLevel, character, camera, spotLight);
 	if (!result) return result;
 
 	result = UpdateAI(enemies, character);
@@ -53,7 +53,7 @@ bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight, int& levelNumberToLoad)
+bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
@@ -125,24 +125,27 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 			Coord characterTileCoord = character->GetTileCoord();
 			Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
 			Button* button = currentTile->getButton();
+
 			if (button != nullptr)
 			{
 				int buttonType = button->getButtonType();
 				switch (buttonType)
 				{
 				case Button::ButtonTypes::START:
-
+					cout << "Start";
 					break;
 				case Button::ButtonTypes::CONTINUE:
-
+					cout << "Continue";
 					break;
 				case Button::ButtonTypes::EXIT:
+					cout << "Exit";
 					return false;
 					break;
 				default:
 					break;
 				}
 			}
+			cout << endl << endl;
 		}
 		else
 		{
@@ -243,6 +246,7 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z - 3.5f);
 	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005f);
 	character->SetPosition(pos);
+	currentLevel->setPlayerPosition(pos);
 
 	UpdateSpotLight(character, camera, spotlight);
 
