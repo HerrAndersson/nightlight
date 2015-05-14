@@ -63,10 +63,6 @@ bool Game::Update()
 	}
 
 	return result;
-			fstream save;
-			save.open("save.save", std::ios_base::trunc);
-			save << newLevelNr;
-			save.close();
 }
 
 bool Game::Render()
