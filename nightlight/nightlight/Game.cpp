@@ -14,30 +14,29 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
 	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
 
-	InitManagers(hwnd, fullscreen);
-	LoadAssets();
+	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
+	Assets = new AssetManager(Renderer->GetDevice());
+	Levels = new LevelParser(Assets);
 
-	//AI = new AiModule(currentLevel);
+	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
+	menuLevel = Levels->LoadLevel(0, enemies, *character);
+	currentLevel = menuLevel;
+	AI = new AiModule(currentLevel);
+	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI, menuLevel);
 }
 
 void Game::InitManagers(HWND hwnd, bool fullscreen)
 {
-	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
-	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
-	Assets = new AssetManager(Renderer->GetDevice());
-	Levels = new LevelParser(Assets);
+	
 }
 
 void Game::LoadAssets()
 {
-	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
-	if (currentLevel != nullptr)
-	{
-		delete currentLevel;
-		currentLevel = nullptr;
-	}
+	
 
-	currentLevel = Levels->LoadLevel(0, enemies, *character);
+	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+	//character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
+	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 }
 
 Game::~Game()
@@ -86,23 +85,29 @@ bool Game::Update()
 	//	default:
 	//		break;
 	//}
-	if (currentLevelNr == 1)
+	if (levelNumberToLoad != currentLevelNr)
 	{
-		currentLevel = UpdateLevel(currentLevelNr);
-		currentLevelNr = 0;
+		SwitchLevel(loadedLevel, levelNumberToLoad);
+		currentLevelNr = levelNumberToLoad;
 	}
-	//currentLevel = UpdateLevel(currentLevelNr);
-	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, currentLevelNr);
+	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, levelNumberToLoad);
 	
-
-
 	return result;
 }
 
-Level* Game::UpdateLevel(int currentLevelNr)
+void Game::SwitchLevel(Level* newlevel, int newLevelNr =- 1 )
 {
-	Level* newLevel = Levels->LoadLevel(currentLevelNr, enemies, *character);
-	return newLevel;
+	if (newlevel == nullptr)
+	{
+		if (newLevelNr != -1)
+		{
+			currentLevel = Levels->LoadLevel(newLevelNr, enemies, *character);
+		}
+	}
+	else
+	{
+		currentLevel = newlevel;
+	}
 }
 
 bool Game::Render()
@@ -110,6 +115,21 @@ bool Game::Render()
 	bool result = true;
 
 	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+
+
+
+	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+	vector<XMINT2> p1;
+	vector<XMINT2> p2;
+	if (AiUtil_ShowDebugPath)
+	{
+		Coord c = character->GetTileCoord();
+//	vector<XMFLOAT3> p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
+//	vector<XMFLOAT3> p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
+	}
+	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+
+
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
@@ -143,6 +163,36 @@ bool Game::Render()
 	Renderer->Render(character);
 
 	Renderer->EndScene();
+
+
+
+//	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+//	for (auto x : p1)
+//	{
+//		Tile* t = currentLevel->getTile((int)x.x, (int)x.z);
+//		if (t)
+//		{
+//			if (t->getFloorTile())
+//				t->getFloorTile()->SetSelected(false);
+//			if (t->getPressurePlate())
+//				t->getPressurePlate()->SetSelected(false);
+//		}	
+//	}
+//
+//	for (auto x : p2)
+//	{
+//		Tile* t = currentLevel->getTile((int)x.x,(int)x.z);
+//		if (t)
+//		{
+//			if (t->getFloorTile())
+//				t->getFloorTile()->SetSelected(false);
+//			if (t->getPressurePlate())
+//				t->getPressurePlate()->SetSelected(false);
+//		}
+//	}
+	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+
+
 
 	return result;
 }

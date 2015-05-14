@@ -13,25 +13,35 @@ class GameLogic
 {
 private:
 
+	enum Axis { X, Y };
+	//enum SelectionTypes {NONE, BUTTON, LEVER, MOVABLEOBJECT};
+	enum CollisionTypes { CHARACTER, ENEMY, MOVABLEOBJECT };
+
 	InputManager*  Input;
 	AiModule*      AI;
-	bool end = true;
+	Level* menuLevel;
+	bool quitGame = true;
 
 	int screenWidth;
 	int screenHeight;
 
 	bool leftMouseLastState = false;
+	bool moveObjectMode = false;
+	int moveObjectModeAxis = -1;
 
 	GameObject* selectedObject = nullptr;
 
 	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight, int& currentLevelNr);
 	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
-	bool UpdateAI(vector<Enemy>* enemies);
+	bool UpdateAI(vector<Enemy>* enemies, Character* player);
 
 	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
 	
-	XMFLOAT3 ManagePlayerCollisions(Level* currentLevel, Character* character, XMFLOAT3 pos);
-	bool IsTileWalkable(Tile* tile);
+	XMFLOAT3 ManageCollisions(Level* currentLevel, GameObject* gameObject, XMFLOAT3 pos, CollisionTypes type);
+	XMFLOAT3 ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos);
+
+	void SelectObject(GameObject* selectedObject);
+
 	XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord);
 	XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door);
 
@@ -39,11 +49,11 @@ private:
 
 public:
 
-	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
+	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel);
 	~GameLogic();
 
-	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& currentLevelNr);
-	int currentLevelNr;
+	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies, int& levelNumberToLoad);
+	
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
 	//Etc

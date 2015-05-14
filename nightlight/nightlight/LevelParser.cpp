@@ -43,6 +43,8 @@ void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> l
 
 Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character &character)
 {
+	//TODO: Handle button reading from menu level
+
 	Level* level = nullptr;
 
 	if (levelID <= -1 || levelID > (signed)levelNames.size() - 1)
@@ -85,6 +87,40 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 
 				enemies.push_back(Enemy(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
 			}
+			else if (gameObjectType.find("button") != std::string::npos)
+			{
+				int i = 0;
+				int renderObjectRef = std::stoi(unparsedLine.at(i++));
+				int gameObjectTypeRef = std::stoi(unparsedLine.at(i++));
+				float rotation;
+				XMFLOAT3 position;
+				position.x = std::stof(unparsedLine.at(i++)) - TILE_SIZE / 2;
+				position.y = std::stof(unparsedLine.at(i++));
+				position.z = std::stof(unparsedLine.at(i++)) - TILE_SIZE / 2;
+				rotation = std::stof(unparsedLine.at(i++));
+				int tileCoordX = std::stoi(unparsedLine.at(i++));
+				int tileCoordY = std::stoi(unparsedLine.at(i++));
+
+
+
+				std::string buttonType = unparsedLine.at(i++);
+				int buttonWidth = stoi(unparsedLine.at(i++));
+				Button* button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, buttonType, buttonWidth);
+				
+				for (int x = tileCoordX; x < tileCoordX + buttonWidth; x++)
+				{
+					Tile* tile = level->getTile(x, tileCoordY);
+					if (tile == nullptr)
+					{
+						tile = new Tile();
+						level->setTile(tile, x, tileCoordY);
+					}
+					tile->setButton(button);
+					
+				}
+
+			}
+
 			else
 			{
 				int tileCoordX = std::stoi(unparsedLine.at(6));

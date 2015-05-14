@@ -4,13 +4,13 @@ AiModule::AiModule(Level* level)
 {
 	this->level = level;
 
-	vector<XMFLOAT3> v = GetPath(level, XMINT2(1, 5), XMINT2(1, 2));
+	//vector<XMFLOAT3> v = GetPath(level, XMINT2(1, 2), XMINT2(4, 7));
 
-	cout << "Path: " << endl;
-	for (auto x : v)
-	{
-		cout << "X: " << x.x << " Y: " << x.z << endl;
-	}
+	//cout << "Path: " << endl;
+	//for (auto x : v)
+	//{
+	//	cout << "X: " << x.x << " Y: " << x.z << endl;
+	//}
 }
 
 AiModule::~AiModule()
@@ -18,17 +18,19 @@ AiModule::~AiModule()
 
 }
 
-void AiModule::HandleAI(Enemy* ai)
+void AiModule::HandleAI(Enemy* ai, Character* player)
 {
 	if (!ai->IsFollowingPlayer() && !ai->HasValidPath())
 	{
 		XMFLOAT3 p = ai->GetPosition();
 		XMINT2 goal = GetRandomPosition(ai);
-		ai->SetPath(aStar(level, 1, XMINT2((int)p.x, (int)p.z), goal));
+		ai->SetPath(aStar(level, XMINT2((int)p.x, (int)p.z), goal));
 	}
 	else if (ai->IsFollowingPlayer())
 	{
-		//Get path towards player (only if PFs are not used
+		Coord c1 = ai->GetTileCoord();
+		Coord c2 = player->GetTileCoord();
+		ai->SetPath(aStar(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
 	}
 	else
 	{
@@ -95,9 +97,9 @@ XMINT2 AiModule::GetRandomPosition(Enemy* ai)
 	return goal;
 }
 
-vector<XMFLOAT3> AiModule::GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
+vector<XMINT2> AiModule::GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 {
-	return aStar(level, 1, startPosXZ, endPosXZ);
+	return aStar(level, startPosXZ, endPosXZ);
 }
 
 void AiModule::ChangeLevel(Level* level)

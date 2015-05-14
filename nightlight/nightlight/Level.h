@@ -10,6 +10,7 @@ private:
 	std::vector<GameObject*> gameObjects;
 	Coord startDoor;
 	Coord endDoor;
+	XMFLOAT3 currentPlayerPosition;
 	
 public:
 	Level ( );
@@ -23,6 +24,8 @@ public:
 	void setStartDoor(Coord val) { startDoor = val; }
 	Coord getEndDoor() const { return endDoor; }
 	void setEndDoor(Coord val) { endDoor = val; }
+	XMFLOAT3 getPlayerPostion() const { return currentPlayerPosition; }
+	void setPlayerPosition(XMFLOAT3 PlayerPosition) { currentPlayerPosition = PlayerPosition; }
 
 	vector<vector<Tile*>>* getTileGrid() { return &tileGrid; }
 

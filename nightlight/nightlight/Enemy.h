@@ -7,7 +7,9 @@ private:
 
 	int enemyType;
 	bool followingPlayer;
-	vector<XMFLOAT3> path;
+	vector<XMINT2> path;
+
+	bool hasValidPath;
 
 public:
 
@@ -18,7 +20,7 @@ public:
 
 	void Update();
 
-	void SetPath(vector<XMFLOAT3> path);
+	void SetPath(vector<XMINT2> path);
 
 	bool IsFollowingPlayer();
 	bool HasValidPath();

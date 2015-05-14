@@ -26,6 +26,8 @@ private:
 	int screenWidth, screenHeight;
 
 	Level* currentLevel = nullptr;
+	Level* loadedLevel = nullptr;
+	Level* menuLevel = nullptr;
 
 	vector<Enemy>		    enemies;
 
@@ -38,7 +40,9 @@ private:
 	AiModule*               AI;
 	AssetManager*			Assets;
 	LevelParser*			Levels;
-
+	
+	int levelNumberToLoad = 1;
+	int currentLevelNr = 1;
 
 	/*
 	To be implemented:
@@ -57,9 +61,9 @@ public:
 	~Game();
 
 	bool Update(); //determines which objects to update and then calls Logic->Update(objectsToUpdate);
-	Level* UpdateLevel(int currentLevelNr);
+	void SwitchLevel(Level* newlevel, int newLevelNr);
 	bool Render(); //determines which objects to render and then calls Render->Render(objectsToRender);
-	int currentLevelNr;
+	
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

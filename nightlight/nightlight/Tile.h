@@ -33,7 +33,6 @@ private:
 	XMINT2 tileCoord;
 	int fScore, gScore;
 	Tile* parent = nullptr;
-	bool tileIsWalkable = false;
 	bool inClosed = false;
 	bool inOpen = false;
 		
@@ -51,14 +50,15 @@ public:
 	Container* getShadowContainer()		const { return shadowContainer; }
 	MovableObject* getMovableObject()	const { return movableObject; }
 	StaticObject* getStaticObject()		const { return staticObject; }
-	Button* getButton() const { return button; }
+	Button* getButton()					const { return button; }
+	void setButton(Button* button);
+
+	bool IsWalkable();
 
 	std::vector<GameObject*>* getAllGameObjects(){ return &gameObjects; }
-
 	void createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData);
 
 	//For pathfinding
-	bool IsWalkable()					{ return tileIsWalkable; }
 	XMINT2 GetTileCoord()				{ return tileCoord; };
 	int GetF()							{ return fScore; };
 	void SetF(int f)					{ fScore = f; };

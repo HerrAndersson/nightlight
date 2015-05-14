@@ -525,7 +525,6 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 			dataPtr->bones[i] = finalTransforms[i];
 			//XMStoreFloat4x4(&dataPtr->bones[i], XMMatrixTranslation(0, 0, 0));
-			//XMStoreFloat4x4(&dataPtr->bones[i], XMMatrixTranslation(0, -1, 0));
 		}
 
 		deviceContext->Unmap(matrixBufferPerWeightedObject, 0);
