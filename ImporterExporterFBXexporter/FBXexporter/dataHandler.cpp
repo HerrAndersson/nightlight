@@ -11,6 +11,8 @@ DataHandler::~DataHandler()
 {}
 int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
 {
+
+
 	for (int i = 0; i < binFileList.size(); i++)
 	{
 		//vectors
@@ -158,13 +160,11 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		//normals vertices per each polygon 
 		int sizeNormals = modelList.at(i).normals.size();
-		vector<float> lNormals;
+		vector<FbxVector4> lNormals;
 		for (int j = 0; j < sizeNormals; j++)
 		{
-			lNormals.push_back(modelList.at(i).normals[j].x);
-			lNormals.push_back(modelList.at(i).normals[j].y);
-			lNormals.push_back(modelList.at(i).normals[j].z);
-			lNormals.push_back(1.0f);
+			FbxVector4 normal = { (double)(modelList.at(i).normals.at(j).x), (double)(modelList.at(i).normals.at(j).y), (double)(modelList.at(i).normals.at(j).z), (double)(1.0f) };
+			lNormals.push_back(normal);
 		}
 
 		//static Vector4 lNormals[8]=
@@ -207,18 +207,13 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lMesh->InitControlPoints(sizePoints);
 		FbxVector4* vertex = lMesh->GetControlPoints();
 
-
+		//set controlPoints
 		for (int p = 0; p < sizePoints; p++)
 		{
 			lMesh->SetControlPointAt(lControlPoints.at(p), p);
 		}
 		
-		//Maybe kanske this but probably not
-		//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
-		//Maybe kanske this but probably not
-
-		//memcpy((void*)vertex, (void*)lControlPoints.data(), sizeof(lControlPoints));
-
+		
 		//create the materials
 		FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
 		lMaterialElement->SetMappingMode(FbxGeometryElement::eAllSame);
@@ -243,9 +238,13 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		FbxGeometryElementNormal* lNormalElement = lMesh->CreateElementNormal();
 		lNormalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		//set normals
 		for (int n = 0; n < sizeNormals; n++)
-			lNormalElement->GetDirectArray().Add(FbxVector4(lNormals.at(n), lNormals.at(n), lNormals.at(n)));
-		
+		{
+			lNormalElement->GetDirectArray().Add(lNormals.at(n));
+
+		}
 		//for (int n = 0; n<8; n++)
 		//    lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
 		//create nodeName from file name
