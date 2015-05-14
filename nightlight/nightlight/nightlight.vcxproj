@@ -92,6 +92,7 @@
     <ClCompile Include="MovableObject.cpp" />
     <ClCompile Include="PressurePlate.cpp" />
     <ClCompile Include="RenderModule.cpp" />
+    <ClCompile Include="SaveLoadManager.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="System.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="MovableObject.h" />
     <ClInclude Include="PressurePlate.h" />
     <ClInclude Include="RenderModule.h" />
+    <ClInclude Include="SaveLoadManager.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="System.h" />

@@ -129,6 +129,9 @@
     <ClCompile Include="Button.cpp">
       <Filter>Game\Menu</Filter>
     </ClCompile>
+    <ClCompile Include="SaveLoadManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -229,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>Game\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveLoadManager.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
