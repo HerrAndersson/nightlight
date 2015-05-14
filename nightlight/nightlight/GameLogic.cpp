@@ -1,10 +1,9 @@
 #include "GameLogic.h"
 
-GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel)
+GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI)
 {
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	this->AI = AI;
-	this->menuLevel = menuLevel;
 }
 
 GameLogic::~GameLogic()
@@ -12,36 +11,20 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies)
+bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies)
 {
-	//TODO: Handle buttons!
-	//Make it so that our code only cares about buttons if level if menu
-	//Make tile sized boundingboxes thingis
-	//Make functions happen (start game always on level 1, continue the game and exit, which is already done but just need to be redone to work for the thingis above
+	if (!UpdatePlayer(levelStates.currentLevel, character, camera, spotLight))
+		return false;
 
-	bool result = false;
+	if (!UpdateAI(enemies, character))
+		return false;
 
-	result = UpdatePlayer(currentLevel, character, camera, spotLight);
-	if (!result) return result;
+	if (!ManageLevelStates(levelStates, character, enemies))
+		return false;
 
-	result = UpdateAI(enemies, character);
-	if (menuLevel != nullptr && menuLevel == currentLevel){
+	Input->Update();
 
-	}
-	else
-	{
-	//	result = UpdateAI(enemies);
-		if (!result) return result;
-
-		//if (Input->Esc()) return false;
-	}
-
-	//if (!quitGame)
-	//{
-	//	return false;
-	//}
-
-	return result;
+	return true;
 }
 
 bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
@@ -63,157 +46,117 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	XMFLOAT3 rot = character->GetRotationDeg();
 
 	bool playerMoved = false;
-	float movementOffset = 0.0f;
-	Coord movementOffsetCoord;
 
 	if (Input->KeyDown('w'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::Y))
-		{
-			movementOffsetCoord = Coord(0, 1);
-			pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
+		playerMoved = true;
 	}
 	if (Input->KeyDown('s'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::Y))
-		{
-			movementOffsetCoord = Coord(0, -1);
-			pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
+		playerMoved = true;
 	}
 	if (Input->KeyDown('a'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::X))
-		{
-			movementOffsetCoord = Coord(1, 0);
-			pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
+		playerMoved = true;
 	}
 	if (Input->KeyDown('d'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::X))
-		{
-			movementOffsetCoord = Coord(-1, 0);
-			pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
+		playerMoved = true;
 	}
 
 	if (playerMoved)
 	{
+		XMFLOAT3 movableObjectOffset;
+		if (moveObjectMode){
+			XMFLOAT3 selectedObjectPos = selectedObject->GetPosition();
+			movableObjectOffset = XMFLOAT3(pos.x - selectedObjectPos.x, pos.y - selectedObjectPos.y, pos.z - selectedObjectPos.z);
+		}
+
+
 		pos = ManageCollisions(currentLevel, character, pos, CollisionTypes::CHARACTER);
 
-		//if (selectedObject != nullptr)
-		//{
-		//	XMFLOAT3 movablePos = selectedObject->GetPosition();
-		//	movablePos.x += movementOffsetCoord.x;
-		//	movablePos.y += movementOffsetCoord.y;
-		//	movablePos = ManageCollisions(currentLevel, selectedObject, movablePos, CollisionTypes::MOVABLEOBJECT);
-		//}
+		if (moveObjectMode)
+		{
+			//TODO: FIX THIS!!!!!!!
+			XMFLOAT3 movablePos = pos;
+			movablePos.x += movableObjectOffset.x;
+			movablePos.y += movableObjectOffset.y;
+			movablePos.z += movableObjectOffset.z;
+			selectedObject->SetPosition(movablePos);
+			//movablePos = ManageCollisions(currentLevel, selectedObject, movablePos, CollisionTypes::MOVABLEOBJECT);
+		}
 	}
 
-	if (Input->LeftMouse() && leftMouseLastState == false)
+	if (Input->LeftMouseDown() && leftMouseLastState == false)
 	{
 		leftMouseLastState = true;
 
-		//levelNumberToLoad = 1;
-		if (currentLevel == menuLevel){
-			Coord characterTileCoord = character->GetTileCoord();
-			Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
-			Button* button = currentTile->getButton();
+		if (!moveObjectMode)
+		{
+			Lever* lever = dynamic_cast<Lever*>(selectedObject);
+			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
 
-			if (button != nullptr)
+			if (movable != nullptr)
 			{
-				int buttonType = button->getButtonType();
-				switch (buttonType)
+				moveObjectMode = true;
+				Coord movableCoord = selectedObject->GetTileCoord();
+				Coord characterCoord = character->GetTileCoord();
+				XMFLOAT3 characterRot = character->GetRotationDeg();
+
+				pos = XMFLOAT3(-characterCoord.x - TILE_SIZE / 2, 0.0f, -characterCoord.y - TILE_SIZE / 2);
+
+				if (movableCoord.y > characterCoord.y)
 				{
-				case Button::ButtonTypes::START:
-					cout << "Start";
-					break;
-				case Button::ButtonTypes::CONTINUE:
-					cout << "Continue";
-					break;
-				case Button::ButtonTypes::EXIT:
-					cout << "Exit";
-					return false;
-					break;
-				default:
-					break;
+					characterRot.y = -90.0f;
+					moveObjectModeAxis = Axis::Y;
 				}
+				else if (movableCoord.y < characterCoord.y)
+				{
+					characterRot.y = 90.0f;
+					moveObjectModeAxis = Axis::Y;
+				}
+				else if (movableCoord.x > characterCoord.x)
+				{
+					characterRot.y = 0.0f;
+					moveObjectModeAxis = Axis::X;
+				}
+				else if (movableCoord.x < characterCoord.x)
+				{
+					characterRot.y = 180.0f;
+					moveObjectModeAxis = Axis::X;
+				}
+				character->SetRotationDeg(characterRot);
+
+
 			}
-			cout << endl << endl;
 		}
 		else
 		{
-			if (!moveObjectMode)
-			{
-				Lever* lever = dynamic_cast<Lever*>(selectedObject);
-				MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
+			moveObjectMode = false;
+		}
 
-				if (movable != nullptr)
-				{
-					moveObjectMode = true;
-					Coord movableCoord = selectedObject->GetTileCoord();
-					Coord characterCoord = character->GetTileCoord();
-					XMFLOAT3 characterRot = character->GetRotationDeg();
+		if (selectedObject != nullptr) {
+			Lever* lever = dynamic_cast<Lever*>(selectedObject);
+			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
 
-					pos = XMFLOAT3(-characterCoord.x - TILE_SIZE / 2, 0.0f, -characterCoord.y - TILE_SIZE / 2);
-
-					if (movableCoord.y > characterCoord.y)
-					{
-						characterRot.y = -90.0f;
-						moveObjectModeAxis = Axis::Y;
-					}
-					else if (movableCoord.y < characterCoord.y)
-					{
-						characterRot.y = 90.0f;
-						moveObjectModeAxis = Axis::Y;
-					}
-					else if (movableCoord.x > characterCoord.x)
-					{
-						characterRot.y = 0.0f;
-						moveObjectModeAxis = Axis::X;
-					}
-					else if (movableCoord.x < characterCoord.x)
-					{
-						characterRot.y = 180.0f;
-						moveObjectModeAxis = Axis::X;
-					}
-					character->SetRotationDeg(characterRot);
-
-
-				}
+			if (movable != nullptr) {
+				//TODO: Enable move mode.
 			}
-			else
-			{
-				moveObjectMode = false;
-			}
-
-
-
-			if (selectedObject != nullptr) {
-				Lever* lever = dynamic_cast<Lever*>(selectedObject);
-				MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
-
-				if (movable != nullptr) {
-					//TODO: Enable move mode.
+			if (lever != nullptr) {
+				if (lever->getIsActivated()) {
+					lever->DeactivateLever();
 				}
-				if (lever != nullptr) {
-					if (lever->getIsActivated()) {
-						lever->DeactivateLever();
-					}
-					else {
-						lever->ActivateLever();
-					}
+				else {
+					lever->ActivateLever();
 				}
 			}
 		}
 	}
-	if (!Input->LeftMouse() && leftMouseLastState == true)
+	if (!Input->LeftMouseDown() && leftMouseLastState == true)
 	{
 		leftMouseLastState = false;
 	}
@@ -404,16 +347,11 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 
 bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 {
-
 	XMFLOAT3 lightEnemyVec = XMFLOAT3((enemy.x - spotlight->getPosition().x), (enemy.y - spotlight->getPosition().y), (enemy.z - spotlight->getPosition().z));
-
 	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
 
 	if ((spotlight->getRange() / 2) > vecLenght)
 	{
-
-
 		XMFLOAT3 spotDirection = spotlight->getDirection();
 
 		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
@@ -423,145 +361,17 @@ bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 
 		float angleInRads = (180 / XM_PI) * angle;
 
-
 		if (spotlight->getCone() < angleInRads)
-		{
 			return false;
-		}
+
 		return true;
-
 	}
-
-
 	return false;
-
 }
 
 XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos)
 {
 	bool result = false;
-
-	//if (iteratorTile != nullptr)
-	//{
-	//	//for when walking on the "buttons" in the menu
-	//	if (iteratorTile->getButton() != nullptr)
-	//	{
-	//		if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() <= 4) && (iteratorTile->getButton()->getCoordY() >= 3))
-	//		{
-	//			//start button
-
-	//			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-	//			{
-	//				if (!iteratorTile->getButton()->getIsStartActivated())
-	//				{
-	//					iteratorTile->getButton()->ActivateStartButton();
-
-	//					if (iteratorTile->getButton()->getIsStartActivated() == true)
-	//					{
-	//						selectedObject = iteratorTile->getButton();
-	//						if (!selectedObject->IsSelected())
-	//							selectedObject->SetSelected((true));
-	//						else
-	//						{
-	//							if (selectedObject != nullptr)
-	//							{
-	//								selectedObject->SetSelected(false);
-	//								selectedObject = nullptr;
-	//							}
-	//						}
-	//					}
-	//				}
-	//			}
-	//			else
-	//			{
-	//				if (iteratorTile->getButton()->getIsStartActivated())
-	//				{
-	//					iteratorTile->getButton()->DeactivateStartButton();
-	//				}
-	//			}
-	//		}
-
-	//	}
-
-	//	if (iteratorTile->getButton() != nullptr)
-	//	{
-	//		if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() > 4) && (iteratorTile->getButton()->getCoordY() <= 6))
-	//		{
-	//			//continue button
-
-	//			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-	//			{
-	//				if (!iteratorTile->getButton()->getIsContinueActivated())
-	//				{
-	//					iteratorTile->getButton()->ActivateContinueButton();
-
-	//					if (iteratorTile->getButton()->getIsContinueActivated() == true)
-	//					{
-	//						selectedObject = iteratorTile->getButton();
-
-	//						if (!selectedObject->IsSelected())
-	//							selectedObject->SetSelected((true));
-	//						else
-	//						{
-	//							if (selectedObject != nullptr)
-	//							{
-	//								selectedObject->SetSelected(false);
-	//								selectedObject = nullptr;
-	//							}
-	//						}
-	//					}
-	//				}
-	//			}
-	//			else
-	//			{
-	//				if (iteratorTile->getButton()->getIsContinueActivated())
-	//				{
-	//					iteratorTile->getButton()->DeactivateContinueButton();
-	//				}
-	//			}
-	//		}
-
-	//	}
-
-	//	if (iteratorTile->getButton() != nullptr)
-	//	{
-	//		if ((iteratorTile->getButton()->getCoordX() == 6) && (iteratorTile->getButton()->getCoordY() > 6) && (iteratorTile->getButton()->getCoordY() <= 7))
-	//		{
-	//			//exit button
-
-	//			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-	//			{
-	//				if (!iteratorTile->getButton()->getIsExitActivated())
-	//				{
-	//					iteratorTile->getButton()->ActivateExitButton();
-
-	//					if (iteratorTile->getButton()->getIsExitActivated() == true)
-	//					{
-	//						selectedObject = iteratorTile->getButton();
-	//						if (!selectedObject->IsSelected())
-	//							selectedObject->SetSelected((true));
-	//						else
-	//						{
-	//							if (selectedObject != nullptr)
-	//							{
-	//								selectedObject->SetSelected(false);
-	//								selectedObject = nullptr;
-	//							}
-	//						}
-	//					}
-	//				}
-	//			}
-	//			else
-	//			{
-	//				if (iteratorTile->getButton()->getIsExitActivated())
-	//				{
-	//					iteratorTile->getButton()->DeactivateExitButton();
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-
 
 	if (!iteratorTile->IsWalkable())
 	{
@@ -571,14 +381,14 @@ XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTile
 			MovableObject* movableObject = iteratorTile->getMovableObject();
 			if (movableObject != nullptr)
 			{
-				if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
-				{
+				if (moveObjectMode)
 					SelectObject(movableObject);
-				}
 				else
 				{
-					SelectObject(nullptr);
-					//moveObjectMode = false;
+					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
+						SelectObject(movableObject);
+					else
+						SelectObject(nullptr);
 				}
 			}
 		}
@@ -634,4 +444,124 @@ void GameLogic::SelectObject(GameObject* newSelectedObject)
 			selectedObject = nullptr;
 		}
 	}
+}
+
+void GameLogic::SelectButton(Button* newSelectedButton)
+{
+	if (newSelectedButton != nullptr)
+	{
+		SelectButton(nullptr);
+
+		selectedButton = newSelectedButton;
+		selectedButton->SetSelected((true));
+	}
+	else
+	{
+		if (selectedButton != nullptr)
+		{
+			selectedButton->SetSelected(false);
+			selectedButton = nullptr;
+		}
+	}
+}
+
+bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies)
+{
+	Level* currentLevel = levelStates.currentLevel;
+	Level* menuLevel = levelStates.menuLevel;
+	Level* loadedLevel = levelStates.loadedLevel;
+
+	bool restart = false;
+
+	Coord characterTileCoord = character->GetTileCoord();
+	Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
+	Button* button = currentTile->getButton();
+
+	if (button)
+		SelectButton(button);
+	else
+		SelectButton(nullptr);
+
+	//Choose the correct level
+	if (Input->LeftMouseClicked())
+	{
+		if (currentLevel == menuLevel)
+		{
+			if (button != nullptr)
+			{
+				int buttonType = button->getButtonType();
+				switch (buttonType)
+				{
+				case Button::ButtonTypes::START:
+					levelStates.currentLevelNr = 1;
+					SelectObject(nullptr);
+					restart = true;
+					break;
+				case Button::ButtonTypes::CONTINUE:
+					if (loadedLevel)
+						levelStates.currentLevelNr = loadedLevel->GetLevelNr();
+					else if (levelStates.savedLevelNr != -1)
+						levelStates.currentLevelNr = levelStates.savedLevelNr;
+					SelectObject(nullptr);
+					break;
+				case Button::ButtonTypes::EXIT:
+					return false;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+	else if (Input->EscClicked())
+	{
+		if (currentLevel->GetLevelNr() != menuLevel->GetLevelNr())
+			levelStates.currentLevelNr = menuLevel->GetLevelNr();
+		else
+			if (loadedLevel)
+				levelStates.currentLevelNr = loadedLevel->GetLevelNr();
+	}
+
+	//Check for end door. If found, go to next level
+	Door* door = currentTile->getDoor();
+	if (door && door->getDoorType() == door->DoorTypes::END_DOOR && door->getIsOpen())
+		levelStates.currentLevelNr++;
+
+	//Set the correct level
+	if (currentLevel->GetLevelNr() != levelStates.currentLevelNr)
+	{
+		if (levelStates.currentLevelNr == menuLevel->GetLevelNr())
+		{
+			loadedLevelCharacterRot = character->GetRotationDeg();
+			loadedLevelMoveObjectMode = moveObjectMode;
+			moveObjectMode = false;
+
+			currentLevel = menuLevel;
+			character->SetTilePosition(currentLevel->getStartDoorCoord());
+		}
+		else if (!loadedLevel || loadedLevel->GetLevelNr() != levelStates.currentLevelNr || restart)
+		{
+			selectedObject = nullptr;
+			moveObjectMode = false;
+
+			if (loadedLevel)
+				delete loadedLevel;
+
+			loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, *enemies, *character);
+			currentLevel = loadedLevel;
+			character->SetTilePosition(currentLevel->getStartDoorCoord());
+		}
+		else
+		{		
+			moveObjectMode = loadedLevelMoveObjectMode;
+			currentLevel = loadedLevel;
+			character->SetRotationDeg(loadedLevelCharacterRot);
+			character->SetPosition(currentLevel->getPlayerPostion());
+		}
+	}
+
+	levelStates.currentLevel = currentLevel;
+	levelStates.loadedLevel = loadedLevel;
+
+	return true;
 }

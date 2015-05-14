@@ -1,8 +1,9 @@
 #include "Level.h"
 
 
-Level::Level()
+Level::Level(int levelNr)
 {
+	this->levelNr = levelNr;
 	startDoor = Coord();
 	endDoor = Coord();
 }

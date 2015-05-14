@@ -39,6 +39,16 @@ private:
 		XMFLOAT3 lightPosPoint2;
 		float pad3;
 		XMFLOAT4 lightDiffusePoint2;
+
+		//spotlight
+		XMFLOAT3 lightPosSpot2;
+		float  lightRangeSpot2;
+		XMFLOAT3 lightDirSpot2;
+		float lightConeSpot2;
+		XMFLOAT3 lightAttSpot2;
+		float pad4;
+		XMFLOAT4 lightAmbientSpot2;
+		XMFLOAT4 lightDiffuseSpot2;
 		
 	};
 

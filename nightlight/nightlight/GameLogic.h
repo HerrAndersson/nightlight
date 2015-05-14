@@ -8,6 +8,17 @@
 #include "Character.h"
 #include "Level.h"
 #include "AiModule.h"
+#include "LevelParser.h"
+
+struct LevelStates
+{
+	int currentLevelNr = -1;
+	int savedLevelNr = -1;
+	Level* currentLevel = nullptr;
+	Level* loadedLevel = nullptr;
+	Level* menuLevel = nullptr;
+	LevelParser* levelParser = nullptr;
+};
 
 class GameLogic
 {
@@ -19,7 +30,7 @@ private:
 
 	InputManager*  Input;
 	AiModule*      AI;
-	Level* menuLevel;
+
 	bool quitGame = true;
 
 	int screenWidth;
@@ -27,9 +38,14 @@ private:
 
 	bool leftMouseLastState = false;
 	bool moveObjectMode = false;
+	bool loadedLevelMoveObjectMode = false;
+	XMFLOAT3 loadedLevelCharacterRot;
 	int moveObjectModeAxis = -1;
 
 	GameObject* selectedObject = nullptr;
+	Button* selectedButton = nullptr;
+
+	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies);
 
 	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight);
 	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight);
@@ -40,7 +56,8 @@ private:
 	XMFLOAT3 ManageCollisions(Level* currentLevel, GameObject* gameObject, XMFLOAT3 pos, CollisionTypes type);
 	XMFLOAT3 ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos);
 
-	void SelectObject(GameObject* selectedObject);
+	void SelectObject(GameObject* newSelectedObject);
+	void SelectButton(Button* newSelectedButton);
 
 	XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord);
 	XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door);
@@ -49,10 +66,10 @@ private:
 
 public:
 
-	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI, Level* menuLevel);
+	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
 	~GameLogic();
 
-	bool Update(Level* currentLevel, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
+	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
 	
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)

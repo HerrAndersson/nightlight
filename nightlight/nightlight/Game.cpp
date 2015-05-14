@@ -11,8 +11,6 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	//activeGameState = MENU;
-
 	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
 	spotLight = new LightObject();
 	spotLight->generateProjMatrix(0.1f, 1000);
@@ -22,19 +20,19 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
 	Assets = new AssetManager(Renderer->GetDevice());
-	Levels = new LevelParser(Assets);
-
+	levelParser = new LevelParser(Assets);
+	saveLoadManager = SaveLoadManager();
+	
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 
-	
-	menuLevel = Levels->LoadLevel(currentLevelNr++, enemies, *character);
-	
-	//TODO: remove this
-	loadedLevel = Levels->LoadLevel(currentLevelNr, enemies, *character);
-	SwitchLevel(menuLevel);
+	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
+	levelStates.currentLevel = levelStates.menuLevel;
+	levelStates.currentLevelNr = levelStates.menuLevel->GetLevelNr();
+	levelStates.levelParser = levelParser;
+	saveLoadManager.Load(saveFilePath, levelStates.savedLevelNr);
 
-	AI = new AiModule(currentLevel);
-	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI, menuLevel);
+	AI = new AiModule(levelStates.currentLevel);
+	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 	//character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
@@ -43,15 +41,15 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 Game::~Game()
 {
-	delete menuLevel;
-	if (loadedLevel != nullptr)
-		delete loadedLevel;
+	delete levelStates.menuLevel;
+	if (levelStates.loadedLevel != nullptr)
+		delete levelStates.loadedLevel;
 
 	delete Logic;
 	delete Renderer;
 	delete Assets;
 	delete AI;
-	delete Levels;
+	delete levelParser;
 
 	delete camera;
 	delete spotLight;
@@ -61,76 +59,23 @@ Game::~Game()
 bool Game::Update()
 {
 	bool result = true;
-
-	//switch (activeGameState)
-	//{
-	//	case QUIT:
-	//	{
-	//		result = false;
-	//	}
-	//	case MENU:
-	//	{
-	//		//UpdateMenu()
-	//		//RenderMenu()
-	//		break;
-	//	}
-	//	case GAME:
-	//	{
-	//		//UpdateGame()
-	//		//RenderGame()
-	//		break;
-	//	}
-	//	case GAME_OVER:
-	//	{
-	//		//UpdateGameOver()
-	//		//RenderGameOver()
-	//		break;
-	//	}
-	//	default:
-	//		break;
-	//}
-
-	//if (levelNumberToLoad != currentLevelNr)
-	//{
-	//	SwitchLevel(loadedLevel, levelNumberToLoad);
-	//	currentLevelNr = levelNumberToLoad;
-	//}
-	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies);
 	
-	return result;
-}
+	result = Logic->Update(levelStates, character, camera, spotLight, &enemies);
+	
+	if (!result){
+		Level* loadedLevel = levelStates.loadedLevel;
+		if (loadedLevel)
+			saveLoadManager.Save(saveFilePath, loadedLevel->GetLevelNr());
+	}
 
-void Game::SwitchLevel(Level* newlevel, int newLevelNr)
-{
-	if (newlevel == nullptr)
-	{
-		if (newLevelNr != -1)
-		{
-			loadedLevel = Levels->LoadLevel(newLevelNr, enemies, *character);
-			currentLevel = loadedLevel;
-			fstream save;
-			save.open("save.save", std::ios_base::trunc);
-			save << newLevelNr;
-			save.close();
-		}
-	}
-	else
-	{
-		if (newlevel == menuLevel){
-			character->SetTilePosition(menuLevel->getStartDoorCoord());
-		}
-		else{
-			character->SetPosition(newlevel->getPlayerPostion());
-		}
-		currentLevel = newlevel;
-	}
+	return result;
 }
 
 bool Game::Render()
 {
 	bool result = true;
 
-	std::vector<GameObject*>* toRender = currentLevel->GetGameObjects();
+	std::vector<GameObject*>* toRender = levelStates.currentLevel->GetGameObjects();
 
 
 
