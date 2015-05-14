@@ -19,20 +19,16 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	Levels = new LevelParser(Assets);
 
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
-	menuLevel = Levels->LoadLevel(0, enemies, *character);
-	currentLevel = menuLevel;
+
+	
+	menuLevel = Levels->LoadLevel(currentLevelNr++, enemies, *character);
+	
+	//TODO: remove this
+	loadedLevel = Levels->LoadLevel(currentLevelNr, enemies, *character);
+	SwitchLevel(menuLevel);
+
 	AI = new AiModule(currentLevel);
 	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI, menuLevel);
-}
-
-void Game::InitManagers(HWND hwnd, bool fullscreen)
-{
-	
-}
-
-void Game::LoadAssets()
-{
-	
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 	//character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
@@ -41,7 +37,9 @@ void Game::LoadAssets()
 
 Game::~Game()
 {
-	delete currentLevel;
+	delete menuLevel;
+	if (loadedLevel != nullptr)
+		delete loadedLevel;
 
 	delete Logic;
 	delete Renderer;
@@ -85,27 +83,35 @@ bool Game::Update()
 	//	default:
 	//		break;
 	//}
-	if (levelNumberToLoad != currentLevelNr)
-	{
-		SwitchLevel(loadedLevel, levelNumberToLoad);
-		currentLevelNr = levelNumberToLoad;
-	}
-	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies, levelNumberToLoad);
+
+	//if (levelNumberToLoad != currentLevelNr)
+	//{
+	//	SwitchLevel(loadedLevel, levelNumberToLoad);
+	//	currentLevelNr = levelNumberToLoad;
+	//}
+	result = Logic->Update(currentLevel, character, camera, spotLight, &enemies);
 	
 	return result;
 }
 
-void Game::SwitchLevel(Level* newlevel, int newLevelNr =- 1 )
+void Game::SwitchLevel(Level* newlevel, int newLevelNr)
 {
 	if (newlevel == nullptr)
 	{
 		if (newLevelNr != -1)
 		{
-			currentLevel = Levels->LoadLevel(newLevelNr, enemies, *character);
+			loadedLevel = Levels->LoadLevel(newLevelNr, enemies, *character);
+			currentLevel = loadedLevel;
 		}
 	}
 	else
 	{
+		if (newlevel == menuLevel){
+			character->SetTilePosition(menuLevel->getStartDoorCoord());
+		}
+		else{
+			character->SetPosition(newlevel->getPlayerPostion());
+		}
 		currentLevel = newlevel;
 	}
 }

@@ -108,8 +108,7 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 
 void Tile::setButton(Button* button) 
 {
-	this->button = button; 
-	gameObjects.push_back(button);
+	this->button = button;
 }
 
 bool Tile::IsWalkable()
@@ -134,4 +133,9 @@ bool Tile::IsWalkable()
 		return false;
 	}
 	return true;
+}
+
+void Tile::AddGameObjectManually(GameObject* gameObject)
+{
+	gameObjects.push_back(gameObject);
 }

@@ -29,6 +29,8 @@ private:
 	Level* loadedLevel = nullptr;
 	Level* menuLevel = nullptr;
 
+	int currentLevelNr = 0;
+
 	vector<Enemy>		    enemies;
 
 	CameraObject*			camera;
@@ -40,9 +42,6 @@ private:
 	AiModule*               AI;
 	AssetManager*			Assets;
 	LevelParser*			Levels;
-	
-	int levelNumberToLoad = 1;
-	int currentLevelNr = 1;
 
 	/*
 	To be implemented:
@@ -52,18 +51,14 @@ private:
 
 	*/
 
-	void InitManagers(HWND hwnd, bool fullscreen);
-	void LoadAssets();
-
 public:
 
 	Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
 	~Game();
 
 	bool Update(); //determines which objects to update and then calls Logic->Update(objectsToUpdate);
-	void SwitchLevel(Level* newlevel, int newLevelNr);
 	bool Render(); //determines which objects to render and then calls Render->Render(objectsToRender);
-	
+	void SwitchLevel(Level* newlevel, int newLevelNr = -1);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);

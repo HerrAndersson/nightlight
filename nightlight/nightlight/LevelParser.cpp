@@ -115,10 +115,10 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 						tile = new Tile();
 						level->setTile(tile, x, tileCoordY);
 					}
+					if (x == tileCoordX)
+						tile->AddGameObjectManually(button);
 					tile->setButton(button);
-					
 				}
-
 			}
 
 			else
@@ -200,6 +200,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 	if (startDoor.x != -1 && startDoor.y != -1) {
 		character.SetTilePosition(startDoor);
 	}
+	level->setPlayerPosition(character.GetPosition());
 
 	level->updateGameObjets();
 	//traverse levelGrid and find start/end pos, bind levers/pressurePlates/containers/doors.
