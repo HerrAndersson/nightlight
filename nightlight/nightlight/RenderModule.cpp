@@ -919,19 +919,42 @@ bool RenderModule::Render(GameObject* gameObject)
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	RenderObject* renderObject = gameObject->GetRenderObject();
 
-	/////////////////////////////////////////////////////////////////////// Shadow rendering /////////////////////////////////////////////////////////////////////////
-	//UseShadowShader();
+	if (renderObject->model->hasSkeleton)
+		if (renderObject->model->hasBlendShapes)
+		{
+			//UseSkeletalBlendShader();
+		}
+		else
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float frame");
+		}
+	else
+		if (renderObject->model->hasBlendShapes)
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float weights[4]");
+		}
+		else
+		{
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+		}
 
-	//shadowMap->SetBufferPerObject(deviceContext, gameObject->GetWorldMatrix());
+	//Set shader parameters, preparing them for render.
+	if (!result)
+		return false;
 
-	////Now render the prepared buffers with the shader.
-	//deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
+	//Now render the prepared buffers with the shader.
+	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
 
-	/////////////////////////////////////////////////////////////////////// Normal rendering /////////////////////////////////////////////////////////////////////////
-	//d3d->BeginScene(0, 1, 0, 1);
+	return result;
+}
 
-	float frame=0;
-	float weights[4];
+bool RenderModule::Render(GameObject* gameObject, float frame)
+{
+	bool result = true;
+
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	RenderObject* renderObject = gameObject->GetRenderObject();
 
 	if (renderObject->model->hasSkeleton)
 		if (renderObject->model->hasBlendShapes)
@@ -942,6 +965,43 @@ bool RenderModule::Render(GameObject* gameObject)
 		{
 			UseSkeletalShader();
 			result = SetDataPerSkeletalObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), frame);
+		}
+	else
+		if (renderObject->model->hasBlendShapes)
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float weights[4]");
+		}
+		else
+		{
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+		}
+
+	//Set shader parameters, preparing them for render.
+	if (!result)
+		return false;
+
+	//Now render the prepared buffers with the shader.
+	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
+
+	return result;
+}
+
+bool RenderModule::Render(GameObject* gameObject, float weights[4])
+{
+	bool result = true;
+
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	RenderObject* renderObject = gameObject->GetRenderObject();
+
+	if (renderObject->model->hasSkeleton)
+		if (renderObject->model->hasBlendShapes)
+		{
+			//UseSkeletalBlendShader();
+		}
+		else
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float frame");
 		}
 	else
 		if (renderObject->model->hasBlendShapes)

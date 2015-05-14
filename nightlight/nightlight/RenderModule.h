@@ -118,6 +118,8 @@ public:
 	void BeginScene(float red, float green, float blue, float alpha);
 
 	bool Render(GameObject* gameObject);
+	bool Render(GameObject* gameObject, float frame);
+	bool Render(GameObject* gameObject, float weights[4]);
 	bool RenderShadow(GameObject* gameObject);
 
 	void EndScene();
