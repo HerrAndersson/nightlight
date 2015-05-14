@@ -53,7 +53,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 		return level;
 	}
 
-	level = new Level();
+	level = new Level(levelID);
 
 	std::string pathToLevel = "Assets/Levels/" + levelNames.at(levelID);
 	std::vector<std::string> unparsedLevel;
