@@ -46,57 +46,49 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	XMFLOAT3 rot = character->GetRotationDeg();
 
 	bool playerMoved = false;
-	float movementOffset = 0.0f;
-	Coord movementOffsetCoord;
 
 	if (Input->KeyDown('w'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::Y))
-		{
-			movementOffsetCoord = Coord(0, 1);
-			pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
+		playerMoved = true;
 	}
 	if (Input->KeyDown('s'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::Y))
-		{
-			movementOffsetCoord = Coord(0, -1);
-			pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
+		playerMoved = true;
 	}
 	if (Input->KeyDown('a'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::X))
-		{
-			movementOffsetCoord = Coord(1, 0);
-			pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
+		playerMoved = true;
 	}
 	if (Input->KeyDown('d'))
 	{
-		if (!moveObjectMode || (moveObjectMode && moveObjectModeAxis == Axis::X))
-		{
-			movementOffsetCoord = Coord(-1, 0);
-			pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
-			playerMoved = true;
-		}
+		pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
+		playerMoved = true;
 	}
 
 	if (playerMoved)
 	{
+		XMFLOAT3 movableObjectOffset;
+		if (moveObjectMode){
+			XMFLOAT3 selectedObjectPos = selectedObject->GetPosition();
+			movableObjectOffset = XMFLOAT3(pos.x - selectedObjectPos.x, pos.y - selectedObjectPos.y, pos.z - selectedObjectPos.z);
+		}
+
+
 		pos = ManageCollisions(currentLevel, character, pos, CollisionTypes::CHARACTER);
 
-		//if (selectedObject != nullptr)
-		//{
-		//	XMFLOAT3 movablePos = selectedObject->GetPosition();
-		//	movablePos.x += movementOffsetCoord.x;
-		//	movablePos.y += movementOffsetCoord.y;
-		//	movablePos = ManageCollisions(currentLevel, selectedObject, movablePos, CollisionTypes::MOVABLEOBJECT);
-		//}
+		if (moveObjectMode)
+		{
+			//TODO: FIX THIS!!!!!!!
+			XMFLOAT3 movablePos = pos;
+			movablePos.x += movableObjectOffset.x;
+			movablePos.y += movableObjectOffset.y;
+			movablePos.z += movableObjectOffset.z;
+			selectedObject->SetPosition(movablePos);
+			//movablePos = ManageCollisions(currentLevel, selectedObject, movablePos, CollisionTypes::MOVABLEOBJECT);
+		}
 	}
 
 	if (Input->LeftMouseDown() && leftMouseLastState == false)
@@ -355,16 +347,11 @@ XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos
 
 bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 {
-
 	XMFLOAT3 lightEnemyVec = XMFLOAT3((enemy.x - spotlight->getPosition().x), (enemy.y - spotlight->getPosition().y), (enemy.z - spotlight->getPosition().z));
-
 	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
 
 	if ((spotlight->getRange() / 2) > vecLenght)
 	{
-
-
 		XMFLOAT3 spotDirection = spotlight->getDirection();
 
 		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
@@ -374,18 +361,12 @@ bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
 
 		float angleInRads = (180 / XM_PI) * angle;
 
-
 		if (spotlight->getCone() < angleInRads)
-		{
 			return false;
-		}
+
 		return true;
-
 	}
-
-
 	return false;
-
 }
 
 XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos)
@@ -400,14 +381,14 @@ XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTile
 			MovableObject* movableObject = iteratorTile->getMovableObject();
 			if (movableObject != nullptr)
 			{
-				if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
-				{
+				if (moveObjectMode)
 					SelectObject(movableObject);
-				}
 				else
 				{
-					SelectObject(nullptr);
-					//moveObjectMode = false;
+					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
+						SelectObject(movableObject);
+					else
+						SelectObject(nullptr);
 				}
 			}
 		}
@@ -465,6 +446,25 @@ void GameLogic::SelectObject(GameObject* newSelectedObject)
 	}
 }
 
+void GameLogic::SelectButton(Button* newSelectedButton)
+{
+	if (newSelectedButton != nullptr)
+	{
+		SelectButton(nullptr);
+
+		selectedButton = newSelectedButton;
+		selectedButton->SetSelected((true));
+	}
+	else
+	{
+		if (selectedButton != nullptr)
+		{
+			selectedButton->SetSelected(false);
+			selectedButton = nullptr;
+		}
+	}
+}
+
 bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies)
 {
 	Level* currentLevel = levelStates.currentLevel;
@@ -473,14 +473,20 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 
 	bool restart = false;
 
+	Coord characterTileCoord = character->GetTileCoord();
+	Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
+	Button* button = currentTile->getButton();
+
+	if (button)
+		SelectButton(button);
+	else
+		SelectButton(nullptr);
+
+	//Choose the correct level
 	if (Input->LeftMouseClicked())
 	{
-		//levelNumberToLoad = 1;
-		if (currentLevel == menuLevel){
-			Coord characterTileCoord = character->GetTileCoord();
-			Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
-			Button* button = currentTile->getButton();
-
+		if (currentLevel == menuLevel)
+		{
 			if (button != nullptr)
 			{
 				int buttonType = button->getButtonType();
@@ -488,6 +494,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 				{
 				case Button::ButtonTypes::START:
 					levelStates.currentLevelNr = 1;
+					SelectObject(nullptr);
 					restart = true;
 					break;
 				case Button::ButtonTypes::CONTINUE:
@@ -495,6 +502,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 						levelStates.currentLevelNr = loadedLevel->GetLevelNr();
 					else if (levelStates.savedLevelNr != -1)
 						levelStates.currentLevelNr = levelStates.savedLevelNr;
+					SelectObject(nullptr);
 					break;
 				case Button::ButtonTypes::EXIT:
 					return false;
@@ -505,17 +513,21 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			}
 		}
 	}
-
-
-	if (Input->EscClicked())
+	else if (Input->EscClicked())
 	{
 		if (currentLevel->GetLevelNr() != menuLevel->GetLevelNr())
 			levelStates.currentLevelNr = menuLevel->GetLevelNr();
 		else
-			levelStates.currentLevelNr = loadedLevel->GetLevelNr();
+			if (loadedLevel)
+				levelStates.currentLevelNr = loadedLevel->GetLevelNr();
 	}
 
+	//Check for end door. If found, go to next level
+	Door* door = currentTile->getDoor();
+	if (door && door->getDoorType() == door->DoorTypes::END_DOOR && door->getIsOpen())
+		levelStates.currentLevelNr++;
 
+	//Set the correct level
 	if (currentLevel->GetLevelNr() != levelStates.currentLevelNr)
 	{
 		if (levelStates.currentLevelNr == menuLevel->GetLevelNr())
@@ -540,10 +552,10 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			character->SetTilePosition(currentLevel->getStartDoorCoord());
 		}
 		else
-		{
-			character->SetRotationDeg(loadedLevelCharacterRot);
+		{		
 			moveObjectMode = loadedLevelMoveObjectMode;
 			currentLevel = loadedLevel;
+			character->SetRotationDeg(loadedLevelCharacterRot);
 			character->SetPosition(currentLevel->getPlayerPostion());
 		}
 	}

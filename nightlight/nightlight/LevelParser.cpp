@@ -163,12 +163,12 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 
 				if (tileDoor != nullptr)
 				{
-					if (tileDoor->getDoorType() == Door::doorTypes::START_DOOR) 
+					if (tileDoor->getDoorType() == Door::DoorTypes::START_DOOR) 
 					{
 						startDoor = Coord(x, y);
 						level->setStartDoor(startDoor);
 					}
-					if (tileDoor->getDoorType() == Door::doorTypes::END_DOOR)
+					if (tileDoor->getDoorType() == Door::DoorTypes::END_DOOR)
 						level->setEndDoor(Coord(x, y));
 					doors.push_back(tileDoor);
 				}
