@@ -45,7 +45,7 @@ private:
 	XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord);
 	XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door);
 
-	float Clamp(float x, float a, float b) {return x < a ? a : (x > b ? b : x);}
+	float Clamp(float x, float a, float b) { return x < a ? a : (x > b ? b : x); };
 
 public:
 

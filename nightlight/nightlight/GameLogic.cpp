@@ -30,7 +30,7 @@ bool GameLogic::Update(Level* currentLevel, Character* character, CameraObject* 
 	}
 	else
 	{
-		result = UpdateAI(enemies);
+		//result = UpdateAI(enemies);
 		if (!result) return result;
 
 		//if (Input->Esc()) return false;
