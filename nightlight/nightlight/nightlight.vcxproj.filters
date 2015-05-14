@@ -245,4 +245,9 @@
       <Filter>Render\Shaders</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="blendVertexShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

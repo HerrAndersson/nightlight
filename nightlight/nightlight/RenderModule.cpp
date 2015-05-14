@@ -9,10 +9,12 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	vertexShader = NULL;
 	pixelShader = NULL;
 	skeletalVertexShader = NULL;
+	blendVertexShader = NULL;
 	sampleStateWrap = NULL;
 	sampleStateClamp = NULL;
 	matrixBufferPerObject = NULL;
 	matrixBufferPerWeightedObject = NULL;
+	matrixBufferPerBlendObject = NULL;
 	matrixBufferPerFrame = NULL;
 	lightBuffer = NULL;
 	this->hwnd = hwnd;
@@ -26,23 +28,28 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	//initializing shader files
 	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 	result = InitializeSkeletalShader(L"skeletalVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
+	result = InitializeBlendShader(L"blendVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 }
 
 RenderModule::~RenderModule()
 {
 	delete d3d;
 	delete shadowMap;
-
 	layoutPosUvNorm->Release();
 	layoutPosUvNormIdxWei->Release();
+	layoutPosUvNorm3PosNorm->Release();
+
 	matrixBufferPerObject->Release();
 	matrixBufferPerWeightedObject->Release();
+	matrixBufferPerBlendObject->Release();
+
 	matrixBufferPerFrame->Release();
 	pixelShader->Release();
 	sampleStateClamp->Release();
 	sampleStateWrap->Release();
 	vertexShader->Release();
 	skeletalVertexShader->Release();
+	blendVertexShader->Release();
 }
 
 bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
@@ -385,7 +392,216 @@ bool RenderModule::InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename
 		throw std::runtime_error("\nFailed to create light buffer");
 
 	return true;
-	
+
+}
+
+bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
+{
+	HRESULT result;
+	ID3D10Blob* errorMessage;
+	ID3D10Blob* vertexShaderBuffer;
+	ID3D10Blob* pixelShaderBuffer;
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[9];
+	unsigned int numElements;
+	D3D11_SAMPLER_DESC samplerDesc;
+	D3D11_BUFFER_DESC matrixBufferDesc, lightBufferDesc;
+
+	errorMessage = 0;
+	vertexShaderBuffer = 0;
+	pixelShaderBuffer = 0;
+
+	ID3D11Device* device = d3d->GetDevice();
+
+	/////////////////////////////////////////////////////////////////////////// Shaders ///////////////////////////////////////////////////////////////////////////
+
+	//vertex shader
+	result = D3DCompileFromFile(vsFilename, NULL, NULL, "blendVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
+	if (FAILED(result))
+	{
+		if (errorMessage)
+			throw runtime_error(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+		else
+			throw std::runtime_error("\nBlendVertexshader not found");;
+
+		return false;
+	}
+	if (SUCCEEDED(result))
+		OutputDebugString("\nVertexshader created");
+
+	//pixel shader
+	result = D3DCompileFromFile(psFilename, NULL, NULL, "pixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pixelShaderBuffer, &errorMessage);
+	if (FAILED(result))
+	{
+		if (errorMessage)
+			throw runtime_error(string(static_cast<const char*>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+		else
+			throw std::runtime_error("\nPixelshader not found");
+
+		return false;
+	}
+
+	if (SUCCEEDED(result))
+		OutputDebugString("\nPixelshader created");
+
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &blendVertexShader);
+	if (FAILED(result))
+		return false;
+
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader);
+	if (FAILED(result))
+		return false;
+
+	/////////////////////////////////////////////////////////////////////// Input layout /////////////////////////////////////////////////////////////////////////
+	// Create the layout description for input into the vertex shader.
+	polygonLayout[0].SemanticName = "POSITION";
+	polygonLayout[0].SemanticIndex = 0;
+	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[0].InputSlot = 0;
+	polygonLayout[0].AlignedByteOffset = 0;
+	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[0].InstanceDataStepRate = 0;
+
+	polygonLayout[1].SemanticName = "TEXCOORD";
+	polygonLayout[1].SemanticIndex = 0;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[1].InputSlot = 0;
+	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[1].InstanceDataStepRate = 0;
+
+	polygonLayout[2].SemanticName = "NORMAL";
+	polygonLayout[2].SemanticIndex = 0;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[2].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[2].InstanceDataStepRate = 0;
+
+	polygonLayout[3].SemanticName = "POSITION";
+	polygonLayout[3].SemanticIndex = 1;
+	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[3].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[3].InstanceDataStepRate = 0;
+
+	polygonLayout[4].SemanticName = "POSITION";
+	polygonLayout[4].SemanticIndex = 2;
+	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[4].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[4].InstanceDataStepRate = 0;
+
+	polygonLayout[5].SemanticName = "POSITION";
+	polygonLayout[5].SemanticIndex = 3;
+	polygonLayout[5].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[5].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[5].InstanceDataStepRate = 0;
+
+	polygonLayout[6].SemanticName = "NORMAL";
+	polygonLayout[6].SemanticIndex = 1;
+	polygonLayout[6].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[6].InputSlot = 0;
+	polygonLayout[6].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[6].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[6].InstanceDataStepRate = 0;
+
+	polygonLayout[7].SemanticName = "NORMAL";
+	polygonLayout[7].SemanticIndex = 2;
+	polygonLayout[7].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[7].InputSlot = 0;
+	polygonLayout[7].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[7].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[7].InstanceDataStepRate = 0;
+
+	polygonLayout[8].SemanticName = "NORMAL";
+	polygonLayout[8].SemanticIndex = 3;
+	polygonLayout[8].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[8].InputSlot = 0;
+	polygonLayout[8].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[8].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[8].InstanceDataStepRate = 0;
+
+	//count of elements in the layout
+	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
+
+	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layoutPosUvNorm3PosNorm);
+	if (FAILED(result)){ return false; }
+
+	//we no longer need the shader buffers, so release them
+	vertexShaderBuffer->Release();
+	vertexShaderBuffer = 0;
+
+	pixelShaderBuffer->Release();
+	pixelShaderBuffer = 0;
+
+	/////////////////////////////////////////////////////////////////////// Samplers /////////////////////////////////////////////////////////////////////////
+	//Create a WRAP texture sampler state description
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	//Create the texture sampler state
+	result = device->CreateSamplerState(&samplerDesc, &sampleStateWrap);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	//Create a CLAMP texture sampler state description.
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+	//Create the texture sampler state.
+	result = device->CreateSamplerState(&samplerDesc, &sampleStateClamp);
+	if (FAILED(result))
+		return false;
+
+	/////////////////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////////////////
+	//CONSTANT BUFFER DESCRIPTIONS:
+	//this is the dynamic matrix constant buffer that is in the VERTEX SHADER
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+
+	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
+	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerBlendObject);
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerBlendObject);
+
+	if (FAILED(result))
+		throw std::runtime_error("\nFailed to create matrix buffer");
+
+	//this is the light dynamic constant buffer in the PIXEL SHADER
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
+	result = device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
+
+	if (FAILED(result))
+		throw std::runtime_error("\nFailed to create light buffer");
+
+	return true;
+
 }
 
 bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected)
@@ -394,38 +610,18 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNr;
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
-	
+
 	XMMATRIX worldMatrixC;
 
 	worldMatrixC = XMMatrixTranspose(worldMatrix);
-	
+
 	//lock the constant buffer for writing
 
 	bufferNr = 0;
-	if (!renderObject->model->hasSkeleton){
-		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		if (FAILED(result)) { return false; }
-
-		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
-
-		dataPtr->world = worldMatrixC;
-		deviceContext->Unmap(matrixBufferPerObject, 0);
-		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
-	}
-
 
 	//setting the sent in shader texture resource in the pixel shader
 	UINT32 vertexSize;
-	if (renderObject->model->hasSkeleton)
-		if (renderObject->model->hasBlendShapes)
-			vertexSize = sizeof(WeightedBlendVertex);
-		else
-			vertexSize = sizeof(WeightedVertex);
-	else
-		if (renderObject->model->hasBlendShapes)
-			vertexSize = sizeof(BlendVertex);
-		else
-			vertexSize = sizeof(Vertex);
+	vertexSize = sizeof(Vertex);
 
 	UINT32 offset = 0;
 
@@ -435,30 +631,95 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 	worldMatrixC = XMMatrixTranspose(worldMatrix);
 	bufferNr = 0;
-	//Setting constant-buffer for models WITHOUT skeleton and animation
-	if (!renderObject->model->hasSkeleton)
-	{
-		result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		if (FAILED(result)) { return false; }
+	result = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) { return false; }
 
-		MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
+	MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
-		dataPtr->world = worldMatrixC;
-		dataPtr->isSelected = isSelected;
+	dataPtr->world = worldMatrixC;
+	dataPtr->isSelected = isSelected;
 
-		deviceContext->Unmap(matrixBufferPerObject, 0);
+	deviceContext->Unmap(matrixBufferPerObject, 0);
 
-		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
-	}
-	//Setting constant-buffer for models WITH skeleton and animation
-	else if (renderObject->model->hasSkeleton)
-	{
-		int currentFrame=frame, finalFrame=renderObject->model->skeleton[0].frames.size();//todo
-		float interpolation=framefloat-(float)frame;
-		framefloat += 0.1f;
-		frame = (int)framefloat;
-		if (framefloat >= 15)
-			framefloat = 0;
+	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
+	return true;
+}
+
+bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float weights[4])
+{
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	unsigned int bufferNr;
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+
+	XMMATRIX worldMatrixC;
+
+	worldMatrixC = XMMatrixTranspose(worldMatrix);
+
+	//lock the constant buffer for writing
+
+	bufferNr = 0;
+
+	//setting the sent in shader texture resource in the pixel shader
+	UINT32 vertexSize;
+	vertexSize = sizeof(BlendVertex);
+
+	UINT32 offset = 0;
+
+	deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
+	deviceContext->PSSetShaderResources(0, 1, &renderObject->diffuseTexture);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	worldMatrixC = XMMatrixTranspose(worldMatrix);
+	bufferNr = 0;
+
+	result = deviceContext->Map(matrixBufferPerBlendObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) { return false; }
+
+	MatrixBufferPerBlendObject* dataPtr = (MatrixBufferPerBlendObject*)mappedResource.pData;
+
+	dataPtr->world = worldMatrixC;
+	dataPtr->isSelected = isSelected;
+	dataPtr->weight[0] = weights[0];
+	dataPtr->weight[1] = weights[1];
+	dataPtr->weight[2] = weights[2];
+	dataPtr->weight[3] = weights[3];
+
+	deviceContext->Unmap(matrixBufferPerObject, 0);
+
+	deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerObject);
+	return true;
+}
+
+bool RenderModule::SetDataPerSkeletalObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float frame)
+{
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	unsigned int bufferNr;
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+
+	XMMATRIX worldMatrixC;
+
+	worldMatrixC = XMMatrixTranspose(worldMatrix);
+
+	//lock the constant buffer for writing
+
+	bufferNr = 0;
+
+	//setting the sent in shader texture resource in the pixel shader
+	UINT32 vertexSize;
+	vertexSize = sizeof(WeightedVertex);
+
+	UINT32 offset = 0;
+
+	deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
+	deviceContext->PSSetShaderResources(0, 1, &renderObject->diffuseTexture);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	worldMatrixC = XMMatrixTranspose(worldMatrix);
+
+		int currentFrame = (int)frame, finalFrame = renderObject->model->skeleton[0].frames.size();
+		float interpolation = frame - (float)currentFrame;
 
 		std::vector<XMFLOAT4X4> boneLocalMatrices;
 		std::vector<XMFLOAT4X4> boneGlobalMatrices;
@@ -466,7 +727,6 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 		boneGlobalMatrices.resize(renderObject->model->skeleton.size());
 		boneLocalMatrices.resize(renderObject->model->skeleton.size());
 		XMFLOAT3 idnt(1, 1, 1);
-		XMVECTOR det;
 		XMVECTOR S = XMLoadFloat3(&idnt);
 		XMVECTOR P = XMLoadFloat3(&bones->at(0).frames[currentFrame].trans);
 		XMVECTOR Q = XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&bones->at(0).frames[currentFrame].rot));
@@ -529,13 +789,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 		deviceContext->Unmap(matrixBufferPerWeightedObject, 0);
 		deviceContext->VSSetConstantBuffers(bufferNr, 1, &matrixBufferPerWeightedObject);
-	}
-
-	if (renderObject->model->hasBlendShapes)
-	{
-
-	}
-
+	
 	return true;
 }
 
@@ -643,6 +897,22 @@ void RenderModule::UseSkeletalShader()
 	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
 }
 
+void RenderModule::UseBlendShader()
+{
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+
+	deviceContext->IASetInputLayout(layoutPosUvNorm3PosNorm);
+
+	d3d->SetCullingState(3);
+
+	//Set shaders
+	deviceContext->VSSetShader(blendVertexShader, NULL, 0);
+	deviceContext->PSSetShader(pixelShader, NULL, 0);
+
+	deviceContext->PSSetSamplers(0, 1, &sampleStateClamp);
+	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
+}
+
 bool RenderModule::Render(GameObject* gameObject)
 {
 	bool result = true;
@@ -650,22 +920,101 @@ bool RenderModule::Render(GameObject* gameObject)
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	RenderObject* renderObject = gameObject->GetRenderObject();
 
-	/////////////////////////////////////////////////////////////////////// Shadow rendering /////////////////////////////////////////////////////////////////////////
-	//UseShadowShader();
-
-	//shadowMap->SetBufferPerObject(deviceContext, gameObject->GetWorldMatrix());
-
-	////Now render the prepared buffers with the shader.
-	//deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
-
-	/////////////////////////////////////////////////////////////////////// Normal rendering /////////////////////////////////////////////////////////////////////////
-	//d3d->BeginScene(0, 1, 0, 1);
-
-	result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
 	if (renderObject->model->hasSkeleton)
-		UseSkeletalShader();
+		if (renderObject->model->hasBlendShapes)
+		{
+			//UseSkeletalBlendShader();
+		}
+		else
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float frame");
+		}
 	else
-		UseDefaultShader();
+		if (renderObject->model->hasBlendShapes)
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float weights[4]");
+		}
+		else
+		{
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+		}
+
+	//Set shader parameters, preparing them for render.
+	if (!result)
+		return false;
+
+	//Now render the prepared buffers with the shader.
+	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
+
+	return result;
+}
+
+bool RenderModule::Render(GameObject* gameObject, float frame)
+{
+	bool result = true;
+
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	RenderObject* renderObject = gameObject->GetRenderObject();
+
+	if (renderObject->model->hasSkeleton)
+		if (renderObject->model->hasBlendShapes)
+		{
+			//UseSkeletalBlendShader();
+		}
+		else
+		{
+			UseSkeletalShader();
+			result = SetDataPerSkeletalObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), frame);
+		}
+	else
+		if (renderObject->model->hasBlendShapes)
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float weights[4]");
+		}
+		else
+		{
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+		}
+
+	//Set shader parameters, preparing them for render.
+	if (!result)
+		return false;
+
+	//Now render the prepared buffers with the shader.
+	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
+
+	return result;
+}
+
+bool RenderModule::Render(GameObject* gameObject, float weights[4])
+{
+	bool result = true;
+
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	RenderObject* renderObject = gameObject->GetRenderObject();
+
+	if (renderObject->model->hasSkeleton)
+		if (renderObject->model->hasBlendShapes)
+		{
+			//UseSkeletalBlendShader();
+		}
+		else
+		{
+			throw std::runtime_error("\nDetta objekt behöver:\n GameObject* gameObject, float frame");
+		}
+	else
+		if (renderObject->model->hasBlendShapes)
+		{
+			UseBlendShader();
+			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), weights);
+		}
+		else
+		{
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+		}
 
 	//Set shader parameters, preparing them for render.
 	if (!result)

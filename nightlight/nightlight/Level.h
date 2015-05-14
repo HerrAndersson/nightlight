@@ -20,7 +20,7 @@ public:
 
 	Tile* getTile (int x, int y);
 	void setTile(Tile* tile, int x, int y);
-	Coord getStartDoor() const { return startDoor; }
+	Coord getStartDoorCoord() const { return startDoor; }
 	void setStartDoor(Coord val) { startDoor = val; }
 	Coord getEndDoor() const { return endDoor; }
 	void setEndDoor(Coord val) { endDoor = val; }
