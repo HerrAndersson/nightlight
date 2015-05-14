@@ -13,12 +13,18 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 {
 	for (int i = 0; i < binFileList.size(); i++)
 	{
+		//vectors
+		typedef double Vector4[4];
+		typedef double Vector2[2];
+
 		//Create the FBX SDK manager
 		FbxManager* lSdkManager = FbxManager::Create();
+
 		//Create an IOSettings object.
 		FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
 		lSdkManager->SetIOSettings(ios);
-		//Configure the FbxIOSettings object
+
+		//Configure the FbxIOSettings object. What to export and so on
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_LINK, true);
@@ -26,34 +32,41 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GOBO, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
+		
 		bool lEmbedMedia = true;
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
 
-		string sceneNameStr = binFileList.at(i);
-		//get rid of .bin
+		
+		//Save the filename as a string so we can use it when needed. 
+		string nameStr = binFileList.at(i);
+		
+		//get rid of .bin in the name.
 		for (int j = 0; j < 4; j++)
 		{
-			sceneNameStr.pop_back();
+			nameStr.pop_back();
 		}
-		sceneNameStr += "Scene";
+		
+		//add "Scene"
+		string sceneNameStr = nameStr;
+		sceneNameStr = sceneNameStr +="Scene";
+		
+		//convert to char*
 		char * sceneName = new char[binFileList.at(i).length()];
 		std::strcpy(sceneName, sceneNameStr.c_str());
-
+		
+		//add the scene name from name in modellist
 		FbxScene* lScene = FbxScene::Create(lSdkManager, sceneName);
-		//Export the contents of the file.    
+		  
 		//Create an exporter.
 		FbxExporter* lExporter = FbxExporter::Create(lSdkManager, "");
+		
 		//filename of the file to which the scene will be exported.
-		string fileNameStr = binFileList.at(i);
-		//get rid of .bin
-		for (int j = 0; j < 4; j++)
-		{
-			fileNameStr.pop_back();
-		}
+		string fileNameStr = nameStr;
+		
 		//convert to char*
-		char * fileName = new char[binFileList.at(i).length()];
-		std::strcpy(fileName, fileNameStr.c_str());
-		char* lFilenameOut = fileName;
+		char * lFilenameOut = new char[binFileList.at(i).length()];
+		std::strcpy(lFilenameOut, fileNameStr.c_str());
+		
 		//Initialize the exporter.
 		bool lExportStatus = lExporter->Initialize(lFilenameOut, -4, lSdkManager->GetIOSettings());
 		if (!lExportStatus) {
@@ -61,19 +74,21 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			printf("Error returned: %s\n\n", lExporter->GetStatus().GetErrorString());
 			return false;
 		}
-		//vectors
-		typedef double Vector4[4];
-		typedef double Vector2[2];
-		vector <double> point;
+		
 		// indices of the vertices per each polygon (faceIds)
 		int size = modelList.at(i).vertexIndices.size();
+		
 		vector<int> vtxId;
 		vector<int> normId;
 		vector<int> uvId;
+		
+		//Get all the ID's
 		for (int j = 0; j < size; j++)
 		{
-
-			vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
+			//if (j % 3 == 0)
+			//{
+				vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
+			//}
 			normId.push_back(modelList.at(i).vertexIndices.at(j).y);
 			uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
 		}
@@ -85,8 +100,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	//	       vtxId.at(12), vtxId.at(13), vtxId.at(14), vtxId.at(15),
 	//	       vtxId.at(16), vtxId.at(17), vtxId.at(18), vtxId.at(19),
 	//	       vtxId.at(20), vtxId.at(21), vtxId.at(22), vtxId.at(23)
-
-			//0, 1, 2, 3, // front  face  (Z+)
+		//0, 1, 2, 3, // front  face  (Z+)
 			//1, 5, 6, 2, // right  side  (X+)
 			//5, 4, 7, 6, // back   face  (Z-)
 			//4, 0, 3, 7, // left   side  (X-)
@@ -110,9 +124,6 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 //			{ modelList.at(i).purePoints.at(6).position.x, modelList.at(i).purePoints.at(6).position.y, modelList.at(i).purePoints.at(6).position.z, 1.0 },
 //			{ modelList.at(i).purePoints.at(7).position.x, modelList.at(i).purePoints.at(7).position.y, modelList.at(i).purePoints.at(7).position.z, 1.0 },
 //		};
-
-	
-		
 //		static Vector4 lControlPoints[8] = {
 //			{ modelList.at(i).purePoints.at(0).position.x, modelList.at(i).purePoints.at(0).position.y, modelList.at(i).purePoints.at(0).position.z, 1.0 },
 //			{ modelList.at(i).purePoints.at(3).position.x, modelList.at(i).purePoints.at(3).position.y, modelList.at(i).purePoints.at(3).position.z, 1.0 },
@@ -124,23 +135,33 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 //			{ modelList.at(i).purePoints.at(21).position.x, modelList.at(i).purePoints.at(21).position.y, modelList.at(i).purePoints.at(21).position.z, 1.0 },
 //		};
 		////control points
-   
-		
+   		
+		//get the controlpoints
 		int sizePoints = modelList.at(i).purePoints.size();
-    vector<vector<double>> lControlPoints;
-    for (int j = 0; j < sizePoints; j++)
-    {
+		vector<vector<double>> lControlPoints;
+		
+		for (int j = 0; j < sizePoints; j++)
 		{
-			point.push_back(modelList.at(i).purePoints.at(j).position.x);
-			point.push_back(modelList.at(i).purePoints.at(j).position.y);
-			point.push_back(modelList.at(i).purePoints.at(j).position.z);
-			point.push_back(1.0f);
-			lControlPoints.push_back(point);
-
+			{
+				vector <double> point;
+				
+				point.push_back(modelList.at(i).purePoints.at(j).position.x);
+				point.push_back(modelList.at(i).purePoints.at(j).position.y);
+				point.push_back(modelList.at(i).purePoints.at(j).position.z);
+				point.push_back(1.0f);
+				lControlPoints.push_back(point);
+				//if (j % 3 == 0)
+			//{
+			//	point.push_back(modelList.at(i).purePoints.at(j).position.x);
+			//	point.push_back(modelList.at(i).purePoints.at(j).position.y);
+			//	point.push_back(modelList.at(i).purePoints.at(j).position.z);
+			//	point.push_back(1.0f);
+			//	lControlPoints.push_back(point);
+			//}
+			}
 		}
-    }
 
-		// normals vertices per each polygon 
+		//normals vertices per each polygon 
 		int sizeNormals = modelList.at(i).normals.size();
 		vector<float> lNormals;
 		for (int j = 0; j < sizeNormals; j++)
@@ -148,6 +169,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lNormals.push_back(modelList.at(i).normals[j].x);
 			lNormals.push_back(modelList.at(i).normals[j].y);
 			lNormals.push_back(modelList.at(i).normals[j].z);
+			lNormals.push_back(1.0f);
 		}
 
 		//static Vector4 lNormals[8]=
@@ -185,9 +207,11 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		};
 		//create the main structure.
 		FbxMesh* lMesh = FbxMesh::Create(lScene, "");
+		
 		// Create control points.
-		lMesh->InitControlPoints(8);
+		lMesh->InitControlPoints(sizePoints);
 		FbxVector4* vertex = lMesh->GetControlPoints();
+		
 		//Maybe kanske this but probably not
 		//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
 		//Maybe kanske this but probably not
@@ -199,12 +223,13 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
 		lMaterialElement->GetIndexArray().Add(0);
 
-		//int numFaces = (vtxId.size() / 3);
+		int numFaces = (vtxId.size() / 3);
 		// Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
 		int vId = 0;
-		for (int f = 0; f < sizePoints/3; f++)
+		for (int f = 0; f < numFaces; f++)
 		{
 			lMesh->BeginPolygon();
+			//lMesh->ReservePolygonCount(3);
 			for (int v = 0; v < 3; v++)
 				//	lMesh->AddPolygon(vtxId[vId++]);
 				lMesh->AddPolygon(vtxId.at(vId++));
@@ -217,10 +242,13 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
 		for (int n = 0; n < sizeNormals; n++)
 			lNormalElement->GetDirectArray().Add(FbxVector4(lNormals.at(n), lNormals.at(n), lNormals.at(n)));
+		
 		//for (int n = 0; n<8; n++)
 		//    lNormalElement->GetDirectArray().Add(FbxVector4(lNormals[n][0], lNormals[n][1], lNormals[n][2]));
 		//create nodeName from file name
+		
 		string meshNameStr = binFileList.at(i);
+		
 		//get rid of .bin
 		for (int j = 0; j < 4; j++)
 		{
@@ -228,12 +256,15 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		}
 		char * meshName = new char[binFileList.at(i).length()];
 		std::strcpy(meshName, meshNameStr.c_str());
+		
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
+		
 		//Find the translation of object and add here
 		//lNode->LclTranslation.Set(pLclTranslation);
 		lNode->SetNodeAttribute(lMesh);
 		lNode->SetShadingMode(FbxNode::eTextureShading);
+		
 		//create UVset
 		FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
 		FBX_ASSERT(lUVElement1 != NULL);
@@ -243,10 +274,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lUVElement1->GetDirectArray().Add(FbxVector2(lUVs[i][0], lUVs[i][1]));
 		for (int i = 0; i < 24; i++)
 			lUVElement1->GetIndexArray().Add(uvsId[i % 4]);
+		
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);
 		lExporter->Export(lScene);
+		
 		//Get rid of objects
 		lExporter->Destroy();
 
