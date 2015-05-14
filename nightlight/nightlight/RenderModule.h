@@ -54,6 +54,13 @@ private:
 		XMFLOAT4X4 bones[30];
 	};
 
+	struct MatrixBufferPerBlendObject
+	{
+		XMMATRIX world;
+		int isSelected;
+		float weight[4];
+	};
+
 
 	struct MatrixBufferPerFrame
 	{
@@ -68,6 +75,7 @@ private:
 	//Vertex shaders
 	ID3D11VertexShader*		vertexShader;
 	ID3D11VertexShader*		skeletalVertexShader;
+	ID3D11VertexShader*		blendVertexShader;
 
 	//Pixel shaders
 	ID3D11PixelShader*		pixelShader;
@@ -79,14 +87,13 @@ private:
 	//Other
 	ID3D11InputLayout*		layoutPosUvNorm;
 	ID3D11InputLayout*		layoutPosUvNormIdxWei;
+	ID3D11InputLayout*		layoutPosUvNorm3PosNorm;
 	ID3D11Buffer*			matrixBufferPerObject;
 	ID3D11Buffer*			matrixBufferPerWeightedObject;
+	ID3D11Buffer*			matrixBufferPerBlendObject;
 	ID3D11Buffer*			matrixBufferPerFrame;
 	ID3D11Buffer*			lightBuffer;
 	HWND					hwnd;
-
-	int frame=0;
-	float framefloat=0;
 
 public:
 	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
@@ -96,12 +103,16 @@ public:
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename);
+	bool InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename);
 
 	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected);
+	bool SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float weights[4]);
+	bool SetDataPerSkeletalObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float frame);
 
 	void UseDefaultShader();
 	void ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 	void UseSkeletalShader();
+	void UseBlendShader();
 	//void Usesomeothershader() etc.
 
 	void BeginScene(float red, float green, float blue, float alpha);
