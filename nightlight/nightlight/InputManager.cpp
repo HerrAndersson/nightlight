@@ -13,6 +13,12 @@ InputManager::~InputManager()
 
 }
 
+void InputManager::Update()
+{
+	leftMouse.Update();
+	esc.Update();
+}
+
 void InputManager::HandleMouse()
 {
 	LPPOINT point = new POINT();
@@ -85,13 +91,27 @@ bool InputManager::KeyDown(char key)
 	else
 		return false;
 }
-bool InputManager::Esc()
+bool InputManager::EscDown()
 {
 	return GetAsyncKeyState(VK_ESCAPE) != 0;
 }
-bool InputManager::LeftMouse()
+bool InputManager::EscClicked()
+{
+	if (esc.lastState == Key::KeyStates::DOWN && GetAsyncKeyState(esc.key) == 0)
+		return true;
+
+	return false;
+}
+bool InputManager::LeftMouseDown()
 {
 	return GetAsyncKeyState(VK_LBUTTON) != 0;
+}
+bool InputManager::LeftMouseClicked()
+{
+	if (leftMouse.lastState == Key::KeyStates::DOWN && GetAsyncKeyState(leftMouse.key) == 0)
+		return true;
+
+	return false;
 }
 bool InputManager::RightMouse()
 {
@@ -101,4 +121,3 @@ bool InputManager::Space()
 {
 	return GetAsyncKeyState(VK_SPACE) != 0;
 }
-
