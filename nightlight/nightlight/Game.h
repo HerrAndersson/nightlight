@@ -5,10 +5,11 @@
 #include "RenderModule.h"
 #include "GameLogic.h"
 #include "AiModule.h"
-
 #include "AssetManager.h"
-#include "AssetUtil.h"
 #include "LevelParser.h"
+#include "SaveLoadManager.h"
+
+#include "AssetUtil.h"
 #include "GameObject.h"
 #include "cameraObject.h"
 #include "lightObject.h"
@@ -20,16 +21,10 @@ class Game
 {
 private:
 
-	enum GameStates { QUIT, MENU, GAME, GAME_OVER };
-
-	int activeGameState;
 	int screenWidth, screenHeight;
+	std::string saveFilePath = "nightlight.sav";
 
-	Level* currentLevel = nullptr;
-	Level* loadedLevel = nullptr;
-	Level* menuLevel = nullptr;
-
-	int currentLevelNr = 0;
+	LevelStates             levelStates;
 
 	vector<Enemy>		    enemies;
 
@@ -41,15 +36,8 @@ private:
 	RenderModule*           Renderer;
 	AiModule*               AI;
 	AssetManager*			Assets;
-	LevelParser*			Levels;
-
-	/*
-	To be implemented:
-
-	SoundManager
-	SaveLoadManager
-
-	*/
+	LevelParser*			levelParser;
+	SaveLoadManager			saveLoadManager;
 
 public:
 
@@ -58,7 +46,6 @@ public:
 
 	bool Update(); //determines which objects to update and then calls Logic->Update(objectsToUpdate);
 	bool Render(); //determines which objects to render and then calls Render->Render(objectsToRender);
-	void SwitchLevel(Level* newlevel, int newLevelNr = -1);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
