@@ -138,17 +138,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
    		
 		//get the controlpoints
 		int sizePoints = modelList.at(i).purePoints.size();
-		vector<vector<double>> lControlPoints;
+		vector<FbxVector4> lControlPoints;
 		
 		for (int j = 0; j < sizePoints; j++)
 		{
 			{
-				vector <double> point;
-				
-				point.push_back(modelList.at(i).purePoints.at(j).position.x);
-				point.push_back(modelList.at(i).purePoints.at(j).position.y);
-				point.push_back(modelList.at(i).purePoints.at(j).position.z);
-				point.push_back(1.0f);
+				FbxVector4 point = { (double)(modelList.at(i).purePoints.at(j).position.x), (double)(modelList.at(i).purePoints.at(j).position.y), (double)(modelList.at(i).purePoints.at(j).position.z), (double)(1.0f) };
 				lControlPoints.push_back(point);
 				//if (j % 3 == 0)
 			//{
@@ -211,11 +206,18 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		// Create control points.
 		lMesh->InitControlPoints(sizePoints);
 		FbxVector4* vertex = lMesh->GetControlPoints();
+
+
+		for (int p = 0; p < sizePoints; p++)
+		{
+			lMesh->SetControlPointAt(lControlPoints.at(p), p);
+		}
 		
 		//Maybe kanske this but probably not
 		//memcpy((void*)vertex, (void*)&lControlPoints, sizePoints * sizeof(FbxVector4));
 		//Maybe kanske this but probably not
-		memcpy((void*)vertex, (void*)&lControlPoints, sizeof(lControlPoints));
+
+		//memcpy((void*)vertex, (void*)lControlPoints.data(), sizeof(lControlPoints));
 
 		//create the materials
 		FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
@@ -225,11 +227,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		int numFaces = (vtxId.size() / 3);
 		// Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
+		
 		int vId = 0;
 		for (int f = 0; f < numFaces; f++)
 		{
 			lMesh->BeginPolygon();
-			//lMesh->ReservePolygonCount(3);
+			lMesh->ReservePolygonCount(3);
 			for (int v = 0; v < 3; v++)
 				//	lMesh->AddPolygon(vtxId[vId++]);
 				lMesh->AddPolygon(vtxId.at(vId++));
