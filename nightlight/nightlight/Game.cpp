@@ -102,6 +102,10 @@ void Game::SwitchLevel(Level* newlevel, int newLevelNr)
 		{
 			loadedLevel = Levels->LoadLevel(newLevelNr, enemies, *character);
 			currentLevel = loadedLevel;
+			fstream save;
+			save.open("save.save", std::ios_base::trunc);
+			save << newLevelNr;
+			save.close();
 		}
 	}
 	else
