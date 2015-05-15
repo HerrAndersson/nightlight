@@ -14,7 +14,7 @@ using namespace std;
 using DirectX::XMFLOAT2;
 using DirectX::XMINT2;
 
-static bool AiUtil_ShowDebugPath = true;
+static bool AiUtil_ShowDebugPath = false;
 
 static int ManhattanDistance(Tile* n1, Tile* n2) //Cheap, less accurate
 {
@@ -67,11 +67,11 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 
 	list<Tile*>::iterator i;
 
-	if (start != nullptr && end != nullptr)
+	if (start && end)
 	{
 		//Counter to limit path length
 		int n = 0;
-		int limit = 50;
+		int limit = 100;
 
 		openList.push_back(start);
 		start->SetInOpen(true);
@@ -85,8 +85,8 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 					current = (*i);
 
 			//Stop if it reached the end or the current tile holds a closed door
-			Door* d = current->getDoor();
-			if (current == end || (d != nullptr && !d->getIsOpen()))
+			Door* door = current->getDoor();
+			if (current == end || (door && !door->getIsOpen()))
 				break;
 
 			openList.remove(current);
@@ -101,13 +101,13 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 				for (int y = -1; y <= 1; y++)
 				{
 					XMINT2 currentTileCoord = current->GetTileCoord();
-					if (!(x == 0 && y == 0) && level->withinBounds(currentTileCoord.x + x, currentTileCoord.y + y))
+					if (!(x == 0 && y == 0))
 					{
 						int xc = currentTileCoord.x + x;
 						int yc = currentTileCoord.y + y;
 						child = level->getTile(xc, yc);
 
-						if (child != nullptr && child != current)
+						if (child && child != current)
 						{
 							XMINT2 childTileCoord = child->GetTileCoord();
 
@@ -117,33 +117,9 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 							//Do not use when paths are generated each frame!
 							//cout << "Node: " << childTileCoord.x << " " << childTileCoord.y << " inOpen: " << boolalpha << inOpen << " inClosed: " << boolalpha << inClosed << endl;
 
-							Lever* l = child->getLever();
-							if (!inClosed && child->IsWalkable() && l == nullptr)
+							if (!inClosed && child->IsWalkableAI())
 							{
-								//Check for corners 
-								//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
-
-								//XMINT2 currentCoord = current->GetTileCoord();
-
-								//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-								//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
-
-								////Tile* nextY = nullptr;
-								////Tile* nextX = nullptr;
-								////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
-								////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-								////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
-								////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
-
-								//if (nextY != nullptr)
-								//	if (!nextY->IsWalkable() || nextY->InClosed())
-								//		continue;
-
-								//if (nextX != nullptr)
-								//	if (!nextX->IsWalkable() || nextX->InClosed())
-								//		continue;
-
-								int tentativeG = current->GetG() + 1;
+								int tentativeG = current->GetG() + (int)TILE_SIZE;
 
 								//Already in open but a better solution found, update it
 								if (inOpen)
@@ -181,19 +157,16 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 
 		//Reset open/closed in tiles
 		for (i = openList.begin(); i != openList.end(); ++i)
-		{
 			(*i)->SetInOpen(false);
-		}
 		for (i = closedList.begin(); i != closedList.end(); ++i)
-		{
 			(*i)->SetInClosed(false);
-		}
+
 
 		if (AiUtil_ShowDebugPath)
 			start->getFloorTile()->SetSelected(true);
 
 		//Retrace the path from the end to start
-		while (current->GetParent() != nullptr && current != start)
+		while (current->GetParent() && current != start)
 		{
 			XMINT2 currentCoord = current->GetTileCoord();
 			path.push_back(XMINT2(currentCoord.x,currentCoord.y));
@@ -206,7 +179,6 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 					current->getPressurePlate()->SetSelected(true);
 			}
 
-
 			current = current->GetParent();
 			n++;
 		}
@@ -214,3 +186,27 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 
 	return path;
 }
+
+
+//Check for corners 
+//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+
+//XMINT2 currentCoord = current->GetTileCoord();
+
+//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+////Tile* nextY = nullptr;
+////Tile* nextX = nullptr;
+////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
+////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
+////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+//if (nextY != nullptr)
+//	if (!nextY->IsWalkable() || nextY->InClosed())
+//		continue;
+
+//if (nextX != nullptr)
+//	if (!nextX->IsWalkable() || nextX->InClosed())
+//		continue;

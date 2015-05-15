@@ -32,7 +32,7 @@ private:
 	int id;
 	Coord tileCoord;
 	XMFLOAT3		position;
-	XMFLOAT3		rotation;
+	XMFLOAT3		rotation = XMFLOAT3(0, 0, 0);
 	XMVECTOR		forwardVector;
 	RenderObject*	renderObject;
 	bool			isSelected	= false;

@@ -25,16 +25,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create an IOSettings object.
 		FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
 		lSdkManager->SetIOSettings(ios);
-			(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
-		//Configure the FbxIOSettings object. What to export and so on
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_MATERIAL, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_TEXTURE, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_LINK, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_SHAPE, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GOBO, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_ANIMATION, true);
-		(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
-		
+				
 		bool lEmbedMedia = true;
 		(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
 
@@ -87,55 +78,13 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Get all the ID's
 		for (int j = 0; j < size; j++)
 		{
-			//if (j % 3 == 0)
-			//{
+			
 				vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
-			//}
+			
 			normId.push_back(modelList.at(i).vertexIndices.at(j).y);
 			uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
 		}
-		// indices of the vertices per each polygon
-	//static int vtxId2[24] = {
-	//	       vtxId.at(0), vtxId.at(1), vtxId.at(2), vtxId.at(3),
-	//	       vtxId.at(4), vtxId.at(5), vtxId.at(6), vtxId.at(7),
-	//	       vtxId.at(8), vtxId.at(9), vtxId.at(10), vtxId.at(11),
-	//	       vtxId.at(12), vtxId.at(13), vtxId.at(14), vtxId.at(15),
-	//	       vtxId.at(16), vtxId.at(17), vtxId.at(18), vtxId.at(19),
-	//	       vtxId.at(20), vtxId.at(21), vtxId.at(22), vtxId.at(23)
-		//0, 1, 2, 3, // front  face  (Z+)
-			//1, 5, 6, 2, // right  side  (X+)
-			//5, 4, 7, 6, // back   face  (Z-)
-			//4, 0, 3, 7, // left   side  (X-)
-			//0, 4, 5, 1, // bottom face  (Y-)
-			//3, 2, 6, 7  // top    face  (Y+)
-			//0, 1, 2, 3, // front  face  (Z+)
-			//1, 5, 6, 2, // right  side  (X+)
-			//5, 4, 7, 6, // back   face  (Z-)
-			//4, 0, 3, 7, // left   side  (X-)
-			//0, 4, 5, 1, // bottom face  (Y-)
-			//3, 2, 6, 7  // top    face  (Y+)
-		//};
-//		// control points
-//		static Vector4 lControlPoints[8] = {
-//			{ modelList.at(i).purePoints.at(0).position.x, modelList.at(i).purePoints.at(0).position.y, modelList.at(i).purePoints.at(0).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(1).position.x, modelList.at(i).purePoints.at(1).position.y, modelList.at(i).purePoints.at(1).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(2).position.x, modelList.at(i).purePoints.at(2).position.y, modelList.at(i).purePoints.at(2).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(3).position.x, modelList.at(i).purePoints.at(3).position.y, modelList.at(i).purePoints.at(3).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(4).position.x, modelList.at(i).purePoints.at(4).position.y, modelList.at(i).purePoints.at(4).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(5).position.x, modelList.at(i).purePoints.at(5).position.y, modelList.at(i).purePoints.at(5).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(6).position.x, modelList.at(i).purePoints.at(6).position.y, modelList.at(i).purePoints.at(6).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(7).position.x, modelList.at(i).purePoints.at(7).position.y, modelList.at(i).purePoints.at(7).position.z, 1.0 },
-//		};
-//		static Vector4 lControlPoints[8] = {
-//			{ modelList.at(i).purePoints.at(0).position.x, modelList.at(i).purePoints.at(0).position.y, modelList.at(i).purePoints.at(0).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(3).position.x, modelList.at(i).purePoints.at(3).position.y, modelList.at(i).purePoints.at(3).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(6).position.x, modelList.at(i).purePoints.at(6).position.y, modelList.at(i).purePoints.at(6).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(9).position.x, modelList.at(i).purePoints.at(9).position.y, modelList.at(i).purePoints.at(9).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(12).position.x, modelList.at(i).purePoints.at(12).position.y, modelList.at(i).purePoints.at(12).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(15).position.x, modelList.at(i).purePoints.at(15).position.y, modelList.at(i).purePoints.at(15).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(18).position.x, modelList.at(i).purePoints.at(18).position.y, modelList.at(i).purePoints.at(18).position.z, 1.0 },
-//			{ modelList.at(i).purePoints.at(21).position.x, modelList.at(i).purePoints.at(21).position.y, modelList.at(i).purePoints.at(21).position.z, 1.0 },
-//		};
+
 		////control points
    		
 		//get the controlpoints
@@ -147,14 +96,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			{
 				FbxVector4 point = { (double)(modelList.at(i).purePoints.at(j).position.x), (double)(modelList.at(i).purePoints.at(j).position.y), (double)(modelList.at(i).purePoints.at(j).position.z), (double)(1.0f) };
 				lControlPoints.push_back(point);
-				//if (j % 3 == 0)
-			//{
-			//	point.push_back(modelList.at(i).purePoints.at(j).position.x);
-			//	point.push_back(modelList.at(i).purePoints.at(j).position.y);
-			//	point.push_back(modelList.at(i).purePoints.at(j).position.z);
-			//	point.push_back(1.0f);
-			//	lControlPoints.push_back(point);
-			//}
+		
 			}
 		}
 
@@ -167,28 +109,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lNormals.push_back(normal);
 		}
 
-		//static Vector4 lNormals[8]=
-		//{
-		//    { -0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-		//    { 0.577350258827209, -0.577350258827209, 0.577350258827209, 1.0 },
-		//    { 0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-		//    { -0.577350258827209, 0.577350258827209, 0.577350258827209, 1.0 },
-		//    { -0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-		//    { 0.577350258827209, -0.577350258827209, -0.577350258827209, 1.0 },
-		//    { 0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 },
-		//    { -0.577350258827209, 0.577350258827209, -0.577350258827209, 1.0 }
-		//};
-		////uvs
-		//
-		//// normals vertices per each polygon 
-		//int size = modelList.at(i).UVs.size();
-		//vector<XMFLOAT2> lUVs;
-		//for (int i; i < size; i++)
-		//{
-		//    lUVs.push_back(modelList.at(i).UVs[i]);
-		//}
-		//    int size = modelList.at(i).UVs.size();
-
+		
 
 		vector<FbxVector2> lUVs;
 		for (int j = 0; j < modelList.at(i).UVs.size(); j++)
@@ -198,19 +119,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lUVs.push_back(UVs);
 		}
 
-
-		//static Vector2 lUVs[14] =
-		//{
-		//	{ 0.0, 1.0 },
-		//	{ 1.0, 0.0 },
-		//	{ 0.0, 0.0 },
-		//	{ 1.0, 1.0 }
-		//};
-
-
 	
-
-		
 		//create the main structure.
 		FbxMesh* lMesh = FbxMesh::Create(lScene, "");
 		
@@ -273,8 +182,10 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
 		
-		//Find the translation of object and add here
-		//lNode->LclTranslation.Set(pLclTranslation);
+		//set the translation of object and add here
+		lNode->LclTranslation.Set(FbxDouble3(0, 0, 0));
+		lNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+
 		lNode->SetNodeAttribute(lMesh);
 		lNode->SetShadingMode(FbxNode::eTextureShading);
 		
@@ -284,8 +195,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lUVElement1->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVElement1->SetReferenceMode(FbxGeometryElement::eDirect);
 		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
-			lUVElement1->GetDirectArray().Add((lUVs.at(uvId.at(u))));
-		
+			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
 		
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();

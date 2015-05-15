@@ -425,7 +425,7 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 							formattedOutput += "0,";
 						}
 
-						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
+						formattedOutput += nodeVec.at(1) + nodeVec.at(2) + ",";
 					}
 					if (goType == "lever")
 					{
@@ -451,18 +451,19 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 						formattedOutput += nodeVec.at(1) + nodeVec.at(2);
 						formattedOutput += ",";
-						formattedOutput += nodeVec.at(5);
+						formattedOutput += nodeVec.at(5) + ",";
 					}
 					if (goType == "pressure" ||
 						goType == "container")
 					{
-						formattedOutput += nodeVec.at(3);
+						formattedOutput += nodeVec.at(3) + ",";
 					}
 					if (goType == "button")
 					{
 						formattedOutput += nodeVec.at(3) + ",";
-						formattedOutput += nodeVec.at(4);
+						formattedOutput += nodeVec.at(4) + ",";
 					}
+
 
 					formattedLevelData.push_back(formattedOutput);
 

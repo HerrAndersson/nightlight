@@ -2,7 +2,7 @@
 
 Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
 {
-	srand(1);
+	//srand(1);
 
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
@@ -78,12 +78,16 @@ bool Game::Render()
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 	vector<XMINT2> p1;
 	vector<XMINT2> p2;
+
 	if (AiUtil_ShowDebugPath)
 	{
 		Coord c = character->GetTileCoord();
-//	vector<XMFLOAT3> p1 = AI->GetPath(currentLevel, XMINT2(4, 2), XMINT2(c.x, c.y));
-//	vector<XMFLOAT3> p2 = AI->GetPath(currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
+		Coord pos = levelStates.currentLevel->getStartDoorCoord();
+		p1 = AI->GetPath(levelStates.currentLevel, XMINT2(pos.x, pos.y), XMINT2(c.x, c.y));
+		p2 = AI->GetPath(levelStates.currentLevel, XMINT2(4, 8), XMINT2(c.x, c.y));
+		//vector<XMINT2> p2 = AI->GetPath(levelStates.currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
 	}
+
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 
 
@@ -93,7 +97,7 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight);
+	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 
 	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
 	//
@@ -112,13 +116,15 @@ bool Game::Render()
 		Renderer->Render(toRender->at(i));
 	}
 
-	for (Enemy e : enemies) 
+	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
 	{
-		XMFLOAT4 weight;
-		e.UpdateWeights(weight);
-		Renderer->Render(&e, weight);
+		for (Enemy e : enemies) 
+		{
+			XMFLOAT4 weight;
+			e.UpdateWeights(weight);
+			Renderer->Render(&e, weight);
+		}
 	}
-
 	XMFLOAT4 weights = { 1, 0, 0, 0 };
 	Renderer->Render(character, weights);
 
@@ -126,30 +132,33 @@ bool Game::Render()
 
 
 
-//	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-//	for (auto x : p1)
-//	{
-//		Tile* t = currentLevel->getTile((int)x.x, (int)x.z);
-//		if (t)
-//		{
-//			if (t->getFloorTile())
-//				t->getFloorTile()->SetSelected(false);
-//			if (t->getPressurePlate())
-//				t->getPressurePlate()->SetSelected(false);
-//		}	
-//	}
-//
-//	for (auto x : p2)
-//	{
-//		Tile* t = currentLevel->getTile((int)x.x,(int)x.z);
-//		if (t)
-//		{
-//			if (t->getFloorTile())
-//				t->getFloorTile()->SetSelected(false);
-//			if (t->getPressurePlate())
-//				t->getPressurePlate()->SetSelected(false);
-//		}
-//	}
+	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
+	if (AiUtil_ShowDebugPath)
+	{
+		for (auto& x : p1)
+		{
+			Tile* t = levelStates.currentLevel->getTile((int)x.x, (int)x.y);
+			if (t)
+			{
+				if (t->getFloorTile())
+					t->getFloorTile()->SetSelected(false);
+				if (t->getPressurePlate())
+					t->getPressurePlate()->SetSelected(false);
+			}
+		}
+
+		for (auto& x : p2)
+		{
+			Tile* t = levelStates.currentLevel->getTile((int)x.x, (int)x.y);
+			if (t)
+			{
+				if (t->getFloorTile())
+					t->getFloorTile()->SetSelected(false);
+				if (t->getPressurePlate())
+					t->getPressurePlate()->SetSelected(false);
+			}
+		}
+	}
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 
 
