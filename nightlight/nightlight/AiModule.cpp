@@ -20,22 +20,27 @@ AiModule::~AiModule()
 
 void AiModule::HandleAI(Enemy* ai, Character* player)
 {
-	if (!ai->IsFollowingPlayer() && !ai->HasValidPath())
-	{
-		XMFLOAT3 p = ai->GetPosition();
-		XMINT2 goal = GetRandomPosition(ai);
-		ai->SetPath(aStar(level, XMINT2((int)p.x, (int)p.z), goal));
-	}
-	else if (ai->IsFollowingPlayer())
-	{
-		Coord c1 = ai->GetTileCoord();
-		Coord c2 = player->GetTileCoord();
-		ai->SetPath(aStar(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
-	}
-	else
-	{
-		//Do something else?
-	}
+	//if (!ai->IsFollowingPlayer() && !ai->HasValidPath())
+	//{
+	//	XMFLOAT3 p = ai->GetPosition();
+	//	XMINT2 goal = GetRandomPosition(ai);
+	//	ai->SetPath(aStar(level, XMINT2((int)p.x, (int)p.z), goal));
+	//}
+	//else if (ai->IsFollowingPlayer())
+	//{
+	//	Coord c1 = ai->GetTileCoord();
+	//	Coord c2 = player->GetTileCoord();
+	//	ai->SetPath(aStar(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
+	//}
+	//else
+	//{
+	//	//Do something else?
+	//}
+
+	Coord c1 = ai->GetTileCoord();
+	Coord c2 = player->GetTileCoord();
+	vector<XMINT2> p = aStar(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y));
+	ai->SetPath(p);
 }
 
 XMINT2 AiModule::GetRandomPosition(Enemy* ai)

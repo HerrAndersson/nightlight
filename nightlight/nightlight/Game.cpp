@@ -83,9 +83,13 @@ bool Game::Render()
 	{
 		Coord c = character->GetTileCoord();
 		Coord pos = levelStates.currentLevel->getStartDoorCoord();
+		Coord pos2 = pos;
+
+		if (enemies.size() > 0)
+			pos2 = enemies.at(0).GetTileCoord();
+
 		p1 = AI->GetPath(levelStates.currentLevel, XMINT2(pos.x, pos.y), XMINT2(c.x, c.y));
-		p2 = AI->GetPath(levelStates.currentLevel, XMINT2(4, 8), XMINT2(c.x, c.y));
-		//vector<XMINT2> p2 = AI->GetPath(levelStates.currentLevel, XMINT2(2, 12), XMINT2(c.x, c.y));
+		p2 = AI->GetPath(levelStates.currentLevel, XMINT2(pos2.x, pos2.y), XMINT2(c.x, c.y));
 	}
 
 	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////

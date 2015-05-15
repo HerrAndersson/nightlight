@@ -66,7 +66,7 @@ public:
 	int GetG()							{ return gScore; };
 	void SetG(int g)					{ gScore = g; };
 	bool InOpen()						{ return inOpen; };
-	bool InClosed()						{ return inOpen; };
+	bool InClosed()						{ return inClosed; };
 	void SetInOpen(bool inOpen)			{ this->inOpen = inOpen; };
 	void SetInClosed(bool inClosed)		{ this->inClosed = inClosed; };
 	Tile* GetParent()					{ return parent; };

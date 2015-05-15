@@ -131,7 +131,7 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 										child->SetF(GenerateF(child, end));
 									}
 								}
-								else if (current->GetParent() != child)
+								if (current->GetParent() != child)
 								{
 									openList.push_back(child);
 									child->SetInOpen(true);
@@ -169,7 +169,7 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 		while (current->GetParent() && current != start)
 		{
 			XMINT2 currentCoord = current->GetTileCoord();
-			path.push_back(XMINT2(currentCoord.x,currentCoord.y));
+			path.push_back(XMINT2(currentCoord.x, currentCoord.y));
 
 			if (AiUtil_ShowDebugPath)
 			{
