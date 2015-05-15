@@ -16,7 +16,7 @@ private:
 
 public:
 
-	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType);
+	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType);
 	virtual ~Enemy();
 
 	enum EnemyType { SMALL, MEDIUM, LARGE };

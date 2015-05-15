@@ -70,7 +70,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 			int gameObjectTypeRef = std::stoi(unparsedLine.at(1));
 			std::string gameObjectType = gameObjectTypes.at(gameObjectTypeRef);
 			
-			if (gameObjectType.find("enemy") != std::string::npos) 
+			if (gameObjectType.find("small") != std::string::npos || gameObjectType.find("average") != std::string::npos || gameObjectType.find("large") != std::string::npos)
 			{
 				int i = 0;
 				int renderObjectRef = std::stoi(unparsedLine.at(i++));
@@ -83,7 +83,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				rotation = std::stof(unparsedLine.at(i++));
 				int tileCoordX = std::stoi(unparsedLine.at(i++));
 				int tileCoordY = std::stoi(unparsedLine.at(i++));
-				int enemyType = std::stoi(unparsedLine.at(i++));
+				std::string enemyType = std::string(unparsedLine.at(i++));
 
 				enemies.push_back(Enemy(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
 			}
