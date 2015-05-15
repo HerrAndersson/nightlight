@@ -114,28 +114,51 @@ void Tile::setButton(Button* button)
 bool Tile::IsWalkable()
 {
 	if (this == nullptr)
-	{
 		return false;
-	}
 
-	if (this->getPressurePlate() != nullptr)
-	{
+	if (pressurePlate)
 		return true;
-	}
 
-	if (this->getButton() != nullptr)
-	{
+	if (button)
 		return true;
-	}
 
-	if (this->getMovableObject() != nullptr || this->getShadowContainer() != nullptr || this->getStaticObject() != nullptr || this->getFloorTile() == nullptr)
-	{
+	if (movableObject || shadowContainer || staticObject ||!floorTile)
 		return false;
-	}
+
 	return true;
 }
 
 void Tile::AddGameObjectManually(GameObject* gameObject)
 {
 	gameObjects.push_back(gameObject);
+}
+
+bool Tile::IsWalkableAI()
+{
+	if (this == nullptr)
+		return false;
+
+	if (movableObject)
+		return false;
+
+	if (pressurePlate)
+		return true;
+	else if (button)
+		return true;
+	else if (lever)
+		return false;
+
+
+	if(shadowContainer)
+		return false;
+	else if(staticObject)
+		return false;
+	else if (!floorTile)
+		return false;
+
+
+	//else if (door && !door->getIsOpen())
+	//	return false;
+
+	return true;
 }

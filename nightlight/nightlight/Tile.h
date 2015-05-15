@@ -71,5 +71,6 @@ public:
 	void SetInClosed(bool inClosed)		{ this->inClosed = inClosed; };
 	Tile* GetParent()					{ return parent; };
 	void SetParent(Tile* parent)		{ this->parent = parent; };
+	bool IsWalkableAI();
 };
 
