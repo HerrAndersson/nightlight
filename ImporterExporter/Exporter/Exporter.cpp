@@ -1151,6 +1151,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 			output.parent = -1;
 			output.name = dag_path.fullPathName().asChar();
 
+			scene_.sceneGraphRoots.push_back(output);
 			int children = dag_path.childCount();
 			for (int i = 0; i < children; i++){
 				MObject child = dag_path.child(i);
@@ -1160,7 +1161,6 @@ bool Exporter::IdentifyAndExtractMeshes()
 					scene_.sceneGraphRoots[root].children.push_back(childnode);
 				}
 			}
-			scene_.sceneGraphRoots.push_back(output);
 			root++;
 		}
 		dag_iter.next();
