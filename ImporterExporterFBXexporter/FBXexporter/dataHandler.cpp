@@ -278,11 +278,11 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lNode->SetNodeAttribute(lMesh);
 		lNode->SetShadingMode(FbxNode::eTextureShading);
 		
-		//create UVset
+		////create UVset
 		FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
 		FBX_ASSERT(lUVElement1 != NULL);
-		lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
-		lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+		lUVElement1->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lUVElement1->SetReferenceMode(FbxGeometryElement::eDirect);
 		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
 			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
 		for (int u = 0; u < modelList.at(i).UVs.size() * 6; u++)
