@@ -18,3 +18,4 @@ Exitbutton.bin
 grandpa.bin
 pipes.bin
 shelf.bin
+Thick.bin
