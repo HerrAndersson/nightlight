@@ -11,6 +11,9 @@ private:
 
 	bool hasValidPath;
 
+	float weights[4];
+	float weightchange[4];
+
 public:
 
 	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType);
@@ -24,5 +27,6 @@ public:
 
 	bool IsFollowingPlayer();
 	bool HasValidPath();
+	void UpdateWeights(XMFLOAT4 &outputweights);
 };
 

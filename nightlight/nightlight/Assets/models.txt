@@ -1,4 +1,4 @@
-Blendshapes.bin
+mainchar.bin
 floor.bin
 wall.bin
 door.bin

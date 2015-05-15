@@ -645,7 +645,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	return true;
 }
 
-bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float weights[4])
+bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4 weights)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -679,10 +679,10 @@ bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* re
 	MatrixBufferPerBlendObject* dataPtr = (MatrixBufferPerBlendObject*)mappedResource.pData;
 
 	dataPtr->world = worldMatrixC;
-	dataPtr->weight[0] = weights[0];
-	dataPtr->weight[1] = weights[1];
-	dataPtr->weight[2] = weights[2];
-	dataPtr->weight[3] = weights[3];
+	dataPtr->weight[0] = weights.x;
+	dataPtr->weight[1] = weights.y;
+	dataPtr->weight[2] = weights.z;
+	dataPtr->weight[3] = weights.w;
 
 	deviceContext->Unmap(matrixBufferPerBlendObject, 0);
 
@@ -998,7 +998,7 @@ bool RenderModule::Render(GameObject* gameObject, float frame)
 	return result;
 }
 
-bool RenderModule::Render(GameObject* gameObject, float weights[4])
+bool RenderModule::Render(GameObject* gameObject, XMFLOAT4 weights)
 {
 	bool result = true;
 

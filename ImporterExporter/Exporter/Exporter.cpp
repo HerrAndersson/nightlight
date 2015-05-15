@@ -884,8 +884,8 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 		cout << "\t\t\t" << it.normal() << endl;
 		//cout << "\t\t\t" << it.weight() << endl;
 
-		vec3 point = { P.x, P.y, P.z };
-		vec3 norm = { it.normal().x, it.normal().y, it.normal().z };
+		vec3 point = { P.x, -P.y, P.z };
+		vec3 norm = { it.normal().x, -it.normal().y, it.normal().z };
 
 		temp.points.push_back(point);
 		temp.normals.push_back(norm);

@@ -39,7 +39,6 @@ private:
 	LevelParser*			levelParser;
 	SaveLoadManager			saveLoadManager;
 
-	float weights[4];//todo
 
 public:
 
