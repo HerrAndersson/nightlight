@@ -47,8 +47,8 @@ private:
 
 	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies);
 
-	bool UpdatePlayer(Level* currentLevel, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
-	bool UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies);
+	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
+	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies);
 	bool UpdateAI(vector<Enemy>* enemies, Character* player);
 
 	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
