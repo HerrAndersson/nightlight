@@ -253,7 +253,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//set normals
 		for (int n = 0; n < sizeNormals; n++)
 		{
-			lNormalElement->GetDirectArray().Add(lNormals.at(n));
+			lNormalElement->GetDirectArray().Add(lNormals.at(normId.at(n)));
 
 		}
 		//for (int n = 0; n<8; n++)
@@ -284,9 +284,8 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lUVElement1->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVElement1->SetReferenceMode(FbxGeometryElement::eDirect);
 		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
-			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
-		for (int u = 0; u < modelList.at(i).UVs.size() * 6; u++)
-			lUVElement1->GetIndexArray().Add(uvId.at(u % 4));
+			lUVElement1->GetDirectArray().Add((lUVs.at(uvId.at(u))));
+		
 		
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
