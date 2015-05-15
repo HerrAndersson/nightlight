@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "lightObject.h"
 #include "ShadowMap.h"
+#include "GameLogic.h"
 
 using DirectX::XMMATRIX;
 using DirectX::XMFLOAT3;
@@ -94,7 +95,7 @@ private:
 	HWND					hwnd;
 
 public:
-	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight);
+	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight, LevelStates* levelstate);
 
 	RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
 	~RenderModule();
