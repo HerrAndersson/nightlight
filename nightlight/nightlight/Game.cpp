@@ -116,13 +116,15 @@ bool Game::Render()
 		Renderer->Render(toRender->at(i));
 	}
 
-	for (Enemy e : enemies) 
+	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
 	{
-		XMFLOAT4 weight;
-		e.UpdateWeights(weight);
-		Renderer->Render(&e, weight);
+		for (Enemy e : enemies) 
+		{
+			XMFLOAT4 weight;
+			e.UpdateWeights(weight);
+			Renderer->Render(&e, weight);
+		}
 	}
-
 	XMFLOAT4 weights = { 1, 0, 0, 0 };
 	Renderer->Render(character, weights);
 

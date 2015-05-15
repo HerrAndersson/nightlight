@@ -8,9 +8,9 @@ container
 lever
 mainc
 sidec
-smallenemy
-averageenemy
-largeenemy
+small
+average
+large
 corner
 cornerin
 button

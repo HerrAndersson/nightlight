@@ -1,9 +1,21 @@
 #include "Enemy.h"
 
-Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType)
+Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType)
 	 : GameObject(position, rotation,  renderObject, coordX, coordY)
 {
-	this->enemyType = enemyType;
+	if (enemyType == "small")
+	{
+		this->enemyType = EnemyType::SMALL;
+	}
+	else if (enemyType == "average")
+	{
+		this->enemyType = EnemyType::MEDIUM;
+	}
+	else if (enemyType == "large")
+	{
+		this->enemyType = EnemyType::LARGE;
+	}
+	
 
 	followingPlayer = true;
 	hasValidPath = false;

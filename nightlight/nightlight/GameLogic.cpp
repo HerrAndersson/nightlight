@@ -13,7 +13,7 @@ GameLogic::~GameLogic()
 
 bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies)
 {
-	if (!UpdatePlayer(levelStates.currentLevel, character, camera, spotLight))
+	if (!UpdatePlayer(levelStates.currentLevel, character, camera, spotLight, enemies))
 		return false;
 
 	if (!UpdateAI(enemies, character))
@@ -37,7 +37,7 @@ bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies)
 {
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
@@ -192,12 +192,12 @@ bool GameLogic::UpdatePlayer(Level* currentLevel, Character* character, CameraOb
 	character->SetPosition(pos);
 	currentLevel->setPlayerPosition(pos);
 
-	UpdateSpotLight(character, camera, spotlight);
+	UpdateSpotLight(character, camera, spotlight, enemies);
 
 	return true;
 }
 
-bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight)
+bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies)
 {
 	XMFLOAT3 pForward;
 	XMStoreFloat3(&pForward, player->GetForwardVector());
@@ -217,16 +217,18 @@ bool GameLogic::UpdateSpotLight(Character* player, CameraObject* camera, LightOb
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 
 
-
-	if (inLight(spotlight, XMFLOAT3(0, 0, 0)) == true)
+	for each (Enemy e in *enemies)
 	{
-		spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
-		spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
-	}
-	else
-	{
-		spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
-		spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+		if (inLight(spotlight, e.GetPosition()) == true)
+		{
+			spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+			spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
+		}
+		else
+		{
+			spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+			spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+		}
 	}
 
 	spotlight->generateViewMatrix();
@@ -545,8 +547,10 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			selectedObject = nullptr;
 			moveObjectMode = false;
 
-			if (loadedLevel)
+			if (loadedLevel){
 				delete loadedLevel;
+				enemies->clear();
+			}
 
 			loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, *enemies, *character);
 			currentLevel = loadedLevel;

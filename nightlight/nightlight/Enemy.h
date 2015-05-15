@@ -18,8 +18,8 @@ private:
 public:
 
 	enum EnemyType { SMALL, MEDIUM, LARGE };
+	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType);
 
-	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, int enemyType);
 	virtual ~Enemy();
 
 	void Update();
