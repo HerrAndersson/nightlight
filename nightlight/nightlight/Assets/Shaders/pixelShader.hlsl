@@ -53,13 +53,13 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	float3 pointLightDir = normalize(input.worldPos - lightPosPoint);
 	float3 pointLightDir2 = normalize(input.worldPos - lightPosPoint2);
 	
-	float diffuseLighting = saturate(dot(input.normal, -pointLightDir));
-	float diffuseLighting2 = saturate(dot(input.normal, -pointLightDir2));
+	float3 diffuseLighting = saturate(dot(input.normal, -pointLightDir));
+	float3 diffuseLighting2 = saturate(dot(input.normal, -pointLightDir2));
 
 	//add the two point lights
 	//calculate fallof for point lights. 
 	diffuseLighting *= (3) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
-	diffuseLighting2 *= (3) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
+	diffuseLighting2 *= (5) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
 
 	//calculate light to pixel vector for spotlight
 	float3 lightToPixelVec = lightPosSpot - input.worldPos;
@@ -83,14 +83,14 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		finalColor *= pow(max(dot(-lightToPixelVec, lightDirSpot), 0.0f), lightConeSpot);
 	}
 
-
 	finalColor = saturate(finalColor + finalAmbient);
-	finalColor += saturate(diffuseLighting *  lightDiffusePoint);
-	finalColor += saturate(diffuseLighting2 *  lightDiffusePoint2);
+	finalColor += (diffuseLighting *  lightDiffusePoint);
+	finalColor += (diffuse *(diffuseLighting2 * lightDiffusePoint2));
 
-	if (diffuseLighting > 0)
+	if (diffuseLighting.x > 0 || diffuseLighting.y > 0 || diffuseLighting.z > 0)
 	{
 		reflection = normalize(2 * diffuseLighting * input.normal + pointLightDir);
+		reflection = normalize(2 * diffuseLighting2 * input.normal + pointLightDir2);
 		reflection *= normalize(2 * diffuseLighting * input.normal + lightDirSpot);
 		
 		//Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.

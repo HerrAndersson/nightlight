@@ -792,7 +792,7 @@ bool RenderModule::SetDataPerSkeletalObject(XMMATRIX& worldMatrix, RenderObject*
 	return true;
 }
 
-bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight)
+bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight, LevelStates* levelstate)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -829,7 +829,8 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	if (FAILED(result)) { return false; }
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
-	
+
+
 	lightPtr->lightPosSpot = spotlight->getPosition();
 	lightPtr->lightDirSpot = spotlight->getDirection();
 	lightPtr->lightRangeSpot = spotlight->getRange();
@@ -837,20 +838,23 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightAttSpot = XMFLOAT3(0.3f, 0.03f, 0.0f);
 	lightPtr->lightAmbientSpot = spotlight->getAmbientColor();
 	lightPtr->lightDiffuseSpot = spotlight->getDiffuseColor();
-	
+
+	//if (levelstate->currentLevel->getEndDoor())
+	//{
 	//Point light which only want to exist at Enddoor, therefore needs to get enddoor position (probably without Y to put it at a good height manually):
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
 	lightPtr->lightPosPoint1 = XMFLOAT3(-1.0f, -2.4f, -2.0f);
+	//}
 
-	//Point light which won't look good but need a bool to only exist in Menu Level:
-	lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.7f, -5.5f) ;
-
-	//For good looking lights this information below, but it is for a spotlight and that is annoying to deal with:
-	//Menu Spotlight: Position: -7.0f, -0.7f, -0.5f For Complete lit up room: (-7.0f, -8.0f, 5.0f)
-	//Menu Spotlight: Direction: 0.0008f, 0.0f, -0.99f For Complete lit up room: (0.0008f, 0.5f, -0.99f)
-	//Best Position: XMFLOAT3(-7.0f, -2.3f, -1.0f);
-	//Best Direction: XMFLOAT3(0.0008f, 0.3f, -0.99f);
+	if (levelstate->currentLevelNr == levelstate->menuLevel->GetLevelNr())
+	{
+		////Point light which won't look good but need a bool to only exist in Menu Level:
+		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
+		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
+	}
+	else
+	{
+	}
 
 	deviceContext->Unmap(lightBuffer, 0);
 

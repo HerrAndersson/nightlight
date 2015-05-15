@@ -260,8 +260,15 @@ struct Animation{
 	int length, startFrame;
 };
 
+struct Node{
+	int parent;
+	std::string name;
+	std::vector<Node> children;
+};
+
 struct SceneData
 {
+	std::vector<Node> sceneGraphRoots;
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 	std::vector<BlendShapeTarget> blendShapes;
@@ -322,6 +329,7 @@ private:
 	void extractColor(Color& tempcolor, MFnDependencyNode& fn, MString name);
 	void extractCamera(MObject& obj);
 	void extractJointData(MDagPath path);
+	Node createSceneGraph(MDagPath path, int root);
 	void OutputSkinCluster(MObject& obj);
 	void RecursiveJointExtraction(MFnIkJoint& joint, int parentIndex);
 

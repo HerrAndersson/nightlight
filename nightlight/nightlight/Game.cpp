@@ -101,7 +101,7 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight);
+	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 
 	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
 	//

@@ -245,6 +245,7 @@ void Exporter::ProcessScene(const char *file_path)
 	scene_.lights.pointLights.clear();
 	scene_.animations.clear();
 	scene_.skeleton.clear();
+	scene_.sceneGraphRoots.clear();
 }
 
 void Exporter::ProcessLevel(const char *file_path)
@@ -1137,17 +1138,45 @@ bool Exporter::IdentifyAndExtractMeshes()
 	}
 
 	//general purpose iterator, sista argument är filtret
-	/*
-		dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
-		while (!dag_iter.isDone())
-		{
+	int root = 0;
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kTransform);
+	while (!dag_iter.isDone())
+	{
+		int depth = dag_iter.depth();
+		if (depth > 1)
+			break;
 		if (dag_iter.getPath(dag_path))
 		{
+			Node output;
+			output.parent = -1;
+			output.name = dag_path.fullPathName().asChar();
 
+			scene_.sceneGraphRoots.push_back(output);
+			int children = dag_path.childCount();
+			for (int i = 0; i < children; i++){
+				MObject child = dag_path.child(i);
+				MFnDagNode childpath(child);
+				if (child.apiType() == MFn::kTransform){
+					Node childnode = createSceneGraph(childpath.dagPath(), root);
+					scene_.sceneGraphRoots[root].children.push_back(childnode);
+				}
+			}
+			root++;
 		}
 		dag_iter.next();
-		}
-		*/
+	}
+	/*
+	//general purpose iterator, sista argument är filtret
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
+	while (!dag_iter.isDone())
+	{
+	if (dag_iter.getPath(dag_path))
+	{
+
+	}
+	dag_iter.next();
+	}
+	*/
 
 
 	return true;
@@ -1340,6 +1369,7 @@ void Exporter::extractJointData(MDagPath path)
 
 	if (!strcmp(rootpath.fullPathName().asChar(), ""))
 		RecursiveJointExtraction(joint, -1);
+	
 
 
 
@@ -1830,3 +1860,22 @@ void Exporter::fileToStrings(std::string file_path, std::vector<std::string> &ou
 
 	splitStringToVector(s, output, "\n");
 };
+
+Node Exporter::createSceneGraph(MDagPath path, int root)
+{
+	Node output;
+	output.parent = root;
+	cout << path.fullPathName().asChar();
+	output.name = path.fullPathName().asChar();
+	std::vector<std::string> pathparts;
+	splitStringToVector(output.name, pathparts, ":");
+	output.name = pathparts[pathparts.size()-1];
+	int children = path.childCount();
+	for (int i = 0; i < children; i++){
+		MObject child = path.child(i);
+		MFnDagNode childpath(child);
+		Node childnode = createSceneGraph(childpath.dagPath(), root+1);
+		output.children.push_back(childnode);
+	}
+	return output;
+}
