@@ -32,6 +32,7 @@ bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
 	for each (Enemy e in *enemies)
 	{
 		AI->HandleAI(&e, player);
+		e.Update();
 	}
 	return true;
 }

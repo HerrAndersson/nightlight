@@ -8,7 +8,6 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 	followingPlayer = true;
 	hasValidPath = false;
 
-
 	weights[0] = 1;
 	weights[1] = 0;
 	weights[2] = 0;
@@ -17,7 +16,6 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 
 Enemy::~Enemy()
 {
-	//for (auto p : path) delete p;
 	path.clear();
 }
 
@@ -51,17 +49,22 @@ void Enemy::Update()
 	}
 }
 
-void Enemy::UpdateWeights(XMFLOAT4 &outputweights){
-	system("CLS");
+void Enemy::UpdateWeights(XMFLOAT4 &outputweights)
+{
+	//system("CLS");
 	float weightchangechange[4] = { (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100) };
 	float totalweightchangechange = weightchangechange[0] + weightchangechange[1] + weightchangechange[2] + weightchangechange[3];
-	for (int i = 0; i < 4; i++){
+
+	for (int i = 0; i < 4; i++)
+	{
 		weightchangechange[i] = weightchangechange[i] / totalweightchangechange * 4.0f - 1.0f;
 		weightchange[i] += weightchangechange[i];
-		weightchange[i] *= 0.9;
+		weightchange[i] *= 0.9f;
 	}
+
 	float totalweight = 0;
-	for (int i = 0; i < 4; i++){
+	for (int i = 0; i < 4; i++)
+	{
 		weights[i] += (weightchange[i] / 60);
 		if (weights[i] < 0)
 			weights[i] = 0;
@@ -69,6 +72,7 @@ void Enemy::UpdateWeights(XMFLOAT4 &outputweights){
 			weights[i] = 1;
 		totalweight += weights[i];
 	}
+
 	outputweights.x = weights[0] / totalweight;
 	outputweights.y = weights[1] / totalweight;
 	outputweights.z = weights[2] / totalweight;
