@@ -273,8 +273,10 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
 		
-		//Find the translation of object and add here
-		//lNode->LclTranslation.Set(pLclTranslation);
+		//set the translation of object and add here
+		lNode->LclTranslation.Set(FbxDouble3(0, 0, 0));
+		lNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+
 		lNode->SetNodeAttribute(lMesh);
 		lNode->SetShadingMode(FbxNode::eTextureShading);
 		

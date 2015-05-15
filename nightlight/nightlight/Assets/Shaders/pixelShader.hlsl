@@ -85,8 +85,8 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 
 	finalColor = saturate(finalColor + finalAmbient);
-	finalColor += (diffuseLighting *  lightDiffusePoint);
-	finalColor += (diffuseLighting2 *  lightDiffusePoint2);
+	finalColor += saturate(diffuseLighting *  lightDiffusePoint);
+	finalColor += saturate(diffuseLighting2 *  lightDiffusePoint2);
 
 	if (diffuseLighting > 0)
 	{
