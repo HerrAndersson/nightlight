@@ -18,8 +18,6 @@ cbuffer lightBuffer : register(cb0)
 	//player point light
 	float3 lightPosPoint2;
 	float4 lightDiffusePoint2;
-
-
 };
 
 struct pixelInputType
@@ -61,7 +59,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//add the two point lights
 	//calculate fallof for point lights. 
 	diffuseLighting *= (3) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
-	diffuseLighting2 *= (0.9) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
+	diffuseLighting2 *= (3) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
 
 	//calculate light to pixel vector for spotlight
 	float3 lightToPixelVec = lightPosSpot - input.worldPos;
@@ -88,6 +86,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 	finalColor = saturate(finalColor + finalAmbient);
 	finalColor += (diffuseLighting *  lightDiffusePoint);
+	finalColor += (diffuseLighting2 *  lightDiffusePoint2);
 
 	if (diffuseLighting > 0)
 	{

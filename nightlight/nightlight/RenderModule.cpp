@@ -842,18 +842,13 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightPosPoint1 = XMFLOAT3(-1.0f, -2.4f, -2.0f);
 
 	lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint2 = XMFLOAT3(spotlight->getPosition().x, spotlight->getPosition().y+3, spotlight->getPosition().z) ;
+	lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.7f, -5.5f) ;
 
 	//Menu Spotlight: Position: -7.0f, -0.7f, -0.5f For Complete lit up room: (-7.0f, -8.0f, 5.0f)
 	//Menu Spotlight: Direction: 0.0008f, 0.0f, -0.99f For Complete lit up room: (0.0008f, 0.5f, -0.99f)
 
-	//lightPtr->lightPosSpot2 = XMFLOAT3(-7.0f, -0.7f, -0.5f);
-	//lightPtr->lightDirSpot2 = XMFLOAT3(0.0008f, 0.0f, -0.99f);
-	//lightPtr->lightRangeSpot2 = spotlight->getRange();
-	//lightPtr->lightConeSpot2 = spotlight->getCone();
-	//lightPtr->lightAttSpot2 = XMFLOAT3(0.3f, 0.03f, 0.0f);
-	//lightPtr->lightAmbientSpot2 = spotlight->getAmbientColor();
-	//lightPtr->lightDiffuseSpot2 = spotlight->getDiffuseColor();
+	//Best Position: XMFLOAT3(-7.0f, -2.3f, -1.0f);
+	//Best Direction: XMFLOAT3(0.0008f, 0.3f, -0.99f);
 
 	deviceContext->Unmap(lightBuffer, 0);
 
