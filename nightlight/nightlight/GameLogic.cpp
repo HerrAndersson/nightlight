@@ -567,6 +567,8 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			character->SetRotationDeg(loadedLevelCharacterRot);
 			character->SetPosition(currentLevel->getPlayerPostion());
 		}
+
+		AI->ChangeLevel(currentLevel);
 	}
 
 	levelStates.currentLevel = currentLevel;
