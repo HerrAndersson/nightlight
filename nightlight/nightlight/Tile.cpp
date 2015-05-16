@@ -111,7 +111,20 @@ void Tile::setButton(Button* button)
 	this->button = button;
 }
 
-bool Tile::IsWalkable()
+void Tile::setMovableObject(MovableObject* movable)
+{
+	if (movableObject)
+		for (int i = 0; i < gameObjects.size(); i++)
+			if (gameObjects.at(i) == movableObject)
+				gameObjects.erase(gameObjects.begin() + i);
+	
+	if (movable)
+		gameObjects.push_back(movable);
+
+	this->movableObject = movable;
+}
+
+bool Tile::IsWalkable(bool moveObjectMode, GameObject* selectedObject)
 {
 	if (this == nullptr)
 		return false;
@@ -122,8 +135,14 @@ bool Tile::IsWalkable()
 	if (button)
 		return true;
 
-	if (movableObject || shadowContainer || staticObject ||!floorTile)
+	if (shadowContainer || staticObject || !floorTile)
 		return false;
+
+	if (movableObject)
+		if (moveObjectMode && selectedObject == movableObject)
+			return true;
+		else
+			return false;
 
 	return true;
 }

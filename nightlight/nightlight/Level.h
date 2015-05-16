@@ -20,6 +20,7 @@ public:
 	void updateGameObjets();
 
 	Tile* getTile (int x, int y);
+	Tile* getTile (Coord coord);
 	void setTile(Tile* tile, int x, int y);
 	Coord getStartDoorCoord() const { return startDoor; }
 	void setStartDoor(Coord val) { startDoor = val; }

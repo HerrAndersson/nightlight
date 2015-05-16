@@ -61,6 +61,10 @@ Tile* Level::getTile (int x, int y)
 	return tile;
 }
 
+Tile* Level::getTile(Coord coord) {
+	return getTile(coord.x, coord.y);
+}
+
 //If there is already tile at x,y it will be deleted.
 void Level::setTile(Tile* tile, int x, int y)
 {

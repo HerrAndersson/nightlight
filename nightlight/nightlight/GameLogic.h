@@ -25,6 +25,7 @@ class GameLogic
 private:
 
 	enum Axis { X, Y };
+	enum Direction {NONE, RIGHT, UP, LEFT, DOWN};
 	//enum SelectionTypes {NONE, BUTTON, LEVER, MOVABLEOBJECT};
 	enum CollisionTypes { CHARACTER, ENEMY, MOVABLEOBJECT };
 
@@ -41,6 +42,7 @@ private:
 	bool loadedLevelMoveObjectMode = false;
 	XMFLOAT3 loadedLevelCharacterRot;
 	int moveObjectModeAxis = -1;
+	XMFLOAT3 movableObjectTilePos;
 
 	GameObject* selectedObject = nullptr;
 	Button* selectedButton = nullptr;

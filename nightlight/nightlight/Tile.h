@@ -49,11 +49,12 @@ public:
 	Lever* getLever()					const { return lever; }
 	Container* getShadowContainer()		const { return shadowContainer; }
 	MovableObject* getMovableObject()	const { return movableObject; }
+	void setMovableObject(MovableObject* movable);
 	StaticObject* getStaticObject()		const { return staticObject; }
 	Button* getButton()					const { return button; }
 	void setButton(Button* button);
 
-	bool IsWalkable();
+	bool IsWalkable(bool moveObjectMode = false , GameObject* selectedObject = nullptr);
 
 	std::vector<GameObject*>* getAllGameObjects(){ return &gameObjects; }
 	void AddGameObjectManually(GameObject* gameObject);

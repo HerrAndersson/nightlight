@@ -39,8 +39,7 @@ bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
 
 bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies)
 {
-	Level* currentLevel;
-	currentLevel = levelStates.currentLevel;
+	Level* currentLevel = levelStates.currentLevel;
 	XMFLOAT2 oldP = Input->GetMousePos();
 	Input->HandleMouse();
 	XMFLOAT2 newP = Input->GetMousePos();
@@ -48,120 +47,115 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	XMFLOAT3 pos = character->GetPosition();
 	XMFLOAT3 rot = character->GetRotationDeg();
 
-	bool playerMoved = false;
+	int playerMoved = Direction::NONE;
 
 	if (Input->KeyDown('w'))
 	{
 		pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
-		playerMoved = true;
+		playerMoved = Direction::UP;
 	}
 	if (Input->KeyDown('s'))
 	{
 		pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
-		playerMoved = true;
+		playerMoved = Direction::DOWN;
 	}
 	if (Input->KeyDown('a'))
 	{
 		pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
-		playerMoved = true;
+		playerMoved = Direction::LEFT;
 	}
 	if (Input->KeyDown('d'))
 	{
 		pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
-		playerMoved = true;
+		playerMoved = Direction::RIGHT;
 	}
 
 	if (playerMoved)
 	{
-		XMFLOAT3 movableObjectOffset;
-		if (moveObjectMode){
-			XMFLOAT3 selectedObjectPos = selectedObject->GetPosition();
-			movableObjectOffset = XMFLOAT3(pos.x - selectedObjectPos.x, pos.y - selectedObjectPos.y, pos.z - selectedObjectPos.z);
+		Coord movableObjectOffset;
+		
+		if (moveObjectMode) {
+			Coord selectedObjectCurrentCoord = selectedObject->GetTileCoord();
+			Coord characterCurrentCoord = character->GetTileCoord();
+			movableObjectOffset = Coord(selectedObjectCurrentCoord.x - characterCurrentCoord.x, selectedObjectCurrentCoord.y - characterCurrentCoord.y);
 		}
-
-
+			
 		pos = ManageCollisions(currentLevel, character, pos, CollisionTypes::CHARACTER);
-
+		
 		if (moveObjectMode)
 		{
-			//TODO: FIX THIS!!!!!!!
 			XMFLOAT3 movablePos = pos;
-			movablePos.x += movableObjectOffset.x;
-			movablePos.y += movableObjectOffset.y;
-			movablePos.z += movableObjectOffset.z;
+			movablePos.x -= movableObjectOffset.x;
+			movablePos.z -= movableObjectOffset.y;
+			
 			selectedObject->SetPosition(movablePos);
-			//movablePos = ManageCollisions(currentLevel, selectedObject, movablePos, CollisionTypes::MOVABLEOBJECT);
+
+			float zOffset = abs(movablePos.z - movableObjectTilePos.z);
+			float xOffset = abs(movablePos.x - movableObjectTilePos.x);
+
+			if (zOffset >= 1 || xOffset >= 1) {
+				currentLevel->getTile(-movableObjectTilePos.x, -movableObjectTilePos.z)->setMovableObject(nullptr);
+				currentLevel->getTile(selectedObject->GetTileCoord())->setMovableObject((MovableObject*)selectedObject);
+				movableObjectTilePos = movablePos;
+			}
 		}
 	}
 
-	if (Input->LeftMouseDown() && leftMouseLastState == false)
+	if (Input->LeftMouseClicked())
 	{
-		leftMouseLastState = true;
-
-		if (!moveObjectMode)
-		{
-			Lever* lever = dynamic_cast<Lever*>(selectedObject);
-			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
-
-			if (movable != nullptr)
-			{
-				moveObjectMode = true;
-				Coord movableCoord = selectedObject->GetTileCoord();
-				Coord characterCoord = character->GetTileCoord();
-				XMFLOAT3 characterRot = character->GetRotationDeg();
-
-				pos = XMFLOAT3(-characterCoord.x - TILE_SIZE / 2, 0.0f, -characterCoord.y - TILE_SIZE / 2);
-
-				if (movableCoord.y > characterCoord.y)
-				{
-					characterRot.y = -90.0f;
-					moveObjectModeAxis = Axis::Y;
-				}
-				else if (movableCoord.y < characterCoord.y)
-				{
-					characterRot.y = 90.0f;
-					moveObjectModeAxis = Axis::Y;
-				}
-				else if (movableCoord.x > characterCoord.x)
-				{
-					characterRot.y = 0.0f;
-					moveObjectModeAxis = Axis::X;
-				}
-				else if (movableCoord.x < characterCoord.x)
-				{
-					characterRot.y = 180.0f;
-					moveObjectModeAxis = Axis::X;
-				}
-				character->SetRotationDeg(characterRot);
-
-
-			}
-		}
-		else
-		{
-			moveObjectMode = false;
-		}
+		Lever* lever = nullptr;
+		MovableObject* movable = nullptr;
 
 		if (selectedObject != nullptr) {
-			Lever* lever = dynamic_cast<Lever*>(selectedObject);
-			MovableObject* movable = dynamic_cast<MovableObject*>(selectedObject);
+			lever = dynamic_cast<Lever*>(selectedObject);
+			movable = dynamic_cast<MovableObject*>(selectedObject);
 
 			if (movable != nullptr) {
-				//TODO: Enable move mode.
+				moveObjectMode = !moveObjectMode;
 			}
 			if (lever != nullptr) {
 				if (lever->getIsActivated()) {
 					lever->DeactivateLever();
-				}
-				else {
+				} else {
 					lever->ActivateLever();
 				}
 			}
 		}
-	}
-	if (!Input->LeftMouseDown() && leftMouseLastState == true)
-	{
-		leftMouseLastState = false;
+
+		if (moveObjectMode)
+		{
+			movableObjectTilePos = selectedObject->GetPosition();
+			Coord movableCoord = selectedObject->GetTileCoord();
+			Coord characterCoord = character->GetTileCoord();
+			XMFLOAT3 characterRot = character->GetRotationDeg();
+
+			pos = XMFLOAT3(-characterCoord.x - TILE_SIZE / 2, 0.0f, -characterCoord.y - TILE_SIZE / 2);
+
+			if (movableCoord.y > characterCoord.y) {
+				characterRot.y = -90.0f;
+				moveObjectModeAxis = Axis::Y;
+			} else if (movableCoord.y < characterCoord.y) {
+				characterRot.y = 90.0f;
+				moveObjectModeAxis = Axis::Y;
+			} else if (movableCoord.x > characterCoord.x) {
+				characterRot.y = 0.0f;
+				moveObjectModeAxis = Axis::X;
+			} else if (movableCoord.x < characterCoord.x) {
+				characterRot.y = 180.0f;
+				moveObjectModeAxis = Axis::X;
+			}
+			character->SetRotationDeg(characterRot);
+		}
+		else if (movable) {
+			XMFLOAT3 movableCurrentPos = movable->GetPosition();
+			float xOffset = movableCurrentPos.x - movableObjectTilePos.x;
+			float zOffset = movableCurrentPos.z - movableObjectTilePos.z;
+
+			pos.x -= xOffset;
+			pos.z -= zOffset;
+
+			movable->SetPosition(movableObjectTilePos);
+		}
 	}
 
 	if (!moveObjectMode)
@@ -380,7 +374,7 @@ XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTile
 {
 	bool result = false;
 
-	if (!iteratorTile->IsWalkable())
+	if (!iteratorTile->IsWalkable(moveObjectMode, selectedObject))
 	{
 		nextPos = NextPositionFromCollision(result, nextPos, characterRadius, iteratorTileCoord);
 		if (iteratorTile != nullptr)

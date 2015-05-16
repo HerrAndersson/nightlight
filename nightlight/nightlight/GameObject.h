@@ -21,6 +21,9 @@ struct Coord {
 			return true;
 		return false;
 	}
+	bool operator!=(const Coord& other) {
+		return !operator==(other);
+	}
 	int x;
 	int y;
 };
