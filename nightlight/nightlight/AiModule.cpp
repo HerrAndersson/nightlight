@@ -3,14 +3,6 @@
 AiModule::AiModule(Level* level)
 {
 	this->level = level;
-
-	//vector<XMFLOAT3> v = GetPath(level, XMINT2(1, 2), XMINT2(4, 7));
-
-	//cout << "Path: " << endl;
-	//for (auto x : v)
-	//{
-	//	cout << "X: " << x.x << " Y: " << x.z << endl;
-	//}
 }
 
 AiModule::~AiModule()
@@ -33,15 +25,11 @@ void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 		XMINT2 goal = GenerateRandomPosition(ai);
 		ai->SetPath(aStar(level, XMINT2((int)-p.x, (int)-p.z), goal));
 	}
-	else if (ai->IsFollowingPlayer())
+	else if (ai->IsFollowingPlayer()) //&& player->moved()
 	{
 		Coord c1 = ai->GetTileCoord();
 		Coord c2 = player->GetTileCoord();
 		ai->SetPath(aStar(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
-	}
-	else
-	{
-		//Do something else?
 	}
 
 	if (!inLight)
@@ -58,10 +46,6 @@ XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)
 		for (int i = 0; i < 2; i++)
 		{
 			int rnd = rand() % (R_MAX - R_MIN) + R_MIN;
-
-			//int max = ((rand() % R_MAX) + R_MIN);
-			//int min = ((rand() % R_MIN) + R_MIN);
-			//int rnd = rand() % (max - min) + min;
 
 			if (i == 0)
 			{
@@ -115,30 +99,29 @@ vector<XMINT2> AiModule::GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosX
 void AiModule::ChangeLevel(Level* level)
 {
 	this->level = level;
-	//GenerateStaticPF()
 }
 
-void AiModule::Update(vector<GameObject*> dynamicObjects)
-{
-	//Generate dynamic pf each frame, or as often as needed.
-
-	GenerateTotalPF();
-}
-
-void AiModule::GenerateStaticPF(vector<GameObject*> staticObjects)
-{
-	//Sum the hard-coded potential fields of all static objects (walls, pillars, static lights etc). Or check position and generate a field there.
-}
-void AiModule::GenerateDynamicPF(vector<GameObject*> dynamicObjects)
-{
-	//Sum the hard-coded potential fields of all dynamic objects (player, boxes, dynamic lights etc). Or check position and generate a field there.
-}
-void AiModule::GenerateTotalPF()
-{
-	//Sum the static and dynamic fields to get the total.
-	//Update the field for each tile?
-}
-vector< vector<int> > AiModule::GetTotalPF()
-{
-	return totalPF;
-}
+//void AiModule::Update(vector<GameObject*> dynamicObjects)
+//{
+//	//Generate dynamic pf each frame, or as often as needed.
+//
+//	GenerateTotalPF();
+//}
+//
+//void AiModule::GenerateStaticPF(vector<GameObject*> staticObjects)
+//{
+//	//Sum the hard-coded potential fields of all static objects (walls, pillars, static lights etc). Or check position and generate a field there.
+//}
+//void AiModule::GenerateDynamicPF(vector<GameObject*> dynamicObjects)
+//{
+//	//Sum the hard-coded potential fields of all dynamic objects (player, boxes, dynamic lights etc). Or check position and generate a field there.
+//}
+//void AiModule::GenerateTotalPF()
+//{
+//	//Sum the static and dynamic fields to get the total.
+//	//Update the field for each tile?
+//}
+//vector< vector<int> > AiModule::GetTotalPF()
+//{
+//	return totalPF;
+//}
