@@ -105,8 +105,8 @@ bool Game::Render()
 		}
 	}
 
-	bool moving = false;
-	character->UpdateCharacterAnimation(moving);
+
+	character->UpdateCharacterAnimation(character->GetMoved());
 
 	Renderer->Render(character, character->GetBlendWeights());
 

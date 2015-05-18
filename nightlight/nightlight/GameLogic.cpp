@@ -188,6 +188,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z - 3.5f);
 	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005f);
 	character->SetPosition(pos);
+	character->SetMoved(playerMoved);
 	currentLevel->setPlayerPosition(pos);
 
 	UpdateSpotLight(levelStates, character, camera, spotlight, enemies);

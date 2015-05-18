@@ -12,7 +12,7 @@ Character::~Character ( )
 }
 
 
-void Character::UpdateCharacterAnimation(bool moving)
+void Character::UpdateCharacterAnimation(int moving)
 {
 	if(moving)
 	{
