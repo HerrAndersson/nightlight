@@ -28,7 +28,7 @@ public:
 	AiModule(Level* level);
 	~AiModule();
 
-	void HandleAI(Enemy* enemy, Character* player);
+	void HandleAI(Enemy* enemy, Character* player, LightObject* spotlight);
 
 	void ChangeLevel(Level* level);
 	void Update(vector<GameObject*> dynamicObjects);

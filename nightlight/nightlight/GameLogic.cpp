@@ -16,7 +16,7 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 	if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
 		return false;
 
-	if (!UpdateAI(enemies, character))
+	if (!UpdateAI(enemies, character, spotLight))
 		return false;
 
 	if (!ManageLevelStates(levelStates, character, enemies))
@@ -27,12 +27,11 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 	return true;
 }
 
-bool GameLogic::UpdateAI(vector<Enemy>& enemies, Character* player)
+bool GameLogic::UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight)
 {
 	for (auto &e : enemies)
 	{
-		AI->HandleAI(&e, player);
-		e.Update();
+		AI->HandleAI(&e, player, spotlight);
 	}
 
 	return true;
@@ -214,22 +213,22 @@ bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, Cam
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 
-	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
-	{
-		for (auto &e : enemies)
-		{
-			if (e.InLight(spotlight) == true)
-			{
-				spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
-				spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
-			}
-			else
-			{
-				spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
-				spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
-			}
-		}
-	}
+	//if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
+	//{
+	//	for (auto &e : enemies)
+	//	{
+	//		if (e.InLight(spotlight) == true)
+	//		{
+	//			spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	//			spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
+	//		}
+	//		else
+	//		{
+	//			spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+	//			spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+	//		}
+	//	}
+	//}
 
 	spotlight->generateViewMatrix();
 	return true;

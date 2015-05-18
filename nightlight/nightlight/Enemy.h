@@ -27,7 +27,7 @@ public:
 
 	virtual ~Enemy();
 
-	void Update();
+	void Update(LightObject* spotlight);
 	void UpdateWeights(XMFLOAT4 &outputweights);
 
 	void SetPath(vector<XMINT2> path);

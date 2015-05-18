@@ -18,8 +18,10 @@ AiModule::~AiModule()
 
 }
 
-void AiModule::HandleAI(Enemy* ai, Character* player)
+void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 {
+	cout << boolalpha << InSight(level, ai, player) << endl;
+
 	if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level))
 	{
 		XMFLOAT3 p = ai->GetPosition();
@@ -37,7 +39,7 @@ void AiModule::HandleAI(Enemy* ai, Character* player)
 		//Do something else?
 	}
 
-	ai->Update();
+	ai->Update(spotlight);
 }
 
 XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)

@@ -51,7 +51,7 @@ private:
 
 	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
 	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies);
-	bool UpdateAI(vector<Enemy>& enemies, Character* player);
+	bool UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight);
 	
 	XMFLOAT3 ManageCollisions(Level* currentLevel, GameObject* gameObject, XMFLOAT3 pos, CollisionTypes type);
 	XMFLOAT3 ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos);

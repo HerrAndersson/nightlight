@@ -141,8 +141,8 @@ void Game::UpdateCharacterAnimation()
 		chracterWeights.z = 0;
 		chracterWeights.w = 0;
 	}
-	system("CLS");
-	printf("%f\n%f\n%f\n%f", chracterWeights.x, chracterWeights.y, chracterWeights.z, chracterWeights.w);
+	//system("CLS");
+	//printf("%f\n%f\n%f\n%f", chracterWeights.x, chracterWeights.y, chracterWeights.z, chracterWeights.w);
 }
 
 void* Game::operator new(size_t i)
