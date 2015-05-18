@@ -38,6 +38,7 @@ private:
 	AssetManager*			Assets;
 	LevelParser*			levelParser;
 	SaveLoadManager			saveLoadManager;
+	InputManager*			Input;
 
 
 public:
