@@ -10,7 +10,7 @@ using namespace DirectX;
 
 enum CollisionTypes { CHARACTER, ENEMY, MOVABLEOBJECT };
 
-float Clamp(float x, float a, float b) { return x < a ? a : (x > b ? b : x); };
+static float Clamp(float x, float a, float b) { return x < a ? a : (x > b ? b : x); };
 
 static XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord)
 {

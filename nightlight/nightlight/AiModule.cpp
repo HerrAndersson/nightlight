@@ -45,7 +45,7 @@ void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 	}
 
 	if (!inLight)
-		ai->Update();
+		ai->Update(level);
 }
 
 XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)

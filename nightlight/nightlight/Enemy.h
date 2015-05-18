@@ -26,7 +26,7 @@ public:
 
 	virtual ~Enemy();
 
-	void Update();
+	void Update(Level* level);
 	void UpdateWeights(XMFLOAT4 &outputweights);
 
 	void SetPath(vector<XMINT2> path);

@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Collision.h"
 
 Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType)
 	 : GameObject(position, rotation,  renderObject, coordX, coordY)
@@ -23,7 +24,7 @@ Enemy::~Enemy()
 	path.clear();
 }
 
-void Enemy::Update()
+void Enemy::Update(Level* level)
 {
 	if (path.size() > 0)
 	{
@@ -39,10 +40,36 @@ void Enemy::Update()
 
 		Coord dir = aiCoord - next;
 
-		XMFLOAT3 pos = GetPosition();
-		pos.x += dir.x / SPEED;
-		pos.z += dir.y / SPEED;
-		SetPosition(pos);
+		XMFLOAT3 nextPos = GetPosition();
+		nextPos.x += dir.x / SPEED;
+		nextPos.z += dir.y / SPEED;
+
+
+
+		//XMFLOAT3 currentPos = GetPosition();
+		//float characterRadius = 0.5f;
+		//bool result = false;
+
+		//Tile* currentTile = level->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
+		//if (currentTile != nullptr)
+		//{
+		//	Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
+		//	Tile* nextTile = level->getTile(nextTileCoord.x, nextTileCoord.y);
+		//	if (nextTile != nullptr)
+		//	{
+		//		for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
+		//		{
+		//			for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
+		//			{
+		//				Tile* iteratorTile = level->getTile(x, y);
+		//				Coord iteratorTileCoord = Coord(x, y);
+		//				nextPos = NextPositionFromCollision(result, nextPos, characterRadius, iteratorTileCoord);
+		//			}
+		//		}
+		//	}
+		//}
+
+		SetPosition(nextPos);
 	}
 }
 
