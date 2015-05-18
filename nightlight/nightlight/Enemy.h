@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
 #include "AiUtil.h"
-#include "lightObject.h"
 
 class Enemy : public GameObject
 {
@@ -27,7 +26,7 @@ public:
 
 	virtual ~Enemy();
 
-	void Update(LightObject* spotlight);
+	void Update();
 	void UpdateWeights(XMFLOAT4 &outputweights);
 
 	void SetPath(vector<XMINT2> path);

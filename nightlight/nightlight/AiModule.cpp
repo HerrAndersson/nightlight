@@ -20,9 +20,12 @@ AiModule::~AiModule()
 
 void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 {
-	//cout << boolalpha << InSight(level, ai, player) << endl;
-	bool inSight = InSight(level, ai, player);
+	bool inSight = InSight(level, ai->GetPosition(), player->GetPosition());
+	bool inLight = InLight(level, ai, spotlight);
+
 	ai->SetFollowingPlayer(inSight);
+
+	//cout << boolalpha << inSight << endl;
 
 	if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level))
 	{
@@ -41,7 +44,8 @@ void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 		//Do something else?
 	}
 
-	ai->Update(spotlight);
+	if (!inLight)
+		ai->Update();
 }
 
 XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)

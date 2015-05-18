@@ -23,9 +23,9 @@ Enemy::~Enemy()
 	path.clear();
 }
 
-void Enemy::Update(LightObject* spotlight)
+void Enemy::Update()
 {
-	if (path.size() > 0 && !InLight(this, spotlight))
+	if (path.size() > 0)
 	{
 		Coord aiCoord = GetTileCoord();
 

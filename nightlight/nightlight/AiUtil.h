@@ -213,36 +213,8 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 	return path;
 }
 
-static bool InLight(GameObject* object, LightObject* spotlight)
+static bool InSight(Level* level, XMFLOAT3 objectPos, XMFLOAT3 targetPos)
 {
-	XMFLOAT3 pos = object->GetPosition();
-	XMFLOAT3 lightEnemyVec = XMFLOAT3((pos.x - spotlight->getPosition().x), (pos.y - spotlight->getPosition().y), (pos.z - spotlight->getPosition().z));
-	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
-	if ((spotlight->getRange() / 2) > vecLenght)
-	{
-		XMFLOAT3 spotDirection = spotlight->getDirection();
-
-		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
-		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
-		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
-		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
-
-		float angleInRads = (180 / XM_PI) * angle;
-
-		if (spotlight->getCone() < angleInRads)
-			return false;
-
-		return true;
-	}
-	return false;
-}
-
-static bool InSight(Level* level, GameObject* object, GameObject* target)
-{
-	XMFLOAT3 objectPos = object->GetPosition();
-	XMFLOAT3 targetPos = target->GetPosition();
-
 	//Bresenham's line algorithm
 	float x1 = objectPos.x;
 	float y1 = objectPos.z;
@@ -274,22 +246,19 @@ static bool InSight(Level* level, GameObject* object, GameObject* target)
 	for (int x = (int)x1; x < maxX; x++)
 	{
 		Tile* tile = nullptr;
-		if (steep)
-		{
-			tile = level->getTile(-y, -x);
 
-			if (tile)
-				if (!tile->IsWalkable())
-					return false;
-		}
+		if (steep)
+			tile = level->getTile(-y, -x);
 		else
-		{
 			tile = level->getTile(-x, -y);
 
-			if (tile)
-				if (!tile->IsWalkable())
-					return false;
+		if (tile)
+		{
+			if (!tile->SeeThrough())
+				return false;
 		}
+		else
+			return false;
 
 		error -= dy;
 		if (error < 0)
@@ -300,4 +269,32 @@ static bool InSight(Level* level, GameObject* object, GameObject* target)
 	}
 
 	return true;
+}
+
+static bool InLight(Level* level, GameObject* object, LightObject* spotlight)
+{
+	if (InSight(level, object->GetPosition(), spotlight->getPosition()))
+	{
+		XMFLOAT3 pos = object->GetPosition();
+		XMFLOAT3 lightEnemyVec = XMFLOAT3((pos.x - spotlight->getPosition().x), (pos.y - spotlight->getPosition().y), (pos.z - spotlight->getPosition().z));
+		float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
+
+		if ((spotlight->getRange() / 2) > vecLenght)
+		{
+			XMFLOAT3 spotDirection = spotlight->getDirection();
+
+			float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
+			float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
+			float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
+			float angle = acos(dot / sqrt(lenSq1 * lenSq2));
+
+			float angleInRads = (180 / XM_PI) * angle;
+
+			if (spotlight->getCone() < angleInRads)
+				return false;
+
+			return true;
+		}
+	}
+	return false;
 }
