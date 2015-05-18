@@ -830,7 +830,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 
-
+	//Spotlight:
 	lightPtr->lightPosSpot = spotlight->getPosition();
 	lightPtr->lightDirSpot = spotlight->getDirection();
 	lightPtr->lightRangeSpot = spotlight->getRange();
@@ -841,7 +841,6 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 
 	if (levelstate->currentLevelNr == levelstate->menuLevel->GetLevelNr())
 	{
-		
 		//Menu Pointlight:
 		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
@@ -852,6 +851,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	}
 	else
 	{
+		//Menu Pointlight:
 		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
 
