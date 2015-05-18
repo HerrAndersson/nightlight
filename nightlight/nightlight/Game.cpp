@@ -129,8 +129,17 @@ bool Game::Render()
 			Renderer->Render(&e, weight);
 		}
 	}
-	XMFLOAT4 weights = { 1, 0, 0, 0 };
-	Renderer->Render(character, weights);
+
+	bool moving = false;
+	if (!moving)
+	{
+		UpdateCharacterAnimation();
+	}
+	else
+		frame = 0;
+		chracterWeights = { 1, 0, 0, 0 };
+
+	Renderer->Render(character, chracterWeights);
 
 	Renderer->EndScene();
 
@@ -168,6 +177,31 @@ bool Game::Render()
 
 
 	return result;
+}
+
+void Game::UpdateCharacterAnimation()
+{
+	frame += 0.1f;
+	float framelength = 25;
+	if (frame > (framelength*2))
+		frame = 0;
+
+	if (frame < (framelength * 2))
+	{
+		chracterWeights.x = 0;
+		chracterWeights.y = (-frame + (framelength * 2)) / framelength;
+		chracterWeights.z = (frame - (framelength)) / framelength;
+		chracterWeights.w = 0;
+	}
+	if (frame < (framelength))
+	{
+		chracterWeights.x = (-frame + (framelength)) / framelength;
+		chracterWeights.y = frame / framelength;
+		chracterWeights.z = 0;
+		chracterWeights.w = 0;
+	}
+	system("CLS");
+	printf("%f\n%f\n%f\n%f", chracterWeights.x, chracterWeights.y, chracterWeights.z, chracterWeights.w);
 }
 
 void* Game::operator new(size_t i)
