@@ -11,6 +11,7 @@ private:
 
 	XMFLOAT4 characterWeights = { 1, 0, 0, 0 };
 	float frame = 0;
+	int moved;
 
 public:
 
@@ -21,7 +22,9 @@ public:
 
 	float GetSpeed() const { return speed; }
 	XMFLOAT4 GetBlendWeights() { return characterWeights; }
+	int GetMoved() { return moved; }
+	void SetMoved(int val) { moved = val; }
 	void SetSpeed(float val) { speed = val; }
-	void UpdateCharacterAnimation(bool moving);
+	void UpdateCharacterAnimation(int moving);
 };
 

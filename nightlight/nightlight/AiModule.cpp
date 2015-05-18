@@ -25,7 +25,7 @@ void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 		XMINT2 goal = GenerateRandomPosition(ai);
 		ai->SetPath(aStar(level, XMINT2((int)-p.x, (int)-p.z), goal));
 	}
-	else if (ai->IsFollowingPlayer())
+	else if (ai->IsFollowingPlayer()) //&& player->moved()
 	{
 		Coord c1 = ai->GetTileCoord();
 		Coord c2 = player->GetTileCoord();
