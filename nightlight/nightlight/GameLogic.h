@@ -28,7 +28,6 @@ private:
 	enum Direction {NONE, RIGHT, UP, LEFT, DOWN};
 	//enum SelectionTypes {NONE, BUTTON, LEVER, MOVABLEOBJECT};
 
-
 	InputManager*  Input;
 	AiModule*      AI;
 
@@ -55,7 +54,7 @@ private:
 
 public:
 
-	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
+	GameLogic(AiModule* AI, InputManager* Input);
 	~GameLogic();
 
 	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);

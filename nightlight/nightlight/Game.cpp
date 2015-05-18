@@ -2,7 +2,6 @@
 
 Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
 {
-	//srand(1);
 
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
@@ -18,6 +17,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	Assets = new AssetManager(Renderer->GetDevice());
 	levelParser = new LevelParser(Assets);
 	saveLoadManager = SaveLoadManager();
+	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	
 	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 
@@ -28,7 +28,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	saveLoadManager.Load(saveFilePath, levelStates.savedLevelNr);
 
 	AI = new AiModule(levelStates.currentLevel);
-	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
+	Logic = new GameLogic(AI, Input);
 
 }
 
@@ -43,6 +43,7 @@ Game::~Game()
 	delete Assets;
 	delete AI;
 	delete levelParser;
+	delete Input;
 
 	delete camera;
 	delete spotLight;

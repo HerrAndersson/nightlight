@@ -1,15 +1,15 @@
 #include "GameLogic.h"
 #include "Collision.h"
 
-GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI)
+GameLogic::GameLogic(AiModule* AI, InputManager* Input)
 {
-	Input = new InputManager(hwnd, screenWidth, screenHeight);
+	this->Input = Input;
 	this->AI = AI;
 }
 
 GameLogic::~GameLogic()
 {
-	delete Input;
+
 }
 
 bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies)
