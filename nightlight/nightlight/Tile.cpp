@@ -8,24 +8,7 @@ Tile::Tile ( )
 
 Tile::~Tile ( ) 
 {
-	//if (floorTile != nullptr)
-	//	delete floorTile;
-	//if (wall != nullptr)
-	//	delete wall;
-	//if (corner != nullptr)
-	//	delete corner;
-	//if (door != nullptr)
-	//	delete door;
-	//if (pressurePlate != nullptr)
-	//	delete pressurePlate;
-	//if (lever != nullptr)
-	//	delete lever;
-	//if (shadowContainer != nullptr)
-	//	delete shadowContainer;
-	//if (movableObject != nullptr)
-	//	delete movableObject;
-	//if (staticObject != nullptr)
-	//	delete staticObject;
+
 }
 
 void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData)
@@ -114,7 +97,7 @@ void Tile::setButton(Button* button)
 void Tile::setMovableObject(MovableObject* movable)
 {
 	if (movableObject)
-		for (int i = 0; i < gameObjects.size(); i++)
+		for (int i = 0; i < (signed)gameObjects.size(); i++)
 			if (gameObjects.at(i) == movableObject)
 				gameObjects.erase(gameObjects.begin() + i);
 	
@@ -157,6 +140,9 @@ bool Tile::IsWalkableAI()
 	if (this == nullptr)
 		return false;
 
+	if (!floorTile)
+		return false;
+
 	if (movableObject)
 		return false;
 
@@ -167,16 +153,12 @@ bool Tile::IsWalkableAI()
 	else if (lever)
 		return false;
 
-
 	if(shadowContainer)
 		return false;
 	else if(staticObject)
 		return false;
-	else if (!floorTile)
-		return false;
 
-
-	//else if (door && !door->getIsOpen())
+	//if (door && !door->getIsOpen())
 	//	return false;
 
 	return true;
