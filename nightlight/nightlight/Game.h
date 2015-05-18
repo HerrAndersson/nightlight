@@ -40,8 +40,6 @@ private:
 	SaveLoadManager			saveLoadManager;
 	InputManager*			Input;
 
-	XMFLOAT4 chracterWeights = { 1, 0, 0, 0 };
-	float frame = 0;
 
 public:
 

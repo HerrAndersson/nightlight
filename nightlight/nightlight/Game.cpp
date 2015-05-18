@@ -106,44 +106,13 @@ bool Game::Render()
 	}
 
 	bool moving = false;
-	if (!moving)
-		UpdateCharacterAnimation();
-	else
-	{
-		frame = 0;
-		chracterWeights = { 1, 0, 0, 0 };
-	}
+	character->UpdateCharacterAnimation(moving);
 
-	Renderer->Render(character, chracterWeights);
+	Renderer->Render(character, character->GetBlendWeights());
 
 	Renderer->EndScene();
 
 	return result;
-}
-
-void Game::UpdateCharacterAnimation()
-{
-	frame += 0.1f;
-	float framelength = 1;
-	if (frame > (framelength * 2))
-		frame = 0;
-
-	if (frame < (framelength * 2))
-	{
-		chracterWeights.x = 0;
-		chracterWeights.y = 0;
-		chracterWeights.z = (-frame + (framelength * 2)) / framelength;
-		chracterWeights.w = (frame - (framelength)) / framelength;
-	}
-	if (frame < (framelength))
-	{
-		chracterWeights.x = 0;
-		chracterWeights.y = (-frame + (framelength)) / framelength;
-		chracterWeights.z = frame / framelength;
-		chracterWeights.w = 0;
-	}
-	//system("CLS");
-	//printf("%f\n%f\n%f\n%f", chracterWeights.x, chracterWeights.y, chracterWeights.z, chracterWeights.w);
 }
 
 void* Game::operator new(size_t i)
