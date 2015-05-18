@@ -160,7 +160,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
 		//set normals
-		for (int n = 0; n < sizeNormals; n++)
+		for (int n = 0; n < sizeNormals +(sizeNormals/2); n++)
 		{
 			lNormalElement->GetDirectArray().Add(lNormals.at(normId.at(n)));
 
