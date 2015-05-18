@@ -119,6 +119,30 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 
 							if (!inClosed && child->IsWalkableAI())
 							{
+								//Check for corners 
+								//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+
+								//XMINT2 currentCoord = current->GetTileCoord();
+
+								//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+								//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+								////Tile* nextY = nullptr;
+								////Tile* nextX = nullptr;
+								////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
+								////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+								////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
+								////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+								//if (nextY != nullptr)
+								//	if (!nextY->IsWalkable() || nextY->InClosed())
+								//		continue;
+
+								//if (nextX != nullptr)
+								//	if (!nextX->IsWalkable() || nextX->InClosed())
+								//		continue;
+
+
 								int tentativeG = current->GetG() + (int)TILE_SIZE;
 
 								//Already in open but a better solution found, update it

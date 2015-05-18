@@ -1,19 +1,24 @@
 #pragma once
 #include "GameObject.h"
 #include "AiUtil.h"
+#include "lightObject.h"
 
 class Enemy : public GameObject
 {
 private:
+	
+	const float SPEED = 50.0F;
 
 	int enemyType;
-	bool followingPlayer;
-	vector<XMINT2> path;
 
-	bool hasValidPath;
+	bool isFollowingPlayer;
+	vector<XMINT2> path;
+	Coord next, end;
 
 	float weights[4];
 	float weightchange[4];
+
+	bool CheckPathValidity(Level* level);
 
 public:
 
@@ -28,7 +33,9 @@ public:
 	void SetPath(vector<XMINT2> path);
 
 	bool IsFollowingPlayer();
-	bool HasValidPath();
+	bool HasValidPath(Level* level);
+
+	bool InLight(LightObject* spotlight);
 
 };
 

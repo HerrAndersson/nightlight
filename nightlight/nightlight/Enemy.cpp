@@ -4,21 +4,13 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 	 : GameObject(position, rotation,  renderObject, coordX, coordY)
 {
 	if (enemyType == "small")
-	{
 		this->enemyType = EnemyType::SMALL;
-	}
 	else if (enemyType == "average")
-	{
 		this->enemyType = EnemyType::MEDIUM;
-	}
 	else if (enemyType == "large")
-	{
 		this->enemyType = EnemyType::LARGE;
-	}
-	
 
-	followingPlayer = true;
-	hasValidPath = false;
+	isFollowingPlayer = true;
 
 	weights[0] = 1;
 	weights[1] = 0;
@@ -33,37 +25,30 @@ Enemy::~Enemy()
 
 void Enemy::Update()
 {
-	if (!followingPlayer)
+	if (path.size() > 0)
 	{
-		if (HasValidPath())
+		Coord aiCoord = GetTileCoord();
+
+		if (aiCoord == next)
 		{
-			Coord aiCoord = GetTileCoord();
 			XMINT2 p = path.at(path.size() - 1);
-			path.pop_back();
+			this->path.pop_back();
 
-			Coord pathCoord = Coord(p.x, p.y);
-
-			SetTilePosition(pathCoord);
-
-			if (aiCoord == pathCoord)
-			{
-				hasValidPath = false;
-			}
+			next = Coord(p.x, p.y);
 		}
-		else
-		{
-			//Get new path? Since this is handled each frame in AiModule, maybe HasValidPath will never be false?
-		}
-	}
-	else
-	{
-		//Follow player here, using potential field
+
+
+		Coord dir = aiCoord - next;
+
+		XMFLOAT3 pos = GetPosition();
+		pos.x += dir.x / SPEED;
+		pos.z += dir.y / SPEED;
+		SetPosition(pos);
 	}
 }
 
 void Enemy::UpdateWeights(XMFLOAT4 &outputweights)
 {
-	//system("CLS");
 	float weightchangechange[4] = { (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100) };
 	float totalweightchangechange = weightchangechange[0] + weightchangechange[1] + weightchangechange[2] + weightchangechange[3];
 
@@ -93,16 +78,72 @@ void Enemy::UpdateWeights(XMFLOAT4 &outputweights)
 
 bool Enemy::IsFollowingPlayer()
 {
-	return followingPlayer;
+	return isFollowingPlayer;
 }
 
-bool Enemy::HasValidPath()
+bool Enemy::HasValidPath(Level* level)
 {
-	//Check the path for validity
-	return hasValidPath;
+	return CheckPathValidity(level);
+}
+
+bool Enemy::CheckPathValidity(Level* level)
+{
+	bool valid = true;
+
+	//Traverse the path and check all tiles for validity
+	for (int i = path.size() - 1; i > 0; i--)
+	{
+		XMINT2 p = path.at(i);
+
+		Tile* tile = level->getTile(p.x, p.y);
+		if (!(tile && tile->IsWalkableAI()))
+		{
+			valid = false;
+			break;
+		}
+	}
+
+	if (GetTileCoord() == end)
+		valid = false;
+
+	if (path.size() <= 0)
+		valid = false;
+
+	return valid;
 }
 
 void Enemy::SetPath(vector<XMINT2> path)
 {
 	this->path = path;
+
+	if (path.size() > 0)
+	{
+		end = Coord(path.at(0).x, path.at(0).y);
+		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
+	}
+}
+
+bool Enemy::InLight(LightObject* spotlight)
+{
+	XMFLOAT3 pos = GetPosition();
+	XMFLOAT3 lightEnemyVec = XMFLOAT3((pos.x - spotlight->getPosition().x), (pos.y - spotlight->getPosition().y), (pos.z - spotlight->getPosition().z));
+	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
+
+	if ((spotlight->getRange() / 2) > vecLenght)
+	{
+		XMFLOAT3 spotDirection = spotlight->getDirection();
+
+		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
+		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
+		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
+		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
+
+		float angleInRads = (180 / XM_PI) * angle;
+
+		if (spotlight->getCone() < angleInRads)
+			return false;
+
+		return true;
+	}
+	return false;
 }
