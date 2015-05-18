@@ -29,7 +29,8 @@ void GameObject::SetPosition(XMFLOAT3 pos) {
 	tileCoord.y = (int)(-position.z);
 }
 
-void GameObject::SetTilePosition(Coord coord) {
+void GameObject::SetTilePosition(Coord coord) 
+{
 	tileCoord = coord;
 	position.x = -coord.x - TILE_SIZE / 2;
 	position.z = -coord.y - TILE_SIZE / 2;

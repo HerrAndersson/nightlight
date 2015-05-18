@@ -7,25 +7,35 @@
 using DirectX::XMMATRIX;
 using namespace assetUtility;
 
-struct Coord {
-	Coord() {
+struct Coord 
+{
+	int x;
+	int y;
+
+	Coord() 
+	{
 		x = -1;
 		y = -1;
 	}
-	Coord(int x, int y) {
+	Coord(int x, int y)
+	{
 		this->x = x;
 		this->y = y;
 	}
-	bool operator==(const Coord& other) {
+	bool operator==(const Coord& other) 
+	{
 		if (x == other.x && y == other.y)
 			return true;
 		return false;
 	}
-	bool operator!=(const Coord& other) {
+	bool operator!=(const Coord& other) 
+	{
 		return !operator==(other);
 	}
-	int x;
-	int y;
+	Coord operator-(const Coord& other)
+	{
+		return Coord(x - other.x, y - other.y);
+	}
 };
 
 class GameObject
