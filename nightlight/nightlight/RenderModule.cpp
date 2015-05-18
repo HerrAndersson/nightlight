@@ -841,7 +841,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 
 	//End door light:
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint1 = XMFLOAT3(-levelstate->currentLevel->getEndDoor().x - 0.5f, -2.8f, -levelstate->currentLevel->getEndDoor().y - 0.5f);
+	
 
 	if (levelstate->currentLevelNr == levelstate->menuLevel->GetLevelNr())
 	{
@@ -853,6 +853,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	{
 		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
+		lightPtr->lightPosPoint1 = XMFLOAT3(-levelstate->currentLevel->getEndDoor().x - 0.5f, -2.8f, -levelstate->currentLevel->getEndDoor().y - 0.5f);
 	}
 
 	deviceContext->Unmap(lightBuffer, 0);
