@@ -839,21 +839,20 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightAmbientSpot = spotlight->getAmbientColor();
 	lightPtr->lightDiffuseSpot = spotlight->getDiffuseColor();
 
-	//if (levelstate->currentLevel->getEndDoor())
-	//{
-	//Point light which only want to exist at Enddoor, therefore needs to get enddoor position (probably without Y to put it at a good height manually):
+	//End door light:
 	lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	lightPtr->lightPosPoint1 = XMFLOAT3(-1.0f, -2.4f, -2.0f);
-	//}
+	lightPtr->lightPosPoint1 = XMFLOAT3(-levelstate->currentLevel->getEndDoor().x - 0.5f, -2.8f, -levelstate->currentLevel->getEndDoor().y - 0.5f);
 
 	if (levelstate->currentLevelNr == levelstate->menuLevel->GetLevelNr())
 	{
-		////Point light which won't look good but need a bool to only exist in Menu Level:
+		//Menu Pointlight:
 		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
 	}
 	else
 	{
+		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
 	}
 
 	deviceContext->Unmap(lightBuffer, 0);
