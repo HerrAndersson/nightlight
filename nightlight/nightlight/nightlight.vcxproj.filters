@@ -236,6 +236,9 @@
     <ClInclude Include="SaveLoadManager.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\pixelShader.hlsl">
