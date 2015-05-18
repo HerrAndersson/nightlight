@@ -58,7 +58,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 	//add the two point lights
 	//calculate fallof for point lights. 
-	diffuseLighting *= (3) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
+	diffuseLighting *= (1) / dot(lightPosPoint - input.worldPos, lightPosPoint - input.worldPos);
 	diffuseLighting2 *= (5) / dot(lightPosPoint2 - input.worldPos, lightPosPoint2 - input.worldPos);
 
 	//calculate light to pixel vector for spotlight
