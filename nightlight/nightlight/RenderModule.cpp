@@ -839,24 +839,25 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightAmbientSpot = spotlight->getAmbientColor();
 	lightPtr->lightDiffuseSpot = spotlight->getDiffuseColor();
 
-	//End door light:
-	
-
 	if (levelstate->currentLevelNr == levelstate->menuLevel->GetLevelNr())
 	{
 		
 		//Menu Pointlight:
 		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.55f, 0.45f, 0.2f, 1.0f);
 		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
+
+		//End door light:
 		lightPtr->lightDiffusePoint1 = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+		lightPtr->lightPosPoint1 = XMFLOAT3(0, 0, 0);
 	}
 	else
 	{
-		lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
-	
 		lightPtr->lightDiffusePoint2 = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 		lightPtr->lightPosPoint2 = XMFLOAT3(-7.0f, -2.0f, -5.5f);
-		lightPtr->lightPosPoint1 = XMFLOAT3(-levelstate->currentLevel->getEndDoor().x - 0.5f, -2.8f, -levelstate->currentLevel->getEndDoor().y - 0.5f);
+
+		//End door light:
+		lightPtr->lightDiffusePoint1 = XMFLOAT4(0.95f, 0.1f, 0.2f, 1.0f);
+		lightPtr->lightPosPoint1 = XMFLOAT3(-levelstate->currentLevel->getEndDoor().x - 0.5f, -2.6f, -levelstate->currentLevel->getEndDoor().y - 0.5f);
 	}
 
 	deviceContext->Unmap(lightBuffer, 0);
