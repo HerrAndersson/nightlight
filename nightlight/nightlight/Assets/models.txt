@@ -1,4 +1,4 @@
-mainchar.bin
+blendCharTestAnim.bin
 floor.bin
 wall.bin
 door.bin

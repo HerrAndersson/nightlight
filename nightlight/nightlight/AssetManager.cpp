@@ -169,7 +169,7 @@ void AssetManager::LoadModel(string file_path){
 		infile.read((char*)&blendShape.MeshTarget, 4);
 		blendShape.points.resize(points.size() + purePoints.size());
 		infile.read((char*)blendShape.points.data(), blendShape.points.size()*sizeof(XMFLOAT3));
-		blendShape.normals.resize(normals.size());
+		blendShape.normals.resize(points.size() + purePoints.size());
 		infile.read((char*)blendShape.normals.data(), blendShape.normals.size()*sizeof(XMFLOAT3));
 		
 
@@ -244,9 +244,16 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedPoint> *points, ve
 					tempVertex.position3 = blendShapes->at(2).points[vertexIndices->at(i + a).x];
 
 					tempVertex.normal0 = normals->at(vertexIndices->at(i + a).y);
-					tempVertex.normal1 = blendShapes->at(0).normals[vertexIndices->at(i + a).x];
-					tempVertex.normal2 = blendShapes->at(1).normals[vertexIndices->at(i + a).x];
-					tempVertex.normal3 = blendShapes->at(2).normals[vertexIndices->at(i + a).x];
+					if (vertexIndices->at(i + a).y < blendShapes->at(0).normals.size()){
+						tempVertex.normal1 = blendShapes->at(0).normals[vertexIndices->at(i + a).y];
+						tempVertex.normal2 = blendShapes->at(1).normals[vertexIndices->at(i + a).y];
+						tempVertex.normal3 = blendShapes->at(2).normals[vertexIndices->at(i + a).y];
+					}
+					else{
+						tempVertex.normal1 = normals->at(vertexIndices->at(i + a).y);
+						tempVertex.normal2 = normals->at(vertexIndices->at(i + a).y);
+						tempVertex.normal3 = normals->at(vertexIndices->at(i + a).y);
+					}
 
 					tempVertex.uv = UVs->at(vertexIndices->at(i + a).z);
 					for (int b = 0; b < 4; b++)
