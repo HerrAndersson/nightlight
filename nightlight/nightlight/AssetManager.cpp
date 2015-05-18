@@ -244,7 +244,7 @@ ID3D11Buffer* AssetManager::CreateVertexBuffer(vector<WeightedPoint> *points, ve
 					tempVertex.position3 = blendShapes->at(2).points[vertexIndices->at(i + a).x];
 
 					tempVertex.normal0 = normals->at(vertexIndices->at(i + a).y);
-					if (vertexIndices->at(i + a).y < blendShapes->at(0).normals.size()){
+					if (vertexIndices->at(i + a).y < (signed)blendShapes->at(0).normals.size()){
 						tempVertex.normal1 = blendShapes->at(0).normals[vertexIndices->at(i + a).y];
 						tempVertex.normal2 = blendShapes->at(1).normals[vertexIndices->at(i + a).y];
 						tempVertex.normal3 = blendShapes->at(2).normals[vertexIndices->at(i + a).y];
