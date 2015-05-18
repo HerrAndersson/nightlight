@@ -645,7 +645,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	return true;
 }
 
-bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4 weights)
+bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4& weights)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -1003,7 +1003,7 @@ bool RenderModule::Render(GameObject* gameObject, float frame)
 	return result;
 }
 
-bool RenderModule::Render(GameObject* gameObject, XMFLOAT4 weights)
+bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 {
 	bool result = true;
 

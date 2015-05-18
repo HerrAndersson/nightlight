@@ -105,7 +105,7 @@ public:
 	bool InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename);
 
 	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected);
-	bool SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4 weights);
+	bool SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4& weights);
 	bool SetDataPerSkeletalObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float frame);
 
 	void UseDefaultShader();
@@ -118,7 +118,7 @@ public:
 
 	bool Render(GameObject* gameObject);
 	bool Render(GameObject* gameObject, float frame);
-	bool Render(GameObject* gameObject, XMFLOAT4 weights);
+	bool Render(GameObject* gameObject, XMFLOAT4& weights);
 	bool RenderShadow(GameObject* gameObject);
 
 	void EndScene();

@@ -132,12 +132,12 @@ bool Game::Render()
 
 	bool moving = false;
 	if (!moving)
-	{
 		UpdateCharacterAnimation();
-	}
 	else
+	{
 		frame = 0;
 		chracterWeights = { 1, 0, 0, 0 };
+	}
 
 	Renderer->Render(character, chracterWeights);
 
@@ -182,22 +182,22 @@ bool Game::Render()
 void Game::UpdateCharacterAnimation()
 {
 	frame += 0.1f;
-	float framelength = 25;
-	if (frame > (framelength*2))
+	float framelength = 1;
+	if (frame > (framelength * 2))
 		frame = 0;
 
 	if (frame < (framelength * 2))
 	{
 		chracterWeights.x = 0;
-		chracterWeights.y = (-frame + (framelength * 2)) / framelength;
-		chracterWeights.z = (frame - (framelength)) / framelength;
-		chracterWeights.w = 0;
+		chracterWeights.y = 0;
+		chracterWeights.z = (-frame + (framelength * 2)) / framelength;
+		chracterWeights.w = (frame - (framelength)) / framelength;
 	}
 	if (frame < (framelength))
 	{
-		chracterWeights.x = (-frame + (framelength)) / framelength;
-		chracterWeights.y = frame / framelength;
-		chracterWeights.z = 0;
+		chracterWeights.x = 0;
+		chracterWeights.y = (-frame + (framelength)) / framelength;
+		chracterWeights.z = frame / framelength;
 		chracterWeights.w = 0;
 	}
 	system("CLS");

@@ -833,7 +833,12 @@ void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base)
 
 	//attach the function set to the object
 	unsigned int nWeights = fn.numWeights();
-
+	MIntArray weightindices;
+	fn.weightIndexList(weightindices);
+	int debug;
+	for (int i = 0; i < weightindices.length(); i++){
+		debug = weightindices[i];
+	}
 	cout << "\t\tNumWeights " << nWeights << endl;
 
 	MObjectArray targets;
@@ -844,7 +849,7 @@ void Exporter::OutputBlendShapes(MFnBlendShapeDeformer& fn, MObject& Base)
 		//fn.getBaseObjects(targets);
 
 		//Get an array of target shapes
-		fn.getTargets(Base, i + 1, targets);
+		fn.getTargets(Base, weightindices[i], targets);
 
 		//cout << "Weight unimportant stuff " << fn.weightIndexList(l) << endl;
 
@@ -951,6 +956,11 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 
 				if (!strcmp(basemfn.partialPathName().asChar(), dag_node.partialPathName().asChar()))
 					temp.MeshTarget = y;
+
+				std::string name = basemfn.partialPathName().asChar();
+				if (!strcmp(name.substr(0, 5).c_str(), "Blend")==0){
+					y += -1;
+				}
 				y++;
 			}
 		}
@@ -1696,8 +1706,8 @@ void Exporter::ExportMeshes()
 
 	for (int i = 0; i < mainHeader.blendShapeCount; i++){
 		outfile.write((const char*)&scene_.blendShapes[i].MeshTarget, 4);
-		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].points.size());
-		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.meshes[scene_.blendShapes[i].MeshTarget].normals.size());
+		outfile.write((const char*)scene_.blendShapes[i].points.data(), sizeof(vec3)*scene_.blendShapes[i].points.size());
+		outfile.write((const char*)scene_.blendShapes[i].normals.data(), sizeof(vec3)*scene_.blendShapes[i].normals.size());
 
 		int BlendFrames = scene_.blendShapes[i].WeightF.size();
 
