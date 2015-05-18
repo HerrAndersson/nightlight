@@ -45,29 +45,31 @@ void Enemy::Update(Level* level)
 		nextPos.z += dir.y / SPEED;
 
 
+		XMFLOAT3 currentPos = GetPosition();
+		float radius = 0.5f;
+		bool result = false;
 
-		//XMFLOAT3 currentPos = GetPosition();
-		//float characterRadius = 0.5f;
-		//bool result = false;
-
-		//Tile* currentTile = level->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
-		//if (currentTile != nullptr)
-		//{
-		//	Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
-		//	Tile* nextTile = level->getTile(nextTileCoord.x, nextTileCoord.y);
-		//	if (nextTile != nullptr)
-		//	{
-		//		for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
-		//		{
-		//			for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
-		//			{
-		//				Tile* iteratorTile = level->getTile(x, y);
-		//				Coord iteratorTileCoord = Coord(x, y);
-		//				nextPos = NextPositionFromCollision(result, nextPos, characterRadius, iteratorTileCoord);
-		//			}
-		//		}
-		//	}
-		//}
+		Tile* currentTile = level->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
+		if (currentTile != nullptr)
+		{
+			Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
+			Tile* nextTile = level->getTile(nextTileCoord.x, nextTileCoord.y);
+			if (nextTile != nullptr)
+			{
+				for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
+				{
+					for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
+					{
+						Tile* iteratorTile = level->getTile(x, y);
+						if (iteratorTile && !iteratorTile->IsWalkableAI())
+						{
+							Coord iteratorTileCoord = Coord(x, y);
+							nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
+						}
+					}
+				}
+			}
+		}
 
 		SetPosition(nextPos);
 	}
