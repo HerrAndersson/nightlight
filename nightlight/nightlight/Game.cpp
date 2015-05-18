@@ -30,9 +30,6 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	AI = new AiModule(levelStates.currentLevel);
 	Logic = new GameLogic(hwnd, screenWidth, screenHeight, AI);
 
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	//character->SetPosition(XMFLOAT3(-4 - TILE_SIZE / 2, 0, -4 - TILE_SIZE / 2));
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
 }
 
 Game::~Game()
@@ -56,7 +53,7 @@ bool Game::Update()
 {
 	bool result = true;
 	
-	result = Logic->Update(levelStates, character, camera, spotLight, &enemies);
+	result = Logic->Update(levelStates, character, camera, spotLight, enemies);
 	
 	if (!result){
 		Level* loadedLevel = levelStates.loadedLevel;
@@ -72,29 +69,6 @@ bool Game::Render()
 	bool result = true;
 
 	std::vector<GameObject*>* toRender = levelStates.currentLevel->GetGameObjects();
-
-
-
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	vector<XMINT2> p1;
-	vector<XMINT2> p2;
-
-	if (AiUtil_ShowDebugPath)
-	{
-		Coord c = character->GetTileCoord();
-		Coord pos = levelStates.currentLevel->getStartDoorCoord();
-		Coord pos2 = pos;
-
-		if (enemies.size() > 0)
-			pos2 = enemies.at(0).GetTileCoord();
-
-		p1 = AI->GetPath(levelStates.currentLevel, XMINT2(pos.x, pos.y), XMINT2(c.x, c.y));
-		p2 = AI->GetPath(levelStates.currentLevel, XMINT2(pos2.x, pos2.y), XMINT2(c.x, c.y));
-	}
-
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-
-
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	worldMatrix = DirectX::XMMatrixIdentity();
@@ -133,39 +107,6 @@ bool Game::Render()
 	Renderer->Render(character, weights);
 
 	Renderer->EndScene();
-
-
-
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-	if (AiUtil_ShowDebugPath)
-	{
-		for (auto& x : p1)
-		{
-			Tile* t = levelStates.currentLevel->getTile((int)x.x, (int)x.y);
-			if (t)
-			{
-				if (t->getFloorTile())
-					t->getFloorTile()->SetSelected(false);
-				if (t->getPressurePlate())
-					t->getPressurePlate()->SetSelected(false);
-			}
-		}
-
-		for (auto& x : p2)
-		{
-			Tile* t = levelStates.currentLevel->getTile((int)x.x, (int)x.y);
-			if (t)
-			{
-				if (t->getFloorTile())
-					t->getFloorTile()->SetSelected(false);
-				if (t->getPressurePlate())
-					t->getPressurePlate()->SetSelected(false);
-			}
-		}
-	}
-	///////////////////////////////////// DEBUG FOR PATHFINDING /////////////////////////////////////
-
-
 
 	return result;
 }

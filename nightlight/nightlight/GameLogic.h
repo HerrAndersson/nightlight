@@ -47,13 +47,11 @@ private:
 	GameObject* selectedObject = nullptr;
 	Button* selectedButton = nullptr;
 
-	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies);
+	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>& enemies);
 
-	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
-	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies);
-	bool UpdateAI(vector<Enemy>* enemies, Character* player);
-
-	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
+	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
+	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies);
+	bool UpdateAI(vector<Enemy>& enemies, Character* player);
 	
 	XMFLOAT3 ManageCollisions(Level* currentLevel, GameObject* gameObject, XMFLOAT3 pos, CollisionTypes type);
 	XMFLOAT3 ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos);
@@ -71,7 +69,7 @@ public:
 	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
 	~GameLogic();
 
-	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
+	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
 	
 	//UpdateObjects(objects)
 	//UpdateAI(aiObjects)
