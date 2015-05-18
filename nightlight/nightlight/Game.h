@@ -39,8 +39,6 @@ private:
 	LevelParser*			levelParser;
 	SaveLoadManager			saveLoadManager;
 
-	XMFLOAT4 chracterWeights = { 1, 0, 0, 0 };
-	float frame = 0;
 
 public:
 
