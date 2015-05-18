@@ -163,3 +163,20 @@ bool Tile::IsWalkableAI()
 
 	return true;
 }
+
+bool Tile::SeeThrough()
+{
+	if (this == nullptr)
+		return false;
+
+	if (!floorTile)
+		return false;
+
+	if (shadowContainer || staticObject || wall)
+		return false;
+	
+	if (door && !door->getIsOpen())
+		return false;
+	
+	return true;
+}

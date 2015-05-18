@@ -29,7 +29,7 @@ private:
 
 	std::vector<GameObject*> gameObjects;
 
-	//For pathfinding
+	//For ai
 	XMINT2 tileCoord;
 	int fScore, gScore;
 	Tile* parent = nullptr;
@@ -60,7 +60,7 @@ public:
 	void AddGameObjectManually(GameObject* gameObject);
 	void createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData);
 
-	//For pathfinding
+	//For ai
 	XMINT2 GetTileCoord()				{ return tileCoord; };
 	int GetF()							{ return fScore; };
 	void SetF(int f)					{ fScore = f; };
@@ -72,6 +72,8 @@ public:
 	void SetInClosed(bool inClosed)		{ this->inClosed = inClosed; };
 	Tile* GetParent()					{ return parent; };
 	void SetParent(Tile* parent)		{ this->parent = parent; };
+
 	bool IsWalkableAI();
+	bool SeeThrough();
 };
 
