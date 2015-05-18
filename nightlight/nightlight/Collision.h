@@ -109,11 +109,15 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 			MovableObject* movableObject = iteratorTile->getMovableObject();
 			if (movableObject != nullptr)
 			{
-				if (gl->GetMoveObjectMode())
+				if (gl->GetMoveObjectMode()) 
+				{
 					gl->SelectObject(movableObject);
+					gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
+				}
 				else
 				{
-					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y)) {
+					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y)) 
+					{
 						gl->SelectObject(movableObject);
 						gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
 					}
