@@ -23,10 +23,8 @@ struct LevelStates
 class GameLogic
 {
 private:
-
-	enum Axis { X, Y };
-	enum Direction {NONE, RIGHT, UP, LEFT, DOWN};
-	//enum SelectionTypes {NONE, BUTTON, LEVER, MOVABLEOBJECT};
+	enum Axis { X, Y, BOTH };
+	enum Direction { NONE, RIGHT, UP, LEFT, DOWN };
 
 	InputManager*  Input;
 	AiModule*      AI;
@@ -40,10 +38,11 @@ private:
 	bool moveObjectMode = false;
 	bool loadedLevelMoveObjectMode = false;
 	XMFLOAT3 loadedLevelCharacterRot;
-	int moveObjectModeAxis = -1;
+	int moveObjectModeAxis = Axis::BOTH;
 	XMFLOAT3 movableObjectTilePos;
 
 	GameObject* selectedObject = nullptr;
+	int selectedObjectType = -1;
 	Button* selectedButton = nullptr;
 
 	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>& enemies);
@@ -53,6 +52,7 @@ private:
 	bool UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight);
 
 public:
+	enum SelectionTypes { BUTTON, LEVER, MOVABLEOBJECT };
 
 	GameLogic(AiModule* AI, InputManager* Input);
 	~GameLogic();
@@ -65,5 +65,7 @@ public:
 	GameObject* GetSelectedObject();
 	bool GetMoveObjectMode();
 
+	int GetSelectedObjectType() const { return selectedObjectType; }
+	void SetSelectedObjectType(int val) { selectedObjectType = val; }
 };
 

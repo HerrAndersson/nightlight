@@ -52,23 +52,31 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 
 	if (Input->KeyDown('w'))
 	{
-		pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
-		playerMoved = Direction::UP;
+		if (moveObjectModeAxis == Axis::BOTH || moveObjectModeAxis == Axis::Y) {
+			pos = XMFLOAT3(pos.x, pos.y, pos.z + character->GetSpeed());
+			playerMoved = Direction::UP;
+		}
 	}
 	if (Input->KeyDown('s'))
 	{
-		pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
-		playerMoved = Direction::DOWN;
+		if (moveObjectModeAxis == Axis::BOTH || moveObjectModeAxis == Axis::Y) {
+			pos = XMFLOAT3(pos.x, pos.y, pos.z - character->GetSpeed());
+			playerMoved = Direction::DOWN;
+		}
 	}
 	if (Input->KeyDown('a'))
 	{
-		pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
-		playerMoved = Direction::LEFT;
+		if (moveObjectModeAxis == Axis::BOTH || moveObjectModeAxis == Axis::X) {
+			pos = XMFLOAT3(pos.x + character->GetSpeed(), pos.y, pos.z);
+			playerMoved = Direction::LEFT;
+		}
 	}
 	if (Input->KeyDown('d'))
 	{
-		pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
-		playerMoved = Direction::RIGHT;
+		if (moveObjectModeAxis == Axis::BOTH || moveObjectModeAxis == Axis::X) {
+			pos = XMFLOAT3(pos.x - character->GetSpeed(), pos.y, pos.z);
+			playerMoved = Direction::RIGHT;
+		}
 	}
 
 	if (playerMoved)
@@ -149,14 +157,19 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetRotationDeg(characterRot);
 		}
 		else if (movable) {
-			XMFLOAT3 movableCurrentPos = movable->GetPosition();
-			float xOffset = movableCurrentPos.x - movableObjectTilePos.x;
-			float zOffset = movableCurrentPos.z - movableObjectTilePos.z;
+			Coord lastTileCoord = Coord((int)-movableObjectTilePos.x, (int)-movableObjectTilePos.z);
+			Coord currentTileCoord = movable->GetTileCoord();
+			Tile* lastTile = currentLevel->getTile(lastTileCoord);
+			Tile* currentTile = currentLevel->getTile(currentTileCoord);
+			
+			if (lastTile->getMovableObject()) {
+				lastTile->setMovableObject(nullptr);
+				currentTile->setMovableObject(movable);
+			}
 
-			pos.x -= xOffset;
-			pos.z -= zOffset;
-
-			movable->SetPosition(movableObjectTilePos);
+			movable->SetTilePosition(currentTileCoord);
+			pos = ManageCollisions(this, currentLevel, character, pos, CollisionTypes::CHARACTER);
+			moveObjectModeAxis = Axis::BOTH;
 		}
 	}
 

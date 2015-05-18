@@ -113,10 +113,16 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 					gl->SelectObject(movableObject);
 				else
 				{
-					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
+					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y)) {
 						gl->SelectObject(movableObject);
-					else
+						gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
+					}
+					else 
+					{
 						gl->SelectObject(nullptr);
+						gl->SetSelectedObjectType(-1);
+					}
+						
 				}
 			}
 		}
@@ -127,14 +133,18 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 		nextPos = NextPositionFromDoorCollision(result, nextPos, characterRadius, iteratorTileCoord, nextTileCoord, door);
 
 		Lever* lever = iteratorTile->getLever();
-		if (lever != nullptr)
-		{
+		if (lever != nullptr) {
 			nextPos = NextPositionFromCollision(result, nextPos, 0.15f, iteratorTileCoord);
 
-			if (result)
-				gl->SelectObject(lever);
-			else
-				gl->SelectObject(nullptr);
+			if (gl->GetSelectedObjectType() != gl->SelectionTypes::MOVABLEOBJECT) {
+				if (result) {
+					gl->SelectObject(lever);
+					gl->SetSelectedObjectType(gl->SelectionTypes::LEVER);
+				} else {
+					gl->SelectObject(nullptr);
+					gl->SetSelectedObjectType(-1);
+				}
+			}
 		}
 
 		PressurePlate* pressurePlate = iteratorTile->getPressurePlate();
