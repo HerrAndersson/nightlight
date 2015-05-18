@@ -5,6 +5,7 @@
 #include <vector>
 #include <deque>
 #include <list>
+#include <algorithm>
 
 #include "Level.h"
 #include "GameObject.h"
@@ -211,26 +212,66 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 	return path;
 }
 
+static bool InSight(Level* level, GameObject* object, GameObject* target)
+{
+	XMFLOAT3 objectPos = object->GetPosition();
+	XMFLOAT3 targetPos = target->GetPosition();
 
-//Check for corners 
-//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+	//Bresenham's line algorithm
+	float x1 = objectPos.x;
+	float y1 = objectPos.z;
+	float x2 = targetPos.x;
+	float y2 = targetPos.z;
 
-//XMINT2 currentCoord = current->GetTileCoord();
+	const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+	if (steep)
+	{
+		swap(x1, y1);
+		swap(x2, y2);
+	}
 
-//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+	if (x1 > x2)
+	{
+		swap(x1, x2);
+		swap(y1, y2);
+	}
 
-////Tile* nextY = nullptr;
-////Tile* nextX = nullptr;
-////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
-////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
-////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+	const float dx = x2 - x1;
+	const float dy = fabs(y2 - y1);
 
-//if (nextY != nullptr)
-//	if (!nextY->IsWalkable() || nextY->InClosed())
-//		continue;
+	float error = dx / 2.0f;
+	const int ystep = (y1 < y2) ? 1 : -1;
+	int y = (int)y1;
 
-//if (nextX != nullptr)
-//	if (!nextX->IsWalkable() || nextX->InClosed())
-//		continue;
+	const int maxX = (int)x2;
+
+	for (int x = (int)x1; x < maxX; x++)
+	{
+		Tile* tile = nullptr;
+		if (steep)
+		{
+			tile = level->getTile(-y, -x);
+
+			if (tile)
+				if (!tile->IsWalkable())
+					return false;
+		}
+		else
+		{
+			tile = level->getTile(-x, -y);
+
+			if (tile)
+				if (!tile->IsWalkable())
+					return false;
+		}
+
+		error -= dy;
+		if (error < 0)
+		{
+			y += ystep;
+			error += dx;
+		}
+	}
+
+	return true;
+}
