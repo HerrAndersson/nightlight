@@ -10,6 +10,7 @@
 #include "Level.h"
 #include "GameObject.h"
 #include "Tile.h"
+#include "lightObject.h"
 
 using namespace std;
 using DirectX::XMFLOAT2;
@@ -210,6 +211,31 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 	}
 
 	return path;
+}
+
+static bool InLight(GameObject* object, LightObject* spotlight)
+{
+	XMFLOAT3 pos = object->GetPosition();
+	XMFLOAT3 lightEnemyVec = XMFLOAT3((pos.x - spotlight->getPosition().x), (pos.y - spotlight->getPosition().y), (pos.z - spotlight->getPosition().z));
+	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
+
+	if ((spotlight->getRange() / 2) > vecLenght)
+	{
+		XMFLOAT3 spotDirection = spotlight->getDirection();
+
+		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
+		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
+		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
+		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
+
+		float angleInRads = (180 / XM_PI) * angle;
+
+		if (spotlight->getCone() < angleInRads)
+			return false;
+
+		return true;
+	}
+	return false;
 }
 
 static bool InSight(Level* level, GameObject* object, GameObject* target)

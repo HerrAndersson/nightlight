@@ -11,7 +11,7 @@ private:
 
 	int enemyType;
 
-	bool isFollowingPlayer;
+	bool followingPlayer;
 	vector<XMINT2> path;
 	Coord next, end;
 
@@ -32,10 +32,9 @@ public:
 
 	void SetPath(vector<XMINT2> path);
 
+	void SetFollowingPlayer(bool val);
 	bool IsFollowingPlayer();
 	bool HasValidPath(Level* level);
-
-	bool InLight(LightObject* spotlight);
 
 };
 

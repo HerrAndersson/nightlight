@@ -10,7 +10,7 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 	else if (enemyType == "large")
 		this->enemyType = EnemyType::LARGE;
 
-	isFollowingPlayer = true;
+	followingPlayer = true;
 
 	weights[0] = 1;
 	weights[1] = 0;
@@ -25,7 +25,7 @@ Enemy::~Enemy()
 
 void Enemy::Update(LightObject* spotlight)
 {
-	if (path.size() > 0 && !InLight(spotlight))
+	if (path.size() > 0 && !InLight(this, spotlight))
 	{
 		Coord aiCoord = GetTileCoord();
 
@@ -77,7 +77,12 @@ void Enemy::UpdateWeights(XMFLOAT4 &outputweights)
 
 bool Enemy::IsFollowingPlayer()
 {
-	return isFollowingPlayer;
+	return followingPlayer;
+}
+
+void Enemy::SetFollowingPlayer(bool val)
+{
+	followingPlayer = val;
 }
 
 bool Enemy::HasValidPath(Level* level)
@@ -120,29 +125,4 @@ void Enemy::SetPath(vector<XMINT2> path)
 		end = Coord(path.at(0).x, path.at(0).y);
 		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
 	}
-}
-
-bool Enemy::InLight(LightObject* spotlight)
-{
-	XMFLOAT3 pos = GetPosition();
-	XMFLOAT3 lightEnemyVec = XMFLOAT3((pos.x - spotlight->getPosition().x), (pos.y - spotlight->getPosition().y), (pos.z - spotlight->getPosition().z));
-	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
-	if ((spotlight->getRange() / 2) > vecLenght)
-	{
-		XMFLOAT3 spotDirection = spotlight->getDirection();
-
-		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
-		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
-		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
-		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
-
-		float angleInRads = (180 / XM_PI) * angle;
-
-		if (spotlight->getCone() < angleInRads)
-			return false;
-
-		return true;
-	}
-	return false;
 }

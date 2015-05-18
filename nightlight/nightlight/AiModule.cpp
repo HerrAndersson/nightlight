@@ -20,7 +20,9 @@ AiModule::~AiModule()
 
 void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 {
-	cout << boolalpha << InSight(level, ai, player) << endl;
+	//cout << boolalpha << InSight(level, ai, player) << endl;
+	bool inSight = InSight(level, ai, player);
+	ai->SetFollowingPlayer(inSight);
 
 	if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level))
 	{
