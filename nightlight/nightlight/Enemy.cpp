@@ -1,24 +1,17 @@
 #include "Enemy.h"
+#include "Collision.h"
 
 Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType)
 	 : GameObject(position, rotation,  renderObject, coordX, coordY)
 {
 	if (enemyType == "small")
-	{
 		this->enemyType = EnemyType::SMALL;
-	}
 	else if (enemyType == "average")
-	{
 		this->enemyType = EnemyType::MEDIUM;
-	}
 	else if (enemyType == "large")
-	{
 		this->enemyType = EnemyType::LARGE;
-	}
-	
 
 	followingPlayer = true;
-	hasValidPath = false;
 
 	weights[0] = 1;
 	weights[1] = 0;
@@ -31,39 +24,59 @@ Enemy::~Enemy()
 	path.clear();
 }
 
-void Enemy::Update()
+void Enemy::Update(Level* level)
 {
-	if (!followingPlayer)
+	if (path.size() > 0)
 	{
-		if (HasValidPath())
+		Coord aiCoord = GetTileCoord();
+
+		if (aiCoord == next)
 		{
-			Coord aiCoord = GetTileCoord();
 			XMINT2 p = path.at(path.size() - 1);
-			path.pop_back();
+			this->path.pop_back();
 
-			Coord pathCoord = Coord(p.x, p.y);
+			next = Coord(p.x, p.y);
+		}
 
-			SetTilePosition(pathCoord);
+		Coord dir = aiCoord - next;
 
-			if (aiCoord == pathCoord)
+		XMFLOAT3 nextPos = GetPosition();
+		nextPos.x += dir.x / SPEED;
+		nextPos.z += dir.y / SPEED;
+
+
+		XMFLOAT3 currentPos = GetPosition();
+		float radius = 0.5f;
+		bool result = false;
+
+		Tile* currentTile = level->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
+		if (currentTile != nullptr)
+		{
+			Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
+			Tile* nextTile = level->getTile(nextTileCoord.x, nextTileCoord.y);
+			if (nextTile != nullptr)
 			{
-				hasValidPath = false;
+				for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
+				{
+					for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
+					{
+						Tile* iteratorTile = level->getTile(x, y);
+						if (iteratorTile && !iteratorTile->IsWalkableAI())
+						{
+							Coord iteratorTileCoord = Coord(x, y);
+							nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
+						}
+					}
+				}
 			}
 		}
-		else
-		{
-			//Get new path? Since this is handled each frame in AiModule, maybe HasValidPath will never be false?
-		}
-	}
-	else
-	{
-		//Follow player here, using potential field
+
+		SetPosition(nextPos);
 	}
 }
 
 void Enemy::UpdateWeights(XMFLOAT4 &outputweights)
 {
-	//system("CLS");
 	float weightchangechange[4] = { (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100) };
 	float totalweightchangechange = weightchangechange[0] + weightchangechange[1] + weightchangechange[2] + weightchangechange[3];
 
@@ -96,13 +109,49 @@ bool Enemy::IsFollowingPlayer()
 	return followingPlayer;
 }
 
-bool Enemy::HasValidPath()
+void Enemy::SetFollowingPlayer(bool val)
 {
-	//Check the path for validity
-	return hasValidPath;
+	followingPlayer = val;
+}
+
+bool Enemy::HasValidPath(Level* level)
+{
+	return CheckPathValidity(level);
+}
+
+bool Enemy::CheckPathValidity(Level* level)
+{
+	bool valid = true;
+
+	//Traverse the path and check all tiles for validity
+	for (int i = path.size() - 1; i > 0; i--)
+	{
+		XMINT2 p = path.at(i);
+
+		Tile* tile = level->getTile(p.x, p.y);
+		if (!(tile && tile->IsWalkableAI()))
+		{
+			valid = false;
+			break;
+		}
+	}
+
+	if (GetTileCoord() == end)
+		valid = false;
+
+	if (path.size() <= 0)
+		valid = false;
+
+	return valid;
 }
 
 void Enemy::SetPath(vector<XMINT2> path)
 {
 	this->path = path;
+
+	if (path.size() > 0)
+	{
+		end = Coord(path.at(0).x, path.at(0).y);
+		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
+	}
 }

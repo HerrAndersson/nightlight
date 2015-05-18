@@ -27,7 +27,7 @@ private:
 	enum Axis { X, Y };
 	enum Direction {NONE, RIGHT, UP, LEFT, DOWN};
 	//enum SelectionTypes {NONE, BUTTON, LEVER, MOVABLEOBJECT};
-	enum CollisionTypes { CHARACTER, ENEMY, MOVABLEOBJECT };
+
 
 	InputManager*  Input;
 	AiModule*      AI;
@@ -47,34 +47,24 @@ private:
 	GameObject* selectedObject = nullptr;
 	Button* selectedButton = nullptr;
 
-	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies);
+	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>& enemies);
 
-	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
-	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies);
-	bool UpdateAI(vector<Enemy>* enemies, Character* player);
-
-	bool inLight(LightObject* spotlight, XMFLOAT3& enemy);
-	
-	XMFLOAT3 ManageCollisions(Level* currentLevel, GameObject* gameObject, XMFLOAT3 pos, CollisionTypes type);
-	XMFLOAT3 ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos);
-
-	void SelectObject(GameObject* newSelectedObject);
-	void SelectButton(Button* newSelectedButton);
-
-	XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord);
-	XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door);
-
-	float Clamp(float x, float a, float b) { return x < a ? a : (x > b ? b : x); };
+	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
+	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies);
+	bool UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight);
 
 public:
 
 	GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI);
 	~GameLogic();
 
-	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies);
-	
-	//UpdateObjects(objects)
-	//UpdateAI(aiObjects)
-	//Etc
+	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
+
+	void SelectObject(GameObject* newSelectedObject);
+	void SelectButton(Button* newSelectedButton);
+
+	GameObject* GetSelectedObject();
+	bool GetMoveObjectMode();
+
 };
 

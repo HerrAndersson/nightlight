@@ -5,10 +5,12 @@
 #include <vector>
 #include <deque>
 #include <list>
+#include <algorithm>
 
 #include "Level.h"
 #include "GameObject.h"
 #include "Tile.h"
+#include "lightObject.h"
 
 using namespace std;
 using DirectX::XMFLOAT2;
@@ -119,6 +121,30 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 
 							if (!inClosed && child->IsWalkableAI())
 							{
+								//Check for corners 
+								//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+
+								//XMINT2 currentCoord = current->GetTileCoord();
+
+								//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+								//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+								////Tile* nextY = nullptr;
+								////Tile* nextX = nullptr;
+								////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
+								////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
+								////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
+								////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+
+								//if (nextY != nullptr)
+								//	if (!nextY->IsWalkable() || nextY->InClosed())
+								//		continue;
+
+								//if (nextX != nullptr)
+								//	if (!nextX->IsWalkable() || nextX->InClosed())
+								//		continue;
+
+
 								int tentativeG = current->GetG() + (int)TILE_SIZE;
 
 								//Already in open but a better solution found, update it
@@ -187,26 +213,88 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 	return path;
 }
 
+static bool InSight(Level* level, XMFLOAT3 objectPos, XMFLOAT3 targetPos)
+{
+	//Bresenham's line algorithm
+	float x1 = objectPos.x;
+	float y1 = objectPos.z;
+	float x2 = targetPos.x;
+	float y2 = targetPos.z;
 
-//Check for corners 
-//ALMOST WORKS, BUT IT KILLS THE LOOP SOMETIMES
+	const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+	if (steep)
+	{
+		swap(x1, y1);
+		swap(x2, y2);
+	}
 
-//XMINT2 currentCoord = current->GetTileCoord();
+	if (x1 > x2)
+	{
+		swap(x1, x2);
+		swap(y1, y2);
+	}
 
-//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+	const float dx = x2 - x1;
+	const float dy = fabs(y2 - y1);
 
-////Tile* nextY = nullptr;
-////Tile* nextX = nullptr;
-////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
-////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
-////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
+	float error = dx / 2.0f;
+	const int ystep = (y1 < y2) ? 1 : -1;
+	int y = (int)y1;
 
-//if (nextY != nullptr)
-//	if (!nextY->IsWalkable() || nextY->InClosed())
-//		continue;
+	const int maxX = (int)x2;
 
-//if (nextX != nullptr)
-//	if (!nextX->IsWalkable() || nextX->InClosed())
-//		continue;
+	for (int x = (int)x1; x < maxX; x++)
+	{
+		Tile* tile = nullptr;
+
+		if (steep)
+			tile = level->getTile(-y, -x);
+		else
+			tile = level->getTile(-x, -y);
+
+		if (tile)
+		{
+			if (!tile->SeeThrough())
+				return false;
+		}
+		else
+			return false;
+
+		error -= dy;
+		if (error < 0)
+		{
+			y += ystep;
+			error += dx;
+		}
+	}
+
+	return true;
+}
+
+static bool InLight(Level* level, GameObject* object, LightObject* spotlight)
+{
+	if (InSight(level, object->GetPosition(), spotlight->getPosition()))
+	{
+		XMFLOAT3 pos = object->GetPosition();
+		XMFLOAT3 lightEnemyVec = XMFLOAT3((pos.x - spotlight->getPosition().x), (pos.y - spotlight->getPosition().y), (pos.z - spotlight->getPosition().z));
+		float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
+
+		if ((spotlight->getRange() / 2) > vecLenght)
+		{
+			XMFLOAT3 spotDirection = spotlight->getDirection();
+
+			float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
+			float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
+			float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
+			float angle = acos(dot / sqrt(lenSq1 * lenSq2));
+
+			float angleInRads = (180 / XM_PI) * angle;
+
+			if (spotlight->getCone() < angleInRads)
+				return false;
+
+			return true;
+		}
+	}
+	return false;
+}

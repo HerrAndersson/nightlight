@@ -8,8 +8,8 @@ class AiModule
 {
 private:
 
-	const int R_MAX = 10;
-	const int R_MIN = 4;
+	const int R_MAX = 12;
+	const int R_MIN = 2;
 
 	Level* level;
 
@@ -21,14 +21,14 @@ private:
 	void GenerateDynamicPF(vector<GameObject*> dynamicObjects);
 	void GenerateTotalPF();
 
-	XMINT2 GetRandomPosition(Enemy* ai);
+	XMINT2 GenerateRandomPosition(Enemy* ai);
 
 public:
 
 	AiModule(Level* level);
 	~AiModule();
 
-	void HandleAI(Enemy* enemy, Character* player);
+	void HandleAI(Enemy* enemy, Character* player, LightObject* spotlight);
 
 	void ChangeLevel(Level* level);
 	void Update(vector<GameObject*> dynamicObjects);

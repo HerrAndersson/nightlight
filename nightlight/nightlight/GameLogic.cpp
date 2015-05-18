@@ -1,4 +1,5 @@
 #include "GameLogic.h"
+#include "Collision.h"
 
 GameLogic::GameLogic(HWND hwnd, int screenWidth, int screenHeight, AiModule* AI)
 {
@@ -11,12 +12,12 @@ GameLogic::~GameLogic()
 	delete Input;
 }
 
-bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>* enemies)
+bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies)
 {
 	if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
 		return false;
 
-	if (!UpdateAI(enemies, character))
+	if (!UpdateAI(enemies, character, spotLight))
 		return false;
 
 	if (!ManageLevelStates(levelStates, character, enemies))
@@ -27,17 +28,17 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 	return true;
 }
 
-bool GameLogic::UpdateAI(vector<Enemy>* enemies, Character* player)
+bool GameLogic::UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight)
 {
-	for each (Enemy e in *enemies)
+	for (auto &e : enemies)
 	{
-		AI->HandleAI(&e, player);
-		e.Update();
+		AI->HandleAI(&e, player, spotlight);
 	}
+
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies)
+bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	XMFLOAT2 oldP = Input->GetMousePos();
@@ -80,7 +81,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			movableObjectOffset = Coord(selectedObjectCurrentCoord.x - characterCurrentCoord.x, selectedObjectCurrentCoord.y - characterCurrentCoord.y);
 		}
 			
-		pos = ManageCollisions(currentLevel, character, pos, CollisionTypes::CHARACTER);
+		pos = ManageCollisions(this, currentLevel, character, pos, CollisionTypes::CHARACTER);
 		
 		if (moveObjectMode)
 		{
@@ -93,8 +94,9 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			float zOffset = abs(movablePos.z - movableObjectTilePos.z);
 			float xOffset = abs(movablePos.x - movableObjectTilePos.x);
 
-			if (zOffset >= 1 || xOffset >= 1) {
-				currentLevel->getTile(-movableObjectTilePos.x, -movableObjectTilePos.z)->setMovableObject(nullptr);
+			if (zOffset >= 1 || xOffset >= 1) 
+			{
+				currentLevel->getTile((int)-movableObjectTilePos.x, (int)-movableObjectTilePos.z)->setMovableObject(nullptr);
 				currentLevel->getTile(selectedObject->GetTileCoord())->setMovableObject((MovableObject*)selectedObject);
 				movableObjectTilePos = movablePos;
 			}
@@ -193,7 +195,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	return true;
 }
 
-bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>* enemies)
+bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies)
 {
 	XMFLOAT3 pForward;
 	XMStoreFloat3(&pForward, player->GetForwardVector());
@@ -212,220 +214,35 @@ bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, Cam
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 
-	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
-	{
-		for each (Enemy e in *enemies)
-		{
-			if (inLight(spotlight, e.GetPosition()) == true)
-			{
-				spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
-				spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
-			}
-			else
-			{
-				spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
-				spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
-			}
-		}
-	}
+	//if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
+	//{
+	//	for (auto &e : enemies)
+	//	{
+	//		if (e.InLight(spotlight) == true)
+	//		{
+	//			spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	//			spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
+	//		}
+	//		else
+	//		{
+	//			spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+	//			spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+	//		}
+	//	}
+	//}
 
 	spotlight->generateViewMatrix();
 	return true;
 
 }
 
-XMFLOAT3 GameLogic::ManageCollisions(Level* currentLevel, GameObject* gameObject, XMFLOAT3 nextPos, CollisionTypes type)
+GameObject* GameLogic::GetSelectedObject()
 {
-	XMFLOAT3 currentPos = gameObject->GetPosition();
-	float characterRadius = 1.0f;
-
-	if (type == CollisionTypes::CHARACTER)
-		characterRadius = ((Character*)gameObject)->getRadius();
-
-	Tile* currentTile = currentLevel->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
-	if (currentTile != nullptr)
-	{
-		Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
-		Tile* nextTile = currentLevel->getTile(nextTileCoord.x, nextTileCoord.y);
-		if (nextTile != nullptr)
-		{
-			for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
-			{
-				for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
-				{
-					Tile* iteratorTile = currentLevel->getTile(x, y);
-					Coord iteratorTileCoord = Coord(x, y);
-					nextPos = ManagePlayerCollision(iteratorTile, iteratorTileCoord, nextTileCoord, gameObject->GetTileCoord(), characterRadius, nextPos);
-				}
-			}
-		}
-	}
-	return nextPos;
+	return selectedObject;
 }
-
-XMFLOAT3 GameLogic::NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord)
+bool GameLogic::GetMoveObjectMode()
 {
-	//Calculate the tiles edge coordinates.
-	float xMin = -(tileCoord.x + TILE_SIZE);
-	float xMax = (float)-tileCoord.x;
-	float yMin = -(tileCoord.y + TILE_SIZE);
-	float yMax = (float)-tileCoord.y;
-
-	//Find the closest point to the character on the perimiter of the tile.
-	float closestX = Clamp(nextPos.x, xMin, xMax);
-	float closestY = Clamp(nextPos.z, yMin, yMax);
-
-	float distanceX = nextPos.x - closestX;
-	float distanceY = nextPos.z - closestY;
-	float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
-
-	if (distanceSquared < (radius * radius))
-	{
-		float length = sqrt(distanceSquared);
-
-		nextPos.x = (distanceX / length) * radius + closestX;
-		nextPos.z = (distanceY / length) * radius + closestY;
-
-		result = true;
-	}
-	else
-	{
-		result = false;
-	}
-	return nextPos;
-}
-
-XMFLOAT3 GameLogic::NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord iteratorTileCoord, Coord nextTileCoord, Door* door)
-{
-	if (door != nullptr && !door->getIsOpen()) {
-		XMFLOAT3 doorRot = door->GetRotationRad();
-		int doorRotX = (int)round(cos(doorRot.y));
-		int doorRotY = (int)round(sin(doorRot.y));
-
-		if (iteratorTileCoord.y == nextTileCoord.y){
-			if (doorRotY < 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y - 1));
-			}
-			else if (doorRotY > 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y + 1));
-			}
-		}
-		else if (iteratorTileCoord.y < nextTileCoord.y){
-			if (doorRotY > 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
-			}
-		}
-		else if (iteratorTileCoord.y > nextTileCoord.y){
-			if (doorRotY < 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
-			}
-		}
-
-
-		if (iteratorTileCoord.x == nextTileCoord.x){
-			if (doorRotX > 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x - 1, iteratorTileCoord.y));
-			}
-			else if (doorRotX < 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x + 1, iteratorTileCoord.y));
-			}
-		}
-		else if (iteratorTileCoord.x < nextTileCoord.x){
-			if (doorRotX < 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
-			}
-		}
-		else if (iteratorTileCoord.x > nextTileCoord.x){
-			if (doorRotX > 0){
-				nextPos = NextPositionFromCollision(result, nextPos, radius, Coord(iteratorTileCoord.x, iteratorTileCoord.y));
-			}
-		}
-	}
-
-	return nextPos;
-}
-
-
-bool GameLogic::inLight(LightObject* spotlight, XMFLOAT3& enemy)
-{
-	XMFLOAT3 lightEnemyVec = XMFLOAT3((enemy.x - spotlight->getPosition().x), (enemy.y - spotlight->getPosition().y), (enemy.z - spotlight->getPosition().z));
-	float vecLenght = sqrt((lightEnemyVec.x * lightEnemyVec.x) + (lightEnemyVec.y * lightEnemyVec.y) + (lightEnemyVec.z * lightEnemyVec.z));
-
-	if ((spotlight->getRange() / 2) > vecLenght)
-	{
-		XMFLOAT3 spotDirection = spotlight->getDirection();
-
-		float dot = spotDirection.x*lightEnemyVec.x + spotDirection.y*lightEnemyVec.y + spotDirection.z*lightEnemyVec.z;
-		float lenSq1 = spotDirection.x*spotDirection.x + spotDirection.y*spotDirection.y + spotDirection.z*spotDirection.z;
-		float lenSq2 = lightEnemyVec.x*lightEnemyVec.x + lightEnemyVec.y*lightEnemyVec.y + lightEnemyVec.z*lightEnemyVec.z;
-		float angle = acos(dot / sqrt(lenSq1 * lenSq2));
-
-		float angleInRads = (180 / XM_PI) * angle;
-
-		if (spotlight->getCone() < angleInRads)
-			return false;
-
-		return true;
-	}
-	return false;
-}
-
-XMFLOAT3 GameLogic::ManagePlayerCollision(Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos)
-{
-	bool result = false;
-
-	if (!iteratorTile->IsWalkable(moveObjectMode, selectedObject))
-	{
-		nextPos = NextPositionFromCollision(result, nextPos, characterRadius, iteratorTileCoord);
-		if (iteratorTile != nullptr)
-		{
-			MovableObject* movableObject = iteratorTile->getMovableObject();
-			if (movableObject != nullptr)
-			{
-				if (moveObjectMode)
-					SelectObject(movableObject);
-				else
-				{
-					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
-						SelectObject(movableObject);
-					else
-						SelectObject(nullptr);
-				}
-			}
-		}
-	}
-	else
-	{
-		Door* door = iteratorTile->getDoor();
-		nextPos = NextPositionFromDoorCollision(result, nextPos, characterRadius, iteratorTileCoord, nextTileCoord, door);
-
-		Lever* lever = iteratorTile->getLever();
-		if (lever != nullptr)
-		{
-			nextPos = NextPositionFromCollision(result, nextPos, 0.15f, iteratorTileCoord);
-
-			if (result)
-				SelectObject(lever);
-			else
-				SelectObject(nullptr);
-		}
-
-		PressurePlate* pressurePlate = iteratorTile->getPressurePlate();
-		if (pressurePlate != nullptr)
-		{
-			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
-			{
-				if (!pressurePlate->getIsActivated())
-					pressurePlate->ActivatePressurePlate();
-			}
-			else
-			{
-				if (pressurePlate->getIsActivated())
-					pressurePlate->DeactivatePressurePlate();
-			}
-		}
-	}
-	return nextPos;
+	return moveObjectMode;
 }
 
 void GameLogic::SelectObject(GameObject* newSelectedObject)
@@ -466,7 +283,7 @@ void GameLogic::SelectButton(Button* newSelectedButton)
 	}
 }
 
-bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>* enemies)
+bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>& enemies)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	Level* menuLevel = levelStates.menuLevel;
@@ -547,10 +364,10 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 
 			if (loadedLevel){
 				delete loadedLevel;
-				enemies->clear();
+				enemies.clear();
 			}
 
-			loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, *enemies, *character);
+			loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character);
 			currentLevel = loadedLevel;
 			character->SetTilePosition(currentLevel->getStartDoorCoord());
 		}
