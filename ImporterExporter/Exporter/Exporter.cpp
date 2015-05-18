@@ -354,14 +354,12 @@ bool Exporter::IdentifyAndExtractLevelInformation()
 
 				if (nodeVec.size() > 3)
 				{
-					if (nodeVec.at(3) == "movable")
+
+					if (nodeVec.at(3) == "movable" || nodeVec.at(3) == "static" || nodeVec.at(3) == "small" || nodeVec.at(3) == "average" || nodeVec.at(3) == "large")
 					{
-						nodeVec.at(2) = "movable";
+						nodeVec.at(2) = nodeVec.at(3);
 					}
-					else if (nodeVec.at(3) == "static")
-					{
-						nodeVec.at(2) = "static";
-					}
+
 				}
 
 				for (int i = 0; i < levelGameObjectTypes.size() && !relevantObjectFound; i++)
