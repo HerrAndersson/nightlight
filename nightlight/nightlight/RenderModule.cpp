@@ -28,7 +28,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 	//initializing shader files
 	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 	result = InitializeSkeletalShader(L"skeletalVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
-	result = InitializeBlendShader(L"blendVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
+	result = InitializeBlendShader(L"Assets/Shaders/blendVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 }
 
 RenderModule::~RenderModule()
@@ -604,7 +604,7 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 
 }
 
-bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected)
+bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 colorModifier)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -640,7 +640,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	MatrixBufferPerObject* dataPtr = (MatrixBufferPerObject*)mappedResource.pData;
 
 	dataPtr->world = worldMatrixC;
-	dataPtr->isSelected = isSelected;
+	dataPtr->colorModifier = colorModifier;
 
 	deviceContext->Unmap(matrixBufferPerObject, 0);
 
@@ -648,7 +648,7 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 	return true;
 }
 
-bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4& weights)
+bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 colorModifier, XMFLOAT4& weights)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -689,7 +689,7 @@ bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* re
 	dataPtr->weight[1] = weights.y;
 	dataPtr->weight[2] = weights.z;
 	dataPtr->weight[3] = weights.w;
-	dataPtr->isSelected = isSelected;
+	dataPtr->colorModifier = colorModifier;
 
 	deviceContext->Unmap(matrixBufferPerBlendObject, 0);
 
@@ -961,7 +961,7 @@ bool RenderModule::Render(GameObject* gameObject)
 		else
 		{
 			UseDefaultShader();
-			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier());
 		}
 
 	//Set shader parameters, preparing them for render.
@@ -989,7 +989,7 @@ bool RenderModule::Render(GameObject* gameObject, float frame)
 		else
 		{
 			UseSkeletalShader();
-			result = SetDataPerSkeletalObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), frame);
+			result = SetDataPerSkeletalObject(gameObject->GetWorldMatrix(), renderObject, false, frame);
 		}
 	else
 		if (renderObject->model->hasBlendShapes)
@@ -999,7 +999,7 @@ bool RenderModule::Render(GameObject* gameObject, float frame)
 		else
 		{
 			UseDefaultShader();
-			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier());
 		}
 
 	//Set shader parameters, preparing them for render.
@@ -1039,12 +1039,12 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 		if (renderObject->model->hasBlendShapes)
 		{
 			UseBlendShader();
-			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), weights);
+			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier(), weights);
 		}
 		else
 		{
 			UseDefaultShader();
-			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier());
 		}
 	}
 

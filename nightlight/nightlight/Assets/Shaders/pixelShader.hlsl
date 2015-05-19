@@ -28,7 +28,7 @@ struct pixelInputType
 
 	float3 worldPos : TEXCOORD1;
 	float3 viewDir : POSITION;
-	int    isSelected : SELECTED;
+	float3 colorModifier : COLORMODIFIER;
 };
 
 
@@ -40,12 +40,8 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	float4 specular = float4(0.0f, 1.0f, 0.0f, 1.0f);
 	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
 
-	float4 diffuseAdd = float4(0.0f, 0.0f, 0.0f, 1.0f);
-	
 	//sample the texture for diffuse
 	float4 diffuse = AssetTexture.Sample(AssetSamplerState, input.tex);
-	if (input.isSelected == 1)
-		diffuseAdd = float4(0.21f, 0.21f, 0.17f, 1.0f);
 
 	float3 finalAmbient = diffuse * lightAmbientSpot;
 	
@@ -99,5 +95,5 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	}
 	
 	//Return Final Color
-	return float4(finalColor += diffuseAdd, diffuse.a);
+	return float4(finalColor += input.colorModifier, diffuse.a);
 }

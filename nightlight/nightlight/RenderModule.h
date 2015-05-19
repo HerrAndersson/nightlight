@@ -45,7 +45,7 @@ private:
 	struct MatrixBufferPerObject
 	{
 		XMMATRIX world;
-		int isSelected;
+		XMFLOAT3 colorModifier;
 	};
 
 	struct MatrixBufferPerWeightedObject
@@ -58,7 +58,7 @@ private:
 	{
 		XMMATRIX world;
 		float weight[4];
-		int isSelected;
+		XMFLOAT3 colorModifier;
 	};
 
 
@@ -105,8 +105,8 @@ public:
 	bool InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename);
 
-	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected);
-	bool SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, XMFLOAT4& weights);
+	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 colorModifier);
+	bool SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 colorModifier, XMFLOAT4& weights);
 	bool SetDataPerSkeletalObject(XMMATRIX& worldMatrix, RenderObject* renderObject, bool isSelected, float frame);
 
 	void UseDefaultShader();

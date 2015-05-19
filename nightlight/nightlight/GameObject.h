@@ -48,15 +48,22 @@ private:
 	XMFLOAT3		rotation = XMFLOAT3(0, 0, 0);
 	XMVECTOR		forwardVector;
 	RenderObject*	renderObject;
-	bool			isSelected	= false;
+	bool			isSelected = false;
 
+protected:
+	XMFLOAT3		colorModifier = XMFLOAT3(0, 0, 0);
 public:
+
+	const XMFLOAT3 selectionColor = XMFLOAT3(0.21f, 0.21f, 0.17f);
 
 	GameObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	virtual ~GameObject();
 
 	XMMATRIX GetWorldMatrix();
 	RenderObject* GetRenderObject();
+
+	XMFLOAT3 GetColorModifier() const { return colorModifier; }
+	void SetColorModifier(XMFLOAT3 val) { colorModifier = val; }
 
 	bool IsSelected();
 	void SetSelected(bool selected);

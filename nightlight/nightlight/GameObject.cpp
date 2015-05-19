@@ -83,6 +83,10 @@ bool GameObject::IsSelected()
 
 void GameObject::SetSelected(bool selected)
 {
+	if (selected)
+		colorModifier = selectionColor;
+	else
+		colorModifier = XMFLOAT3(0, 0, 0);
 	isSelected = selected;
 }
 

@@ -14,10 +14,7 @@ PressurePlate::~PressurePlate()
 
 void PressurePlate::ActivatePressurePlate() {
 	isActivated = true;
-
-	XMFLOAT3 rot = this->GetRotationDeg();
-	rot.y += 45.0f;
-	this->SetRotationDeg(rot);
+	colorModifier = XMFLOAT3(0.1, 0.1, 0.2);
 
 	if (activatesLever != nullptr) {
 		activatesLever->setIsPowered(true);
@@ -29,11 +26,8 @@ void PressurePlate::ActivatePressurePlate() {
 
 void PressurePlate::DeactivatePressurePlate() {
 	isActivated = false;
-
-	XMFLOAT3 rot = this->GetRotationDeg();
-	rot.y -= 45.0f;
-	this->SetRotationDeg(rot);
-
+	colorModifier = XMFLOAT3(0, 0, 0);
+	
 	if (activatesLever != nullptr) {
 		activatesLever->DeactivateLever();
 		activatesLever->setIsPowered(false);

@@ -1,7 +1,7 @@
 cbuffer matrixBufferPerObject : register(cb0)
 {
 	matrix worldMatrix;
-	int isSelected;
+	float3 colorModifier;
 };
 
 cbuffer matrixBufferPerFrame : register(cb1)
@@ -26,7 +26,7 @@ struct vertexOutput
 
 	float3 worldPos		: TEXCOORD1;
 	float3 viewDir		: POSITION;
-	int    isSelected   : SELECTED;
+	float3 colorModifier: COLORMODIFIER;
 };
 
 vertexOutput vertexShader(vertexInputType input)
@@ -48,7 +48,7 @@ vertexOutput vertexShader(vertexInputType input)
 	output.normal = mul(input.normal, worldMatrix);
 	output.normal = normalize(output.normal);
 
-	output.isSelected = isSelected;
+	output.colorModifier = colorModifier;
 
 	return output;
 }
