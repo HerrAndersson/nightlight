@@ -68,12 +68,12 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 
 		float xRem = -(nextPos.x - (int)nextPos.x);
 		float zRem = -(nextPos.z - (int)nextPos.z);
-		cout << xRem << " " << zRem << endl;
+		//cout << xRem << " " << zRem << endl;
 		// && xRem >= 0.45f && zRem >= 0.45f
 
 		if (aiCoord == next)
 		{
-			cout << "next!" << endl;
+			//cout << "next!" << endl;
 			XMINT2 p = path.at(path.size() - 1);
 			this->path.pop_back();
 
