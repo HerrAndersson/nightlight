@@ -50,8 +50,11 @@ protected:
 	RenderObject*	renderObject;
 	bool			isSelected = false;
 	XMFLOAT3		colorModifier = XMFLOAT3(0, 0, 0);
+	XMFLOAT4 Weights = { 1, 0, 0, 0 };
 
 public:
+	XMFLOAT4 GetWeights(){ return Weights; }
+
 	const XMFLOAT3 selectionColor = XMFLOAT3(0.21f, 0.21f, 0.17f);
 
 	GameObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);

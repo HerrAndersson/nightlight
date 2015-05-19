@@ -33,6 +33,6 @@ public:
 	int GetMoved() { return moved; }
 	void SetMoved(int val) { moved = val; }
 	void SetSpeed(float val) { speed = val; }
-	void UpdateCharacterAnimation(int moving);
+	void UpdateCharacterAnimation();
 };
 

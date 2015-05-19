@@ -12,6 +12,7 @@ public:
 	std::string getActivationName() const { return activationName; }
 	std::string getActivatesName() const { return activatesName; }
 
+
 	Lever* getActivatesLever() const { return activatesLever; }
 	void setActivatesLever(Lever* val) { activatesLever = val; }
 	Door* getActivatesDoor() const { return activatesDoor; }
@@ -29,5 +30,6 @@ private:
 	std::string activatesName = "";
 	Lever* activatesLever = nullptr;
 	Door* activatesDoor = nullptr;
+
 };
 

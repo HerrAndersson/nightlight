@@ -96,7 +96,7 @@ bool Game::Render()
 	
 	for (int i = 0; i < (signed)toRender->size(); i++) 
 	{
-		Renderer->Render(toRender->at(i));
+		Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
@@ -109,7 +109,7 @@ bool Game::Render()
 		}
 	}
 
-	character->UpdateCharacterAnimation(character->GetMoved());
+	character->UpdateCharacterAnimation();
 
 	Renderer->Render(character, character->GetBlendWeights());
 

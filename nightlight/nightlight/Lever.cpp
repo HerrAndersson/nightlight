@@ -18,7 +18,7 @@ void Lever::ActivateLever() {
 		isActivated = true;
 
 		XMFLOAT3 rot = this->GetRotationDeg();
-		rot.y += 90.0f;
+		Weights = { 0, 1, 0, 0 };
 		this->SetRotationDeg(rot);
 
 		if (activatesLever != nullptr) {
@@ -35,7 +35,7 @@ void Lever::DeactivateLever() {
 		isActivated = false;
 
 		XMFLOAT3 rot = this->GetRotationDeg();
-		rot.y -= 90.0f;
+		Weights = { 1, 0, 0, 0 };
 		this->SetRotationDeg(rot);
 
 		if (activatesLever != nullptr) {

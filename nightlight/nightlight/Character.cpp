@@ -12,9 +12,9 @@ Character::~Character ( )
 }
 
 
-void Character::UpdateCharacterAnimation(int moving)
+void Character::UpdateCharacterAnimation()
 {
-	if(moving)
+	if(moved)
 	{
 		frame += 0.1f;
 		float framelength = 1.8f;
