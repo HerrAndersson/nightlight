@@ -134,7 +134,7 @@ bool Tile::IsWalkableAI()
 	if (this == nullptr)
 		return false;
 
-	if (!floorTile)
+	if (!floorTile && !pressurePlate)
 		return false;
 
 	if (movableObject)

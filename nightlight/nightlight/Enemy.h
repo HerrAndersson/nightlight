@@ -1,12 +1,13 @@
 #pragma once
 #include "GameObject.h"
 #include "AiUtil.h"
+#include "lightObject.h"
 
 class Enemy : public GameObject
 {
 private:
 	
-	const float SPEED = 50.0F;
+	const float SPEED = 25.0F;
 
 	int enemyType;
 
@@ -26,7 +27,7 @@ public:
 
 	virtual ~Enemy();
 
-	void Update(Level* level);
+	void Update(Level* level, LightObject* spotlight);
 	void UpdateWeights(XMFLOAT4 &outputweights);
 
 	void SetPath(vector<XMINT2> path);
