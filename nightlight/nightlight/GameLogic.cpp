@@ -223,7 +223,6 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetRotationDeg(rot);
 		}
 	}
-
 	for (Enemy e : enemies)
 	{
 		if (sqrt((pow((e.GetPosition().x - pos.x), 2)) + (pow((e.GetPosition().z - pos.z), 2))) < 0.7f && character->GetInvulTimer() <= 0)
@@ -231,26 +230,35 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0)
 				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo
-			character->SetInvulTimer(3);
+			character->SetInvulTimer(180);
 		}
 	}
-	float invulTimer = character->GetInvulTimer();
+	int invulTimer = character->GetInvulTimer();
+	int blinkspeed = 4;
+	if (character->GetHitPoints()>0)//temporär ifsats för att förhindra krashar då hp kan gå under 1
+	blinkspeed=character->GetHitPoints()*10;
 	if (invulTimer > 0)
 	{
-		if (invulTimer > 2.5)
+		int mod = invulTimer % blinkspeed;
+		if (mod>((blinkspeed/2)-1))
 			character->SetSelected(true);
-		if (invulTimer > 2 && invulTimer < 2.5)
-			character->SetSelected(false);
-		if (invulTimer > 1.5 && invulTimer < 2)
-			character->SetSelected(true);
-		if (invulTimer > 1 && invulTimer < 1.5)
-			character->SetSelected(false);
-		if (invulTimer > 0.5 && invulTimer < 1)
-			character->SetSelected(true);
-		if (invulTimer > 0 && invulTimer < 0.5)
+		if (mod<(blinkspeed / 2))
 			character->SetSelected(false);
 
-		character->SetInvulTimer(character->GetInvulTimer() - 0.0166667);
+// 		if (invulTimer > 2.5)
+// 			character->SetSelected(true);
+// 		if (invulTimer > 2 && invulTimer < 2.5)
+// 			character->SetSelected(false);
+// 		if (invulTimer > 1.5 && invulTimer < 2)
+// 			character->SetSelected(true);
+// 		if (invulTimer > 1 && invulTimer < 1.5)
+// 			character->SetSelected(false);
+// 		if (invulTimer > 0.5 && invulTimer < 1)
+// 			character->SetSelected(true);
+// 		if (invulTimer > 0 && invulTimer < 0.5)
+// 			character->SetSelected(false);
+
+		character->SetInvulTimer(invulTimer - 1);
 	}
 // 	system("CLS");
 // 	printf("%f", character->GetInvulTimer());
