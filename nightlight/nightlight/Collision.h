@@ -116,17 +116,18 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 				}
 				else
 				{
-					if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y)) 
-					{
-						gl->SelectObject(movableObject);
-						gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
+					if (gl->GetSelectedObjectType() != gl->SelectionTypes::LEVER) {
+						if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
+						{
+							gl->SelectObject(movableObject);
+							gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
+						}
+						else
+						{
+							gl->SelectObject(nullptr);
+							gl->SetSelectedObjectType(-1);
+						}
 					}
-					else 
-					{
-						gl->SelectObject(nullptr);
-						gl->SetSelectedObjectType(-1);
-					}
-						
 				}
 			}
 		}
@@ -154,7 +155,8 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 		PressurePlate* pressurePlate = iteratorTile->getPressurePlate();
 		if (pressurePlate != nullptr)
 		{
-			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord)
+			if (iteratorTile->getMovableObject() != nullptr || nextTileCoord == iteratorTileCoord ||
+				(gl->GetSelectedObject() && gl->GetSelectedObject()->GetTileCoord() == iteratorTileCoord))
 			{
 				if (!pressurePlate->getIsActivated())
 					pressurePlate->ActivatePressurePlate();
@@ -184,9 +186,9 @@ static XMFLOAT3 ManageCollisions(GameLogic* gl, Level* currentLevel, GameObject*
 		Tile* nextTile = currentLevel->getTile(nextTileCoord.x, nextTileCoord.y);
 		if (nextTile != nullptr)
 		{
-			for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
+			for (int x = nextTileCoord.x - 2; x <= nextTileCoord.x + 2; x++)
 			{
-				for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
+				for (int y = nextTileCoord.y - 2; y <= nextTileCoord.y + 2; y++)
 				{
 					Tile* iteratorTile = currentLevel->getTile(x, y);
 					Coord iteratorTileCoord = Coord(x, y);

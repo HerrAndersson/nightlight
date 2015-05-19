@@ -53,11 +53,6 @@ Tile* Level::getTile (int x, int y)
 		}
 		catch (...) {}
 	}
-	else
-	{
-		cout << "Error in Level::getTile: x=" + std::to_string(x) + ", y=" + std::to_string(y) + " is not a valid coordinate.\n";
-		return tile;
-	}
 	return tile;
 }
 
