@@ -393,6 +393,8 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			loadedLevelCharacterRot = character->GetRotationDeg();
 			loadedLevelMoveObjectMode = moveObjectMode;
 			moveObjectMode = false;
+			loadedLevelMoveObjectModeAxis = moveObjectModeAxis;
+			moveObjectModeAxis = Axis::BOTH;
 
 			currentLevel = menuLevel;
 			character->SetTilePosition(currentLevel->getStartDoorCoord());
@@ -415,6 +417,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		else
 		{		
 			moveObjectMode = loadedLevelMoveObjectMode;
+			moveObjectModeAxis = loadedLevelMoveObjectMode;
 			currentLevel = loadedLevel;
 			character->SetRotationDeg(loadedLevelCharacterRot);
 			character->SetPosition(currentLevel->getPlayerPostion());
