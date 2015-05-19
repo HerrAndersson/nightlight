@@ -45,7 +45,7 @@ private:
 	int selectedObjectType = -1;
 	Button* selectedButton = nullptr;
 
-	bool ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>& enemies);
+	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy>& enemies);
 
 	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
 	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies);

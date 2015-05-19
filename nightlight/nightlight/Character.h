@@ -8,6 +8,8 @@ private:
 	float speed = 0.1f;
 	float dragSpeed = 0.08f;
 
+	int hitPoints = 3;
+	float invulTimer=0;
 
 	XMFLOAT4 characterWeights = { 1, 0, 0, 0 };
 	float frame = 0;
@@ -19,6 +21,12 @@ public:
 	~Character ( );
 
 	float getRadius() const { return radius; }
+
+	int GetHitPoints(){ return hitPoints; }
+	void SetHitPoints(int val) { hitPoints = val; }
+
+	float GetInvulTimer(){ return invulTimer; }
+	void SetInvulTimer(float val) { invulTimer = val; }
 
 	float GetSpeed() const { return speed; }
 	XMFLOAT4 GetBlendWeights() { return characterWeights; }

@@ -224,6 +224,21 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 		}
 	}
 
+	for (Enemy e : enemies)
+	{
+		if (sqrt((pow((e.GetPosition().x - pos.x), 2)) + (pow((e.GetPosition().z - pos.z), 2))) < 1.0f && character->GetInvulTimer() <= 0)
+		{
+			character->SetHitPoints(character->GetHitPoints() - 1);
+			if (character->GetHitPoints() <= 0)
+				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo
+			character->SetInvulTimer(2);
+		}
+	}
+	if (character->GetInvulTimer() > 0)
+ 		character->SetInvulTimer(character->GetInvulTimer()-0.0166667);
+// 	system("CLS");
+// 	printf("%f", character->GetInvulTimer());
+// 	int debug = character->GetHitPoints();
 	camera->SetPosition(character->GetPosition().x, -12, character->GetPosition().z - 3.5f);
 	camera->SetLookAt(character->GetPosition().x, 5.0f, character->GetPosition().z*1.005f);
 	character->SetPosition(pos);
