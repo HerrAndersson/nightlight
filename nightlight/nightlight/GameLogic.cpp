@@ -477,9 +477,14 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 				enemies.clear();
 			}
 
-			loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character);
-			currentLevel = loadedLevel;
-			character->SetTilePosition(currentLevel->getStartDoorCoord());
+			if (levelStates.currentLevelNr > levelStates.levelParser->GetLevelCount())
+			{
+				loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character);
+				currentLevel = loadedLevel;
+				character->SetTilePosition(currentLevel->getStartDoorCoord());
+			}
+			else
+				throw std::runtime_error("Slut :^)");
 		}
 		else
 		{		

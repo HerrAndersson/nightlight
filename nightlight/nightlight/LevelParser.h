@@ -17,4 +17,5 @@ public:
 	~LevelParser ( );
 
 	Level* LoadLevel ( int levelID, std::vector<Enemy> &enemies, Character &character );
+	int GetLevelCount(){ return levelNames.size(); }
 };
