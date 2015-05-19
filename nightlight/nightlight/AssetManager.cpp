@@ -192,11 +192,12 @@ void AssetManager::LoadModel(string file_path){
 
 		model->skeleton[i].frames.resize(frames);
 
+		if (frames)
 		infile.read((char*)model->skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
 
-	if (mainHeader.boneCount)
-		setUpBones(model);
+//	if (mainHeader.boneCount)
+//		setUpBones(model);
 
 	model->vertexBufferSize = vertexIndices.size();
 	infile.close();

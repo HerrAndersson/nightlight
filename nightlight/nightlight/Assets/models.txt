@@ -1,4 +1,4 @@
-blendCharTestAnim.bin
+char-rest-run-blendshapes.bin
 floor.bin
 wall.bin
 door.bin
