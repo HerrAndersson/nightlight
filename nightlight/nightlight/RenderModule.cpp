@@ -621,7 +621,10 @@ bool RenderModule::SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderO
 
 	//setting the sent in shader texture resource in the pixel shader
 	UINT32 vertexSize;
-	vertexSize = sizeof(Vertex);
+	if (renderObject->model->hasSkeleton)
+		vertexSize = sizeof(WeightedVertex);
+	else
+		vertexSize = sizeof(Vertex);
 
 	UINT32 offset = 0;
 
@@ -662,7 +665,10 @@ bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* re
 
 	//setting the sent in shader texture resource in the pixel shader
 	UINT32 vertexSize;
-	vertexSize = sizeof(BlendVertex);
+	if (renderObject->model->hasSkeleton)
+		vertexSize = sizeof(WeightedBlendVertex);
+	else
+		vertexSize = sizeof(BlendVertex);
 
 	UINT32 offset = 0;
 
@@ -1018,12 +1024,14 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 		if (renderObject->model->hasBlendShapes)
 		{
 			//UseSkeletalBlendShader();
+			UseBlendShader();
+			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), weights);
 		}
 		else
 		{
 			//throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
-			UseBlendShader();
-			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), weights);
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
 		}
 	}
 	else
