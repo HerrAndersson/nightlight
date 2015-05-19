@@ -226,16 +226,32 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 
 	for (Enemy e : enemies)
 	{
-		if (sqrt((pow((e.GetPosition().x - pos.x), 2)) + (pow((e.GetPosition().z - pos.z), 2))) < 1.0f && character->GetInvulTimer() <= 0)
+		if (sqrt((pow((e.GetPosition().x - pos.x), 2)) + (pow((e.GetPosition().z - pos.z), 2))) < 0.7f && character->GetInvulTimer() <= 0)
 		{
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0)
 				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo
-			character->SetInvulTimer(2);
+			character->SetInvulTimer(3);
 		}
 	}
-	if (character->GetInvulTimer() > 0)
- 		character->SetInvulTimer(character->GetInvulTimer()-0.0166667);
+	float invulTimer = character->GetInvulTimer();
+	if (invulTimer > 0)
+	{
+		if (invulTimer > 2.5)
+			character->SetSelected(true);
+		if (invulTimer > 2 && invulTimer < 2.5)
+			character->SetSelected(false);
+		if (invulTimer > 1.5 && invulTimer < 2)
+			character->SetSelected(true);
+		if (invulTimer > 1 && invulTimer < 1.5)
+			character->SetSelected(false);
+		if (invulTimer > 0.5 && invulTimer < 1)
+			character->SetSelected(true);
+		if (invulTimer > 0 && invulTimer < 0.5)
+			character->SetSelected(false);
+
+		character->SetInvulTimer(character->GetInvulTimer() - 0.0166667);
+	}
 // 	system("CLS");
 // 	printf("%f", character->GetInvulTimer());
 // 	int debug = character->GetHitPoints();

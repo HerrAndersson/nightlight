@@ -683,6 +683,7 @@ bool RenderModule::SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* re
 	dataPtr->weight[1] = weights.y;
 	dataPtr->weight[2] = weights.z;
 	dataPtr->weight[3] = weights.w;
+	dataPtr->isSelected = isSelected;
 
 	deviceContext->Unmap(matrixBufferPerBlendObject, 0);
 

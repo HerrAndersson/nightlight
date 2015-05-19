@@ -58,6 +58,7 @@ private:
 	{
 		XMMATRIX world;
 		float weight[4];
+		int isSelected;
 	};
 
 
