@@ -65,6 +65,7 @@ void Enemy::Update(Level* level)
 						{
 							Coord iteratorTileCoord = Coord(x, y);
 							nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
+							//InLight()
 						}
 					}
 				}

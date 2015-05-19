@@ -76,6 +76,10 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
+	vector<XMINT2> p;
+	if (enemies.size() > 0)
+		p = AI->GetPath(levelStates.currentLevel, XMINT2(enemies.at(0).GetTileCoord().x, enemies.at(0).GetTileCoord().y), XMINT2(character->GetTileCoord().x, character->GetTileCoord().y));
+
 	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 
 	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
@@ -105,12 +109,26 @@ bool Game::Render()
 		}
 	}
 
-
 	character->UpdateCharacterAnimation(character->GetMoved());
 
 	Renderer->Render(character, character->GetBlendWeights());
 
 	Renderer->EndScene();
+
+	for (auto x : p)
+	{
+		Coord c = Coord(x.x, x.y);
+		Tile* t = levelStates.currentLevel->getTile(c);
+
+		if (t)
+		{
+			if (t->getFloorTile())
+				t->getFloorTile()->SetSelected(false);
+			if (t->getPressurePlate())
+				t->getPressurePlate()->SetSelected(false);
+		}
+	}
+	p.clear();
 
 	return result;
 }
