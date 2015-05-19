@@ -37,6 +37,7 @@ private:
 	bool leftMouseLastState = false;
 	bool moveObjectMode = false;
 	bool loadedLevelMoveObjectMode = false;
+	int loadedLevelMoveObjectModeAxis = Axis::BOTH;
 	XMFLOAT3 loadedLevelCharacterRot;
 	int moveObjectModeAxis = Axis::BOTH;
 	XMFLOAT3 movableObjectTilePos;

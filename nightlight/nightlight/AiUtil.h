@@ -16,7 +16,7 @@ using namespace std;
 using DirectX::XMFLOAT2;
 using DirectX::XMINT2;
 
-static bool AiUtil_ShowDebugPath = false;
+static bool AiUtil_ShowDebugPath = true;
 
 static int ManhattanDistance(Tile* n1, Tile* n2) //Cheap, less accurate
 {
@@ -55,7 +55,7 @@ static int GenerateF(Tile* child, Tile* end)
 	return child->GetG() + ManhattanDistance(child, end);
 }
 
-static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
+static vector<XMINT2> AStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 {
 	vector<XMINT2> path;
 
@@ -129,18 +129,11 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 								//Tile* nextY = level->getTile(currentCoord.x, currentCoord.y + y);
 								//Tile* nextX = level->getTile(currentCoord.x + x, currentCoord.y);
 
-								////Tile* nextY = nullptr;
-								////Tile* nextX = nullptr;
-								////if (level->withinBounds(currentCoord.x, currentCoord.y + y))
-								////	nextY = level->getTile(currentCoord.x, currentCoord.y + y);
-								////if (level->withinBounds(currentCoord.x + x, currentCoord.y))
-								////	nextX = level->getTile(currentCoord.x + x, currentCoord.y);
-
 								//if (nextY != nullptr)
 								//	if (!nextY->IsWalkable() || nextY->InClosed())
 								//		continue;
 
-								//if (nextX != nullptr)
+					 			//if (nextX != nullptr)
 								//	if (!nextX->IsWalkable() || nextX->InClosed())
 								//		continue;
 
@@ -175,6 +168,133 @@ static vector<XMINT2> aStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 						continue;
 					}
 				}
+			}
+
+			//Add to the counter
+			n++;
+		}
+
+		//Reset open/closed in tiles
+		for (i = openList.begin(); i != openList.end(); ++i)
+			(*i)->SetInOpen(false);
+		for (i = closedList.begin(); i != closedList.end(); ++i)
+			(*i)->SetInClosed(false);
+
+
+		if (AiUtil_ShowDebugPath)
+			start->getFloorTile()->SetSelected(true);
+
+		//Retrace the path from the end to start
+		while (current->GetParent() && current != start)
+		{
+			XMINT2 currentCoord = current->GetTileCoord();
+			path.push_back(XMINT2(currentCoord.x, currentCoord.y));
+
+			if (AiUtil_ShowDebugPath)
+			{
+				if (current->getFloorTile())
+					current->getFloorTile()->SetSelected(true);
+				if (current->getPressurePlate())
+					current->getPressurePlate()->SetSelected(true);
+			}
+
+			current = current->GetParent();
+			n++;
+		}
+	}
+
+	return path;
+}
+
+static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
+{
+	vector<XMINT2> path;
+
+	Tile* start = level->getTile(startPosXZ.x, startPosXZ.y);
+	Tile* end = level->getTile(endPosXZ.x, endPosXZ.y);
+	Tile* current = nullptr;
+	Tile* child = nullptr;
+
+	list<Tile*> openList;
+	list<Tile*> closedList;
+
+	list<Tile*>::iterator i;
+
+	if (start && end)
+	{
+		//Counter to limit path length
+		int n = 0;
+		int limit = 100;
+
+		openList.push_back(start);
+		start->SetInOpen(true);
+		start->SetParent(nullptr);
+
+		while (n == 0 || (current != end && n < limit))
+		{
+			//Find the smallest F value in openList and make it the current tile
+			for (i = openList.begin(); i != openList.end(); ++i)
+				if (i == openList.begin() || (*i)->GetF() <= current->GetF())
+					current = (*i);
+
+			//Stop if it reached the end or the current tile holds a closed door
+			Door* door = current->getDoor();
+			if (current == end || (door && !door->getIsOpen()))
+				break;
+
+			openList.remove(current);
+			current->SetInOpen(false);
+
+			closedList.push_back(current);
+			current->SetInClosed(true);
+
+			XMINT2 ct = current->GetTileCoord();
+			Tile* adj[4];
+			adj[0] = level->getTile(ct.x - 1, ct.y);
+			adj[1] = level->getTile(ct.x, ct.y - 1);
+			adj[2] = level->getTile(ct.x + 1, ct.y);
+			adj[3] = level->getTile(ct.x, ct.y + 1);
+
+			for (int i = 0; i < 4; i++)
+			{
+				XMINT2 currentTileCoord = current->GetTileCoord();
+				
+				child = adj[i];
+
+				if (child && child != current)
+				{
+					XMINT2 childTileCoord = child->GetTileCoord();
+
+					bool inClosed = child->InClosed();
+					bool inOpen = child->InOpen();
+
+					if (!inClosed && child->IsWalkableAI())
+					{
+						int tentativeG = current->GetG() + (int)TILE_SIZE;
+
+						//Already in open but a better solution found, update it
+						if (inOpen)
+						{
+							if (child->GetG() > tentativeG)
+							{
+								child->SetParent(current);
+								child->SetG(tentativeG);
+								child->SetF(GenerateF(child, end));
+							}
+						}
+						if (current->GetParent() != child)
+						{
+							openList.push_back(child);
+							child->SetInOpen(true);
+
+							child->SetParent(current);
+							child->SetG(tentativeG);
+							child->SetF(GenerateF(child, end));
+						}
+					}
+				}
+
+
 			}
 
 			//Add to the counter
