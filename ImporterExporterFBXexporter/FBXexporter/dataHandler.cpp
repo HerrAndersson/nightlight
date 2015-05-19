@@ -160,7 +160,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lNormalElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
 		//set normals
-		for (int n = 0; n < sizeNormals +(sizeNormals/2); n++)
+		for (int n = 0; n < normId.size(); n++)
 		{
 			lNormalElement->GetDirectArray().Add(lNormals.at(normId.at(n)));
 
@@ -192,11 +192,20 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		////create UVset
 		FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
 		FBX_ASSERT(lUVElement1 != NULL);
+		lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
+		lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
 		lUVElement1->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVElement1->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
-			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
 		
+		for (int u = 0; u < sizePoints; u++)
+			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
+
+	//	for (int i = 0; i<uvId.size(); i++)
+	//		lUVElement1->GetIndexArray().Add(uvId.at(i % 3));
+	//	
+
+
+
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);
