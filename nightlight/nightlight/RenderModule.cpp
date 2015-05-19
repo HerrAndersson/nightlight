@@ -943,7 +943,9 @@ bool RenderModule::Render(GameObject* gameObject)
 		}
 		else
 		{
-			throw std::runtime_error(string("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame"));
+			//throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
+			UseDefaultShader();
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
 		}
 	else
 		if (renderObject->model->hasBlendShapes)
@@ -1019,7 +1021,9 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 		}
 		else
 		{
-			throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
+			//throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
+			UseBlendShader();
+			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), weights);
 		}
 	}
 	else
