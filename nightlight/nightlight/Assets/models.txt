@@ -3,7 +3,7 @@ floor.bin
 wall.bin
 door.bin
 container.bin
-lever.bin
+lever_anim.bin
 corner.bin
 corner_reverse.bin
 pressurep.bin
