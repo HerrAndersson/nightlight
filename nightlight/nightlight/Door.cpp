@@ -17,11 +17,9 @@ Door::~Door()
 void Door::setIsOpen(bool val) {
 	isOpen = val;
 
-	XMFLOAT3 rot = this->GetRotationDeg();
 	if (isOpen) {
-		rot.y += 90.0f;
+		position.y = 1.9f;
 	} else {
-		rot.y -= 90.0f;
+		position.y = 0.0f;
 	}
-	this->SetRotationDeg(rot);
 }

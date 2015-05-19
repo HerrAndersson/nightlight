@@ -40,7 +40,7 @@ struct Coord
 
 class GameObject
 {
-private:
+protected:
 
 	int id;
 	Coord tileCoord;
@@ -49,11 +49,9 @@ private:
 	XMVECTOR		forwardVector;
 	RenderObject*	renderObject;
 	bool			isSelected = false;
-
-protected:
 	XMFLOAT3		colorModifier = XMFLOAT3(0, 0, 0);
-public:
 
+public:
 	const XMFLOAT3 selectionColor = XMFLOAT3(0.21f, 0.21f, 0.17f);
 
 	GameObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
