@@ -24,52 +24,60 @@ Enemy::~Enemy()
 	path.clear();
 }
 
-void Enemy::Update(Level* level)
+void Enemy::Update(Level* level, LightObject* spotlight)
 {
 	if (path.size() > 0)
 	{
 		Coord aiCoord = GetTileCoord();
-
-		if (aiCoord == next)
-		{
-			XMINT2 p = path.at(path.size() - 1);
-			this->path.pop_back();
-
-			next = Coord(p.x, p.y);
-		}
-
 		Coord dir = aiCoord - next;
+
+		XMFLOAT3 currentPos = GetPosition();
+		XMFLOAT3 direction = XMFLOAT3((-currentPos.x - (next.x + (TILE_SIZE / 2))), 0.0f, -currentPos.z - (next.y + (TILE_SIZE / 2)));
 
 		XMFLOAT3 nextPos = GetPosition();
 		nextPos.x += dir.x / SPEED;
 		nextPos.z += dir.y / SPEED;
 
-
-		XMFLOAT3 currentPos = GetPosition();
 		float radius = 0.5f;
 		bool result = false;
+		bool inLight = false;
 
-		Tile* currentTile = level->getTile((int)(abs(currentPos.x)), (int)(abs(currentPos.z)));
+		Tile* currentTile = level->getTile(aiCoord);
 		if (currentTile != nullptr)
 		{
 			Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
 			Tile* nextTile = level->getTile(nextTileCoord.x, nextTileCoord.y);
 			if (nextTile != nullptr)
 			{
-				for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
+				for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1 && !inLight; x++)
 				{
-					for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
+					for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1 && !inLight; y++)
 					{
 						Tile* iteratorTile = level->getTile(x, y);
 						if (iteratorTile && !iteratorTile->IsWalkableAI())
-						{
+						{	
+							inLight = InLight(level, this, spotlight);
+
 							Coord iteratorTileCoord = Coord(x, y);
 							nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
-							//InLight()
 						}
 					}
 				}
 			}
+		}
+
+		float xRem = -(nextPos.x - (int)nextPos.x);
+		float zRem = -(nextPos.z - (int)nextPos.z);
+		//cout << xRem << " " << zRem << endl;
+		// && xRem >= 0.45f && zRem >= 0.45f
+
+		if (aiCoord == next)
+		{
+			//cout << "next!" << endl;
+			XMINT2 p = path.at(path.size() - 1);
+			this->path.pop_back();
+
+			next = Coord(p.x, p.y);
 		}
 
 		SetPosition(nextPos);

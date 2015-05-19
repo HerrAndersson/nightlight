@@ -82,37 +82,66 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	if (playerMoved)
 	{
 		Coord movableObjectOffset;
-		Tile* tileLine[2];
+		Coord nextMovableTileCoord = Coord();
 
 		if (moveObjectMode) {
 			Coord selectedObjectCurrentCoord = selectedObject->GetTileCoord();
 			Coord characterCurrentCoord = character->GetTileCoord();
-			movableObjectOffset = Coord(selectedObjectCurrentCoord.x - characterCurrentCoord.x, selectedObjectCurrentCoord.y - characterCurrentCoord.y);
+
+			int offsetX = selectedObjectCurrentCoord.x - characterCurrentCoord.x;
+			int offsetY = selectedObjectCurrentCoord.y - characterCurrentCoord.y;
+
+			if (offsetX < 0)
+				offsetX = -1;
+			else if (offsetX > 0)
+				offsetX = 1;
+
+			if (offsetY < 0)
+				offsetY = -1;
+			else if (offsetY > 0)
+				offsetY = 1;
+
+			movableObjectOffset = Coord(offsetX, offsetY);
 
 			switch (playerMoved) {
 			case Direction::UP:
-				tileLine[0] = currentLevel->getTile(characterCurrentCoord.x, characterCurrentCoord.y + 1);
-				tileLine[1] = currentLevel->getTile(characterCurrentCoord.x, characterCurrentCoord.y + 2);
+				nextMovableTileCoord = Coord(characterCurrentCoord.x, characterCurrentCoord.y - 2);
 				break;
 			case Direction::DOWN:
-				tileLine[0] = currentLevel->getTile(characterCurrentCoord.x, characterCurrentCoord.y - 1);
-				tileLine[1] = currentLevel->getTile(characterCurrentCoord.x, characterCurrentCoord.y - 2);
+				nextMovableTileCoord = Coord(characterCurrentCoord.x, characterCurrentCoord.y + 2);
 				break;
 			case Direction::RIGHT:
-				tileLine[0] = currentLevel->getTile(characterCurrentCoord.x + 1, characterCurrentCoord.y);
-				tileLine[1] = currentLevel->getTile(characterCurrentCoord.x + 2, characterCurrentCoord.y);
+				nextMovableTileCoord = Coord(characterCurrentCoord.x + 2, characterCurrentCoord.y);
 				break;
 			case Direction::LEFT:
-				tileLine[0] = currentLevel->getTile(characterCurrentCoord.x - 1, characterCurrentCoord.y + 1);
-				tileLine[1] = currentLevel->getTile(characterCurrentCoord.x - 2, characterCurrentCoord.y + 2);
+				nextMovableTileCoord = Coord(characterCurrentCoord.x - 2, characterCurrentCoord.y);
 				break;
 			default:
-				tileLine[0] = nullptr;
-				tileLine[1] = nullptr;
 				break;
 			}
-			
+			bool result;
 
+			XMFLOAT3 nextMovablePos = pos;
+			nextMovablePos.x -= movableObjectOffset.x;
+			nextMovablePos.z -= movableObjectOffset.y;
+
+			Tile* nextMovableTile = currentLevel->getTile(nextMovableTileCoord);
+
+			if (!nextMovableTile->IsWalkable(moveObjectMode, selectedObject) || 
+				(nextMovableTile->getDoor() && !nextMovableTile->getDoor()->getIsOpen()) || 
+				nextMovableTile->getLever()){
+				
+				XMFLOAT3 currentMovablePos = nextMovablePos;
+				nextMovablePos = NextPositionFromCollision(result, currentMovablePos, 0.5f, nextMovableTileCoord);
+
+				if (currentMovablePos.x != nextMovablePos.x || currentMovablePos.z != nextMovablePos.z)
+				{
+					pos.x += nextMovablePos.x - currentMovablePos.x;
+					pos.z += nextMovablePos.z - currentMovablePos.z;
+				}
+			}
+
+			selectedObject->SetPosition(nextMovablePos);
 		}
 		
 		pos = ManageCollisions(this, currentLevel, character, pos, CollisionTypes::CHARACTER);
@@ -122,8 +151,6 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			XMFLOAT3 movablePos = pos;
 			movablePos.x -= movableObjectOffset.x;
 			movablePos.z -= movableObjectOffset.y;
-			
-			selectedObject->SetPosition(movablePos);
 
 			float zOffset = abs(movablePos.z - movableObjectTilePos.z);
 			float xOffset = abs(movablePos.x - movableObjectTilePos.x);
@@ -443,6 +470,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			SelectObject(nullptr);
 			selectedObjectType = -1;
 			moveObjectMode = false;
+			moveObjectModeAxis = Axis::BOTH;
 
 			if (loadedLevel){
 				delete loadedLevel;
