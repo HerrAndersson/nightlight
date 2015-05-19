@@ -17,7 +17,7 @@ void Character::UpdateCharacterAnimation(int moving)
 	if(moving)
 	{
 		frame += 0.1f;
-		float framelength = 1;
+		float framelength = 1.8f;
 		if (frame > (framelength * 2))
 			frame = 0;
 
