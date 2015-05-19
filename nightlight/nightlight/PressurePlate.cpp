@@ -35,5 +35,4 @@ void PressurePlate::DeactivatePressurePlate() {
 	if (activatesDoor != nullptr) {
 		activatesDoor->setIsOpen(false);
 	}
-	
 }

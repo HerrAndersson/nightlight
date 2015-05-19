@@ -951,7 +951,7 @@ bool RenderModule::Render(GameObject* gameObject)
 		{
 			//throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
 			UseDefaultShader();
-			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier());
 		}
 	else
 		if (renderObject->model->hasBlendShapes)
@@ -1025,13 +1025,13 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 		{
 			//UseSkeletalBlendShader();
 			UseBlendShader();
-			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected(), weights);
+			result = SetDataPerBlendObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier(), weights);
 		}
 		else
 		{
 			//throw std::runtime_error("\nDetta objekt: " + gameObject->GetRenderObject()->model->name + "\nbehöver: GameObject* gameObject, float frame");
 			UseDefaultShader();
-			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->IsSelected());
+			result = SetDataPerObject(gameObject->GetWorldMatrix(), renderObject, gameObject->GetColorModifier());
 		}
 	}
 	else
