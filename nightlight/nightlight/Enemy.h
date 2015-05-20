@@ -14,6 +14,8 @@ private:
 	bool followingPlayer;
 	vector<XMINT2> path;
 	Coord next, end;
+	XMFLOAT3 direction;
+	float tileEps = 0.05f;
 
 	float weights[4];
 	float weightchange[4];
@@ -31,6 +33,7 @@ public:
 	void UpdateWeights(XMFLOAT4 &outputweights);
 
 	void SetPath(vector<XMINT2> path);
+	vector<XMINT2> GetPath();
 
 	void SetFollowingPlayer(bool val);
 	bool IsFollowingPlayer();

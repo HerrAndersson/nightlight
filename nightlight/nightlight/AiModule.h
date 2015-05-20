@@ -8,8 +8,8 @@ class AiModule
 {
 private:
 
-	const int R_MAX = 12;
-	const int R_MIN = 6;
+	const int R_MAX = 2;
+	const int R_MIN = 1;
 
 	Level* level;
 

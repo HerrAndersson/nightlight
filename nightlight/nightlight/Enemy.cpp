@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Collision.h"
+#include <math.h>
 
 Enemy::Enemy(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType)
 	: GameObject(id, position, rotation, renderObject, coordX, coordY)
@@ -28,21 +29,15 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 {
 	if (path.size() > 0)
 	{
-		Coord aiCoord = GetTileCoord();
-		Coord dir = aiCoord - next;
-
-		XMFLOAT3 currentPos = GetPosition();
-		XMFLOAT3 direction = XMFLOAT3((-currentPos.x - (next.x + (TILE_SIZE / 2))), 0.0f, -currentPos.z - (next.y + (TILE_SIZE / 2)));
-
-		XMFLOAT3 nextPos = GetPosition();
-		nextPos.x += dir.x / SPEED;
-		nextPos.z += dir.y / SPEED;
+		XMFLOAT3 nextPos = position;
+		nextPos.x += direction.x / SPEED;
+		nextPos.z += direction.z / SPEED;
 
 		float radius = 0.5f;
 		bool result = false;
 		bool inLight = false;
 
-		Tile* currentTile = level->getTile(aiCoord);
+		Tile* currentTile = level->getTile(tileCoord);
 		if (currentTile != nullptr)
 		{
 			Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
@@ -69,15 +64,18 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 		float xRem = -(nextPos.x - (int)nextPos.x);
 		float zRem = -(nextPos.z - (int)nextPos.z);
 		//cout << xRem << " " << zRem << endl;
-		// && xRem >= 0.45f && zRem >= 0.45f
+		// 
 
-		if (aiCoord == next)
+		if (tileCoord == next && xRem >= 0.45f && zRem >= 0.45f)
 		{
 			//cout << "next!" << endl;
 			XMINT2 p = path.at(path.size() - 1);
 			this->path.pop_back();
 
 			next = Coord(p.x, p.y);
+			direction = XMFLOAT3((-position.x - (next.x + (TILE_SIZE / 2))), 0.0f, -position.z - (next.y + (TILE_SIZE / 2)));
+
+			rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
 		}
 
 		SetPosition(nextPos);
@@ -162,5 +160,12 @@ void Enemy::SetPath(vector<XMINT2> path)
 	{
 		end = Coord(path.at(0).x, path.at(0).y);
 		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
+		direction = XMFLOAT3((-position.x - (next.x + (TILE_SIZE / 2))), 0.0f, -position.z - (next.y + (TILE_SIZE / 2)));
+		rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
 	}
+}
+
+vector<XMINT2> Enemy::GetPath()
+{
+	return path;
 }

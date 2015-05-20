@@ -45,7 +45,7 @@ XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			int rnd = rand() % (R_MAX - R_MIN) + R_MIN;
+			int rnd = rand() % R_MAX + R_MIN;
 
 			if (i == 0)
 			{

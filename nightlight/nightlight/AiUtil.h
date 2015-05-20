@@ -16,8 +16,6 @@ using namespace std;
 using DirectX::XMFLOAT2;
 using DirectX::XMINT2;
 
-static bool AiUtil_ShowDebugPath = true;
-
 static int ManhattanDistance(Tile* n1, Tile* n2) //Cheap, less accurate
 {
 	XMINT2 n1c = n1->GetTileCoord();
@@ -180,23 +178,11 @@ static vector<XMINT2> AStar(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ)
 		for (i = closedList.begin(); i != closedList.end(); ++i)
 			(*i)->SetInClosed(false);
 
-
-		if (AiUtil_ShowDebugPath)
-			start->getFloorTile()->SetSelected(true);
-
 		//Retrace the path from the end to start
 		while (current->GetParent() && current != start)
 		{
 			XMINT2 currentCoord = current->GetTileCoord();
 			path.push_back(XMINT2(currentCoord.x, currentCoord.y));
-
-			if (AiUtil_ShowDebugPath)
-			{
-				if (current->getFloorTile())
-					current->getFloorTile()->SetSelected(true);
-				if (current->getPressurePlate())
-					current->getPressurePlate()->SetSelected(true);
-			}
 
 			current = current->GetParent();
 			n++;
@@ -214,6 +200,7 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 	Tile* end = level->getTile(endPosXZ.x, endPosXZ.y);
 	Tile* current = nullptr;
 	Tile* child = nullptr;
+	Tile* lastCurrent = nullptr;
 
 	list<Tile*> openList;
 	list<Tile*> closedList;
@@ -232,6 +219,7 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 
 		while (n == 0 || (current != end && n < limit))
 		{
+			lastCurrent = current;
 			//Find the smallest F value in openList and make it the current tile
 			for (i = openList.begin(); i != openList.end(); ++i)
 				if (i == openList.begin() || (*i)->GetF() <= current->GetF())
@@ -240,7 +228,10 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 			//Stop if it reached the end or the current tile holds a closed door
 			Door* door = current->getDoor();
 			if (current == end || (door && !door->getIsOpen()))
+			{
+				current = lastCurrent;
 				break;
+			}
 
 			openList.remove(current);
 			current->SetInOpen(false);
@@ -307,26 +298,17 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 		for (i = closedList.begin(); i != closedList.end(); ++i)
 			(*i)->SetInClosed(false);
 
-
-		if (AiUtil_ShowDebugPath)
-			start->getFloorTile()->SetSelected(true);
-
 		//Retrace the path from the end to start
-		while (current->GetParent() && current != start)
+		if (current)
 		{
-			XMINT2 currentCoord = current->GetTileCoord();
-			path.push_back(XMINT2(currentCoord.x, currentCoord.y));
-
-			if (AiUtil_ShowDebugPath)
+			while (current->GetParent() && current != start)
 			{
-				if (current->getFloorTile())
-					current->getFloorTile()->SetSelected(true);
-				if (current->getPressurePlate())
-					current->getPressurePlate()->SetSelected(true);
-			}
+				XMINT2 currentCoord = current->GetTileCoord();
+				path.push_back(XMINT2(currentCoord.x, currentCoord.y));
 
-			current = current->GetParent();
-			n++;
+				current = current->GetParent();
+				n++;
+			}
 		}
 	}
 
