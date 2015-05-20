@@ -21,7 +21,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
 	//initialize shadowmap
-	shadowMap = new ShadowMap(d3d->GetDevice(), 512, L"depthVertexShader.hlsl");
+	shadowMap = new ShadowMap(d3d->GetDevice(), 512, L"Assets/Shaders/ShadowVS.hlsl");
 
 	bool result;
 
@@ -900,7 +900,14 @@ void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& proje
 	XMMATRIX view, proj;
 	//spotLight->getViewMatrix(view);
 	//spotLight->getProjMatrix(proj);
-	shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
+
+
+	//THIS IW WHAT BREAKS THE SHADOW MAPPING, BUFFERS NOT SET CORRECTLY OR DATA IS BROKEN! FIEX!
+	//shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
+
+
+
+
 }
 
 void RenderModule::UseSkeletalShader()

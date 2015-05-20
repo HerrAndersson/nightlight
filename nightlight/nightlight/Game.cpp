@@ -115,12 +115,12 @@ bool Game::Render()
 
 	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 
-	//Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
-	//
-	//for (int i = 0; i < toRender->size(); i++) 
-	//{
-	//		Renderer->RenderShadow(toRender->at(i));
-	//	}
+	Renderer->ActivateShadowRendering(viewMatrix, projectionMatrix);
+	
+	for (int i = 0; i < toRender->size(); i++) 
+	{
+		Renderer->Render(toRender->at(i));
+	}
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
