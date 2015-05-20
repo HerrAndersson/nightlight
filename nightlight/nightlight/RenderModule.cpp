@@ -897,17 +897,7 @@ void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& proje
 {
 	d3d->SetCullingState(2);
 	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
-	XMMATRIX view, proj;
-	//spotLight->getViewMatrix(view);
-	//spotLight->getProjMatrix(proj);
-
-
-	//THIS IW WHAT BREAKS THE SHADOW MAPPING, BUFFERS NOT SET CORRECTLY OR DATA IS BROKEN! FIEX!
-	//shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
-
-
-
-
+	shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
 }
 
 void RenderModule::UseSkeletalShader()
