@@ -10,9 +10,9 @@ using namespace DirectX;
 
 enum CollisionTypes { CHARACTER, ENEMY, MOVABLEOBJECT };
 
-static float Clamp(float x, float a, float b) 
-{ 
-	return x < a ? a : (x > b ? b : x); 
+static float Clamp(float x, float a, float b)
+{
+	return x < a ? a : (x > b ? b : x);
 };
 
 static XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float radius, Coord tileCoord)
@@ -35,9 +35,10 @@ static XMFLOAT3 NextPositionFromCollision(bool& result, XMFLOAT3 nextPos, float 
 	{
 		float length = sqrt(distanceSquared);
 
-		nextPos.x = (distanceX / length) * radius + closestX;
-		nextPos.z = (distanceY / length) * radius + closestY;
-
+		if (length > 0.000001f){
+			nextPos.x = (distanceX / length) * radius + closestX;
+			nextPos.z = (distanceY / length) * radius + closestY;
+		}
 		result = true;
 	}
 	else
@@ -99,57 +100,22 @@ static XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, fl
 
 static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos)
 {
-	bool result = false;
+	bool collisionWithTile = false;
+	bool collisionWithDoor = false;
+	bool collisionWithLever = false;
 
 	if (!iteratorTile->IsWalkable(gl->GetMoveObjectMode(), gl->GetSelectedObject()))
 	{
-		nextPos = NextPositionFromCollision(result, nextPos, characterRadius, iteratorTileCoord);
-		if (iteratorTile != nullptr)
-		{
-			MovableObject* movableObject = iteratorTile->getMovableObject();
-			if (movableObject != nullptr)
-			{
-				if (gl->GetMoveObjectMode()) 
-				{
-					gl->SelectObject(movableObject);
-					gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
-				}
-				else
-				{
-					if (gl->GetSelectedObjectType() != gl->SelectionTypes::LEVER) {
-						if (result && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
-						{
-							gl->SelectObject(movableObject);
-							gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
-						}
-						else
-						{
-							gl->SelectObject(nullptr);
-							gl->SetSelectedObjectType(-1);
-						}
-					}
-				}
-			}
-		}
+		nextPos = NextPositionFromCollision(collisionWithTile, nextPos, characterRadius, iteratorTileCoord);
 	}
 	else
 	{
 		Door* door = iteratorTile->getDoor();
-		nextPos = NextPositionFromDoorCollision(result, nextPos, characterRadius, iteratorTileCoord, nextTileCoord, door);
+		nextPos = NextPositionFromDoorCollision(collisionWithDoor, nextPos, characterRadius, iteratorTileCoord, nextTileCoord, door);
 
 		Lever* lever = iteratorTile->getLever();
 		if (lever != nullptr) {
-			nextPos = NextPositionFromCollision(result, nextPos, 0.15f, iteratorTileCoord);
-
-			if (gl->GetSelectedObjectType() != gl->SelectionTypes::MOVABLEOBJECT) {
-				if (result) {
-					gl->SelectObject(lever);
-					gl->SetSelectedObjectType(gl->SelectionTypes::LEVER);
-				} else {
-					gl->SelectObject(nullptr);
-					gl->SetSelectedObjectType(-1);
-				}
-			}
+			nextPos = NextPositionFromCollision(collisionWithLever, nextPos, 0.15f, iteratorTileCoord);
 		}
 
 		PressurePlate* pressurePlate = iteratorTile->getPressurePlate();
@@ -168,6 +134,22 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 			}
 		}
 	}
+	if (!gl->GetMoveObjectMode()){
+		if ((collisionWithTile || collisionWithLever) && iteratorTile){
+			MovableObject* movableObject = iteratorTile->getMovableObject();
+			Lever* lever = iteratorTile->getLever();
+
+			if (lever){
+				gl->SelectObject(lever);
+				gl->SetSelectedObjectType(gl->SelectionTypes::LEVER);
+			}
+			else if (movableObject){
+				gl->SelectObject(movableObject);
+				gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
+			}
+		}
+	}
+
 	return nextPos;
 }
 
@@ -176,6 +158,11 @@ static XMFLOAT3 ManageCollisions(GameLogic* gl, Level* currentLevel, GameObject*
 	XMFLOAT3 currentPos = gameObject->GetPosition();
 	float characterRadius = 1.0f;
 
+	if (!gl->GetMoveObjectMode()){
+		gl->SelectObject(nullptr);
+		gl->SetSelectedObjectType(-1);
+	}
+	
 	if (type == CollisionTypes::CHARACTER)
 		characterRadius = ((Character*)gameObject)->getRadius();
 
