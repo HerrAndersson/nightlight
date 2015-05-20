@@ -301,6 +301,7 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 		//Retrace the path from the end to start
 		if (current)
 		{
+			path.push_back(end->GetTileCoord());
 			while (current->GetParent() && current != start)
 			{
 				path.push_back(current->GetTileCoord());
@@ -308,8 +309,6 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 				current = current->GetParent();
 				n++;
 			}
-
-			path.push_back(end->GetTileCoord());
 		}
 	}
 

@@ -14,7 +14,7 @@ PressurePlate::~PressurePlate()
 
 void PressurePlate::ActivatePressurePlate() {
 	isActivated = true;
-	colorModifier = XMFLOAT3(0.1, 0.1, 0.2);
+	colorModifier = XMFLOAT3(0.1f, 0.1f, 0.2f);
 
 	if (activatesLever != nullptr) {
 		activatesLever->setIsPowered(true);
