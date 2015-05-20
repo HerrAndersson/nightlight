@@ -883,7 +883,7 @@ void RenderModule::UseDefaultShader()
 
 	deviceContext->IASetInputLayout(layoutPosUvNorm);
 
-	d3d->SetCullingState(3);
+	d3d->SetCullingState(2);
 
 	//Set shaders
 	deviceContext->VSSetShader(vertexShader, NULL, 0);

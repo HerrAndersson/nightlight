@@ -321,31 +321,21 @@ bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, Cam
 
 	XMFLOAT3 pPos = player->GetPosition();
 	//offset light
-	pPos.x -= pForward.x / 2;
-	pPos.z -= pForward.z / 2;
+	pPos.x += pForward.x / 2;
+	pPos.z += pForward.z / 2;
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 
-	//if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
-	//{
-	//	for (auto &e : enemies)
-	//	{
-	//		if (e.InLight(spotlight) == true)
-	//		{
-	//			spotlight->setDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
-	//			spotlight->setAmbientColor(0.2f, 0.01f, 0.8f, 1.0f);
-	//		}
-	//		else
-	//		{
-	//			spotlight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
-	//			spotlight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
-	//		}
-	//	}
-	//}
+	XMFLOAT3 lookAt;
+	lookAt.x = pPos.x + pForward.x;
+	lookAt.y = pPos.y + pForward.y;
+	lookAt.z = pPos.z + pForward.z;
+
+	spotlight->setLookAt(lookAt);
 
 	spotlight->generateViewMatrix();
-	return true;
 
+	return true;
 }
 
 GameObject* GameLogic::GetSelectedObject()

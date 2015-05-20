@@ -114,6 +114,7 @@ bool Game::Render()
 	XMMATRIX lightView, lightProj;
 	spotLight->getViewMatrix(lightView);
 	spotLight->getProjMatrix(lightProj);
+
 	Renderer->ActivateShadowRendering(lightView, lightProj);
 	
 	for (int i = 0; i < toRender->size(); i++) 
@@ -123,7 +124,7 @@ bool Game::Render()
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
-	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
+	Renderer->SetDataPerFrame(lightView, lightProj, camera->GetPosition(), spotLight, &levelStates);
 	Renderer->UseDefaultShader();
 
 	

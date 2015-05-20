@@ -30,6 +30,7 @@ public:
 	void setDiffuseColor(float r, float g, float b, float a);
 	void setDirection(float x, float y, float z);
 	void setPosition(float x, float y, float z);
+	void setLookAt(XMFLOAT3 lookAt);
 
 	void setRange(float range);
 	void setCone(float cone);

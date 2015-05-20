@@ -82,6 +82,10 @@ XMFLOAT3 LightObject::getPosition()
 	return position;
 }
 
+void LightObject::setLookAt(XMFLOAT3 lookAt)
+{
+	this->lookAt = lookAt;
+}
 
 void LightObject::generateViewMatrix()
 {
@@ -90,7 +94,7 @@ void LightObject::generateViewMatrix()
 
 	// sets up our up-vector
 	up.x = 0.0f;
-	up.y = 1.0f;
+	up.y = -1.0f;
 	up.z = 0.0f;
 
 	DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
