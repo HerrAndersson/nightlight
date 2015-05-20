@@ -20,7 +20,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	
 	character = new Character(GameObject::GoTypes::MAINCHARACTER, XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
-	character->SetUpAnimation(Assets->GetRenderObject(21), 1);
+	character->SetUpAnimation(Assets->GetRenderObject(22), 1);
 
 	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
 	levelStates.currentLevel = levelStates.menuLevel;
@@ -148,10 +148,10 @@ bool Game::Render()
 	{
 		for (auto& e : enemies) 
 		{
-			enemies[i].UpdateAnimation();
-			Renderer->Render(&enemies[i], enemies[i].GetWeights());
+			e.UpdateAnimation();
+			Renderer->Render(&e, e.GetWeights());
 // 			system("CLS");
-// 			printf("%f\n%f\n%f\n%f", enemies[i].GetWeights().x, enemies[i].GetWeights().y, enemies[i].GetWeights().z, enemies[i].GetWeights().w);
+// 			printf("%f\n%f\n%f\n%f", e.GetWeights().x, e.GetWeights().y, e.GetWeights().z, e.GetWeights().w);
 		}
 	}
 
