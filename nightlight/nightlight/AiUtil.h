@@ -303,12 +303,13 @@ static vector<XMINT2> AStarNoCorners(Level* level, XMINT2 startPosXZ, XMINT2 end
 		{
 			while (current->GetParent() && current != start)
 			{
-				XMINT2 currentCoord = current->GetTileCoord();
-				path.push_back(XMINT2(currentCoord.x, currentCoord.y));
+				path.push_back(current->GetTileCoord());
 
 				current = current->GetParent();
 				n++;
 			}
+
+			path.push_back(end->GetTileCoord());
 		}
 	}
 
