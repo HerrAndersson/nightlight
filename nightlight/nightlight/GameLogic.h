@@ -64,5 +64,6 @@ public:
 
 	GameObject* GetSelectedObject();
 	bool GetMoveObjectMode();
+	void UpdatePointLights(Level* currentLevel);
 };
 

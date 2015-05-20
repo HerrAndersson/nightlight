@@ -40,8 +40,8 @@ private:
 	SaveLoadManager			saveLoadManager;
 	InputManager*			Input;
 
-	const bool debugDisableWallRendering = true;
-	const bool debugRenderEnemyPaths = true;
+	const bool debugDisableWallRendering = false;
+	const bool debugRenderEnemyPaths = false;
 
 public:
 

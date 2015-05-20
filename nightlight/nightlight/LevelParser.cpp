@@ -203,7 +203,25 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 	level->setPlayerPosition(character.GetPosition());
 
 	level->updateGameObjets();
-	//traverse levelGrid and find start/end pos, bind levers/pressurePlates/containers/doors.
-	//randomize enemy starting rotations
+	
+	LightObject* light1 = new LightObject();
+	LightObject* light2 = new LightObject();
+
+	if (levelID == 0) {
+		light1->setPosition(0, 0, 0);
+		light1->setDiffuseColor(0.0f, 0.0f, 0.0f, 0.0f);
+		light2->setPosition(-8.0f, -2.0f, -5.5f);
+		light2->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+	}
+	else {
+		light1->setPosition(-level->getEndDoor().x - 0.5f, -2.6f, -level->getEndDoor().y - 0.5f);
+		light1->setDiffuseColor(0.95f, 0.1f, 0.2f, 1.0f);
+		light2->setPosition(-7.0f, -2.0f, -5.5f);
+		light2->setDiffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	level->AddLight(light1);
+	level->AddLight(light2);
+
 	return level;
 }

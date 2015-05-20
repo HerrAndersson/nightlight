@@ -1,5 +1,6 @@
 #pragma once
 #include "Tile.h"
+#include "lightObject.h"
 
 using std::vector;
 
@@ -8,6 +9,7 @@ class Level
 private:
 	std::vector<std::vector<Tile*>> tileGrid;
 	std::vector<GameObject*> gameObjects;
+	std::vector<LightObject*> lights;
 	Coord startDoor;
 	Coord endDoor;
 	XMFLOAT3 currentPlayerPosition;
@@ -29,6 +31,9 @@ public:
 	XMFLOAT3 getPlayerPostion() const { return currentPlayerPosition; }
 	void setPlayerPosition(XMFLOAT3 PlayerPosition) { currentPlayerPosition = PlayerPosition; }
 	int GetLevelNr() const { return levelNr; }
+	void AddLight(LightObject* light) { lights.push_back(light); }
+	LightObject* GetLightAt(int at) const { return lights.at(at); }
+	std::vector<LightObject*> GetLights() const { return lights; }
 
 	vector<vector<Tile*>>* getTileGrid() { return &tileGrid; }
 

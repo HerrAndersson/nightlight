@@ -13,6 +13,9 @@ Level::~Level()
 	for (auto go : gameObjects) delete go;
 	gameObjects.clear();
 
+	for (auto l : lights) delete l;
+	lights.clear();
+
 	for (auto tg : tileGrid)
 	{
 		for (auto t : tg) delete t;

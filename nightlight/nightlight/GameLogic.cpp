@@ -303,6 +303,8 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	currentLevel->setPlayerPosition(pos);
 
 	UpdateSpotLight(levelStates, character, camera, spotlight, enemies);
+	if (levelStates.currentLevel != levelStates.menuLevel)
+		UpdatePointLights(levelStates.currentLevel);
 
 	return true;
 }
@@ -498,4 +500,14 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 	levelStates.loadedLevel = loadedLevel;
 
 	return true;
+}
+
+void GameLogic::UpdatePointLights(Level* currentLevel) {
+	Door* endDoor = currentLevel->getTile(currentLevel->getEndDoor())->getDoor();
+	LightObject* endDoorLight = currentLevel->GetLightAt(0);
+
+	if (endDoor->getIsOpen())
+		endDoorLight->setDiffuseColor(0.1f, 0.95f, 0.2f, 1.0f);
+	else
+		endDoorLight->setDiffuseColor(0.95f, 0.1f, 0.2f, 1.0f);
 }
