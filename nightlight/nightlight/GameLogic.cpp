@@ -170,13 +170,14 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 		MovableObject* movable = nullptr;
 
 		if (selectedObject != nullptr) {
-			lever = dynamic_cast<Lever*>(selectedObject);
-			movable = dynamic_cast<MovableObject*>(selectedObject);
+			int id = selectedObject->GetId();
 
-			if (movable != nullptr) {
+			if (id == GameObject::GoTypes::MOVABLEOBJECT) {
+				movable = (MovableObject*)selectedObject;
 				moveObjectMode = !moveObjectMode;
 			}
-			if (lever != nullptr) {
+			if (id == GameObject::GoTypes::LEVER) {
+				lever = (Lever*)selectedObject;
 				if (lever->getIsActivated()) {
 					lever->DeactivateLever();
 				} else {
