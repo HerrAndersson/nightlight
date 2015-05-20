@@ -12,7 +12,7 @@ private:
 	Door* activatesDoor = nullptr;
 
 public:
-	Container(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName);
+	Container(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName);
 	~Container();
 
 	std::string getActivatesName() const { return activatesName; }

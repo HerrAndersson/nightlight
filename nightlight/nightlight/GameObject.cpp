@@ -1,7 +1,8 @@
 #include "GameObject.h"
 
-GameObject::GameObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY)
+GameObject::GameObject(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY)
 {
+	this->id = id;
 	this->position = position;
 	this->rotation.y = XMConvertToDegrees(rotation);
 	this->renderObject = renderObject;

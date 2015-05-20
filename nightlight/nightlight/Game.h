@@ -40,6 +40,7 @@ private:
 	SaveLoadManager			saveLoadManager;
 	InputManager*			Input;
 
+	const bool debugDisableWallRendering = false;
 
 public:
 

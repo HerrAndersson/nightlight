@@ -6,7 +6,7 @@ private:
 
 public:
 
-	MovableObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
+	MovableObject(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	~MovableObject();
 };
 

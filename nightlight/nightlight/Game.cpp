@@ -19,7 +19,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	saveLoadManager = SaveLoadManager();
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	
-	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
+	character = new Character(GameObject::GoTypes::MAINCHARACTER, XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 
 	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
 	levelStates.currentLevel = levelStates.menuLevel;
@@ -96,7 +96,19 @@ bool Game::Render()
 	
 	for (int i = 0; i < (signed)toRender->size(); i++) 
 	{
-		Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
+		bool renderThis = true;
+
+		if (debugDisableWallRendering){
+			int id = toRender->at(i)->GetId();
+
+			if (id == GameObject::WALL
+				|| id == GameObject::CORNER
+				|| id == GameObject::CORNERIVERSE)
+				renderThis = false;
+		}
+
+		if (renderThis)
+			Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())

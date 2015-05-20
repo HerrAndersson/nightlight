@@ -468,7 +468,6 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		else if (!loadedLevel || loadedLevel->GetLevelNr() != levelStates.currentLevelNr || restart)
 		{
 			SelectObject(nullptr);
-			selectedObjectType = -1;
 			moveObjectMode = false;
 			moveObjectModeAxis = Axis::BOTH;
 

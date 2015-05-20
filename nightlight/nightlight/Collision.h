@@ -98,6 +98,21 @@ static XMFLOAT3 NextPositionFromDoorCollision(bool& result, XMFLOAT3 nextPos, fl
 	return nextPos;
 }
 
+static void ManageSelection(GameLogic* gl, bool collisionWithTile, bool collisionWithLever, Tile* iteratorTile, Coord &currentTileCoord, Coord &iteratorTileCoord)
+{
+	if (!gl->GetMoveObjectMode()){
+		if ((collisionWithTile || collisionWithLever) && iteratorTile){
+			MovableObject* movableObject = iteratorTile->getMovableObject();
+			Lever* lever = iteratorTile->getLever();
+
+			if (lever)
+				gl->SelectObject(lever);
+			else if (movableObject && (currentTileCoord.x == iteratorTileCoord.x || currentTileCoord.y == iteratorTileCoord.y))
+				gl->SelectObject(movableObject);
+		}
+	}
+}
+
 static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord iteratorTileCoord, Coord nextTileCoord, Coord currentTileCoord, float characterRadius, XMFLOAT3 nextPos)
 {
 	bool collisionWithTile = false;
@@ -134,21 +149,7 @@ static XMFLOAT3 ManagePlayerCollision(GameLogic* gl, Tile* iteratorTile, Coord i
 			}
 		}
 	}
-	if (!gl->GetMoveObjectMode()){
-		if ((collisionWithTile || collisionWithLever) && iteratorTile){
-			MovableObject* movableObject = iteratorTile->getMovableObject();
-			Lever* lever = iteratorTile->getLever();
-
-			if (lever){
-				gl->SelectObject(lever);
-				gl->SetSelectedObjectType(gl->SelectionTypes::LEVER);
-			}
-			else if (movableObject){
-				gl->SelectObject(movableObject);
-				gl->SetSelectedObjectType(gl->SelectionTypes::MOVABLEOBJECT);
-			}
-		}
-	}
+	ManageSelection(gl, collisionWithTile, collisionWithLever, iteratorTile, currentTileCoord, iteratorTileCoord);
 
 	return nextPos;
 }
@@ -160,7 +161,6 @@ static XMFLOAT3 ManageCollisions(GameLogic* gl, Level* currentLevel, GameObject*
 
 	if (!gl->GetMoveObjectMode()){
 		gl->SelectObject(nullptr);
-		gl->SetSelectedObjectType(-1);
 	}
 	
 	if (type == CollisionTypes::CHARACTER)

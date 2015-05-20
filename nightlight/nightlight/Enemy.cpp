@@ -1,8 +1,8 @@
 #include "Enemy.h"
 #include "Collision.h"
 
-Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType)
-	 : GameObject(position, rotation,  renderObject, coordX, coordY)
+Enemy::Enemy(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType)
+	: GameObject(id, position, rotation, renderObject, coordX, coordY)
 {
 	if (enemyType == "small")
 		this->enemyType = EnemyType::SMALL;

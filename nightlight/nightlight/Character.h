@@ -17,7 +17,7 @@ private:
 
 public:
 
-	Character ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
+	Character(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	~Character ( );
 
 	float getRadius() const { return radius; }

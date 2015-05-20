@@ -1,7 +1,7 @@
 #include "Button.h"
 
-Button::Button(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string buttonType, int buttonWidth)
-	: GameObject(position, rotation, renderObject, coordX, coordY)
+Button::Button(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string buttonType, int buttonWidth)
+	: GameObject(id, position, rotation, renderObject, coordX, coordY)
 {
 	if (buttonType == "start"){
 		this->buttonType = ButtonTypes::START;

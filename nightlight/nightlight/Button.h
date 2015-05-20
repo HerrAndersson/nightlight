@@ -6,7 +6,7 @@ class Button : public GameObject
 public:
 	enum ButtonTypes {START,CONTINUE,EXIT};
 
-	Button(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string buttonType, int buttonWidth);
+	Button(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string buttonType, int buttonWidth);
 	~Button();
 
 	int getButtonType()  const { return buttonType; }
