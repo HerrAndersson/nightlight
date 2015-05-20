@@ -159,6 +159,55 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lMaterial->ShadingModel.Set(lShadingName);
 		lMaterial->Shininess.Set(0.5);
 
+
+		FbxFileTexture* lTexture = FbxFileTexture::Create(lScene, "Diffuse Texture");
+
+		// Set texture properties.
+		lTexture->SetFileName("TEXTURE.PNG"); // Needs a texture string from bin file. 
+		lTexture->SetTextureUse(FbxTexture::eStandard);
+		lTexture->SetMappingType(FbxTexture::eUV);
+		lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+		lTexture->SetSwapUV(false);
+		lTexture->SetTranslation(0.0, 0.0);
+		lTexture->SetScale(1.0, 1.0);
+		lTexture->SetRotation(0.0, 0.0);
+
+		//connect the texture to the corresponding property of the material
+		if (lMaterial)
+			lMaterial->Diffuse.ConnectSrcObject(lTexture);
+
+		lTexture = FbxFileTexture::Create(lScene, "Ambient Texture");
+
+		// Set texture properties.
+		lTexture->SetFileName("gradient.jpg"); // Resource file is in current directory.
+		lTexture->SetTextureUse(FbxTexture::eStandard);
+		lTexture->SetMappingType(FbxTexture::eUV);
+		lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+		lTexture->SetSwapUV(false);
+		lTexture->SetTranslation(0.0, 0.0);
+		lTexture->SetScale(1.0, 1.0);
+		lTexture->SetRotation(0.0, 0.0);
+
+		// don't forget to connect the texture to the corresponding property of the material
+		if (lMaterial)
+			lMaterial->Ambient.ConnectSrcObject(lTexture);
+
+		lTexture = FbxFileTexture::Create(lScene, "Emissive Texture");
+
+		// Set texture properties.
+		lTexture->SetFileName("spotty.jpg"); // Resource file is in current directory.
+		lTexture->SetTextureUse(FbxTexture::eStandard);
+		lTexture->SetMappingType(FbxTexture::eUV);
+		lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+		lTexture->SetSwapUV(false);
+		lTexture->SetTranslation(0.0, 0.0);
+		lTexture->SetScale(1.0, 1.0);
+		lTexture->SetRotation(0.0, 0.0);
+
+		// don't forget to connect the texture to the corresponding property of the material
+		if (lMaterial)
+			lMaterial->Emissive.ConnectSrcObject(lTexture);
+		
 		int numFaces = (vtxId.size() / 3);
 		//Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
 		
