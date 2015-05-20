@@ -41,7 +41,6 @@ struct Coord
 class GameObject
 {
 protected:
-
 	int id;
 	Coord tileCoord;
 	XMFLOAT3		position;
@@ -53,11 +52,13 @@ protected:
 	XMFLOAT4 Weights = { 1, 0, 0, 0 };
 
 public:
+	enum GoTypes{ WALL, FLOOR, DOOR, STATICOBJECT, MOVABLEOBJECT, PRESSUREPLATE, CONTAINER, LEVER, MAINCHARACTER, SIDECHARACTER, SMALLENEMY, AVERAGEENEMY, LARGEENEMY, CORNER, CORNERIVERSE, BUTTON, PIPES, SHELF };
+
 	XMFLOAT4 GetWeights(){ return Weights; }
 
 	const XMFLOAT3 selectionColor = XMFLOAT3(0.21f, 0.21f, 0.17f);
 
-	GameObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
+	GameObject(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	virtual ~GameObject();
 
 	XMMATRIX GetWorldMatrix();
@@ -69,6 +70,7 @@ public:
 	bool IsSelected();
 	void SetSelected(bool selected);
 
+	int GetId() const { return id; }
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotationDeg();
 	XMFLOAT3 GetRotationRad();

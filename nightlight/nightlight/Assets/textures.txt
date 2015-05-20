@@ -13,3 +13,4 @@ box_movable.png
 Buttons.png
 Shelf_texture.png
 door.png
+Stair.png

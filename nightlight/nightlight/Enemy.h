@@ -14,6 +14,8 @@ private:
 	bool followingPlayer;
 	vector<XMINT2> path;
 	Coord next, end;
+	XMFLOAT3 direction;
+	float tileEps = 0.05f;
 
 	bool CheckPathValidity(Level* level);
 
@@ -30,13 +32,14 @@ private:
 public:
 
 	enum EnemyType { SMALL, MEDIUM, LARGE };
-	Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType);
+	Enemy(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string enemyType);
 
 	virtual ~Enemy();
 
 	void Update(Level* level, LightObject* spotlight);
 
 	void SetPath(vector<XMINT2> path);
+	vector<XMINT2> GetPath();
 
 	void SetFollowingPlayer(bool val);
 	bool IsFollowingPlayer();

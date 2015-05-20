@@ -7,7 +7,7 @@ class PressurePlate :
 	public GameObject {
 public:
 
-	PressurePlate(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName);
+	PressurePlate(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName);
 	~PressurePlate ( );
 
 	std::string getActivatesName() const { return activatesName; }

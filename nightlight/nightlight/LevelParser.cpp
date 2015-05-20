@@ -85,7 +85,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				int tileCoordY = std::stoi(unparsedLine.at(i++));
 				std::string enemyType = std::string(unparsedLine.at(i++));
 
-				enemies.push_back(Enemy(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
+				enemies.push_back(Enemy(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
 			}
 			else if (gameObjectType.find("button") != std::string::npos)
 			{
@@ -105,7 +105,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 
 				std::string buttonType = unparsedLine.at(i++);
 				int buttonWidth = stoi(unparsedLine.at(i++));
-				Button* button = new Button(position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, buttonType, buttonWidth);
+				Button* button = new Button(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, buttonType, buttonWidth);
 				
 				for (int x = tileCoordX; x < tileCoordX + buttonWidth; x++)
 				{

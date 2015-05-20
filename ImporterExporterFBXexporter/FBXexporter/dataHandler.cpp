@@ -133,15 +133,83 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 			lMesh->SetControlPointAt(lControlPoints.at(p), p);
 		}
 		
-		
+		///MATERIALS
 		//create the materials
 		FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
 		lMaterialElement->SetMappingMode(FbxGeometryElement::eAllSame);
 		lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
 		lMaterialElement->GetIndexArray().Add(0);
 
+		FbxString lMaterialName = "material";
+		FbxString lShadingName = "Phong";
+		lMaterialName += i;
+		FbxDouble3 lBlack(0.0, 0.0, 0.0);
+		FbxDouble3 lRed(i, 0.0, 0.0);
+		FbxDouble3 lColor;
+		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
+
+		//Generate primary and secondary colors.
+		lMaterial->Emissive.Set(lBlack);
+		lMaterial->Ambient.Set(lRed);
+		lColor = FbxDouble3(i > 2 ? 1.0 : 0.0,
+			i > 0 && i < 4 ? 1.0 : 0.0,
+			i % 2 ? 0.0 : 1.0);
+		lMaterial->Diffuse.Set(lColor);
+		lMaterial->TransparencyFactor.Set(0.0);
+		lMaterial->ShadingModel.Set(lShadingName);
+		lMaterial->Shininess.Set(0.5);
+
+
+		FbxFileTexture* lTexture = FbxFileTexture::Create(lScene, "Diffuse Texture");
+
+		// Set texture properties.
+		lTexture->SetFileName("TEXTURE.PNG"); // Needs a texture string from bin file. 
+		lTexture->SetTextureUse(FbxTexture::eStandard);
+		lTexture->SetMappingType(FbxTexture::eUV);
+		lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+		lTexture->SetSwapUV(false);
+		lTexture->SetTranslation(0.0, 0.0);
+		lTexture->SetScale(1.0, 1.0);
+		lTexture->SetRotation(0.0, 0.0);
+
+		//connect the texture to the corresponding property of the material
+		if (lMaterial)
+			lMaterial->Diffuse.ConnectSrcObject(lTexture);
+
+	//	lTexture = FbxFileTexture::Create(lScene, "Ambient Texture");
+	//
+	//	//Not needed
+	//	lTexture->SetFileName("gradient.jpg"); // Not needed
+	//	lTexture->SetTextureUse(FbxTexture::eStandard);
+	//	lTexture->SetMappingType(FbxTexture::eUV);
+	//	lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+	//	lTexture->SetSwapUV(false);
+	//	lTexture->SetTranslation(0.0, 0.0);
+	//	lTexture->SetScale(1.0, 1.0);
+	//	lTexture->SetRotation(0.0, 0.0);
+	//
+	//	// don't forget to connect the texture to the corresponding property of the material
+	//	if (lMaterial)
+	//		lMaterial->Ambient.ConnectSrcObject(lTexture);
+	//
+	//	lTexture = FbxFileTexture::Create(lScene, "Emissive Texture");
+	//
+	//	// Set texture properties.
+	//	lTexture->SetFileName("spotty.jpg"); // Resource file is in current directory.
+	//	lTexture->SetTextureUse(FbxTexture::eStandard);
+	//	lTexture->SetMappingType(FbxTexture::eUV);
+	//	lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+	//	lTexture->SetSwapUV(false);
+	//	lTexture->SetTranslation(0.0, 0.0);
+	//	lTexture->SetScale(1.0, 1.0);
+	//	lTexture->SetRotation(0.0, 0.0);
+	//
+	//	// don't forget to connect the texture to the corresponding property of the material
+	//	if (lMaterial)
+	//		lMaterial->Emissive.ConnectSrcObject(lTexture);
+		
 		int numFaces = (vtxId.size() / 3);
-		// Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
+		//Create polygons later after FbxGeometryElementMaterial is created.Assign material indices.
 		
 		int vId = 0;
 		for (int f = 0; f < numFaces; f++)
@@ -189,20 +257,22 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lNode->SetNodeAttribute(lMesh);
 		lNode->SetShadingMode(FbxNode::eTextureShading);
 		
+		if (lNode)
+			lNode->AddMaterial(lMaterial);
+
 		////create UVset
 		FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
 		FBX_ASSERT(lUVElement1 != NULL);
 		lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
 		lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
-		lUVElement1->SetMappingMode(FbxGeometryElement::eByControlPoint);
-		lUVElement1->SetReferenceMode(FbxGeometryElement::eDirect);
+
 		
-		for (int u = 0; u < sizePoints; u++)
+		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
 			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
 
-	//	for (int i = 0; i<uvId.size(); i++)
-	//		lUVElement1->GetIndexArray().Add(uvId.at(i % 3));
-	//	
+		for (int i = 0; i<uvId.size(); i++)
+			lUVElement1->GetIndexArray().Add(uvId.at(i));
+		
 
 
 

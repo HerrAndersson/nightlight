@@ -17,8 +17,11 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 	if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
 		return false;
 
-	if (!UpdateAI(enemies, character, spotLight))
-		return false;
+	if (levelStates.currentLevel != levelStates.menuLevel)
+	{
+		if (!UpdateAI(enemies, character, spotLight))
+			return false;
+	}
 
 	if (!ManageLevelStates(levelStates, character, enemies))
 		return false;
@@ -170,13 +173,14 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 		MovableObject* movable = nullptr;
 
 		if (selectedObject != nullptr) {
-			lever = dynamic_cast<Lever*>(selectedObject);
-			movable = dynamic_cast<MovableObject*>(selectedObject);
+			int id = selectedObject->GetId();
 
-			if (movable != nullptr) {
+			if (id == GameObject::GoTypes::MOVABLEOBJECT) {
+				movable = (MovableObject*)selectedObject;
 				moveObjectMode = !moveObjectMode;
 			}
-			if (lever != nullptr) {
+			if (id == GameObject::GoTypes::LEVER) {
+				lever = (Lever*)selectedObject;
 				if (lever->getIsActivated()) {
 					lever->DeactivateLever();
 				}
@@ -470,7 +474,6 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		else if (!loadedLevel || loadedLevel->GetLevelNr() != levelStates.currentLevelNr || restart)
 		{
 			SelectObject(nullptr);
-			selectedObjectType = -1;
 			moveObjectMode = false;
 			moveObjectModeAxis = Axis::BOTH;
 
@@ -492,7 +495,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		else
 		{		
 			moveObjectMode = loadedLevelMoveObjectMode;
-			moveObjectModeAxis = loadedLevelMoveObjectMode;
+			moveObjectModeAxis = loadedLevelMoveObjectModeAxis;
 			currentLevel = loadedLevel;
 			character->SetRotationDeg(loadedLevelCharacterRot);
 			character->SetPosition(currentLevel->getPlayerPostion());

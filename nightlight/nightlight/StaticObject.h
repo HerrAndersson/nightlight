@@ -6,7 +6,7 @@ private:
 
 public:
 
-	StaticObject(XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
+	StaticObject(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY);
 	~StaticObject ( );
 };
 

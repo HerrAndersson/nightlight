@@ -19,7 +19,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	saveLoadManager = SaveLoadManager();
 	Input = new InputManager(hwnd, screenWidth, screenHeight);
 	
-	character = new Character(XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
+	character = new Character(GameObject::GoTypes::MAINCHARACTER, XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 	character->SetUpAnimation(Assets->GetRenderObject(21), 1);
 
 	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
@@ -77,9 +77,41 @@ bool Game::Render()
 	camera->GetProjectionMatrix(projectionMatrix);
 	camera->GetViewMatrix(viewMatrix);
 
-	vector<XMINT2> p;
-	if (enemies.size() > 0)
-		p = AI->GetPath(levelStates.currentLevel, XMINT2(enemies.at(0).GetTileCoord().x, enemies.at(0).GetTileCoord().y), XMINT2(character->GetTileCoord().x, character->GetTileCoord().y));
+	vector<vector<XMINT2>> paths;
+
+	if (debugRenderEnemyPaths)
+	{
+		for (auto e : enemies)
+		{
+			paths.push_back(e.GetPath());
+		}
+
+		//int i = 0;
+
+		for (auto& path : paths)
+		{
+			//i++;
+			for (auto& p : path)
+			{
+				Tile* tile = levelStates.currentLevel->getTile(p.x, p.y);
+				if (tile)
+				{
+					GameObject* go = tile->getFloorTile();
+					if (!go)
+						go = tile->getPressurePlate();
+
+					if (go)
+					{
+						XMFLOAT3 color = go->GetColorModifier();
+						color.y += 0.3f;
+						go->SetColorModifier(color);
+					}
+				}
+
+			}
+		}
+	}
+
 
 	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 
@@ -97,12 +129,24 @@ bool Game::Render()
 	
 	for (int i = 0; i < (signed)toRender->size(); i++) 
 	{
-		Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
+		bool renderThis = true;
+
+		if (debugDisableWallRendering){
+			int id = toRender->at(i)->GetId();
+
+			if (id == GameObject::WALL
+				|| id == GameObject::CORNER
+				|| id == GameObject::CORNERIVERSE)
+				renderThis = false;
+		}
+
+		if (renderThis)
+			Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
 	{
-		for (int i = 0; i < enemies.size();i++)
+		for (auto& e : enemies) 
 		{
 			enemies[i].UpdateAnimation();
 			Renderer->Render(&enemies[i], enemies[i].GetWeights());
@@ -117,20 +161,33 @@ bool Game::Render()
 
 	Renderer->EndScene();
 
-	for (auto x : p)
-	{
-		Coord c = Coord(x.x, x.y);
-		Tile* t = levelStates.currentLevel->getTile(c);
 
-		if (t)
+
+	for (auto& path : paths)
+	{
+		for (auto& p : path)
 		{
-			if (t->getFloorTile())
-				t->getFloorTile()->SetSelected(false);
-			if (t->getPressurePlate())
-				t->getPressurePlate()->SetSelected(false);
+			Tile* tile = levelStates.currentLevel->getTile(p.x, p.y);
+			if (tile)
+			{
+				GameObject* go = tile->getFloorTile();
+				if (!go)
+					go = tile->getPressurePlate();
+
+				if (go)
+				{
+					XMFLOAT3 color = go->GetColorModifier();
+					color.y -= 0.3f;
+					go->SetColorModifier(color);
+				}
+			}
+
 		}
 	}
-	p.clear();
+
+
+
+
 
 	return result;
 }

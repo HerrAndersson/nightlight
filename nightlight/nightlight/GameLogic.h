@@ -43,7 +43,6 @@ private:
 	XMFLOAT3 movableObjectTilePos;
 
 	GameObject* selectedObject = nullptr;
-	int selectedObjectType = -1;
 	Button* selectedButton = nullptr;
 
 	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy>& enemies);
@@ -65,8 +64,5 @@ public:
 
 	GameObject* GetSelectedObject();
 	bool GetMoveObjectMode();
-
-	int GetSelectedObjectType() const { return selectedObjectType; }
-	void SetSelectedObjectType(int val) { selectedObjectType = val; }
 };
 

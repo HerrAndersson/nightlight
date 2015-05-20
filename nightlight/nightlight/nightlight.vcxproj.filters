@@ -33,9 +33,6 @@
     <Filter Include="Game\Level">
       <UniqueIdentifier>{e4e6b5e4-50a5-48ed-af4b-dc766853f2a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Menu">
-      <UniqueIdentifier>{8878eee0-8a19-4c2f-a5ff-a96ceb2c46af}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -126,11 +123,11 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Game\Menu</Filter>
-    </ClCompile>
     <ClCompile Include="SaveLoadManager.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Game\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,14 +227,14 @@
     <ClInclude Include="Enemy.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Game\Menu</Filter>
-    </ClInclude>
     <ClInclude Include="SaveLoadManager.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Game\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
