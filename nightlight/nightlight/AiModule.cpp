@@ -38,53 +38,20 @@ void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 
 XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)
 {
+	Coord orig = ai->GetTileCoord();
 	XMINT2 goal(0, 0);
 	bool found = false;
 
 	while (!found)
 	{
-		for (int i = 0; i < 2; i++)
-		{
-			int rnd = rand() % R_MAX + R_MIN;
+		goal.x = rand() % 5 - 2;	
+		goal.y = rand() % 5 - 2;
 
-			if (i == 0)
-			{
-				if (rand() % 2 == 0)
-				{
-					goal.x = rnd;
+		goal.x += orig.x;
+		goal.y += orig.y;
 
-					int boundsX = level->sizeX();
-					if (goal.x >= boundsX)
-						goal.x = boundsX;
-				}
-				else
-				{
-					goal.x = -rnd;
-					if (goal.x < 0)
-						goal.x = 0;
-				}
-			}
-			else if (i == 1)
-			{
-				if (rand() % 2 == 0)
-				{
-					goal.y = rnd;
-
-					int boundsY = level->sizeY(goal.x);
-					if (goal.y >= boundsY)
-						goal.y = boundsY;
-				}
-				else
-				{
-					goal.y = -rnd;
-
-					if (goal.y < 0)
-						goal.y = 0;
-				}
-			}
-		}
-
-		if (level->getTile(goal.x, goal.y)->IsWalkableAI())
+		Tile* tile = level->getTile(goal.x, goal.y);
+		if (tile && tile->IsWalkableAI())
 			found = true;
 	}
 

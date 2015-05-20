@@ -152,8 +152,8 @@ bool Tile::IsWalkableAI()
 	else if(staticObject)
 		return false;
 
-	//if (door && !door->getIsOpen())
-	//	return false;
+	if (door && !door->getIsOpen())
+		return false;
 
 	return true;
 }

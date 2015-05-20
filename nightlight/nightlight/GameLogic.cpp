@@ -17,8 +17,11 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 	if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
 		return false;
 
-	if (!UpdateAI(enemies, character, spotLight))
-		return false;
+	if (levelStates.currentLevel != levelStates.menuLevel)
+	{
+		if (!UpdateAI(enemies, character, spotLight))
+			return false;
+	}
 
 	if (!ManageLevelStates(levelStates, character, enemies))
 		return false;
@@ -490,7 +493,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		else
 		{		
 			moveObjectMode = loadedLevelMoveObjectMode;
-			moveObjectModeAxis = loadedLevelMoveObjectMode;
+			moveObjectModeAxis = loadedLevelMoveObjectModeAxis;
 			currentLevel = loadedLevel;
 			character->SetRotationDeg(loadedLevelCharacterRot);
 			character->SetPosition(currentLevel->getPlayerPostion());
