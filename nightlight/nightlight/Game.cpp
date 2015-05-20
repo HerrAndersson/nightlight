@@ -119,7 +119,8 @@ bool Game::Render()
 	
 	for (int i = 0; i < toRender->size(); i++) 
 	{
-		Renderer->Render(toRender->at(i));
+		//Depth test seem to be inverted. Objects in the back are rendered in the front. Probably because everything is inverted from maya?
+		Renderer->RenderShadow(toRender->at(i));
 	}
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);

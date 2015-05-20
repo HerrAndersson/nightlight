@@ -321,8 +321,8 @@ bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, Cam
 
 	XMFLOAT3 pPos = player->GetPosition();
 	//offset light
-	pPos.x += pForward.x / 2;
-	pPos.z += pForward.z / 2;
+	pPos.x += pForward.x / 2.5f;
+	pPos.z += pForward.z / 2.5f;
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 
