@@ -19,3 +19,4 @@ grandpa.bin
 pipes.bin
 shelf.bin
 Thick.bin
+char-lever-blendshapes.bin

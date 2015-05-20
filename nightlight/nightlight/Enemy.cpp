@@ -13,10 +13,8 @@ Enemy::Enemy(XMFLOAT3 position, float rotation, RenderObject* renderObject, int 
 
 	followingPlayer = true;
 
-	weights[0] = 1;
-	weights[1] = 0;
-	weights[2] = 0;
-	weights[3] = 0;
+	SetUpAnimation(renderObject, 3);
+	PlayAnimation(0);
 }
 
 Enemy::~Enemy()
@@ -55,7 +53,7 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 					{
 						Tile* iteratorTile = level->getTile(x, y);
 						if (iteratorTile && !iteratorTile->IsWalkableAI())
-						{	
+						{
 							inLight = InLight(level, this, spotlight);
 
 							Coord iteratorTileCoord = Coord(x, y);
@@ -79,38 +77,11 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 
 			next = Coord(p.x, p.y);
 		}
-
+		moved = 1;
 		SetPosition(nextPos);
 	}
-}
-
-void Enemy::UpdateWeights(XMFLOAT4 &outputweights)
-{
-	float weightchangechange[4] = { (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100) };
-	float totalweightchangechange = weightchangechange[0] + weightchangechange[1] + weightchangechange[2] + weightchangechange[3];
-
-	for (int i = 0; i < 4; i++)
-	{
-		weightchangechange[i] = weightchangechange[i] / totalweightchangechange * 4.0f - 1.0f;
-		weightchange[i] += weightchangechange[i];
-		weightchange[i] *= 0.9f;
-	}
-
-	float totalweight = 0;
-	for (int i = 0; i < 4; i++)
-	{
-		weights[i] += (weightchange[i] / 60);
-		if (weights[i] < 0)
-			weights[i] = 0;
-		if (weights[i] > 1)
-			weights[i] = 1;
-		totalweight += weights[i];
-	}
-
-	outputweights.x = weights[0] / totalweight;
-	outputweights.y = weights[1] / totalweight;
-	outputweights.z = weights[2] / totalweight;
-	outputweights.w = weights[3] / totalweight;
+	else
+		moved = 0;
 }
 
 bool Enemy::IsFollowingPlayer()
@@ -163,4 +134,90 @@ void Enemy::SetPath(vector<XMINT2> path)
 		end = Coord(path.at(0).x, path.at(0).y);
 		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
 	}
+}
+
+void Enemy::UpdateAnimation()
+{
+	if (!currentAnim)
+	{
+		UpdatePrimaryAnimation();
+	}
+	else
+	{
+		UpdateSecondaryAnimation();
+	}
+}
+
+void Enemy::UpdatePrimaryAnimation()
+{
+	if (moved)
+	{
+		frame += 0.1f;
+		if (frame > (framelength * 2))
+			frame = 0;
+
+		if (frame < (framelength * 2))
+		{
+			Weights.x = 0;
+			Weights.y = 0;
+			Weights.z = (-frame + (framelength * 2)) / framelength;
+			Weights.w = (frame - (framelength)) / framelength;
+		}
+		if (frame < (framelength))
+		{
+			Weights.x = 0;
+			Weights.y = (-frame + (framelength)) / framelength;
+			Weights.z = frame / framelength;
+			Weights.w = 0;
+		}
+	}
+	else{
+		frame = 0;
+		Weights = { 1, 0, 0, 0 };
+	}
+}
+
+void Enemy::UpdateSecondaryAnimation()
+{
+	frame += 0.1f;
+	if (frame > (framelength * 3))
+		PlayAnimation(0);
+
+	if (frame < (framelength * 3))
+	{
+		Weights.x = 0;
+		Weights.y = 0;
+		Weights.z = (-frame + (framelength * 3)) / framelength;
+		Weights.w = (frame - (framelength * 2)) / framelength;
+	}
+	if (frame < (framelength * 2))
+	{
+		Weights.x = 0;
+		Weights.y = (-frame + (framelength * 2)) / framelength;
+		Weights.z = (frame - (framelength)) / framelength;
+		Weights.w = 0;
+	}
+	if (frame < (framelength))
+	{
+		Weights.x = (-frame + (framelength)) / framelength;
+		Weights.y = frame / framelength;
+		Weights.z = 0;
+		Weights.w = 0;
+	}
+}
+
+void Enemy::PlayAnimation(int animID)
+{
+	frame = 0;
+	currentAnim = animID;
+	renderObject = animations[animID].animation;
+	framelength = animations[animID].framelength;
+}
+
+void Enemy::SetUpAnimation(RenderObject* anim, float framelengthin)
+{
+	Animation temp;
+	temp.animation = anim;
+	temp.framelength = framelengthin;
+	animations.push_back(temp);
 }

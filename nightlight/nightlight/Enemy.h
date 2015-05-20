@@ -15,10 +15,17 @@ private:
 	vector<XMINT2> path;
 	Coord next, end;
 
-	float weights[4];
-	float weightchange[4];
-
 	bool CheckPathValidity(Level* level);
+
+	float frame;
+	int moved;
+
+	std::vector<Animation> animations;
+	float framelength;
+	int currentAnim;
+
+	void UpdatePrimaryAnimation();
+	void UpdateSecondaryAnimation();
 
 public:
 
@@ -28,7 +35,6 @@ public:
 	virtual ~Enemy();
 
 	void Update(Level* level, LightObject* spotlight);
-	void UpdateWeights(XMFLOAT4 &outputweights);
 
 	void SetPath(vector<XMINT2> path);
 
@@ -36,5 +42,8 @@ public:
 	bool IsFollowingPlayer();
 	bool HasValidPath(Level* level);
 
+	void PlayAnimation(int animID);
+	void UpdateAnimation();
+	void SetUpAnimation(RenderObject* anim, float framelengthin);
 };
 

@@ -9,12 +9,17 @@ private:
 	float dragSpeed = 0.08f;
 
 	int hitPoints = 3;
-	int invulTimer=0;
+	int invulTimer = 0;
 
-	XMFLOAT4 characterWeights = { 1, 0, 0, 0 };
-	float frame = 0;
+	float frame;
 	int moved;
 
+	std::vector<Animation> animations;
+	float framelength;
+	int currentAnim;
+
+	void UpdatePrimaryAnimation();
+	void UpdateSecondaryAnimation();
 public:
 
 	Character ( XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY );
@@ -29,10 +34,12 @@ public:
 	void SetInvulTimer(int val) { invulTimer = val; }
 
 	float GetSpeed() const { return speed; }
-	XMFLOAT4 GetBlendWeights() { return characterWeights; }
 	int GetMoved() { return moved; }
 	void SetMoved(int val) { moved = val; }
 	void SetSpeed(float val) { speed = val; }
+
+	void PlayAnimation(int animID);
 	void UpdateCharacterAnimation();
+	void SetUpAnimation(RenderObject* anim, float framelengthin);
 };
 

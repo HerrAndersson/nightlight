@@ -179,7 +179,9 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			if (lever != nullptr) {
 				if (lever->getIsActivated()) {
 					lever->DeactivateLever();
-				} else {
+				}
+				else {
+					character->PlayAnimation(1);
 					lever->ActivateLever();
 				}
 			}

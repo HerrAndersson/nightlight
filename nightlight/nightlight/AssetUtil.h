@@ -92,10 +92,6 @@ namespace assetUtility {
 		std::vector<Keyframe> frames;
 	};
 
-	struct Animation{
-		int length, startFrame;
-	};
-
 	struct AmbientLightStruct 
 	{
 		double intensity;
@@ -167,6 +163,11 @@ namespace assetUtility {
 		Model* model;
 		ID3D11ShaderResourceView* diffuseTexture = nullptr;
 		ID3D11ShaderResourceView* specularTexture = nullptr;
+	};
+
+	struct Animation{
+		RenderObject* animation;
+		float framelength;
 	};
 
 	struct LightData 
