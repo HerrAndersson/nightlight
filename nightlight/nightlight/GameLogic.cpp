@@ -180,12 +180,12 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 				moveObjectMode = !moveObjectMode;
 			}
 			if (id == GameObject::GoTypes::LEVER) {
+				character->PlayAnimation(1);
 				lever = (Lever*)selectedObject;
 				if (lever->getIsActivated()) {
 					lever->DeactivateLever();
 				}
 				else {
-					character->PlayAnimation(1);
 					lever->ActivateLever();
 				}
 			}
