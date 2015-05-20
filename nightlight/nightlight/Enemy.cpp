@@ -100,8 +100,6 @@ bool Enemy::HasValidPath(Level* level)
 
 bool Enemy::CheckPathValidity(Level* level)
 {
-	bool valid = true;
-
 	//Traverse the path and check all tiles for validity
 	for (int i = path.size() - 1; i >= 0; i--)
 	{
@@ -110,18 +108,17 @@ bool Enemy::CheckPathValidity(Level* level)
 		Tile* tile = level->getTile(p.x, p.y);
 		if (!(tile && tile->IsWalkableAI()))
 		{
-			valid = false;
-			break;
+			return false;
 		}
 	}
 
 	if (GetTileCoord() == end)
-		valid = false;
+		return false;
 
 	if (path.size() <= 0)
-		valid = false;
+		return false;
 
-	return valid;
+	return true;
 }
 
 void Enemy::SetPath(vector<XMINT2> path)
