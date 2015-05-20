@@ -253,5 +253,11 @@
     <None Include="blendVertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
+    <None Include="Assets\Shaders\ShadowVS.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\ShadowPS.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -164,6 +164,14 @@
       </ExcludedFromBuild>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\ShadowPS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Assets\Shaders\ShadowVS.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

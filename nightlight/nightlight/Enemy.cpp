@@ -12,7 +12,7 @@ Enemy::Enemy(int id, XMFLOAT3 position, float rotation, RenderObject* renderObje
 	else if (enemyType == "large")
 		this->enemyType = EnemyType::LARGE;
 
-	followingPlayer = true;
+	followingPlayer = false;
 
 	SetUpAnimation(renderObject, 3);
 	PlayAnimation(0);
@@ -66,6 +66,7 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 
 		if (tileCoord == next && xRem >= 0.45f && zRem >= 0.45f)
 		{
+			level->getTile(next)->getFloorTile()->SetSelected(false);
 			//cout << "next!" << endl;
 			XMINT2 p = path.at(path.size() - 1);
 			this->path.pop_back();
@@ -102,7 +103,7 @@ bool Enemy::CheckPathValidity(Level* level)
 	bool valid = true;
 
 	//Traverse the path and check all tiles for validity
-	for (int i = path.size() - 1; i > 0; i--)
+	for (int i = path.size() - 1; i >= 0; i--)
 	{
 		XMINT2 p = path.at(i);
 
