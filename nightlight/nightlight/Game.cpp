@@ -6,9 +6,9 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000);
+	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000.0f);
 	spotLight = new LightObject();
-	spotLight->generateProjMatrix(0.1f, 1000);
+	spotLight->generateProjMatrix(0.1f, 1000.0f);
 
 	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
 	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
@@ -120,6 +120,7 @@ bool Game::Render()
 	for (int i = 0; i < toRender->size(); i++) 
 	{
 		//Depth test seem to be inverted. Objects in the back are rendered in the front. Probably because everything is inverted from maya?
+		//Works if lightView + cameraProj is used! No idea why lightProj inverts stuff...
 		Renderer->RenderShadow(toRender->at(i));
 	}
 
