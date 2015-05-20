@@ -194,15 +194,14 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		FBX_ASSERT(lUVElement1 != NULL);
 		lUVElement1->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
 		lUVElement1->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
-		lUVElement1->SetMappingMode(FbxGeometryElement::eByControlPoint);
-		lUVElement1->SetReferenceMode(FbxGeometryElement::eDirect);
+
 		
-		for (int u = 0; u < sizePoints; u++)
+		for (int u = 0; u < modelList.at(i).UVs.size(); u++)
 			lUVElement1->GetDirectArray().Add((lUVs.at(u)));
 
-	//	for (int i = 0; i<uvId.size(); i++)
-	//		lUVElement1->GetIndexArray().Add(uvId.at(i % 3));
-	//	
+		for (int i = 0; i<uvId.size(); i++)
+			lUVElement1->GetIndexArray().Add(uvId.at(i));
+		
 
 
 
