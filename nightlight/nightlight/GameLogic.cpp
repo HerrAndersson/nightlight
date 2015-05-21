@@ -178,6 +178,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			if (id == GameObject::GoTypes::MOVABLEOBJECT) {
 				movable = (MovableObject*)selectedObject;
 				moveObjectMode = !moveObjectMode;
+				character->PlayAnimation(2);
 			}
 			if (id == GameObject::GoTypes::LEVER) {
 				character->PlayAnimation(1);
@@ -260,6 +261,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	{
 		if (sqrt((pow((e.GetPosition().x - pos.x), 2)) + (pow((e.GetPosition().z - pos.z), 2))) < 0.7f && character->GetInvulTimer() <= 0)
 		{
+			character->PlayAnimation(3);
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0)
 				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo

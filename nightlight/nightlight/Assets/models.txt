@@ -8,7 +8,7 @@ corner.bin
 corner_reverse.bin
 pressurep.bin
 enemy_big.bin
-enemy_medium_pose.bin
+enemy_medium-walk-blendshapes.bin
 enemy_small.bin
 box.bin
 pillar.bin
@@ -24,3 +24,4 @@ char-lever-blendshapes.bin
 char-box-push-blendshapes.bin
 char-hurt-blendshapes.bin
 char-gameover2_blendshapes.bin
+enemy_medium-hit-blendshapes.bin
