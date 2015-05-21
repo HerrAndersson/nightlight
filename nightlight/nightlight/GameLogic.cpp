@@ -15,8 +15,11 @@ GameLogic::~GameLogic()
 
 bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies)
 {
-	if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
-		return false;
+	if (character->GetHitPoints() > 0)
+	{
+		if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
+			return false;
+	}
 
 	if (levelStates.currentLevel != levelStates.menuLevel)
 	{
@@ -273,37 +276,41 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0){
 				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo
+				character->SetPrimaryAnimation(5); 
 				character->PlayAnimation(4);
+				spotlight->setDiffuseColor(0, 0, 0, 0);
 			}
 			character->SetInvulTimer(180);
 		}
 	}
-	int invulTimer = character->GetInvulTimer();
-	int blinkspeed = 4;
-	if (character->GetHitPoints()>0)//temporär ifsats för att förhindra krashar då hp kan gå under 1
-	blinkspeed=character->GetHitPoints()*10;
-	if (invulTimer > 0)
-	{
-		int mod = invulTimer % blinkspeed;
-		if (mod>((blinkspeed/2)-1))
-			character->SetSelected(true);
-		if (mod<(blinkspeed / 2))
-			character->SetSelected(false);
+	if (!character->GetHitPoints() <= 0){
+		int invulTimer = character->GetInvulTimer();
+		int blinkspeed = 4;
+		if (character->GetHitPoints() > 0)//temporär ifsats för att förhindra krashar då hp kan gå under 1
+			blinkspeed = character->GetHitPoints() * 10;
+		if (invulTimer > 0)
+		{
+			int mod = invulTimer % blinkspeed;
+			if (mod > ((blinkspeed / 2) - 1))
+				character->SetSelected(true);
+			if (mod < (blinkspeed / 2))
+				character->SetSelected(false);
 
-// 		if (invulTimer > 2.5)
-// 			character->SetSelected(true);
-// 		if (invulTimer > 2 && invulTimer < 2.5)
-// 			character->SetSelected(false);
-// 		if (invulTimer > 1.5 && invulTimer < 2)
-// 			character->SetSelected(true);
-// 		if (invulTimer > 1 && invulTimer < 1.5)
-// 			character->SetSelected(false);
-// 		if (invulTimer > 0.5 && invulTimer < 1)
-// 			character->SetSelected(true);
-// 		if (invulTimer > 0 && invulTimer < 0.5)
-// 			character->SetSelected(false);
+			// 		if (invulTimer > 2.5)
+			// 			character->SetSelected(true);
+			// 		if (invulTimer > 2 && invulTimer < 2.5)
+			// 			character->SetSelected(false);
+			// 		if (invulTimer > 1.5 && invulTimer < 2)
+			// 			character->SetSelected(true);
+			// 		if (invulTimer > 1 && invulTimer < 1.5)
+			// 			character->SetSelected(false);
+			// 		if (invulTimer > 0.5 && invulTimer < 1)
+			// 			character->SetSelected(true);
+			// 		if (invulTimer > 0 && invulTimer < 0.5)
+			// 			character->SetSelected(false);
 
-		character->SetInvulTimer(invulTimer - 1);
+			character->SetInvulTimer(invulTimer - 1);
+		}
 	}
 // 	system("CLS");
 // 	printf("%f", character->GetInvulTimer());
@@ -335,8 +342,8 @@ bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, Cam
 
 	XMFLOAT3 pPos = player->GetPosition();
 	//offset light
-	pPos.x += pForward.x / 2.5f;
-	pPos.z += pForward.z / 2.5f;
+	pPos.x -= pForward.x / 2.0f;
+	pPos.z -= pForward.z / 2.0f;
 	pPos.y -= 0.7f;
 	spotlight->setPosition(pPos.x, pPos.y, pPos.z);
 
@@ -458,8 +465,10 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 
 	//Check for end door. If found, go to next level
 	Door* door = currentTile->getDoor();
-	if (door && door->getDoorType() == door->DoorTypes::END_DOOR && door->getIsOpen())
+	if (door && door->getDoorType() == door->DoorTypes::END_DOOR && door->getIsOpen()){
 		levelStates.currentLevelNr++;
+		character->SetHitPoints(3);
+	}
 
 	//Set the correct level
 	if (currentLevel->GetLevelNr() != levelStates.currentLevelNr)

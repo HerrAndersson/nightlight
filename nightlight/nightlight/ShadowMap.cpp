@@ -14,7 +14,8 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 	///////////////////////////////////////////////////////// T2D, DSV, SRV /////////////////////////////////////////////////////////
 	D3D11_TEXTURE2D_DESC shadowMapDesc;
 	ZeroMemory(&shadowMapDesc, sizeof(D3D11_TEXTURE2D_DESC));
-	shadowMapDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	//shadowMapDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	shadowMapDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	shadowMapDesc.MipLevels = 1;
 	shadowMapDesc.ArraySize = 1;
 	shadowMapDesc.SampleDesc.Count = 1;
@@ -24,14 +25,16 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	/*shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;*/
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	hr = device->CreateTexture2D(&shadowMapDesc, nullptr, &shadowMap);
@@ -173,4 +176,9 @@ void ShadowMap::SetDataPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& li
 ID3D11ShaderResourceView* ShadowMap::GetShadowSRV()
 {
 	return shadowResourceView;
+}
+
+int ShadowMap::GetSize()
+{
+	return dimensions;
 }
