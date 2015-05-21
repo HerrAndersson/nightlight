@@ -44,10 +44,11 @@ private:
 		float pad3;
 		XMFLOAT4 lightDiffusePoint2;
 
-		int shadowMapSize;
 		XMFLOAT3 lightPosPoint3;
 		float pad4;
 		XMFLOAT4 lightDiffusePoint3;
+
+		int shadowMapSize;
 	};
 
 	struct MatrixBufferPerObject
