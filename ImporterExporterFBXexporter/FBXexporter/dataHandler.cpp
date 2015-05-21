@@ -144,16 +144,14 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		FbxString lShadingName = "Phong";
 		lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
-		FbxDouble3 lRed(i, 0.0, 0.0);
+		FbxDouble3 lRed(0.0, 0.0, 0.0);
 		FbxDouble3 lColor;
 		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
 
 		//Generate primary and secondary colors.
 		lMaterial->Emissive.Set(lBlack);
 		lMaterial->Ambient.Set(lRed);
-		lColor = FbxDouble3(i > 2 ? 1.0 : 0.0,
-			i > 0 && i < 4 ? 1.0 : 0.0,
-			i % 2 ? 0.0 : 1.0);
+		lColor = FbxDouble3(modelList.at(i).diffuse.x, modelList.at(i).diffuse.y, modelList.at(i).diffuse.z);
 		lMaterial->Diffuse.Set(lColor);
 		lMaterial->TransparencyFactor.Set(0.0);
 		lMaterial->ShadingModel.Set(lShadingName);
