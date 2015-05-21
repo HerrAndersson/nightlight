@@ -462,8 +462,10 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 
 	//Check for end door. If found, go to next level
 	Door* door = currentTile->getDoor();
-	if (door && door->getDoorType() == door->DoorTypes::END_DOOR && door->getIsOpen())
+	if (door && door->getDoorType() == door->DoorTypes::END_DOOR && door->getIsOpen()){
 		levelStates.currentLevelNr++;
+		character->SetHitPoints(3);
+	}
 
 	//Set the correct level
 	if (currentLevel->GetLevelNr() != levelStates.currentLevelNr)
