@@ -46,6 +46,7 @@ private:
 	{
 		XMMATRIX world;
 		XMFLOAT3 colorModifier;
+		float pad;
 	};
 
 	struct MatrixBufferPerWeightedObject
@@ -59,6 +60,7 @@ private:
 		XMMATRIX world;
 		float weight[4];
 		XMFLOAT3 colorModifier;
+		float pad;
 	};
 
 
@@ -67,6 +69,7 @@ private:
 		XMMATRIX viewMatrix;
 		XMMATRIX projectionMatrix;
 		XMFLOAT3 camPos;
+		float pad;
 	};
 
 	D3DManager*				d3d;

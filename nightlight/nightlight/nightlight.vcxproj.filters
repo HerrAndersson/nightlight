@@ -244,19 +244,13 @@
     <None Include="Assets\Shaders\vertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
-    <None Include="depthVertexShader.hlsl">
-      <Filter>Render\Shaders</Filter>
-    </None>
-    <None Include="skeletalVertexShader.hlsl">
-      <Filter>Render\Shaders</Filter>
-    </None>
-    <None Include="blendVertexShader.hlsl">
-      <Filter>Render\Shaders</Filter>
-    </None>
     <None Include="Assets\Shaders\ShadowVS.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
-    <None Include="Assets\Shaders\ShadowPS.hlsl">
+    <None Include="Assets\Shaders\blendVertexShader.hlsl">
+      <Filter>Render\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\SkeletalVertexShader.hlsl">
       <Filter>Render\Shaders</Filter>
     </None>
   </ItemGroup>

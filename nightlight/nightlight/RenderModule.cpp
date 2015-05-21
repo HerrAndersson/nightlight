@@ -27,7 +27,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 
 	//initializing shader files
 	result = InitializeShader(L"Assets/Shaders/vertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
-	result = InitializeSkeletalShader(L"skeletalVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
+	result = InitializeSkeletalShader(L"Assets/Shaders/skeletalVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 	result = InitializeBlendShader(L"Assets/Shaders/blendVertexShader.hlsl", L"Assets/Shaders/pixelShader.hlsl");
 }
 
