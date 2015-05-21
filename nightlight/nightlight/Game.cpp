@@ -21,6 +21,9 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	
 	character = new Character(GameObject::GoTypes::MAINCHARACTER, XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(7), 0, 0);
 	character->SetUpAnimation(Assets->GetRenderObject(22), 1);
+	character->SetUpAnimation(Assets->GetRenderObject(23), 1);
+	character->SetUpAnimation(Assets->GetRenderObject(24), 1);
+	character->SetUpAnimation(Assets->GetRenderObject(25), 1);
 
 	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
 	levelStates.currentLevel = levelStates.menuLevel;
@@ -126,7 +129,7 @@ bool Game::Render()
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
-	Renderer->SetDataPerFrame(lightView, lightProj, camera->GetPosition(), spotLight, &levelStates);
+	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 	Renderer->UseDefaultShader();
 
 	
