@@ -27,6 +27,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	character->SetUpAnimation(Assets->GetRenderObject(23), 1);
 	character->SetUpAnimation(Assets->GetRenderObject(24), 1);
 	character->SetUpAnimation(Assets->GetRenderObject(25), 1);
+	character->SetUpAnimation(Assets->GetRenderObject(26), 1);
 
 	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
 	levelStates.currentLevel = levelStates.menuLevel;
@@ -147,9 +148,8 @@ bool Game::Render()
 				|| id == GameObject::CORNERIVERSE)
 				renderThis = false;
 		}
-
 		if (renderThis)
-			Renderer->Render(toRender->at(i), toRender->at(0)->GetWeights());
+			Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())

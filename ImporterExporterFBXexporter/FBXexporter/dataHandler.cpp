@@ -79,8 +79,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		for (int j = 0; j < size; j++)
 		{
 			
-				vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
-			
+			vtxId.push_back(modelList.at(i).vertexIndices.at(j).x);
 			normId.push_back(modelList.at(i).vertexIndices.at(j).y);
 			uvId.push_back(modelList.at(i).vertexIndices.at(j).z);
 		}
@@ -248,14 +247,33 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		}
 		char * meshName = new char[binFileList.at(i).length()];
 		std::strcpy(meshName, meshNameStr.c_str());
-		
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
 		
-		
+		//LIGHTS AND CAMERA
+//		//create a camera (pls don't)
+//		FbxCamera* myCamera = FbxCamera::Create(lScene, sceneName);
+//		// Set camera properties for classic TV projection with aspect ratio 4:3
+//		myCamera->SetFormat(FbxCamera::eNTSC);
+//		FbxNode* camNode = FbxNode::Create(lScene, sceneName);
+//		camNode->LclTranslation.Set(FbxDouble3(-2, 0, i));
+//		camNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+//		camNode->SetNodeAttribute(myCamera);
+//		
+//		
+//		FbxLight* lLight = FbxLight::Create(lScene, sceneName);
+//		//Create a node for our light in the scene.
+//		FbxNode* lLightNode = FbxNode::Create(lScene, sceneName);
+//		lLightNode->LclTranslation.Set(FbxDouble3(0, 2, i));
+//		lLightNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+//		//Create a light.
+//		//Set the node attribute of the light node.
+//		lLightNode->SetNodeAttribute(lLight);
 
+		
+	
 		//set the translation of object and add here
-		lNode->LclTranslation.Set(FbxDouble3(0, 0, 0));
+		lNode->LclTranslation.Set(FbxDouble3(0, 0, i));
 		lNode->LclRotation.Set(FbxDouble3(0, 0, 0));
 
 		lNode->SetNodeAttribute(lMesh);
@@ -263,6 +281,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		
 		if (lNode)
 			lNode->AddMaterial(lMaterial);
+		
 
 		////create UVset
 		FbxGeometryElementUV* lUVElement1 = lMesh->CreateElementUV("UVSet1");
@@ -280,6 +299,31 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);
+
+	//	//add the camera and light(pls don't though)
+	//	lRootNode->AddChild(camNode);
+	//	lRootNode->AddChild(lLightNode);
+
+//PARENT CHILD HIERARCHY
+	//FbxNode* lNode1 = FbxNode::Create(lScene, "thing1");
+	//lNode1->LclTranslation.Set(FbxDouble3(1, 0, 0));
+	//lNode1->SetNodeAttribute(lMesh);
+	//FbxNode* lNode2 = FbxNode::Create(lScene, "thing2");
+	//lNode2->LclTranslation.Set(FbxDouble3(2, 0, 0));
+	//lNode2->SetNodeAttribute(lMesh);
+	//FbxNode* lNode3 = FbxNode::Create(lScene, "thing3");
+	//lNode3->LclTranslation.Set(FbxDouble3(3, 0, 0));
+	//lNode3->SetNodeAttribute(lMesh);
+	//FbxNode* lNode4 = FbxNode::Create(lScene, "thing4");
+	//lNode4->LclTranslation.Set(FbxDouble3(4, 0, 0));
+	//lNode4->SetNodeAttribute(lMesh);
+	//lNode->AddChild(lNode1);
+	//lNode1->AddChild(lNode2);
+	//lNode2->AddChild(lNode3);
+	//lNode3->AddChild(lNode4);
+
+		
+
 		lExporter->Export(lScene);
 		
 		//Get rid of objects

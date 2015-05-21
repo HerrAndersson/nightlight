@@ -5,6 +5,7 @@ Character::Character(int id, XMFLOAT3 position, float rotation, RenderObject* re
 	: GameObject(id, position, rotation, renderObject, coordX, coordY)
 {
 	SetUpAnimation(renderObject, 1.8);
+	SetPrimaryAnimation(0);
 	PlayAnimation(0);
 }
 
@@ -15,7 +16,7 @@ Character::~Character ( )
 
 void Character::UpdateCharacterAnimation()
 {
-	if (!currentAnim)
+	if (currentAnim == primaryAnim)
 	{
 		UpdatePrimaryAnimation();
 	}
@@ -98,3 +99,13 @@ void Character::SetUpAnimation(RenderObject* anim, float framelengthin)
 	temp.framelength = framelengthin;
 	animations.push_back(temp);
 }
+
+void Character::SetPrimaryAnimation(int animID)
+{
+	frame = 0;
+	primaryAnim = animID;
+	currentAnim = animID;
+	renderObject = animations[animID].animation;
+	framelength = animations[animID].framelength;
+}
+
