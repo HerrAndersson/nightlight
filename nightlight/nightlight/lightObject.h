@@ -24,6 +24,7 @@ private:
 public:
 
 	LightObject();
+	LightObject(float fov, float aspect, float viewNear, float viewFar, float spotCone, float spotRange);
 	~LightObject();
 
 	void setAmbientColor(float r, float g, float b, float a);
