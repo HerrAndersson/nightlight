@@ -4,7 +4,7 @@
 Character::Character(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY)
 	: GameObject(id, position, rotation, renderObject, coordX, coordY)
 {
-	SetUpAnimation(renderObject, 1.8);
+	SetUpAnimation(renderObject, 1.8f);
 	SetPrimaryAnimation(0);
 	PlayAnimation(0);
 }

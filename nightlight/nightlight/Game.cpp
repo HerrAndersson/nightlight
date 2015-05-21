@@ -186,13 +186,8 @@ bool Game::Render()
 					go->SetColorModifier(color);
 				}
 			}
-
 		}
 	}
-
-
-
-
 
 	return result;
 }

@@ -1082,8 +1082,8 @@ bool RenderModule::RenderShadow(GameObject* gameObject)
 
 	UINT32 offset = 0;
 	UINT32 vertexSize;
-	if (renderObject->model->hasSkeleton)
-		vertexSize = sizeof(WeightedVertex);
+	if (renderObject->model->hasBlendShapes)
+		vertexSize = sizeof(BlendVertex);
 	else
 		vertexSize = sizeof(Vertex);
 
