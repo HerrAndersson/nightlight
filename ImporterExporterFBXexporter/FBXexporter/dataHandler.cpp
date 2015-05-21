@@ -280,6 +280,25 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);
+		FbxNode* lNode1 = FbxNode::Create(lScene, "thing1");
+		lNode1->LclTranslation.Set(FbxDouble3(1, 0, 0));
+		lNode1->SetNodeAttribute(lMesh);
+		FbxNode* lNode2 = FbxNode::Create(lScene, "thing2");
+		lNode2->LclTranslation.Set(FbxDouble3(2, 0, 0));
+		lNode2->SetNodeAttribute(lMesh);
+		FbxNode* lNode3 = FbxNode::Create(lScene, "thing3");
+		lNode3->LclTranslation.Set(FbxDouble3(3, 0, 0));
+		lNode3->SetNodeAttribute(lMesh);
+		FbxNode* lNode4 = FbxNode::Create(lScene, "thing4");
+		lNode4->LclTranslation.Set(FbxDouble3(4, 0, 0));
+		lNode4->SetNodeAttribute(lMesh);
+		lNode->AddChild(lNode1);
+		lNode1->AddChild(lNode2);
+		lNode2->AddChild(lNode3);
+		lNode3->AddChild(lNode4);
+
+		
+
 		lExporter->Export(lScene);
 		
 		//Get rid of objects
