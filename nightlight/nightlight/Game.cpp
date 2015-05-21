@@ -9,7 +9,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000.0f);
 
 	float spotRange = 15.0f;
-	float spotCone = 30.0f;
+	float spotCone = 29.0f;
 	float fov = (spotCone + 10.0f) * (XM_PI / 180);
 	spotLight = new LightObject(fov, 1.0f, 0.1f, spotRange, spotCone, spotRange);
 
@@ -186,8 +186,13 @@ bool Game::Render()
 					go->SetColorModifier(color);
 				}
 			}
+
 		}
 	}
+
+
+
+
 
 	return result;
 }
