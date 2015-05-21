@@ -17,23 +17,20 @@ void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 
 	ai->SetFollowingPlayer(inSight);
 
-	//cout << boolalpha << inSight << endl;
-
 	if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level))
 	{
 		XMFLOAT3 p = ai->GetPosition();
 		XMINT2 goal = GenerateRandomPosition(ai);
 		ai->SetPath(AStarNoCorners(level, XMINT2((int)-p.x, (int)-p.z), goal));
 	}
-	else if (ai->IsFollowingPlayer()) //&& player->moved()
+	else if (ai->IsFollowingPlayer() /*&& player->GetMoved()*/)
 	{
 		Coord c1 = ai->GetTileCoord();
 		Coord c2 = player->GetTileCoord();
 		ai->SetPath(AStarNoCorners(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
 	}
 
-	if (!inLight)
-		ai->Update(level, spotlight);
+	ai->Update(level, spotlight);
 }
 
 XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)

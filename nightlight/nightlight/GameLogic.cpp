@@ -15,8 +15,11 @@ GameLogic::~GameLogic()
 
 bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies)
 {
-	if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
-		return false;
+	if (character->GetHitPoints() > 0)
+	{
+		if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies))
+			return false;
+	}
 
 	if (levelStates.currentLevel != levelStates.menuLevel)
 	{

@@ -29,8 +29,16 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 	if (path.size() > 0)
 	{
 		XMFLOAT3 nextPos = position;
-		nextPos.x += direction.x / SPEED;
-		nextPos.z += direction.z / SPEED;
+		if (!InLight(level, this, spotlight))
+		{
+			nextPos.x += direction.x / SPEED;
+			nextPos.z += direction.z / SPEED;
+		}
+		else
+		{
+			nextPos.x -= spotlight->getDirection().x / SPEED;
+			nextPos.z -= spotlight->getDirection().x / SPEED;
+		}
 
 		float radius = 0.5f;
 		bool result = false;
