@@ -628,14 +628,6 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 	{
 		MPoint P = it.position();
 
-		//print point
-		cout << "\t\t\t"
-			<< P.x << " "
-			<< P.y << " "
-			<< P.z << endl;
-		cout << "\t\t\t" << it.normal() << endl;
-		//cout << "\t\t\t" << it.weight() << endl;
-
 		vec3 point = { P.x, P.y, P.z };
 		vec3 norm = { it.normal().x, it.normal().y, it.normal().z };
 
@@ -703,6 +695,11 @@ void Exporter::outPutTarget(MObject& target, MObject& Base)
 
 				if (!strcmp(basemfn.partialPathName().asChar(), dag_node.partialPathName().asChar()))
 					temp.MeshTarget = y;
+
+				std::string name = basemfn.partialPathName().asChar();
+				if (!strcmp(name.substr(0, 5).c_str(), "Blend") == 0){
+					y += -1;
+				}
 				y++;
 			}
 		}
@@ -887,8 +884,20 @@ bool Exporter::IdentifyAndExtractMeshes()
 		dag_iter.next();
 	}
 
-	//general purpose iterator, sista argument är filtret
+	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kTransform);
+	while (!dag_iter.isDone())
+	{
+		int depth = dag_iter.depth();
+		if (depth > 1)
+			break;
+		if (dag_iter.getPath(dag_path))
+		{
+			scene_.sceneGraphRoots.push_back(createSceneGraph(dag_path));
+		}
+		dag_iter.next();
+	}
 	/*
+	//general purpose iterator, sista argument är filtret
 		dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kLight);
 		while (!dag_iter.isDone())
 		{
@@ -902,6 +911,37 @@ bool Exporter::IdentifyAndExtractMeshes()
 
 
 	return true;
+}
+
+Node Exporter::createSceneGraph(MDagPath path)
+{
+	Node output;
+	cout <<"    name: "<< path.fullPathName().asChar() << endl;
+	output.name = path.fullPathName().asChar();
+	std::vector<std::string> pathparts;
+	splitStringToVector(output.name, pathparts, "|");
+	output.name = pathparts[pathparts.size() - 1];
+	uint children = path.childCount();
+	for (int i = 0; i < children; i++){
+		MObject child = path.child(i);
+
+		cout << "    type: " << child.apiTypeStr() << endl;
+		if (!strcmp(child.apiTypeStr(), "kMesh"));
+		if (!strcmp(child.apiTypeStr(), "kTransform"));
+		MFnDagNode childpath(child);
+
+		//if(child is transform)
+		//ifelse(child is mesh)
+		//else
+		Node childnode = createSceneGraph(childpath.dagPath());
+		output.children.push_back(childnode);
+	}
+	path.numberOfShapesDirectlyBelow(children);
+	for (int i = 0; i < children; i++){
+		Node meshnode;
+		meshnode.name;
+	}
+	return output;
 }
 
 //___________________________________________________________________________________________
@@ -1545,3 +1585,31 @@ void Exporter::ExportMeshes()
 
 }
 
+void Exporter::splitStringToVector(std::string input, std::vector<std::string> &output, std::string delimiter) {
+	size_t pos = 0;
+	std::string token;
+	while ((pos = input.find(delimiter)) != std::string::npos) {
+		token = input.substr(0, pos);
+		if (!token.empty()) {
+			output.push_back(token);
+		}
+		input.erase(0, pos + delimiter.length());
+	}
+	output.push_back(input);
+};
+
+//turns a text file into a vector of strings line-by-line
+void Exporter::fileToStrings(std::string file_path, std::vector<std::string> &output)
+{
+	std::ifstream file(file_path);
+	if (!file.is_open())
+	{
+		printf("Could not open ");
+		printf(file_path.c_str());
+		printf("\n");
+		return;
+	}
+	std::string s((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+	splitStringToVector(s, output, "\n");
+};

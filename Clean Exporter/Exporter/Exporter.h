@@ -260,8 +260,16 @@ struct Animation{
 	int length, startFrame;
 };
 
+struct Node{
+	std::vector<Node> children;
+	std::string name;
+	int type;
+	int mesh;
+};
+
 struct SceneData
 {
+	std::vector<Node> sceneGraphRoots;
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 	std::vector<BlendShapeTarget> blendShapes;
@@ -342,4 +350,7 @@ private:
 
 	void ExportScene();
 	void ExportMeshes();
+	void splitStringToVector(std::string input, std::vector<std::string> &output, std::string delimiter);
+	void fileToStrings(std::string file_path, std::vector<std::string> &output);
+	Node createSceneGraph(MDagPath path);
 };
