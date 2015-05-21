@@ -77,16 +77,37 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
 		float dx = 1.0f / shadowMapSize;
+		float dx2 = 2.0f / shadowMapSize;
+
 		float s0 = ShadowMap.Sample(sampleStateClamp, smTex).r;
-		float s1 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, 0.0f)).r;
-		float s2 = ShadowMap.Sample(sampleStateClamp, smTex + float2(0.0f, dx)).r;
-		float s3 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, dx)).r;
+
+		//float s1 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, 0.0f)).r;
+		//float s2 = ShadowMap.Sample(sampleStateClamp, smTex + float2(0.0f, dx)).r;
+		//float s3 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, dx)).r;
+
+		float s1 = ShadowMap.Sample(sampleStateClamp, smTex + float2(-dx, -dx)).r;
+		float s2 = ShadowMap.Sample(sampleStateClamp, smTex + float2(-dx, 0.0f)).r;
+		float s3 = ShadowMap.Sample(sampleStateClamp, smTex + float2(-dx, dx)).r;
+
+		float s4 = ShadowMap.Sample(sampleStateClamp, smTex + float2(0.0f, -dx)).r;
+		float s5 = ShadowMap.Sample(sampleStateClamp, smTex + float2(0.0f, dx)).r;
+
+		float s6 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, -dx)).r;
+		float s7 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, 0.0f)).r;
+		float s8 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, dx)).r;
 
 		float epsilon = 0.0005f;
 		float2 texelPos = smTex * shadowMapSize;
 
 		float2 lerps = frac(texelPos);
-		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
+		//float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
+
+		float shadowCoeff0 = lerp(lerp(s0, s2, lerps.x), lerp(s1, s4, lerps.x), lerps.y);
+		float shadowCoeff1 = lerp(lerp(s0, s7, lerps.x), lerp(s4, s6, lerps.x), lerps.y);
+		float shadowCoeff2 = lerp(lerp(s0, s7, lerps.x), lerp(s5, s8, lerps.x), lerps.y);
+		float shadowCoeff3 = lerp(lerp(s0, s2, lerps.x), lerp(s3, s5, lerps.x), lerps.y);
+
+		float shadowCoeff = (shadowCoeff0 + shadowCoeff1 + shadowCoeff2 + shadowCoeff3) / 4;
 
 		if (shadowCoeff < depth - epsilon)
 		{
