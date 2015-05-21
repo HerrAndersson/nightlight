@@ -142,7 +142,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 		FbxString lMaterialName = lFilenameOut;
 		FbxString lShadingName = "Phong";
-		lMaterialName += i;
+		//lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 		FbxDouble3 lRed(0.0, 0.0, 0.0);
 		FbxDouble3 lColor;
@@ -255,7 +255,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		
 
 		//set the translation of object and add here
-		lNode->LclTranslation.Set(FbxDouble3(i, 0, 0));
+		lNode->LclTranslation.Set(FbxDouble3(0, 0, 0));
 		lNode->LclRotation.Set(FbxDouble3(0, 0, 0));
 
 		lNode->SetNodeAttribute(lMesh);
