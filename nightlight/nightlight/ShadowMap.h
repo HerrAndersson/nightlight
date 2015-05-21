@@ -25,7 +25,7 @@ private:
 		XMMATRIX lightProj;
 	};
 
-	float dimensions;
+	int dimensions;
 
 	ID3D11Texture2D*				shadowMap;
 	ID3D11DepthStencilView*			shadowDepthView;
@@ -43,7 +43,7 @@ private:
 
 public:
 
-	ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename);
+	ShadowMap(ID3D11Device* device, int dimensions, LPCWSTR vsFilename);
 	virtual ~ShadowMap();
 
 	ID3D11ShaderResourceView* GetShadowSRV();

@@ -3,7 +3,7 @@
 using std::runtime_error;
 using std::string;
 
-ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
+ShadowMap::ShadowMap(ID3D11Device* device, int dimensions, LPCWSTR vsFilename)
 {
 	this->dimensions = dimensions;
 
@@ -94,8 +94,8 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 
 	//Init viewport
 	ZeroMemory(&shadowViewport, sizeof(D3D11_VIEWPORT));
-	shadowViewport.Height = dimensions;
-	shadowViewport.Width = dimensions;
+	shadowViewport.Height = (FLOAT)dimensions;
+	shadowViewport.Width = (FLOAT)dimensions;
 	shadowViewport.MinDepth = 0.f;
 	shadowViewport.MaxDepth = 1.f;
 

@@ -283,7 +283,8 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetInvulTimer(180);
 		}
 	}
-	if (!character->GetHitPoints() <= 0){
+	if (character->GetHitPoints() > 0)
+	{
 		int invulTimer = character->GetInvulTimer();
 		int blinkspeed = 4;
 		if (character->GetHitPoints() > 0)//temporär ifsats för att förhindra krashar då hp kan gå under 1
