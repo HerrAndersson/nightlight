@@ -159,9 +159,13 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 
 
 		FbxFileTexture* lTexture = FbxFileTexture::Create(lScene, "Diffuse Texture");
+		string textFileName = "../Textures/" + nameStr + ".png";
+		// convert to char*
+		char * textureFileName = new char[textFileName.size()];
+		std::strcpy(textureFileName, textFileName.c_str());
 
 		// Set texture properties.
-		lTexture->SetFileName("TEXTURE.PNG"); // Needs a texture string from bin file. 
+		lTexture->SetFileName(textureFileName); // Needs a texture string from bin file. 
 		lTexture->SetTextureUse(FbxTexture::eStandard);
 		lTexture->SetMappingType(FbxTexture::eUV);
 		lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
@@ -316,7 +320,7 @@ bool DataHandler::getBinFilenamesInDirectory(char *folder_path, std::vector<std:
 			// vi vill endast ha ".bin"-filer
 			if (strlen(fdata.cFileName) > 4)
 			{
-				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == 1)
+				if (strcmp(&fdata.cFileName[strlen(fdata.cFileName) - 3], ".bin") == true)
 				{
 					list_to_fill.push_back(fdata.cFileName);
 				}
