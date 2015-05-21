@@ -127,7 +127,7 @@ bool Game::Render()
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
-	Renderer->SetDataPerFrame(lightView, lightProj, camera->GetPosition(), spotLight, &levelStates);
+	Renderer->SetDataPerFrame(viewMatrix, projectionMatrix, camera->GetPosition(), spotLight, &levelStates);
 	Renderer->UseDefaultShader();
 
 	
