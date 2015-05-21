@@ -22,11 +22,13 @@ class Game
 private:
 
 	int screenWidth, screenHeight;
+	const int shadowMapSize = 512;
+
 	std::string saveFilePath = "nightlight.sav";
 
 	LevelStates             levelStates;
 
-	vector<Enemy>		    enemies;
+	vector<Enemy*>		    enemies;
 
 	CameraObject*			camera;
 	LightObject*			spotLight;

@@ -16,6 +16,6 @@ public:
 	LevelParser ( AssetManager* assetManager );
 	~LevelParser ( );
 
-	Level* LoadLevel ( int levelID, std::vector<Enemy> &enemies, Character &character );
+	Level* LoadLevel ( int levelID, std::vector<Enemy*> &enemies, Character &character );
 	int GetLevelCount(){ return levelNames.size(); }
 };

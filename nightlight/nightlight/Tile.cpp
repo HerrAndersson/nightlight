@@ -166,7 +166,7 @@ bool Tile::SeeThrough()
 	if (!floorTile)
 		return false;
 
-	if (shadowContainer || staticObject || wall)
+	if (shadowContainer || staticObject)
 		return false;
 	
 	if (door && !door->getIsOpen())

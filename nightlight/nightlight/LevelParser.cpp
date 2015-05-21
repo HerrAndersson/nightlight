@@ -41,7 +41,7 @@ void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> l
 	}
 }
 
-Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Character &character)
+Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Character &character)
 {
 	//TODO: Handle button reading from menu level
 
@@ -85,7 +85,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy> &enemies, Characte
 				int tileCoordY = std::stoi(unparsedLine.at(i++));
 				std::string enemyType = std::string(unparsedLine.at(i++));
 
-				enemies.push_back(Enemy(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
+				enemies.push_back(new Enemy(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, enemyType));
 			}
 			else if (gameObjectType.find("button") != std::string::npos)
 			{

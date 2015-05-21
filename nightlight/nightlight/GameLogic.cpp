@@ -13,7 +13,7 @@ GameLogic::~GameLogic()
 
 }
 
-bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies)
+bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies)
 {
 	if (character->GetHitPoints() > 0)
 	{
@@ -35,17 +35,21 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 	return true;
 }
 
-bool GameLogic::UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight)
+bool GameLogic::UpdateAI(vector<Enemy*>& enemies, Character* player, LightObject* spotlight)
 {
-	for (auto &e : enemies)
+	for (int i = 0; i < enemies.size();)
 	{
-		AI->HandleAI(&e, player, spotlight);
+		bool isAlive = AI->HandleAI(enemies.at(i), player, spotlight);
+		if (isAlive)
+			i++;
+		else
+			enemies.erase(enemies.begin() + i);
 	}
 
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies)
+bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	XMFLOAT2 oldP = Input->GetMousePos();
@@ -268,14 +272,14 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetRotationDeg(rot);
 		}
 	}
-	for (Enemy e : enemies)
+	for (Enemy* e : enemies)
 	{
-		if (sqrt((pow((e.GetPosition().x - pos.x), 2)) + (pow((e.GetPosition().z - pos.z), 2))) < 0.7f && character->GetInvulTimer() <= 0)
+		if (sqrt((pow((e->GetPosition().x - pos.x), 2)) + (pow((e->GetPosition().z - pos.z), 2))) < 0.7f && character->GetInvulTimer() <= 0)
 		{
 			character->PlayAnimation(3);
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0){
-				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo
+				character->GetRenderObject()->diffuseTexture = e->GetRenderObject()->diffuseTexture;//dead//todo
 				character->SetPrimaryAnimation(5); 
 				character->PlayAnimation(4);
 				spotlight->setDiffuseColor(0, 0, 0, 0);
@@ -329,7 +333,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 	return true;
 }
 
-bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies)
+bool GameLogic::UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies)
 {
 	XMFLOAT3 pForward;
 	XMStoreFloat3(&pForward, player->GetForwardVector());
@@ -407,7 +411,7 @@ void GameLogic::SelectButton(Button* newSelectedButton)
 	}
 }
 
-bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy>& enemies)
+bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	Level* menuLevel = levelStates.menuLevel;

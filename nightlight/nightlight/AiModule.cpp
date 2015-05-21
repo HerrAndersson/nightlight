@@ -10,27 +10,26 @@ AiModule::~AiModule()
 
 }
 
-void AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
+bool AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 {
-	bool inSight = InSight(level, ai->GetPosition(), player->GetPosition());
 	bool inLight = InLight(level, ai, spotlight);
 
-	ai->SetFollowingPlayer(inSight);
+	if (!inLight) {
+		bool inSight = InSight(level, ai->GetPosition(), player->GetPosition());
+		ai->SetFollowingPlayer(inSight);
 
-	if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level))
-	{
-		XMFLOAT3 p = ai->GetPosition();
-		XMINT2 goal = GenerateRandomPosition(ai);
-		ai->SetPath(AStarNoCorners(level, XMINT2((int)-p.x, (int)-p.z), goal));
-	}
-	else if (ai->IsFollowingPlayer() /*&& player->GetMoved()*/)
-	{
-		Coord c1 = ai->GetTileCoord();
-		Coord c2 = player->GetTileCoord();
-		ai->SetPath(AStarNoCorners(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
+		if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level)) {
+			XMFLOAT3 p = ai->GetPosition();
+			XMINT2 goal = GenerateRandomPosition(ai);
+			ai->SetPath(AStarNoCorners(level, XMINT2((int)-p.x, (int)-p.z), goal));
+		} else if (ai->IsFollowingPlayer() /*&& player->GetMoved()*/) {
+			Coord c1 = ai->GetTileCoord();
+			Coord c2 = player->GetTileCoord();
+			ai->SetPath(AStarNoCorners(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
+		}
 	}
 
-	ai->Update(level, spotlight);
+	return ai->Update(level, spotlight, inLight);
 }
 
 XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)
@@ -41,8 +40,8 @@ XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)
 
 	while (!found)
 	{
-		goal.x = rand() % 5 - 2;	
-		goal.y = rand() % 5 - 2;
+		goal.x = rand() % 3 - 1;	
+		goal.y = rand() % 3 - 1;
 
 		goal.x += orig.x;
 		goal.y += orig.y;

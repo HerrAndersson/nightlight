@@ -16,7 +16,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
 	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
 
-	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen);
+	Renderer = new RenderModule(hwnd, screenWidth, screenHeight, fullscreen, shadowMapSize);
 	Assets = new AssetManager(Renderer->GetDevice());
 	levelParser = new LevelParser(Assets);
 	saveLoadManager = SaveLoadManager();
@@ -90,7 +90,7 @@ bool Game::Render()
 	{
 		for (auto e : enemies)
 		{
-			paths.push_back(e.GetPath());
+			paths.push_back(e->GetPath());
 		}
 
 		//int i = 0;
@@ -128,7 +128,7 @@ bool Game::Render()
 		Renderer->RenderShadow(toRender->at(i));
 
 	for (auto& e : enemies)
-		Renderer->RenderShadow(&e);
+		Renderer->RenderShadow(e);
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
@@ -156,8 +156,8 @@ bool Game::Render()
 	{
 		for (auto& e : enemies) 
 		{
-			e.UpdateAnimation();
-			Renderer->Render(&e, e.GetWeights());
+			e->UpdateAnimation();
+			Renderer->Render(e, e->GetWeights());
 		}
 	}
 

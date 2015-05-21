@@ -24,44 +24,46 @@ Enemy::~Enemy()
 	path.clear();
 }
 
-void Enemy::Update(Level* level, LightObject* spotlight)
+bool Enemy::Update(Level* level, LightObject* spotlight, bool inLight)
 {
 	if (path.size() > 0)
 	{
 		XMFLOAT3 nextPos = position;
-		if (!InLight(level, this, spotlight))
+		if (!inLight)
 		{
 			nextPos.x += direction.x / SPEED;
 			nextPos.z += direction.z / SPEED;
 		}
 		else
 		{
-			nextPos.x -= spotlight->getDirection().x;
-			nextPos.z -= spotlight->getDirection().x;
+			float pushSpeed = SPEED / 2;
+			nextPos.x += spotlight->getDirection().x / pushSpeed;
+			nextPos.z += spotlight->getDirection().z / pushSpeed;
 		}
 
 		float radius = 0.5f;
 		bool result = false;
-		bool inLight = false;
 
 		Tile* currentTile = level->getTile(tileCoord);
 		if (currentTile != nullptr)
 		{
 			Coord nextTileCoord = Coord((int)(abs(nextPos.x)), (int)(abs(nextPos.z)));
-			Tile* nextTile = level->getTile(nextTileCoord.x, nextTileCoord.y);
-			if (nextTile != nullptr)
+			for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1; x++)
 			{
-				for (int x = nextTileCoord.x - 1; x <= nextTileCoord.x + 1 && !inLight; x++)
+				for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1; y++)
 				{
-					for (int y = nextTileCoord.y - 1; y <= nextTileCoord.y + 1 && !inLight; y++)
+					Coord iteratorTileCoord = Coord(x, y);
+					Tile* iteratorTile = level->getTile(iteratorTileCoord);
+					if (!iteratorTile->IsWalkableAI())
 					{
-						Tile* iteratorTile = level->getTile(x, y);
-						if (iteratorTile && !iteratorTile->IsWalkableAI())
-						{
-							inLight = InLight(level, this, spotlight);
+						nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
 
-							Coord iteratorTileCoord = Coord(x, y);
-							nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
+						if (result && iteratorTile) {
+							Container* shadowContainer = iteratorTile->getShadowContainer();
+							if (shadowContainer && !shadowContainer->GetIsActivated()) {
+								shadowContainer->ActivateContainer();
+								return false;
+							}
 						}
 					}
 				}
@@ -89,6 +91,8 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 	{
 		moved = 0;
 	}
+
+	return true;
 }
 
 bool Enemy::IsFollowingPlayer()

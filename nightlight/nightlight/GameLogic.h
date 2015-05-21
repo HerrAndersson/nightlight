@@ -45,11 +45,11 @@ private:
 	GameObject* selectedObject = nullptr;
 	Button* selectedButton = nullptr;
 
-	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy>& enemies);
+	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy*>& enemies);
 
-	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
-	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy>& enemies);
-	bool UpdateAI(vector<Enemy>& enemies, Character* player, LightObject* spotlight);
+	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies);
+	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies);
+	bool UpdateAI(vector<Enemy*>& enemies, Character* player, LightObject* spotlight);
 
 public:
 	enum SelectionTypes { BUTTON, LEVER, MOVABLEOBJECT };
@@ -57,7 +57,7 @@ public:
 	GameLogic(AiModule* AI, InputManager* Input);
 	~GameLogic();
 
-	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy>& enemies);
+	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies);
 
 	void SelectObject(GameObject* newSelectedObject);
 	void SelectButton(Button* newSelectedButton);

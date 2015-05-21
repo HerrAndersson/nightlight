@@ -4,7 +4,7 @@
 using namespace std;
 
 
-RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen)
+RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen, int shadowMapSize)
 {
 	vertexShader = NULL;
 	pixelShader = NULL;
@@ -21,7 +21,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
 	//initialize shadowmap
-	shadowMap = new ShadowMap(d3d->GetDevice(), 4096, L"Assets/Shaders/ShadowVS.hlsl");
+	shadowMap = new ShadowMap(d3d->GetDevice(), shadowMapSize, L"Assets/Shaders/ShadowVS.hlsl");
 
 	bool result;
 

@@ -30,7 +30,7 @@ public:
 
 	void ChangeLevel(Level* level);
 
-	void HandleAI(Enemy* enemy, Character* player, LightObject* spotlight);
+	bool HandleAI(Enemy* enemy, Character* player, LightObject* spotlight);
 	vector<XMINT2> GetPath(Level* level, XMINT2 startPosXZ, XMINT2 endPosXZ);
 
 	//void Update(vector<GameObject*> dynamicObjects);

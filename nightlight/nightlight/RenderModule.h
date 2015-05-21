@@ -110,7 +110,7 @@ private:
 
 public:
 
-	RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
+	RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen, int shadowMapSize);
 	~RenderModule();
 
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);

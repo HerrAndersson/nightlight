@@ -7,7 +7,7 @@ class Enemy : public GameObject
 {
 private:
 	
-	const float SPEED = 25.0F;
+	const float SPEED = 50.0F;
 
 	int enemyType;
 
@@ -37,7 +37,7 @@ public:
 
 	virtual ~Enemy();
 
-	void Update(Level* level, LightObject* spotlight);
+	bool Update(Level* level, LightObject* spotlight, bool inLight);
 
 	void SetPath(vector<XMINT2> path);
 	vector<XMINT2> GetPath();
