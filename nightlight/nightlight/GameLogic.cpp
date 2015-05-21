@@ -5,6 +5,7 @@ GameLogic::GameLogic(AiModule* AI, InputManager* Input)
 {
 	this->Input = Input;
 	this->AI = AI;
+
 }
 
 GameLogic::~GameLogic()
@@ -158,11 +159,14 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			float zOffset = abs(movablePos.z - movableObjectTilePos.z);
 			float xOffset = abs(movablePos.x - movableObjectTilePos.x);
 
+			
 			if (zOffset >= 1 || xOffset >= 1) 
 			{
 				currentLevel->getTile((int)-movableObjectTilePos.x, (int)-movableObjectTilePos.z)->setMovableObject(nullptr);
 				currentLevel->getTile(selectedObject->GetTileCoord())->setMovableObject((MovableObject*)selectedObject);
 				movableObjectTilePos = movablePos;
+				character->PlayAnimation(2);
+
 			}
 		}
 	}
@@ -189,6 +193,10 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 				else {
 					lever->ActivateLever();
 				}
+			}
+			else
+			{
+				character->PlayAnimation(0);
 			}
 		}
 
