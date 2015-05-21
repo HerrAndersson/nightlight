@@ -185,8 +185,8 @@ void Enemy::UpdatePrimaryAnimation()
 		frame = 0;
 		Weights = { 1, 0, 0, 0 };
 	}
-	system("CLS");
-	printf("%f\n%f\n%f\n%f", Weights.x, Weights.y, Weights.z, Weights.w);
+// 	system("CLS");
+// 	printf("%f\n%f\n%f\n%f", Weights.x, Weights.y, Weights.z, Weights.w);
 }
 
 void Enemy::UpdateSecondaryAnimation()
