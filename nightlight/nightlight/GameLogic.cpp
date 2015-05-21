@@ -273,8 +273,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0){
 				character->GetRenderObject()->diffuseTexture = e.GetRenderObject()->diffuseTexture;//dead//todo
-				character->PlayAnimation(4);
-			}
+				character->PlayAnimation(4);}
 			character->SetInvulTimer(180);
 		}
 	}

@@ -48,13 +48,12 @@ public:
 	Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
 	~Game();
 
-	bool Update();
-	bool Render();
-
-	void UpdateCharacterAnimation();
+	bool Update(); //determines which objects to update and then calls Logic->Update(objectsToUpdate);
+	bool Render(); //determines which objects to render and then calls Render->Render(objectsToRender);
 
 	//Overloading these guarantees 16B alignment of XMMATRIX
 	void* operator new(size_t i);
 	void operator delete(void* p);
+	void UpdateCharacterAnimation();
 };
 

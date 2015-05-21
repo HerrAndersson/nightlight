@@ -147,9 +147,8 @@ bool Game::Render()
 				|| id == GameObject::CORNERIVERSE)
 				renderThis = false;
 		}
-
 		if (renderThis)
-			Renderer->Render(toRender->at(i));
+			Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
