@@ -21,7 +21,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
 	//initialize shadowmap
-	shadowMap = new ShadowMap(d3d->GetDevice(), 2048, L"Assets/Shaders/ShadowVS.hlsl");
+	shadowMap = new ShadowMap(d3d->GetDevice(), 4096, L"Assets/Shaders/ShadowVS.hlsl");
 
 	bool result;
 
@@ -861,6 +861,7 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 
 	lightPtr->lightView = lvt;
 	lightPtr->lightProj = lpt;
+	lightPtr->shadowMapSize = shadowMap->GetSize();
 	//Spotlight:
 	lightPtr->lightPosSpot = spotlight->getPosition();
 	lightPtr->lightDirSpot = spotlight->getDirection();
@@ -1068,7 +1069,7 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 
 void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
-	d3d->SetCullingState(2);
+	d3d->SetCullingState(3);
 	shadowMap->SetDataPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
 	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
 }

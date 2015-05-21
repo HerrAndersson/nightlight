@@ -43,6 +43,8 @@ private:
 		XMFLOAT3 lightPosPoint2;
 		float pad3;
 		XMFLOAT4 lightDiffusePoint2;
+
+		int shadowMapSize;
 	};
 
 	struct MatrixBufferPerObject
@@ -121,7 +123,6 @@ public:
 	void ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 	void UseSkeletalShader();
 	void UseBlendShader();
-	//void Usesomeothershader() etc.
 
 	void BeginScene(float red, float green, float blue, float alpha);
 

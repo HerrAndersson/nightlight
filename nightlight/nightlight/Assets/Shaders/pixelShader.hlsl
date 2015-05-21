@@ -25,6 +25,8 @@ cbuffer lightBuffer : register(cb0)
 	//player point light
 	float3 lightPosPoint2;
 	float4 lightDiffusePoint2;
+
+	int	shadowMapSize;
 };
 
 struct pixelInputType
@@ -70,14 +72,14 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
-		float dx = 1.0f / 2048;
+		float dx = 1.0f / shadowMapSize;
 		float s0 = ShadowMap.Sample(sampleStateClamp, smTex).r;
 		float s1 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, 0.0f)).r;
 		float s2 = ShadowMap.Sample(sampleStateClamp, smTex + float2(0.0f, dx)).r;
 		float s3 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, dx)).r;
 
-		float epsilon = 0.001f;
-		float2 texelPos = smTex * 2048;
+		float epsilon = 0.0005f;
+		float2 texelPos = smTex * shadowMapSize;
 
 		float2 lerps = frac(texelPos);
 		float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);

@@ -47,6 +47,7 @@ public:
 	virtual ~ShadowMap();
 
 	ID3D11ShaderResourceView* GetShadowSRV();
+	int GetSize();
 
 	void ActivateShadowRendering(ID3D11DeviceContext* deviceContext);
 	void SetDataPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld);
