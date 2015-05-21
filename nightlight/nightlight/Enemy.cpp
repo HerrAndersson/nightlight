@@ -36,8 +36,8 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 		}
 		else
 		{
-			nextPos.x -= spotlight->getDirection().x / SPEED;
-			nextPos.z -= spotlight->getDirection().x / SPEED;
+			nextPos.x -= spotlight->getDirection().x;
+			nextPos.z -= spotlight->getDirection().x;
 		}
 
 		float radius = 0.5f;
@@ -70,13 +70,9 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 
 		float xRem = -(nextPos.x - (int)nextPos.x);
 		float zRem = -(nextPos.z - (int)nextPos.z);
-		//cout << xRem << " " << zRem << endl;
-		// 
 
 		if (tileCoord == next && xRem >= 0.45f && zRem >= 0.45f)
 		{
-			level->getTile(next)->getFloorTile()->SetSelected(false);
-			//cout << "next!" << endl;
 			XMINT2 p = path.at(path.size() - 1);
 			this->path.pop_back();
 
@@ -85,11 +81,14 @@ void Enemy::Update(Level* level, LightObject* spotlight)
 
 			rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
 		}
-		moved = 1;
+
 		SetPosition(nextPos);
+		moved = 1;
 	}
 	else
+	{
 		moved = 0;
+	}
 }
 
 bool Enemy::IsFollowingPlayer()
