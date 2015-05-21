@@ -59,7 +59,7 @@ void Character::UpdateSecondaryAnimation()
 {
 	frame += 0.1f;
 	if (frame > (framelength * 3))
-		PlayAnimation(0);
+		PlayAnimation(primaryAnim);
 
 	if (frame < (framelength * 3))
 	{

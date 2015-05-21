@@ -194,7 +194,7 @@ void Enemy::UpdateSecondaryAnimation()
 {
 	frame += 0.1f;
 	if (frame > (framelength * 4))
-		PlayAnimation(0);
+		PlayAnimation(primaryAnim);
 
 	if (frame < (framelength * 4))
 	{
