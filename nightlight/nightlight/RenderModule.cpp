@@ -885,8 +885,8 @@ void RenderModule::UseDefaultShader()
 void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
 	d3d->SetCullingState(2);
+	shadowMap->SetDataPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
 	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
-	shadowMap->SetBufferPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
 }
 
 void RenderModule::UseSkeletalShader()
@@ -1051,7 +1051,17 @@ bool RenderModule::RenderShadow(GameObject* gameObject)
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	RenderObject* renderObject = gameObject->GetRenderObject();
 
-	shadowMap->SetBufferPerObject(deviceContext, gameObject->GetWorldMatrix());
+	UINT32 offset = 0;
+	UINT32 vertexSize;
+	if (renderObject->model->hasSkeleton)
+		vertexSize = sizeof(WeightedVertex);
+	else
+		vertexSize = sizeof(Vertex);
+
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetVertexBuffers(0, 1, &renderObject->model->vertexBuffer, &vertexSize, &offset);
+
+	shadowMap->SetDataPerObject(deviceContext, gameObject->GetWorldMatrix());
 
 	//Now render the prepared buffers with the shader.
 	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);

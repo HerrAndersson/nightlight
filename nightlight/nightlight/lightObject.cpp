@@ -7,6 +7,13 @@ LightObject::LightObject()
 	spotCone = 30.0f;
 }
 
+LightObject::LightObject(float fov, float aspect, float viewNear, float viewFar, float spotCone, float spotRange)
+{
+	this->spotCone = spotCone;
+	this->spotRange = spotRange;
+
+	projMatrix = XMMatrixPerspectiveFovLH(fov, aspect, viewNear, viewFar);
+}
 
 LightObject::~LightObject()
 {
@@ -17,7 +24,6 @@ void LightObject::setAmbientColor(float red, float green, float blue, float alph
 {
 	ambientColor = XMFLOAT4(red, green, blue, alpha);
 }
-
 
 void LightObject::setDiffuseColor(float red, float green, float blue, float alpha)
 {
@@ -56,26 +62,21 @@ float LightObject::getCone()
 	return spotCone;
 }
 
-
-
 //Getters
 XMFLOAT4 LightObject::getAmbientColor()
 {
 	return ambientColor;
 }
 
-
 XMFLOAT4 LightObject::getDiffuseColor()
 {
 	return diffuseColor;
 }
 
-
 XMFLOAT3 LightObject::getDirection()
 {
 	return direction;
 }
-
 
 XMFLOAT3 LightObject::getPosition()
 {
@@ -90,12 +91,7 @@ void LightObject::setLookAt(XMFLOAT3 lookAt)
 void LightObject::generateViewMatrix()
 {
 	//setting up a perspective-based view matrix
-	XMFLOAT3 up;
-
-	// sets up our up-vector
-	up.x = 0.0f;
-	up.y = -1.0f;
-	up.z = 0.0f;
+	XMFLOAT3 up(0.0f, -1.0f, 0.0f);
 
 	DirectX::XMVECTOR posVec = DirectX::XMLoadFloat3(&position);
 	DirectX::XMVECTOR upVec = DirectX::XMLoadFloat3(&up);
@@ -107,7 +103,6 @@ void LightObject::generateViewMatrix()
 
 void LightObject::generateOrthoMatrix(float width, float screenDepth, float screenNear)
 {
-	//setting up a orthographic-based view matrix
 	orthoMatrix = XMMatrixOrthographicLH(width, width, screenNear, screenDepth);
 }
 
@@ -119,7 +114,6 @@ void LightObject::generateProjMatrix(float screenDepth, float screenNear)
 	screenAspect = 1.0f;
 
 	projMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
-
 }
 
 void LightObject::getProjMatrix(XMMATRIX& projMatrix)

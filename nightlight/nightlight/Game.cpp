@@ -7,8 +7,11 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	this->screenHeight = screenHeight;
 
 	camera = new CameraObject(XM_PI / 3, screenWidth, screenHeight, 0.1f, 1000.0f);
-	spotLight = new LightObject();
-	spotLight->generateProjMatrix(1000.0f, 0.1f);
+
+	float spotRange = 15.0f;
+	float spotCone = 30.0f;
+	float fov = (spotCone + 5.0f) * (XM_PI / 180);
+	spotLight = new LightObject(fov, 1.0f, 0.1f, spotRange, spotCone, spotRange);
 
 	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
 	spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
@@ -145,7 +148,7 @@ bool Game::Render()
 		}
 
 		if (renderThis)
-			Renderer->Render(toRender->at(i), toRender->at(i)->GetWeights());
+			Renderer->Render(toRender->at(i));
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
@@ -154,8 +157,6 @@ bool Game::Render()
 		{
 			e.UpdateAnimation();
 			Renderer->Render(&e, e.GetWeights());
-// 			system("CLS");
-// 			printf("%f\n%f\n%f\n%f", e.GetWeights().x, e.GetWeights().y, e.GetWeights().z, e.GetWeights().w);
 		}
 	}
 
@@ -164,7 +165,6 @@ bool Game::Render()
 	Renderer->Render(character, character->GetWeights());
 
 	Renderer->EndScene();
-
 
 
 	for (auto& path : paths)

@@ -14,15 +14,15 @@ class ShadowMap
 {
 private:
 
+	struct MatrixBufferPerObject
+	{
+		XMMATRIX modelWorld;
+	};
+
 	struct MatrixBufferPerFrame
 	{
 		XMMATRIX lightView;
 		XMMATRIX lightProj;
-	};
-
-	struct MatrixBufferPerObject
-	{
-		XMMATRIX modelWorld;
 	};
 
 	float dimensions;
@@ -49,7 +49,7 @@ public:
 	ID3D11ShaderResourceView* GetShadowSRV();
 
 	void ActivateShadowRendering(ID3D11DeviceContext* deviceContext);
-	void SetBufferPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld);
-	void SetBufferPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj);
+	void SetDataPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld);
+	void SetDataPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj);
 };
 

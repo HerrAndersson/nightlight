@@ -52,7 +52,7 @@ ShadowMap::ShadowMap(ID3D11Device* device, float dimensions, LPCWSTR vsFilename)
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
+	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", NULL, NULL, &pVS, &errorMessage);
 
 	if (FAILED(hr))
 	{
@@ -123,44 +123,48 @@ void ShadowMap::ActivateShadowRendering(ID3D11DeviceContext* deviceContext)
 
 	deviceContext->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	deviceContext->OMSetRenderTargets(0, nullptr, shadowDepthView);
-	deviceContext->RSSetViewports(1, &shadowViewport);
+	deviceContext->OMSetDepthStencilState(shadowDepthState, 1);
 	deviceContext->IASetInputLayout(shadowInputLayout);
 	deviceContext->VSSetShader(shadowVS, nullptr, 0);
-	deviceContext->OMSetDepthStencilState(shadowDepthState, 1);
-	
+	deviceContext->RSSetViewports(1, &shadowViewport);
+
 	//Unbind PS since it's not used
 	ID3D11PixelShader* nullPS = nullptr;
 	deviceContext->PSSetShader(nullPS, nullptr, 0);
 }
 
-void ShadowMap::SetBufferPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld)
+void ShadowMap::SetDataPerObject(ID3D11DeviceContext* deviceContext, XMMATRIX& modelWorld)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	XMMATRIX twvp = XMMatrixTranspose(modelWorld);
 
 	hr = deviceContext->Map(matrixBufferPerObject, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	MatrixBufferPerObject* matrixDataBuffer = (MatrixBufferPerObject*)mappedResource.pData;
-	XMMATRIX twvp = XMMatrixTranspose(modelWorld);
+
 	matrixDataBuffer->modelWorld = twvp;
 
 	deviceContext->Unmap(matrixBufferPerObject, 0);
+
 	deviceContext->VSSetConstantBuffers(0, 1, &matrixBufferPerObject);
 }
 
-void ShadowMap::SetBufferPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj)
+void ShadowMap::SetDataPerFrame(ID3D11DeviceContext* deviceContext, XMMATRIX& lightView, XMMATRIX& lightProj)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
+	XMMATRIX lvt = XMMatrixTranspose(lightView);
+	XMMATRIX lpt = XMMatrixTranspose(lightProj);
+
 	hr = deviceContext->Map(matrixBufferPerFrame, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	MatrixBufferPerFrame* matrixDataBuffer = (MatrixBufferPerFrame*)mappedResource.pData;
-	XMMATRIX lvt = XMMatrixTranspose(lightView);
-	matrixDataBuffer->lightView = lvt;
-	XMMATRIX lpt = XMMatrixTranspose(lightProj);
-	matrixDataBuffer->lightProj = lpt;
 
+	matrixDataBuffer->lightView = lvt;
+	matrixDataBuffer->lightProj = lpt;
 
 	deviceContext->Unmap(matrixBufferPerFrame, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &matrixBufferPerFrame);
