@@ -140,9 +140,9 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
 		lMaterialElement->GetIndexArray().Add(0);
 
-		FbxString lMaterialName = "material";
+		FbxString lMaterialName = lFilenameOut;
 		FbxString lShadingName = "Phong";
-		lMaterialName += i;
+		//lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 		FbxDouble3 lRed(0.0, 0.0, 0.0);
 		FbxDouble3 lColor;
@@ -155,7 +155,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lMaterial->Diffuse.Set(lColor);
 		lMaterial->TransparencyFactor.Set(0.0);
 		lMaterial->ShadingModel.Set(lShadingName);
-		lMaterial->Shininess.Set(0.5);
+		lMaterial->Shininess.Set(modelList.at(i).specular.z);
 
 
 		FbxFileTexture* lTexture = FbxFileTexture::Create(lScene, "Diffuse Texture");
@@ -252,6 +252,8 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
 		
+		
+
 		//set the translation of object and add here
 		lNode->LclTranslation.Set(FbxDouble3(0, 0, 0));
 		lNode->LclRotation.Set(FbxDouble3(0, 0, 0));
@@ -275,9 +277,6 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		for (int i = 0; i<uvId.size(); i++)
 			lUVElement1->GetIndexArray().Add(uvId.at(i));
 		
-
-
-
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);

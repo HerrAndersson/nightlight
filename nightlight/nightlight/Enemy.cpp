@@ -156,9 +156,16 @@ void Enemy::UpdatePrimaryAnimation()
 	if (moved)
 	{
 		frame += 0.1f;
-		if (frame > (framelength * 2))
+		if (frame > (framelength * 3))
 			frame = 0;
 
+		if (frame < (framelength * 3))
+		{
+			Weights.x = 0;
+			Weights.y = (frame - (framelength * 2)) / framelength;
+			Weights.z = 0;
+			Weights.w = (-frame + (framelength * 3)) / framelength;
+		}
 		if (frame < (framelength * 2))
 		{
 			Weights.x = 0;
@@ -178,14 +185,23 @@ void Enemy::UpdatePrimaryAnimation()
 		frame = 0;
 		Weights = { 1, 0, 0, 0 };
 	}
+// 	system("CLS");
+// 	printf("%f\n%f\n%f\n%f", Weights.x, Weights.y, Weights.z, Weights.w);
 }
 
 void Enemy::UpdateSecondaryAnimation()
 {
 	frame += 0.1f;
-	if (frame > (framelength * 3))
+	if (frame > (framelength * 4))
 		PlayAnimation(0);
 
+	if (frame < (framelength * 4))
+	{
+		Weights.x = (frame - (framelength * 3)) / framelength;
+		Weights.y = 0;
+		Weights.z = 0;
+		Weights.w = (-frame + (framelength * 4)) / framelength;
+	}
 	if (frame < (framelength * 3))
 	{
 		Weights.x = 0;
@@ -197,7 +213,7 @@ void Enemy::UpdateSecondaryAnimation()
 	{
 		Weights.x = 0;
 		Weights.y = (-frame + (framelength * 2)) / framelength;
-		Weights.z = (frame - (framelength)) / framelength;
+		Weights.z = (-frame + (framelength)) / framelength;
 		Weights.w = 0;
 	}
 	if (frame < (framelength))
