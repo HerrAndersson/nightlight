@@ -26,10 +26,11 @@ cbuffer lightBuffer : register(cb0)
 	float3 lightPosPoint2;
 	float4 lightDiffusePoint2;
 
-	int	shadowMapSize;
 	//player point light
 	float3 lightPosPoint3;
 	float4 lightDiffusePoint3;
+
+	int	shadowMapSize;
 };
 
 struct pixelInputType
