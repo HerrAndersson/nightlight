@@ -43,6 +43,10 @@ private:
 		XMFLOAT3 lightPosPoint2;
 		float pad3;
 		XMFLOAT4 lightDiffusePoint2;
+
+		XMFLOAT3 lightPosPoint3;
+		float pad4;
+		XMFLOAT4 lightDiffusePoint3;
 	};
 
 	struct MatrixBufferPerObject

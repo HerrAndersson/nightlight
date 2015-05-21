@@ -880,6 +880,10 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	lightPtr->lightDiffusePoint2 = lights.at(1)->getDiffuseColor();
 	lightPtr->lightPosPoint2 = lights.at(1)->getPosition();
 
+	//Player Pointlight:
+	lightPtr->lightDiffusePoint3 = spotlight->getDiffuseColor();
+	lightPtr->lightPosPoint3 = XMFLOAT3(levelstate->currentLevel->getPlayerPostion().x, -1.8f, levelstate->currentLevel->getPlayerPostion().z);
+
 	deviceContext->Unmap(lightBuffer, 0);
 
 	bufferNr = 0;
