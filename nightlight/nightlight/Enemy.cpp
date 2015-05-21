@@ -15,6 +15,7 @@ Enemy::Enemy(int id, XMFLOAT3 position, float rotation, RenderObject* renderObje
 	followingPlayer = false;
 
 	SetUpAnimation(renderObject, 3);
+	SetPrimaryAnimation(0);
 	PlayAnimation(0);
 }
 
@@ -141,7 +142,7 @@ vector<XMINT2> Enemy::GetPath()
 
 void Enemy::UpdateAnimation()
 {
-	if (!currentAnim)
+	if (currentAnim==primaryAnim)
 	{
 		UpdatePrimaryAnimation();
 	}
@@ -185,7 +186,7 @@ void Enemy::UpdatePrimaryAnimation()
 		frame = 0;
 		Weights = { 1, 0, 0, 0 };
 	}
-// 	system("CLS");
+//	system("CLS");
 // 	printf("%f\n%f\n%f\n%f", Weights.x, Weights.y, Weights.z, Weights.w);
 }
 
@@ -213,7 +214,7 @@ void Enemy::UpdateSecondaryAnimation()
 	{
 		Weights.x = 0;
 		Weights.y = (-frame + (framelength * 2)) / framelength;
-		Weights.z = (-frame + (framelength)) / framelength;
+		Weights.z = (frame - (framelength)) / framelength;
 		Weights.w = 0;
 	}
 	if (frame < (framelength))
@@ -239,4 +240,13 @@ void Enemy::SetUpAnimation(RenderObject* anim, float framelengthin)
 	temp.animation = anim;
 	temp.framelength = framelengthin;
 	animations.push_back(temp);
+}
+
+void Enemy::SetPrimaryAnimation(int animID)
+{
+	frame = 0;
+	primaryAnim = animID;
+	currentAnim = animID;
+	renderObject = animations[animID].animation;
+	framelength = animations[animID].framelength;
 }

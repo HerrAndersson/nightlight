@@ -25,6 +25,7 @@ private:
 	std::vector<Animation> animations;
 	float framelength;
 	int currentAnim;
+	int primaryAnim;
 
 	void UpdatePrimaryAnimation();
 	void UpdateSecondaryAnimation();
@@ -46,6 +47,7 @@ public:
 	bool HasValidPath(Level* level);
 
 	void PlayAnimation(int animID);
+	void SetPrimaryAnimation(int animID);
 	void UpdateAnimation();
 	void SetUpAnimation(RenderObject* anim, float framelengthin);
 };

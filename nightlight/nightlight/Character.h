@@ -17,6 +17,7 @@ private:
 	std::vector<Animation> animations;
 	float framelength;
 	int currentAnim;
+	int primaryAnim;
 
 	void UpdatePrimaryAnimation();
 	void UpdateSecondaryAnimation();
@@ -40,6 +41,7 @@ public:
 
 	void PlayAnimation(int animID);
 	void UpdateCharacterAnimation();
+	void SetPrimaryAnimation(int animID);
 	void SetUpAnimation(RenderObject* anim, float framelengthin);
 };
 
