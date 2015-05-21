@@ -24,7 +24,7 @@ struct vertexOutput
 	float2 tex			: TEXCOORD0;
 	float3 normal		: NORMAL;
 
-	float3 worldPos		: TEXCOORD1;
+	float4 worldPos		: TEXCOORD1;
 	float3 viewDir		: POSITION;
 	float3 colorModifier: COLORMODIFIER;
 };

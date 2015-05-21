@@ -21,7 +21,7 @@ RenderModule::RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fu
 
 	d3d = new D3DManager(hwnd, screenWidth, screenHeight, fullscreen);
 	//initialize shadowmap
-	shadowMap = new ShadowMap(d3d->GetDevice(), 512, L"Assets/Shaders/ShadowVS.hlsl");
+	shadowMap = new ShadowMap(d3d->GetDevice(), 2048, L"Assets/Shaders/ShadowVS.hlsl");
 
 	bool result;
 
@@ -47,6 +47,7 @@ RenderModule::~RenderModule()
 	pixelShader->Release();
 	sampleStateClamp->Release();
 	sampleStateWrap->Release();
+	sampleStateComparison->Release();
 	vertexShader->Release();
 	skeletalVertexShader->Release();
 	blendVertexShader->Release();
@@ -166,9 +167,7 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	//Create the texture sampler state
 	result = device->CreateSamplerState(&samplerDesc, &sampleStateWrap);
 	if (FAILED(result))
-	{
 		return false;
-	}
 
 	//Create a CLAMP texture sampler state description.
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -179,6 +178,22 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	result = device->CreateSamplerState(&samplerDesc, &sampleStateClamp);
 	if (FAILED(result))
 		return false;
+
+	//Create texture sampler
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0] = 1.0f;
+	samplerDesc.BorderColor[1] = 1.0f;
+	samplerDesc.BorderColor[2] = 1.0f;
+	samplerDesc.BorderColor[3] = 1.0f;
+	samplerDesc.MaxAnisotropy = 0;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+
+	result = device->CreateSamplerState(&samplerDesc, &sampleStateComparison);
+	if (FAILED(result))
+		throw std::runtime_error("RenderModule: samplerStateComparison initialization failed.");
 
 	/////////////////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////////////////
 	//CONSTANT BUFFER DESCRIPTIONS:
@@ -194,13 +209,13 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerObject);
 
 	if (FAILED(result))
-		throw std::runtime_error("\nFailed to create matrix buffer");
+		throw std::runtime_error("Failed to create matrix buffer");
 
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerFrame);
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerFrame);
 
 	if (FAILED(result))
-		throw std::runtime_error("\nFailed to create matrix buffer");
+		throw std::runtime_error("Failed to create matrix buffer");
 
 	//this is the light dynamic constant buffer in the PIXEL SHADER
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -837,6 +852,15 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	
 	lightPtr = (LightBuffer*)mappedResource.pData;
 
+	XMMATRIX lvt, lpt;
+	spotlight->getViewMatrix(lvt);
+	spotlight->getProjMatrix(lpt);
+
+	lvt = XMMatrixTranspose(lvt);
+	lpt = XMMatrixTranspose(lpt);
+
+	lightPtr->lightView = lvt;
+	lightPtr->lightProj = lpt;
 	//Spotlight:
 	lightPtr->lightPosSpot = spotlight->getPosition();
 	lightPtr->lightDirSpot = spotlight->getDirection();
@@ -862,6 +886,8 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 
 	//setting matrix constant buffer in the VS with its new and updated values
 	deviceContext->PSSetConstantBuffers(bufferNr, 1, &lightBuffer);
+	ID3D11ShaderResourceView* shadowMapSRV = shadowMap->GetShadowSRV();
+	deviceContext->PSSetShaderResources(1, 1, &shadowMapSRV);
 
 	return true;
 }
@@ -880,13 +906,7 @@ void RenderModule::UseDefaultShader()
 
 	deviceContext->PSSetSamplers(0, 1, &sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
-}
-
-void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
-{
-	d3d->SetCullingState(2);
-	shadowMap->SetDataPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
-	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
+	deviceContext->PSSetSamplers(2, 1, &sampleStateComparison);
 }
 
 void RenderModule::UseSkeletalShader()
@@ -903,6 +923,7 @@ void RenderModule::UseSkeletalShader()
 
 	deviceContext->PSSetSamplers(0, 1, &sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
+	deviceContext->PSSetSamplers(2, 1, &sampleStateComparison);
 }
 
 void RenderModule::UseBlendShader()
@@ -919,6 +940,7 @@ void RenderModule::UseBlendShader()
 
 	deviceContext->PSSetSamplers(0, 1, &sampleStateClamp);
 	deviceContext->PSSetSamplers(1, 1, &sampleStateWrap);
+	deviceContext->PSSetSamplers(2, 1, &sampleStateComparison);
 }
 
 bool RenderModule::Render(GameObject* gameObject)
@@ -1044,6 +1066,13 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 	return result;
 }
 
+void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+{
+	d3d->SetCullingState(2);
+	shadowMap->SetDataPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
+	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
+}
+
 bool RenderModule::RenderShadow(GameObject* gameObject)
 {
 	bool result = true;
@@ -1066,7 +1095,6 @@ bool RenderModule::RenderShadow(GameObject* gameObject)
 	//Now render the prepared buffers with the shader.
 	deviceContext->Draw(renderObject->model->vertexBufferSize, 0);
 	return result;
-
 }
 
 void RenderModule::BeginScene(float red, float green, float blue, float alpha)

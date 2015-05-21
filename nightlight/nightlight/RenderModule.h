@@ -23,6 +23,9 @@ private:
 	
 	struct LightBuffer
 	{
+		XMMATRIX lightView;
+		XMMATRIX lightProj;
+
 		//spotlight
 		XMFLOAT3 lightPosSpot;
 		float  lightRangeSpot;
@@ -86,6 +89,7 @@ private:
 	//Sampler states
 	ID3D11SamplerState*		sampleStateWrap;
 	ID3D11SamplerState*		sampleStateClamp;
+	ID3D11SamplerState*     sampleStateComparison;
 
 	//Other
 	ID3D11InputLayout*		layoutPosUvNorm;
@@ -99,7 +103,6 @@ private:
 	HWND					hwnd;
 
 public:
-	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject * spotlight, LevelStates* levelstate);
 
 	RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen);
 	~RenderModule();
@@ -107,6 +110,8 @@ public:
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename);
+
+	bool SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3& camPos, LightObject* spotlight, LevelStates* levelstate);
 
 	bool SetDataPerObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 colorModifier);
 	bool SetDataPerBlendObject(XMMATRIX& worldMatrix, RenderObject* renderObject, XMFLOAT3 colorModifier, XMFLOAT4& weights);

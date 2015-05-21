@@ -10,7 +10,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 
 	float spotRange = 15.0f;
 	float spotCone = 30.0f;
-	float fov = (spotCone + 5.0f) * (XM_PI / 180);
+	float fov = (spotCone + 10.0f) * (XM_PI / 180);
 	spotLight = new LightObject(fov, 1.0f, 0.1f, spotRange, spotCone, spotRange);
 
 	spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
@@ -124,9 +124,10 @@ bool Game::Render()
 	Renderer->ActivateShadowRendering(lightView, lightProj);
 	
 	for (int i = 0; i < (signed)toRender->size(); i++) 
-	{
 		Renderer->RenderShadow(toRender->at(i));
-	}
+
+	for (auto& e : enemies)
+		Renderer->RenderShadow(&e);
 
 	Renderer->BeginScene(0.05f, 0.05f, 0.05f, 1.0f);
 
@@ -148,7 +149,7 @@ bool Game::Render()
 		}
 
 		if (renderThis)
-			Renderer->Render(toRender->at(i));
+			Renderer->Render(toRender->at(i), toRender->at(0)->GetWeights());
 	}
 
 	if (levelStates.currentLevelNr != levelStates.menuLevel->GetLevelNr())
