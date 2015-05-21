@@ -77,7 +77,6 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		float depth = lightSpacePos.z / lightSpacePos.w;
 
 		float dx = 1.0f / shadowMapSize;
-		float dx2 = 2.0f / shadowMapSize;
 
 		float s0 = ShadowMap.Sample(sampleStateClamp, smTex).r;
 

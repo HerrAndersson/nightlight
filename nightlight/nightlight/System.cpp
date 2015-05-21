@@ -14,7 +14,7 @@ System::System(bool fullscreen, bool showCursor, int windowWidth, int windowHeig
 	timer = new Timer();
 	cpuUsage = new Cpu();
 
-	game = new Game(hinstance, hwnd, windowWidth, windowHeight, fullscreen);
+	game = new Game(hinstance, hwnd, this->windowWidth, this->windowHeight, fullscreen);
 }
 
 

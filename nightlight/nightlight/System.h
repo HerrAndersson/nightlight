@@ -11,10 +11,10 @@ class System
 
 private:
 
-	const double MS_PER_FRAME = (1000 / 62.0f); //65FPS
-	//const double MS_PER_FRAME = 16.66666667; //60FPS
-	//const double MS_PER_FRAME =  8.33333333; //120FPS
-	//const double MS_PER_FRAME =  6.94444444; //144FPS
+	const double MS_PER_FRAME = (1000 / 62.0f); //62FPS
+	//const double MS_PER_FRAME = (1000 / 60.0f);//60FPS
+	//const double MS_PER_FRAME =  (1000 / 120.0f); //120FPS
+	//const double MS_PER_FRAME =  (1000 / 144.0f); //144FPS
 
 	LPCSTR		applicationName;
 	HINSTANCE	hinstance;
