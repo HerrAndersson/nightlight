@@ -24,4 +24,5 @@ char-lever-blendshapes.bin
 char-box-push-blendshapes.bin
 char-hurt-blendshapes.bin
 char-gameover2_blendshapes.bin
+char-gameover2_dead_blendshapes.bin
 enemy_medium-hit-blendshapes.bin

@@ -27,6 +27,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	character->SetUpAnimation(Assets->GetRenderObject(23), 1);
 	character->SetUpAnimation(Assets->GetRenderObject(24), 1);
 	character->SetUpAnimation(Assets->GetRenderObject(25), 1);
+	character->SetUpAnimation(Assets->GetRenderObject(26), 1);
 
 	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
 	levelStates.currentLevel = levelStates.menuLevel;
