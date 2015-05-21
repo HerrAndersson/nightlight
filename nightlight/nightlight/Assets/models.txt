@@ -8,7 +8,7 @@ corner.bin
 corner_reverse.bin
 pressurep.bin
 enemy_big.bin
-enemy_medium_pose.bin
+enemy_medium-walk-blendshapes.bin
 enemy_small.bin
 box.bin
 pillar.bin
