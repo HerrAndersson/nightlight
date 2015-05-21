@@ -22,11 +22,14 @@ cbuffer lightBuffer : register(cb0)
 	float3 lightPosPoint;
 	float4 lightDiffusePoint;
 
-	//player point light
+	//Menu point light
 	float3 lightPosPoint2;
 	float4 lightDiffusePoint2;
 
 	int	shadowMapSize;
+	//player point light
+	float3 lightPosPoint3;
+	float4 lightDiffusePoint3;
 };
 
 struct pixelInputType
@@ -99,23 +102,28 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 	//Calculate the point lights directions
 	float3 pointLightDir = normalize(wp - lightPosPoint);
 	float3 pointLightDir2 = normalize(wp - lightPosPoint2);
+	float3 pointLightDir3 = normalize(wp - lightPosPoint3);
 
 	float3 diffuseLighting = saturate(dot(input.normal, -pointLightDir));
 	float3 diffuseLighting2 = saturate(dot(input.normal, -pointLightDir2));
+	float3 diffuseLighting3 = saturate(dot(input.normal, -pointLightDir3));
 
 	//Add the two point lights and calculate falloff
 	diffuseLighting *= (1) / dot(lightPosPoint - wp, lightPosPoint - wp);
 	diffuseLighting2 *= (5) / dot(lightPosPoint2 - wp, lightPosPoint2 - wp);
+	diffuseLighting3 *= (0.2) / dot(lightPosPoint3 - wp, lightPosPoint3 - wp);
 
 	finalColor = saturate(finalColor + finalAmbient);
 	finalColor += (diffuseLighting *  lightDiffusePoint);
 	finalColor += (diffuse *(diffuseLighting2 * lightDiffusePoint2));
+	finalColor += (diffuse *(diffuseLighting3 * lightDiffusePoint3));
 
 	if (diffuseLighting.x > 0 || diffuseLighting.y > 0 || diffuseLighting.z > 0)
 	{
 		reflection = normalize(2 * diffuseLighting * input.normal + pointLightDir);
 		reflection = normalize(2 * diffuseLighting2 * input.normal + pointLightDir2);
 		reflection *= normalize(2 * diffuseLighting * input.normal + lightDirSpot);
+		//reflection = normalize(2 * diffuseLighting3 * input.normal + pointLightDir3);
 		
 		//Determine the amount of specular light based on the reflection vector, viewing direction, and specular power.
 		specular = pow(saturate(dot(reflection, input.viewDir)), 20);
