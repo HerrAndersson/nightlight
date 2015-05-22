@@ -4,4 +4,5 @@ level2.lvl
 level3.lvl
 level4.lvl
 level5.lvl
+level6.lvl
 levelend.lvl
