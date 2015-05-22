@@ -17,7 +17,7 @@ AssetManager::~AssetManager()
 	renderObjects.clear();
 };
 
-void AssetManager::LoadModel(string file_path, Model& model){
+void AssetManager::LoadModel(string file_path, Model& model, MaterialData& material){
 	
 
 
@@ -87,7 +87,7 @@ void AssetManager::LoadModel(string file_path, Model& model){
 
 	for (int i = 0; i < mainHeader.matCount; i++)
 	{
-		if (i == 0){
+	
 			MatHeader matHeader;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
 
@@ -96,25 +96,16 @@ void AssetManager::LoadModel(string file_path, Model& model){
 			infile.read((char*)&model.diffuse, 16);
 			infile.seekg(matHeader.diffuseNameLength, ios::cur);
 
-			infile.read((char*)&model.specular, 16);
-			infile.seekg(matHeader.specularNameLength, ios::cur);
+			infile.read((char*)&material.specular, 16);
+		
+			//infile.seekg(matHeader.specularNameLength, ios::cur);
 
 			infile.seekg(16 + matHeader.transparencyNameLength, ios::cur);
 
 			infile.seekg(16 + matHeader.glowNameLength, ios::cur);
-		}
+		
 
-		else{
-			MatHeader matHeader;
-			infile.read((char*)&matHeader, sizeof(MatHeader));
-			infile.seekg(80
-				+ matHeader.ambientNameLength
-				+ matHeader.diffuseNameLength
-				+ matHeader.specularNameLength
-				+ matHeader.transparencyNameLength
-				+ matHeader.glowNameLength,
-				ios::cur);
-		}
+		
 	}
 
 	model.pointLights.resize(mainHeader.pointLightSize);

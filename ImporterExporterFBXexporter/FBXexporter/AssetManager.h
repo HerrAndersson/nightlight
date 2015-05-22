@@ -12,7 +12,7 @@ public:
 	AssetManager();
 	~AssetManager();
 	RenderObject* GetRenderObject(int id);
-	void LoadModel(string file_path, Model& model);
+	void LoadModel(string file_path, Model& model, MaterialData& material);
 private:
 
 	ID3D11Device* device;

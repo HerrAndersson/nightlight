@@ -9,7 +9,7 @@ DataHandler::DataHandler()
 }
 DataHandler::~DataHandler()
 {}
-int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
+int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList, std::vector<MaterialData>&MaterialList)
 {
 
 
@@ -144,12 +144,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 		FbxDouble3 lRed(0.0, 0.0, 0.0);
-		//FbxDouble3 lSpec(modelList.at(i).specular.x, modelList.at(i).specular.y, modelList.at(i).specular.z);
+		FbxDouble3 lSpec(MaterialList.at(i).specular.x, MaterialList.at(i).specular.y, MaterialList.at(i).specular.z);
 		FbxDouble3 lColor;
 		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
 
 		//Generate primary and secondary colors.
-		//lMaterial->Specular.Set(lSpec);
+		lMaterial->Specular.Set(lSpec);
 		lMaterial->Emissive.Set(lBlack);
 		lMaterial->Ambient.Set(lRed);
 		lColor = FbxDouble3(modelList.at(i).diffuse.x, modelList.at(i).diffuse.y, modelList.at(i).diffuse.z);
@@ -253,25 +253,6 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
 		
-		//LIGHTS AND CAMERA
-//		//create a camera (pls don't)
-//		FbxCamera* myCamera = FbxCamera::Create(lScene, sceneName);
-//		// Set camera properties for classic TV projection with aspect ratio 4:3
-//		myCamera->SetFormat(FbxCamera::eNTSC);
-//		FbxNode* camNode = FbxNode::Create(lScene, sceneName);
-//		camNode->LclTranslation.Set(FbxDouble3(-2, 0, i));
-//		camNode->LclRotation.Set(FbxDouble3(0, 0, 0));
-//		camNode->SetNodeAttribute(myCamera);
-//		
-//		
-//		FbxLight* lLight = FbxLight::Create(lScene, sceneName);
-//		//Create a node for our light in the scene.
-//		FbxNode* lLightNode = FbxNode::Create(lScene, sceneName);
-//		lLightNode->LclTranslation.Set(FbxDouble3(0, 2, i));
-//		lLightNode->LclRotation.Set(FbxDouble3(0, 0, 0));
-//		//Create a light.
-//		//Set the node attribute of the light node.
-//		lLightNode->SetNodeAttribute(lLight);
 
 		
 	
@@ -302,10 +283,30 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);
-
-	//	//add the camera and light(pls don't though)
-	//	lRootNode->AddChild(camNode);
-	//	lRootNode->AddChild(lLightNode);
+	
+	//LIGHTS AND CAMERA
+	//create a camera (pls don't)
+	FbxCamera* myCamera = FbxCamera::Create(lScene, sceneName);
+	// Set camera properties for classic TV projection with aspect ratio 4:3
+	myCamera->SetFormat(FbxCamera::eNTSC);
+	FbxNode* camNode = FbxNode::Create(lScene, sceneName);
+	camNode->LclTranslation.Set(FbxDouble3(i, 0, -2));
+	camNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+	camNode->SetNodeAttribute(myCamera);
+	
+	
+	FbxLight* lLight = FbxLight::Create(lScene, sceneName);
+	//Create a node for our light in the scene.
+	FbxNode* lLightNode = FbxNode::Create(lScene, sceneName);
+	lLightNode->LclTranslation.Set(FbxDouble3(i, 2, 0));
+	lLightNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+	//Create a light.
+	//Set the node attribute of the light node.
+	lLightNode->SetNodeAttribute(lLight);
+	
+		//add the camera and light(pls don't though)
+		lRootNode->AddChild(camNode);
+		lRootNode->AddChild(lLightNode);
 
 //PARENT CHILD HIERARCHY
 	//FbxNode* lNode1 = FbxNode::Create(lScene, "thing1");
@@ -336,14 +337,16 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	return 0;
 }
 
-void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
+void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList, std::vector<MaterialData>&MaterialList)
 {
 	Model model;
+	MaterialData material;
 	for (int i = 0; i < binFileList.size(); i++)
 	{
-		objectData->LoadModel("../Bin/" + binFileList.at(i), model);
+		objectData->LoadModel("../Bin/" + binFileList.at(i), model, material);
 
 		modelList.push_back(model);
+		MaterialList.push_back(material);
 	}
 
 }
