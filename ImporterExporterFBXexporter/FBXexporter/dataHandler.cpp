@@ -144,11 +144,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 		FbxDouble3 lRed(0.0, 0.0, 0.0);
-		FbxDouble3 lSpec(modelList.at(i).specular.x, modelList.at(i).specular.y, modelList.at(i).specular.z);
+		//FbxDouble3 lSpec(modelList.at(i).specular.x, modelList.at(i).specular.y, modelList.at(i).specular.z);
 		FbxDouble3 lColor;
 		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
 
 		//Generate primary and secondary colors.
+		//lMaterial->Specular.Set(lSpec);
 		lMaterial->Emissive.Set(lBlack);
 		lMaterial->Ambient.Set(lRed);
 		lColor = FbxDouble3(modelList.at(i).diffuse.x, modelList.at(i).diffuse.y, modelList.at(i).diffuse.z);
