@@ -195,9 +195,9 @@ namespace assetUtility {
 
 	struct MaterialData
 	{
-		XMFLOAT3 diffuse;
+		XMFLOAT4 diffuse;
 		std::string diffuseTextureName;
-		XMFLOAT3 specular;
+		XMFLOAT4 specular;
 		std::string specularTextureName;
 	};
 

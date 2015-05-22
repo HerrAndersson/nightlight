@@ -412,7 +412,6 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 	Level* currentLevel = levelStates.currentLevel;
 	Level* menuLevel = levelStates.menuLevel;
 	Level* loadedLevel = levelStates.loadedLevel;
-	Level* endLevel = levelStates.loadedLevel;
 
 	Coord characterTileCoord = character->GetTileCoord();
 	Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
@@ -524,8 +523,8 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		{
 			grandpa->SetPosition(XMFLOAT3(-8.5f, 0.0f, -2.5f));
 			grandpa->SetRotationDeg(XMFLOAT3(0,-90,0));
-			
-			
+			grandpa->SetPrimaryAnimation(0);
+			grandpa->PlayAnimation(2);
 		}
 
 		AI->ChangeLevel(currentLevel);
