@@ -44,6 +44,7 @@ private:
 
 	const bool debugDisableWallRendering = false;
 	const bool debugRenderEnemyPaths = false;
+	const bool debugShowFps = false;
 
 public:
 
@@ -57,5 +58,6 @@ public:
 	void* operator new(size_t i);
 	void operator delete(void* p);
 	void UpdateCharacterAnimation();
+	bool GetDebugShowFps() { return debugShowFps; }
 };
 
