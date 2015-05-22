@@ -253,26 +253,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, meshName);
 		
-		//LIGHTS AND CAMERA
-//		//create a camera (pls don't)
-//		FbxCamera* myCamera = FbxCamera::Create(lScene, sceneName);
-//		// Set camera properties for classic TV projection with aspect ratio 4:3
-//		myCamera->SetFormat(FbxCamera::eNTSC);
-//		FbxNode* camNode = FbxNode::Create(lScene, sceneName);
-//		camNode->LclTranslation.Set(FbxDouble3(-2, 0, i));
-//		camNode->LclRotation.Set(FbxDouble3(0, 0, 0));
-//		camNode->SetNodeAttribute(myCamera);
-//		
-//		
-//		FbxLight* lLight = FbxLight::Create(lScene, sceneName);
-//		//Create a node for our light in the scene.
-//		FbxNode* lLightNode = FbxNode::Create(lScene, sceneName);
-//		lLightNode->LclTranslation.Set(FbxDouble3(0, 2, i));
-//		lLightNode->LclRotation.Set(FbxDouble3(0, 0, 0));
-//		//Create a light.
-//		//Set the node attribute of the light node.
-//		lLightNode->SetNodeAttribute(lLight);
-//		camNode->SetTarget(lNode);
+
 		
 	
 		//set the translation of object and add here
@@ -302,10 +283,30 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		// Add the mesh node to the root node in the scene.
 		FbxNode *lRootNode = lScene->GetRootNode();
 		lRootNode->AddChild(lNode);
-
-	//	//add the camera and light(pls don't though)
-	//	lRootNode->AddChild(camNode);
-	//	lRootNode->AddChild(lLightNode);
+	
+	//LIGHTS AND CAMERA
+	//create a camera (pls don't)
+	FbxCamera* myCamera = FbxCamera::Create(lScene, sceneName);
+	// Set camera properties for classic TV projection with aspect ratio 4:3
+	myCamera->SetFormat(FbxCamera::eNTSC);
+	FbxNode* camNode = FbxNode::Create(lScene, sceneName);
+	camNode->LclTranslation.Set(FbxDouble3(i, 0, -2));
+	camNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+	camNode->SetNodeAttribute(myCamera);
+	
+	
+	FbxLight* lLight = FbxLight::Create(lScene, sceneName);
+	//Create a node for our light in the scene.
+	FbxNode* lLightNode = FbxNode::Create(lScene, sceneName);
+	lLightNode->LclTranslation.Set(FbxDouble3(i, 2, 0));
+	lLightNode->LclRotation.Set(FbxDouble3(0, 0, 0));
+	//Create a light.
+	//Set the node attribute of the light node.
+	lLightNode->SetNodeAttribute(lLight);
+	
+		//add the camera and light(pls don't though)
+		lRootNode->AddChild(camNode);
+		lRootNode->AddChild(lLightNode);
 
 //PARENT CHILD HIERARCHY
 	//FbxNode* lNode1 = FbxNode::Create(lScene, "thing1");
