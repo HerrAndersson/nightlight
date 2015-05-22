@@ -92,7 +92,8 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 
 			infile.seekg(16 + matHeader.glowNameLength, ios::cur);
 			bin.materialList.push_back(inmat);
-
+			inmat.diffuseTextureName.clear();
+			inmat.specularTextureName.clear();
 	}
 
 	model.pointLights.resize(mainHeader.pointLightSize);
