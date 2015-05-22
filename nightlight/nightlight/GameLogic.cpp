@@ -27,10 +27,19 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 			return false;
 	}
 
-	if (!ManageLevelStates(levelStates, character, enemies))
+	if (!ManageLevelStates(levelStates, character, enemies, spotLight))
 		return false;
 
 	Input->Update();
+
+	if (resetLevelTimer > 0){
+		resetLevelTimer--;
+
+		if (resetLevelTimer <= 0){
+			restart = true;
+		}
+
+	}
 
 	return true;
 }
@@ -282,7 +291,9 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 				character->GetRenderObject()->diffuseTexture = e->GetRenderObject()->diffuseTexture;//dead//todo
 				character->SetPrimaryAnimation(5); 
 				character->PlayAnimation(4);
+				spotlight->setAmbientColor(0.1f, 0.07f, 0.07f, 1.0f);
 				spotlight->setDiffuseColor(0, 0, 0, 0);
+				resetLevelTimer = 180;
 			}
 			character->SetInvulTimer(180);
 		}
@@ -411,13 +422,11 @@ void GameLogic::SelectButton(Button* newSelectedButton)
 	}
 }
 
-bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies)
+bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	Level* menuLevel = levelStates.menuLevel;
 	Level* loadedLevel = levelStates.loadedLevel;
-
-	bool restart = false;
 
 	Coord characterTileCoord = character->GetTileCoord();
 	Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
@@ -459,7 +468,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			}
 		}
 	}
-	else if (Input->EscClicked())
+	else if (Input->EscClicked() && resetLevelTimer <= 0)
 	{
 		if (currentLevel->GetLevelNr() != menuLevel->GetLevelNr())
 			levelStates.currentLevelNr = menuLevel->GetLevelNr();
@@ -476,7 +485,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 	}
 
 	//Set the correct level
-	if (currentLevel->GetLevelNr() != levelStates.currentLevelNr)
+	if (currentLevel->GetLevelNr() != levelStates.currentLevelNr || restart)
 	{
 		if (levelStates.currentLevelNr == menuLevel->GetLevelNr())
 		{
@@ -491,6 +500,12 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 		}
 		else if (!loadedLevel || loadedLevel->GetLevelNr() != levelStates.currentLevelNr || restart)
 		{
+			restart = false;
+			character->SetPrimaryAnimation(0);
+			character->SetHitPoints(3);
+			spotLight->setAmbientColor(0.09f, 0.09f, 0.09f, 1.0f);
+			spotLight->setDiffuseColor(0.55f, 0.45f, 0.2f, 1.0f);
+
 			SelectObject(nullptr);
 			moveObjectMode = false;
 			moveObjectModeAxis = Axis::BOTH;

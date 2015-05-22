@@ -190,10 +190,6 @@ bool Game::Render()
 		}
 	}
 
-
-
-
-
 	return result;
 }
 
