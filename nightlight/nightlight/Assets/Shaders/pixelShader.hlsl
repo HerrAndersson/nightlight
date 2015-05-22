@@ -79,6 +79,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		float epsilon = 0.0004f;
 		float dx = 1.0f / shadowMapSize;
 
+		//Less filtering
 		//float s0 = ShadowMap.Sample(sampleStateClamp, smTex).r;
 		//float s1 = ShadowMap.Sample(sampleStateClamp, smTex + float2(dx, 0.0f)).r;
 		//float s2 = ShadowMap.Sample(sampleStateClamp, smTex + float2(0.0f, dx)).r;
