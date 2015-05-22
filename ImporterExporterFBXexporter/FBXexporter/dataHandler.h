@@ -15,8 +15,8 @@ public:
 	DataHandler();
 	~DataHandler();
 	
-	int FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList);
-	void importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList);
+	int FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList, std::vector<MaterialData>&MaterialList);
+	void importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList, std::vector<MaterialData>&MaterialList);
 	bool getBinFilenamesInDirectory(char *folder_path, std::vector<std::string> &list_to_fill);
 
 private:

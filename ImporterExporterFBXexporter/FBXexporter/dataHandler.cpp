@@ -9,7 +9,7 @@ DataHandler::DataHandler()
 }
 DataHandler::~DataHandler()
 {}
-int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
+int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Model>&modelList, std::vector<MaterialData>&MaterialList)
 {
 
 
@@ -144,12 +144,12 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 		FbxDouble3 lRed(0.0, 0.0, 0.0);
-		//FbxDouble3 lSpec(modelList.at(i).specular.x, modelList.at(i).specular.y, modelList.at(i).specular.z);
+		FbxDouble3 lSpec(MaterialList.at(i).specular.x, MaterialList.at(i).specular.y, MaterialList.at(i).specular.z);
 		FbxDouble3 lColor;
 		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
 
 		//Generate primary and secondary colors.
-		//lMaterial->Specular.Set(lSpec);
+		lMaterial->Specular.Set(lSpec);
 		lMaterial->Emissive.Set(lBlack);
 		lMaterial->Ambient.Set(lRed);
 		lColor = FbxDouble3(modelList.at(i).diffuse.x, modelList.at(i).diffuse.y, modelList.at(i).diffuse.z);
@@ -272,7 +272,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 //		//Create a light.
 //		//Set the node attribute of the light node.
 //		lLightNode->SetNodeAttribute(lLight);
-
+//		camNode->SetTarget(lNode);
 		
 	
 		//set the translation of object and add here
@@ -336,14 +336,16 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 	return 0;
 }
 
-void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList)
+void DataHandler::importBinData(std::vector<std::string>& binFileList, std::vector<Model>&modelList, std::vector<MaterialData>&MaterialList)
 {
 	Model model;
+	MaterialData material;
 	for (int i = 0; i < binFileList.size(); i++)
 	{
-		objectData->LoadModel("../Bin/" + binFileList.at(i), model);
+		objectData->LoadModel("../Bin/" + binFileList.at(i), model, material);
 
 		modelList.push_back(model);
+		MaterialList.push_back(material);
 	}
 
 }

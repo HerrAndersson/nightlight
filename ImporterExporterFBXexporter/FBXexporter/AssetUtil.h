@@ -185,5 +185,10 @@ namespace assetUtility {
 		std::vector<SpotLightStruct> spotLights;
 	};
 
+	struct MaterialData
+	{
+		XMFLOAT3 specular;
+	
+	};
 
 };
