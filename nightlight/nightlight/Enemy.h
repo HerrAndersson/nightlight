@@ -15,7 +15,7 @@ private:
 	vector<XMINT2> path;
 	Coord next, end;
 	XMFLOAT3 direction;
-	float tileEps = 0.05f;
+	float desiredRotation;
 
 	bool CheckPathValidity(Level* level);
 

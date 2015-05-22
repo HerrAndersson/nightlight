@@ -58,9 +58,11 @@ bool Enemy::Update(Level* level, LightObject* spotlight, bool inLight)
 					{
 						nextPos = NextPositionFromCollision(result, nextPos, radius, iteratorTileCoord);
 
-						if (result && iteratorTile) {
+						if (result && iteratorTile) 
+						{
 							Container* shadowContainer = iteratorTile->getShadowContainer();
-							if (shadowContainer && !shadowContainer->GetIsActivated()) {
+							if (shadowContainer && !shadowContainer->GetIsActivated()) 
+							{
 								shadowContainer->ActivateContainer();
 								return false;
 							}
@@ -73,6 +75,7 @@ bool Enemy::Update(Level* level, LightObject* spotlight, bool inLight)
 		float xRem = -(nextPos.x - (int)nextPos.x);
 		float zRem = -(nextPos.z - (int)nextPos.z);
 
+
 		if (tileCoord == next && xRem >= 0.45f && zRem >= 0.45f)
 		{
 			XMINT2 p = path.at(path.size() - 1);
@@ -80,9 +83,19 @@ bool Enemy::Update(Level* level, LightObject* spotlight, bool inLight)
 
 			next = Coord(p.x, p.y);
 			direction = XMFLOAT3((-position.x - (next.x + (TILE_SIZE / 2))), 0.0f, -position.z - (next.y + (TILE_SIZE / 2)));
-
-			rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
+			desiredRotation = -atan2(direction.z, direction.x) * 180 / XM_PI;
 		}
+
+		float difference = desiredRotation - rotation.y;
+		cout << difference << endl;
+
+		if (difference < 180)
+			rotation.y += difference / 10;
+		else
+			rotation.y -= difference / 10;
+
+
+		SetRotationDeg(rotation);
 
 		SetPosition(nextPos);
 		moved = 1;
@@ -142,7 +155,8 @@ void Enemy::SetPath(vector<XMINT2> path)
 		end = Coord(path.at(0).x, path.at(0).y);
 		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
 		direction = XMFLOAT3((-position.x - (next.x + (TILE_SIZE / 2))), 0.0f, -position.z - (next.y + (TILE_SIZE / 2)));
-		rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
+		desiredRotation = -atan2(direction.z, direction.x) * 180 / XM_PI;
+		//rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
 	}
 }
 

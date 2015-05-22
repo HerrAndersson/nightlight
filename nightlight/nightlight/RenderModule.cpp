@@ -1073,7 +1073,7 @@ bool RenderModule::Render(GameObject* gameObject, XMFLOAT4& weights)
 
 void RenderModule::ActivateShadowRendering(XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
-	d3d->SetCullingState(3);
+	d3d->SetCullingState(2);
 	shadowMap->SetDataPerFrame(d3d->GetDeviceContext(), viewMatrix, projectionMatrix);
 	shadowMap->ActivateShadowRendering(d3d->GetDeviceContext());
 }

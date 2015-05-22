@@ -40,8 +40,8 @@ XMINT2 AiModule::GenerateRandomPosition(Enemy* ai)
 
 	while (!found)
 	{
-		goal.x = rand() % 3 - 1;	
-		goal.y = rand() % 3 - 1;
+		goal.x = rand() % 6 - 3;	
+		goal.y = rand() % 6 - 3;
 
 		goal.x += orig.x;
 		goal.y += orig.y;
