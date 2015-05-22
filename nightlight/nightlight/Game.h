@@ -22,7 +22,7 @@ class Game
 private:
 
 	int screenWidth, screenHeight;
-	const int shadowMapSize = 512;
+	const int shadowMapSize = 2048;
 
 	std::string saveFilePath = "nightlight.sav";
 
