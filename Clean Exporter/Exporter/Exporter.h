@@ -262,10 +262,10 @@ struct Animation{
 
 struct Node{
 	int parent;
-	MFloatMatrix transform;
-	std::string name;
 	int type=0;
 	int mesh;
+	MFloatMatrix transform;
+	std::string name;
 };
 
 struct SceneData

@@ -1489,9 +1489,14 @@ void Exporter::ExportMeshes()
 
 		outfile.write((const char*)scene_.skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
-
-	outfile.write((const char*)scene_.sceneGraph.data(), sizeof(Node)*mainHeader.sceneGraph);
-
+	for (int i = 0; i < mainHeader.sceneGraph;i++)
+	{
+		outfile.write((const char*)&scene_.sceneGraph[i], 12);
+		outfile.write((const char*)&scene_.sceneGraph[i].transform, 64);
+		int namelength = scene_.sceneGraph[i].name.length();
+		outfile.write((const char*)&namelength, 4);
+		outfile.write((const char*)scene_.sceneGraph[i].name.data(), namelength);
+	}
 	outfile.close();
 	debug++;
 	/*

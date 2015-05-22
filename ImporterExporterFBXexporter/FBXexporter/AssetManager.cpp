@@ -148,7 +148,15 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 	}
 
 	bin.sceneGraph.resize(mainHeader.sceneGraph);
-	infile.read((char*)bin.sceneGraph.data(), mainHeader.sceneGraph*sizeof(Node));
+
+	for (int i = 0; i < mainHeader.sceneGraph; i++)
+	{
+		infile.read((char*)&bin.sceneGraph[i], 12);
+		infile.read((char*)&bin.sceneGraph[i].transform, 64);
+		int namelength;
+		infile.read((char*)&namelength, 4);
+		infile.read((char*)bin.sceneGraph[i].name.data(), namelength);
+	}
 
 	infile.close();
 }
