@@ -18,7 +18,6 @@ struct LevelStates
 	Level* loadedLevel = nullptr;
 	Level* menuLevel = nullptr;
 	LevelParser* levelParser = nullptr;
-	Level* endlevel = nullptr;
 };
 
 class GameLogic
