@@ -67,7 +67,7 @@ bool RenderModule::InitializeSamplers()
 	if (FAILED(result))
 		throw std::runtime_error("RenderModule: samplerStateClamp initialization failed.");
 
-	//Create a comparison sampler state
+	//Create a COMPARISON sampler state
 	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
@@ -95,15 +95,12 @@ bool RenderModule::InitializeConstantBuffers()
 	HRESULT result;
 	ID3D11Device* device = d3d->GetDevice();
 
-	//CONSTANT BUFFER DESCRIPTIONS:
-	//this is the dynamic matrix constant buffer that is in the VERTEX SHADER
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
 
-	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerObject);
 
@@ -135,13 +132,13 @@ bool RenderModule::InitializeConstantBuffers()
 		throw std::runtime_error("RenderModule: Failed to create MatrixBufferPerBlendObject");
 
 	return true;
-
 }
 
 RenderModule::~RenderModule()
 {
 	delete d3d;
 	delete shadowMap;
+
 	layoutPosUvNorm->Release();
 	layoutPosUvNormIdxWei->Release();
 	layoutPosUvNorm3PosNorm->Release();
@@ -149,15 +146,16 @@ RenderModule::~RenderModule()
 	matrixBufferPerObject->Release();
 	matrixBufferPerWeightedObject->Release();
 	matrixBufferPerBlendObject->Release();
-
 	matrixBufferPerFrame->Release();
+
 	pixelShader->Release();
-	sampleStateClamp->Release();
-	sampleStateWrap->Release();
-	sampleStateComparison->Release();
 	vertexShader->Release();
 	skeletalVertexShader->Release();
 	blendVertexShader->Release();
+
+	sampleStateClamp->Release();
+	sampleStateWrap->Release();
+	sampleStateComparison->Release();
 }
 
 bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
@@ -172,8 +170,6 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	ID3D11Device* device = d3d->GetDevice();
 
 	/////////////////////////////////////////////////////////////////////////// Shaders ///////////////////////////////////////////////////////////////////////////
-
-	//vertex shader
 	if (!vertexShader)
 	{
 		result = D3DCompileFromFile(vsFilename, NULL, NULL, "vertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
@@ -212,7 +208,6 @@ bool RenderModule::InitializeShader(WCHAR* vsFilename, WCHAR* psFilename)
 	}
 
 	/////////////////////////////////////////////////////////////////////// Input layout /////////////////////////////////////////////////////////////////////////
-	// Create the layout description for input into the vertex shader.
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -274,7 +269,6 @@ bool RenderModule::InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename
 	ID3D11Device* device = d3d->GetDevice();
 
 	/////////////////////////////////////////////////////////////////////////// Shaders ///////////////////////////////////////////////////////////////////////////
-
 	if (!skeletalVertexShader)
 	{
 		result = D3DCompileFromFile(vsFilename, NULL, NULL, "skeletalVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
@@ -313,7 +307,6 @@ bool RenderModule::InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename
 	}
 
 	/////////////////////////////////////////////////////////////////////// Input layout /////////////////////////////////////////////////////////////////////////
-	// Create the layout description for input into the vertex shader.
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -387,7 +380,6 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	ID3D11Device* device = d3d->GetDevice();
 
 	/////////////////////////////////////////////////////////////////////////// Shaders ///////////////////////////////////////////////////////////////////////////
-
 	if (!blendVertexShader)
 	{
 		result = D3DCompileFromFile(vsFilename, NULL, NULL, "blendVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &vertexShaderBuffer, &errorMessage);
@@ -425,7 +417,6 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 	}
 
 	/////////////////////////////////////////////////////////////////////// Input layout /////////////////////////////////////////////////////////////////////////
-	// Create the layout description for input into the vertex shader.
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -514,7 +505,6 @@ bool RenderModule::InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename)
 		pixelShaderBuffer->Release();
 		pixelShaderBuffer = nullptr;
 	}
-
 
 	return true;
 }
@@ -715,7 +705,6 @@ bool RenderModule::SetDataPerFrame(XMMATRIX& viewMatrix, XMMATRIX& projectionMat
 	deviceContext->VSSetConstantBuffers(1, 1, &matrixBufferPerFrame);
 	
 	//Light
-
 	XMMATRIX lvt, lpt;
 	spotlight->getViewMatrix(lvt);
 	spotlight->getProjMatrix(lpt);
@@ -773,7 +762,6 @@ void RenderModule::UseDefaultShader()
 
 	d3d->SetCullingState(2);
 
-	//Set shaders
 	deviceContext->VSSetShader(vertexShader, NULL, 0);
 	deviceContext->PSSetShader(pixelShader, NULL, 0);
 
@@ -790,7 +778,6 @@ void RenderModule::UseSkeletalShader()
 
 	d3d->SetCullingState(3);
 
-	//Set shaders
 	deviceContext->VSSetShader(skeletalVertexShader, NULL, 0);
 	deviceContext->PSSetShader(pixelShader, NULL, 0);
 
@@ -807,7 +794,6 @@ void RenderModule::UseBlendShader()
 
 	d3d->SetCullingState(3);
 
-	//Set shaders
 	deviceContext->VSSetShader(blendVertexShader, NULL, 0);
 	deviceContext->PSSetShader(pixelShader, NULL, 0);
 

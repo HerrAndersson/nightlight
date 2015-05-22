@@ -77,7 +77,6 @@ ShadowMap::ShadowMap(ID3D11Device* device, int dimensions, LPCWSTR vsFilename)
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
 
-	//create a pointer to constant buffer, so we can acess the vertex shader constant buffer within this class
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferPerObject);
 	hr = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBufferPerObject);
 
@@ -91,15 +90,12 @@ ShadowMap::ShadowMap(ID3D11Device* device, int dimensions, LPCWSTR vsFilename)
 		throw std::runtime_error("Failed to create matrixBufferPerFrame");
 
 	///////////////////////////////////////////////////////////// Other /////////////////////////////////////////////////////////////
-
-	//Init viewport
 	ZeroMemory(&shadowViewport, sizeof(D3D11_VIEWPORT));
 	shadowViewport.Height = (FLOAT)dimensions;
 	shadowViewport.Width = (FLOAT)dimensions;
 	shadowViewport.MinDepth = 0.f;
 	shadowViewport.MaxDepth = 1.f;
 
-	//Depth stencil state
 	D3D11_DEPTH_STENCIL_DESC shadowDepthStencilDesc;
 	ZeroMemory(&shadowDepthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	shadowDepthStencilDesc.DepthEnable = true;
