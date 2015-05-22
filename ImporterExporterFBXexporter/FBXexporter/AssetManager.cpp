@@ -75,12 +75,18 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 			infile.seekg(16 + matHeader.ambientNameLength, ios::cur);
 
 			infile.read((char*)&inmat.diffuse, 16);
-			inmat.diffuseTextureName.resize(matHeader.diffuseNameLength);
-			infile.read((char*)inmat.diffuseTextureName.data(), matHeader.diffuseNameLength);
+			if (matHeader.diffuseNameLength)
+			{
+				inmat.diffuseTextureName.resize(matHeader.diffuseNameLength);
+				infile.read((char*)inmat.diffuseTextureName.data(), matHeader.diffuseNameLength);
+			}
 
 			infile.read((char*)&material.specular, 16);
-			inmat.specularTextureName.resize(matHeader.specularNameLength);
-			infile.read((char*)inmat.specularTextureName.data(), matHeader.specularNameLength);
+			if (matHeader.specularNameLength)
+			{
+				inmat.specularTextureName.resize(matHeader.specularNameLength);
+				infile.read((char*)inmat.specularTextureName.data(), matHeader.specularNameLength);
+			}
 
 			infile.seekg(16 + matHeader.transparencyNameLength, ios::cur);
 
