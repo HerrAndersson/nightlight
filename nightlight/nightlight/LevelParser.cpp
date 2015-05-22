@@ -41,7 +41,7 @@ void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> l
 	}
 }
 
-Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Character &character)
+Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Character &character, Character &grandpa)
 {
 	//TODO: Handle button reading from menu level
 
@@ -58,6 +58,11 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Charact
 	std::string pathToLevel = "Assets/Levels/" + levelNames.at(levelID);
 	std::vector<std::string> unparsedLevel;
 	assetUtility::fileToStrings(pathToLevel, unparsedLevel);
+
+	if (levelNames.at(levelID) == "levelend.lvl")
+	{
+		isEnd = true;
+	}
 
 	std::vector<std::string> unparsedLine;
 	for (int i = 0; i < (int)(unparsedLevel.size() - 1); i++)

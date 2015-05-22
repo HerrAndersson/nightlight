@@ -883,7 +883,7 @@ bool Exporter::IdentifyAndExtractMeshes()
 		}
 		dag_iter.next();
 	}
-
+	int breadth=0;
 	dag_iter.reset(dag_iter.root(), MItDag::kBreadthFirst, MFn::kTransform);
 	while (!dag_iter.isDone())
 	{
@@ -892,8 +892,9 @@ bool Exporter::IdentifyAndExtractMeshes()
 			break;
 		if (dag_iter.getPath(dag_path))
 		{
-			scene_.sceneGraphRoots.push_back(createSceneGraph(dag_path));
+			createSceneGraph(MFnDagNode(dag_path),-1);
 		}
+		breadth++;
 		dag_iter.next();
 	}
 	/*
@@ -913,35 +914,51 @@ bool Exporter::IdentifyAndExtractMeshes()
 	return true;
 }
 
-Node Exporter::createSceneGraph(MDagPath path)
+void Exporter::createSceneGraph(MFnDagNode& path, int parentIndex)
 {
 	Node output;
-	cout <<"    name: "<< path.fullPathName().asChar() << endl;
-	output.name = path.fullPathName().asChar();
 	std::vector<std::string> pathparts;
+	output.name = path.fullPathName().asChar();
 	splitStringToVector(output.name, pathparts, "|");
 	output.name = pathparts[pathparts.size() - 1];
-	uint children = path.childCount();
-	for (int i = 0; i < children; i++){
-		MObject child = path.child(i);
+	output.parent = parentIndex;
+	output.transform = path.transformationMatrix().matrix;
 
-		cout << "    type: " << child.apiTypeStr() << endl;
-		if (!strcmp(child.apiTypeStr(), "kMesh"));
-		if (!strcmp(child.apiTypeStr(), "kTransform"));
-		MFnDagNode childpath(child);
 
-		//if(child is transform)
-		//ifelse(child is mesh)
-		//else
-		Node childnode = createSceneGraph(childpath.dagPath());
-		output.children.push_back(childnode);
+
+	scene_.sceneGraph.push_back(output);
+	int children = path.childCount();
+	int parent = scene_.sceneGraph.size() - 1;
+	for (int i = 0; i < children; i++)
+	{
+		cout << path.child(i).apiTypeStr() << endl;
+		if (!strcmp(path.child(i).apiTypeStr(), "kMesh")){
+			scene_.sceneGraph[parent].type = 1;
+			MFnMesh mesh(path.child(i));
+			MDagPath dag_path;
+			MItDag dag_iter(MItDag::kBreadthFirst, MFn::kMesh);
+			int y = 0;
+			while (!dag_iter.isDone())
+			{
+				if (dag_iter.getPath(dag_path))
+				{
+					MFnDagNode dag_node = dag_path.node();
+					if (!dag_node.isIntermediateObject())
+					{
+						if (!strcmp(mesh.partialPathName().asChar(), dag_node.partialPathName().asChar()))
+							scene_.sceneGraph[parent].mesh = y;
+						y++;
+					}
+				}
+				dag_iter.next();
+			}
+		}
+//		else if (!strcmp(path.child(i).apiTypeStr(), "kCamera")); kan lägga till fler typer här
+		else
+		createSceneGraph(MFnDagNode(path.child(i)), parent);
 	}
-	path.numberOfShapesDirectlyBelow(children);
-	for (int i = 0; i < children; i++){
-		Node meshnode;
-		meshnode.name;
-	}
-	return output;
+
+
 }
 
 //___________________________________________________________________________________________
@@ -1384,6 +1401,7 @@ void Exporter::ExportMeshes()
 	mainHeader.dirLightSize = scene_.lights.dirLights.size();
 	mainHeader.camCount = scene_.cameras.size();
 	mainHeader.boneCount = scene_.skeleton.size();
+	mainHeader.sceneGraph = scene_.sceneGraph.size();
 
 	outfile.write((const char*)&mainHeader, sizeof(MainHeader));
 
@@ -1471,6 +1489,8 @@ void Exporter::ExportMeshes()
 
 		outfile.write((const char*)scene_.skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
+
+	outfile.write((const char*)scene_.sceneGraph.data(), sizeof(Node)*mainHeader.sceneGraph);
 
 	outfile.close();
 	debug++;

@@ -13,7 +13,7 @@ GameLogic::~GameLogic()
 
 }
 
-bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies)
+bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Character* grandpa)
 {
 	if (character->GetHitPoints() > 0)
 	{
@@ -27,7 +27,7 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 			return false;
 	}
 
-	if (!ManageLevelStates(levelStates, character, enemies, spotLight))
+	if (!ManageLevelStates(levelStates, character, enemies, spotLight, grandpa))
 		return false;
 
 	Input->Update();
@@ -422,11 +422,12 @@ void GameLogic::SelectButton(Button* newSelectedButton)
 	}
 }
 
-bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight)
+bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	Level* menuLevel = levelStates.menuLevel;
 	Level* loadedLevel = levelStates.loadedLevel;
+	Level* endLevel = levelStates.loadedLevel;
 
 	Coord characterTileCoord = character->GetTileCoord();
 	Tile* currentTile = currentLevel->getTile(characterTileCoord.x, characterTileCoord.y);
@@ -520,7 +521,7 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 				throw std::runtime_error("Slut :^)");
 			else
 			{
-				loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character);
+				loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character, *grandpa);
 				currentLevel = loadedLevel;
 				character->SetTilePosition(currentLevel->getStartDoorCoord());
 			}
@@ -532,6 +533,14 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			currentLevel = loadedLevel;
 			character->SetRotationDeg(loadedLevelCharacterRot);
 			character->SetPosition(currentLevel->getPlayerPostion());
+		}
+
+		if (levelStates.levelParser->isEnd == true)
+		{
+			grandpa->SetPosition(XMFLOAT3(-8.5f, 0.0f, -2.5f));
+			grandpa->SetRotationDeg(XMFLOAT3(0,-90,0));
+			
+			
 		}
 
 		AI->ChangeLevel(currentLevel);

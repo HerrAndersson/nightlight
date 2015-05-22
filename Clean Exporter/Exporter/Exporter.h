@@ -261,15 +261,16 @@ struct Animation{
 };
 
 struct Node{
-	std::vector<Node> children;
+	int parent;
+	MFloatMatrix transform;
 	std::string name;
-	int type;
+	int type=0;
 	int mesh;
 };
 
 struct SceneData
 {
-	std::vector<Node> sceneGraphRoots;
+	std::vector<Node> sceneGraph;
 	std::vector<material> materials;
 	std::vector<MeshData> meshes;
 	std::vector<BlendShapeTarget> blendShapes;
@@ -280,7 +281,7 @@ struct SceneData
 };
 
 struct MainHeader{
-	int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount;
+	int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount, sceneGraph;
 };
 
 struct MeshHeader
@@ -352,5 +353,5 @@ private:
 	void ExportMeshes();
 	void splitStringToVector(std::string input, std::vector<std::string> &output, std::string delimiter);
 	void fileToStrings(std::string file_path, std::vector<std::string> &output);
-	Node createSceneGraph(MDagPath path);
+	void createSceneGraph(MFnDagNode& path, int parentIndex);
 };

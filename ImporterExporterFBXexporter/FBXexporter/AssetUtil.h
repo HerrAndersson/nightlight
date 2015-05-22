@@ -11,7 +11,15 @@ using namespace DirectX;
 namespace assetUtility {
 	struct MainHeader
 	{
-		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount;
+		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount, sceneGraph;
+	};
+
+	struct Node{
+		int parent;
+		XMMATRIX transform;
+		std::string name;
+		int type = 0;
+		int mesh;
 	};
 
 	struct MeshHeader
@@ -187,8 +195,16 @@ namespace assetUtility {
 
 	struct MaterialData
 	{
+		XMFLOAT3 diffuse;
+		std::string diffuseTextureName;
 		XMFLOAT3 specular;
-	
+		std::string specularTextureName;
+	};
+
+	struct binData{
+		std::vector<Model> modelList;
+		std::vector<MaterialData> materialList;
+		std::vector<Node> sceneGraph;
 	};
 
 };
