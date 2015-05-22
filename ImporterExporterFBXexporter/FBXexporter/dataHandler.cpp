@@ -144,6 +144,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		//lMaterialName += i;
 		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 		FbxDouble3 lRed(0.0, 0.0, 0.0);
+		FbxDouble3 lSpec(modelList.at(i).specular.x, modelList.at(i).specular.y, modelList.at(i).specular.z);
 		FbxDouble3 lColor;
 		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
 
@@ -154,8 +155,9 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		lMaterial->Diffuse.Set(lColor);
 		lMaterial->TransparencyFactor.Set(0.0);
 		lMaterial->ShadingModel.Set(lShadingName);
-		lMaterial->Shininess.Set(modelList.at(i).specular.z);
-
+		lMaterial->Shininess.Set(0.5);
+		
+	
 
 		FbxFileTexture* lTexture = FbxFileTexture::Create(lScene, "Diffuse Texture");
 		string textFileName = "../Textures/" + nameStr + ".png";
@@ -273,7 +275,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, std::vector<Mo
 		
 	
 		//set the translation of object and add here
-		lNode->LclTranslation.Set(FbxDouble3(0, 0, i));
+		lNode->LclTranslation.Set(FbxDouble3(i, 0, 0));
 		lNode->LclRotation.Set(FbxDouble3(0, 0, 0));
 
 		lNode->SetNodeAttribute(lMesh);
