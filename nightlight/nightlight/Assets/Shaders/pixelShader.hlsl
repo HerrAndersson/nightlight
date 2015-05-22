@@ -107,7 +107,7 @@ float4 pixelShader(pixelInputType input) : SV_TARGET
 		float shadowCoeff2 = lerp(lerp(s0, s7, lerps.x), lerp(s5, s8, lerps.x), lerps.y);
 		float shadowCoeff3 = lerp(lerp(s0, s2, lerps.x), lerp(s3, s5, lerps.x), lerps.y);
 
-		float shadowCoeff = (shadowCoeff0 + shadowCoeff1 + shadowCoeff2 + shadowCoeff3) / 4;
+		float shadowCoeff = lerp(lerp(shadowCoeff0, shadowCoeff3, lerps.x), lerp(shadowCoeff2, shadowCoeff1, lerps.x), lerps.y);
 
 		if (shadowCoeff < depth - epsilon)
 		{
