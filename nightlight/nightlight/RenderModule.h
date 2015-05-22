@@ -113,6 +113,8 @@ public:
 	RenderModule(HWND hwnd, int screenWidth, int screenHeight, bool fullscreen, int shadowMapSize);
 	~RenderModule();
 
+	bool InitializeSamplers();
+	bool InitializeConstantBuffers();
 	bool InitializeShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeSkeletalShader(WCHAR* vsFilename, WCHAR* psFilename);
 	bool InitializeBlendShader(WCHAR* vsFilename, WCHAR* psFilename);

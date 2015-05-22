@@ -17,9 +17,11 @@ AssetManager::~AssetManager()
 	renderObjects.clear();
 };
 
-void AssetManager::LoadModel(string file_path, Model& model){
+void AssetManager::LoadModel(string file_path, Model& model, MaterialData& material){
 	
-
+	bin.materialList.clear();
+	bin.modelList.clear();
+	bin.sceneGraph.clear();
 
 	ifstream infile;
 	infile.open(file_path.c_str(), ifstream::binary);
@@ -33,88 +35,65 @@ void AssetManager::LoadModel(string file_path, Model& model){
 	infile.read((char*)&mainHeader, sizeof(MainHeader));
 
 	string name;
-	
+
 	for (int i = 0; i < mainHeader.meshCount; i++){
-		if (i == 0){
-			MeshHeader meshHeader;
-			infile.read((char*)&meshHeader, sizeof(MeshHeader));
+		MeshHeader meshHeader;
+		infile.read((char*)&meshHeader, sizeof(MeshHeader));
+
+		Model inmesh;
+		name.resize(meshHeader.nameLength);
+		if (meshHeader.hasSkeleton)
+			inmesh.points.resize(meshHeader.numberPoints);
+		else
+			inmesh.purePoints.resize(meshHeader.numberPoints);
+		inmesh.normals.resize(meshHeader.numberNormals);
+		inmesh.UVs.resize(meshHeader.numberCoords);
+		inmesh.vertexIndices.resize(meshHeader.numberFaces * 3);
+		inmesh.hasSkeleton = meshHeader.hasSkeleton;
 
 
-			name.resize(meshHeader.nameLength);
-			if (meshHeader.hasSkeleton)
-				model.points.resize(meshHeader.numberPoints);
-			else
-				model.purePoints.resize(meshHeader.numberPoints);
-			model.normals.resize(meshHeader.numberNormals);
-			model.UVs.resize(meshHeader.numberCoords);
-			model.vertexIndices.resize(meshHeader.numberFaces * 3);
-			model.hasSkeleton = meshHeader.hasSkeleton;
-
-
-			infile.read((char*)name.data(), meshHeader.nameLength);
-			model.name = name;
-			if (meshHeader.hasSkeleton)
-				infile.read((char*)model.points.data(), meshHeader.numberPoints*sizeof(WeightedPoint));
-			else
-				infile.read((char*)model.purePoints.data(), meshHeader.numberPoints*sizeof(Point));
-			infile.read((char*)model.normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
-			infile.read((char*)model.UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
-			infile.read((char*)model.vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
-		}
-		else{
-			MeshHeader meshHeader;
-			infile.read((char*)&meshHeader, sizeof(MeshHeader));
-			if (meshHeader.hasSkeleton)
-			{
-				infile.seekg(meshHeader.nameLength, ios::cur);
-				infile.seekg(meshHeader.numberPoints*sizeof(WeightedPoint), ios::cur);
-				infile.seekg(meshHeader.numberNormals*sizeof(XMFLOAT3), ios::cur);
-				infile.seekg(meshHeader.numberCoords*sizeof(XMFLOAT2), ios::cur);
-				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
-			}
-			else
-			{
-				infile.seekg(meshHeader.nameLength, ios::cur);
-				infile.seekg(meshHeader.numberPoints*sizeof(Point), ios::cur);
-				infile.seekg(meshHeader.numberNormals*sizeof(XMFLOAT3), ios::cur);
-				infile.seekg(meshHeader.numberCoords*sizeof(XMFLOAT2), ios::cur);
-				infile.seekg(meshHeader.numberFaces*sizeof(XMINT3) * 3, ios::cur);
-			}
-		}
-
+		infile.read((char*)name.data(), meshHeader.nameLength);
+		inmesh.name = name;
+		if (meshHeader.hasSkeleton)
+			infile.read((char*)inmesh.points.data(), meshHeader.numberPoints*sizeof(WeightedPoint));
+		else
+			infile.read((char*)inmesh.purePoints.data(), meshHeader.numberPoints*sizeof(Point));
+		infile.read((char*)inmesh.normals.data(), meshHeader.numberNormals*sizeof(XMFLOAT3));
+		infile.read((char*)inmesh.UVs.data(), meshHeader.numberCoords*sizeof(XMFLOAT2));
+		infile.read((char*)inmesh.vertexIndices.data(), meshHeader.numberFaces*sizeof(XMINT3) * 3);
+		bin.modelList.push_back(inmesh);
 	}
 
 
 	for (int i = 0; i < mainHeader.matCount; i++)
 	{
-		if (i == 0){
+	
 			MatHeader matHeader;
+			MaterialData inmat;
 			infile.read((char*)&matHeader, sizeof(MatHeader));
 
 			infile.seekg(16 + matHeader.ambientNameLength, ios::cur);
 
-			infile.read((char*)&model.diffuse, 16);
-			infile.seekg(matHeader.diffuseNameLength, ios::cur);
+			infile.read((char*)&inmat.diffuse, 16);
+			if (matHeader.diffuseNameLength)
+			{
+				inmat.diffuseTextureName.resize(matHeader.diffuseNameLength);
+				infile.read((char*)inmat.diffuseTextureName.data(), matHeader.diffuseNameLength);
+			}
 
-			infile.read((char*)&model.specular, 16);
-			infile.seekg(matHeader.specularNameLength, ios::cur);
+			infile.read((char*)&material.specular, 16);
+			if (matHeader.specularNameLength)
+			{
+				inmat.specularTextureName.resize(matHeader.specularNameLength);
+				infile.read((char*)inmat.specularTextureName.data(), matHeader.specularNameLength);
+			}
 
 			infile.seekg(16 + matHeader.transparencyNameLength, ios::cur);
 
 			infile.seekg(16 + matHeader.glowNameLength, ios::cur);
-		}
-
-		else{
-			MatHeader matHeader;
-			infile.read((char*)&matHeader, sizeof(MatHeader));
-			infile.seekg(80
-				+ matHeader.ambientNameLength
-				+ matHeader.diffuseNameLength
-				+ matHeader.specularNameLength
-				+ matHeader.transparencyNameLength
-				+ matHeader.glowNameLength,
-				ios::cur);
-		}
+			bin.materialList.push_back(inmat);
+			inmat.diffuseTextureName.clear();
+			inmat.specularTextureName.clear();
 	}
 
 	model.pointLights.resize(mainHeader.pointLightSize);
@@ -167,6 +146,9 @@ void AssetManager::LoadModel(string file_path, Model& model){
 
 		infile.read((char*)model.skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
+
+	bin.sceneGraph.resize(mainHeader.sceneGraph);
+	infile.read((char*)bin.sceneGraph.data(), mainHeader.sceneGraph*sizeof(Node));
 
 	infile.close();
 }

@@ -48,7 +48,7 @@ private:
 	GameObject* selectedObject = nullptr;
 	Button* selectedButton = nullptr;
 
-	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight);
+	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa);
 
 	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies);
 	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies);
@@ -60,7 +60,7 @@ public:
 	GameLogic(AiModule* AI, InputManager* Input);
 	~GameLogic();
 
-	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies);
+	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Character* grandpa);
 
 	void SelectObject(GameObject* newSelectedObject);
 	void SelectButton(Button* newSelectedButton);

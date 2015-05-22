@@ -15,7 +15,7 @@ pillar.bin
 Startbutton.bin
 Continuebutton.bin
 Exitbutton.bin
-grandpa.bin
+grandpa-resting-blendshapes.bin
 pipes.bin
 shelf.bin
 Thick.bin
@@ -26,3 +26,5 @@ char-hurt-blendshapes.bin
 char-gameover2_blendshapes.bin
 char-gameover2_dead_blendshapes.bin
 enemy_medium-hit-blendshapes.bin
+grandpa-walking-blendshapes.bin
+grandpa-waving-blendshapes.bin

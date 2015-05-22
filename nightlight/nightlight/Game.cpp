@@ -29,7 +29,11 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	character->SetUpAnimation(Assets->GetRenderObject(25), 1);
 	character->SetUpAnimation(Assets->GetRenderObject(26), 1);
 
-	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character);
+	grandpa = new Character(GameObject::GoTypes::SIDECHARACTER, XMFLOAT3(0, 0, 0), 0, Assets->GetRenderObject(17), 0, 0);
+	grandpa->SetUpAnimation(Assets->GetRenderObject(28), 1);
+	grandpa->SetUpAnimation(Assets->GetRenderObject(29), 1);
+
+	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character, *grandpa);
 	levelStates.currentLevel = levelStates.menuLevel;
 	levelStates.currentLevelNr = levelStates.menuLevel->GetLevelNr();
 	levelStates.levelParser = levelParser;
@@ -56,13 +60,14 @@ Game::~Game()
 	delete camera;
 	delete spotLight;
 	delete character;
+	delete grandpa;
 }
 
 bool Game::Update()
 {
 	bool result = true;
 	
-	result = Logic->Update(levelStates, character, camera, spotLight, enemies);
+	result = Logic->Update(levelStates, character, camera, spotLight, enemies, grandpa);
 	
 	if (!result){
 		Level* loadedLevel = levelStates.loadedLevel;
@@ -162,8 +167,13 @@ bool Game::Render()
 	}
 
 	character->UpdateCharacterAnimation();
-
 	Renderer->Render(character, character->GetWeights());
+
+	if (levelStates.levelParser->isEnd == true)
+	{
+		grandpa->UpdateCharacterAnimation();
+		Renderer->Render(grandpa, grandpa->GetWeights());
+	}
 
 	Renderer->EndScene();
 
