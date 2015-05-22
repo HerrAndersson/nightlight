@@ -168,6 +168,10 @@ void AssetManager::LoadModel(string file_path, Model& model){
 		infile.read((char*)model.skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
 
+	std::vector<Node> sceneGraph;
+	sceneGraph.resize(mainHeader.sceneGraph);
+	infile.read((char*)sceneGraph.data(), mainHeader.sceneGraph*sizeof(Node));
+
 	infile.close();
 }
 

@@ -11,7 +11,15 @@ using namespace DirectX;
 namespace assetUtility {
 	struct MainHeader
 	{
-		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount;
+		int meshCount, blendShapeCount, matCount, camCount, ambientLightSize, areaLightSize, dirLightSize, pointLightSize, spotLightSize, AnimationData, boneCount, sceneGraph;
+	};
+
+	struct Node{
+		int parent;
+		XMMATRIX transform;
+		std::string name;
+		int type = 0;
+		int mesh;
 	};
 
 	struct MeshHeader
