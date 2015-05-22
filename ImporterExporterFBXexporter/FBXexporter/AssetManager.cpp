@@ -21,6 +21,8 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 	
 	bin.materialList.clear();
 	bin.modelList.clear();
+	for (int i = 0; i < bin.sceneGraph.size(); i++)
+		bin.sceneGraph[i].name.clear();
 	bin.sceneGraph.clear();
 
 	ifstream infile;
