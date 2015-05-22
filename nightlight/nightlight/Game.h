@@ -33,6 +33,7 @@ private:
 	CameraObject*			camera;
 	LightObject*			spotLight;
 	Character*				character;
+	Character*				grandpa;
 
 	GameLogic*              Logic;
 	RenderModule*           Renderer;
