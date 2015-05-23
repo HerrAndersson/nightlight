@@ -501,8 +501,10 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			}
 			int debug = levelStates.currentLevelNr;
 			debug = levelStates.levelParser->GetLevelCount();
-			if (levelStates.currentLevelNr > levelStates.levelParser->GetLevelCount()-1)
-				throw std::runtime_error("Slut :^)");
+			if (levelStates.currentLevelNr > levelStates.levelParser->GetLevelCount() - 1) {
+				loadedLevel = levelStates.levelParser->LoadLevel(1, enemies, *character, *grandpa);
+				levelStates.currentLevelNr = menuLevel->GetLevelNr();
+			}
 			else
 			{
 				loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character, *grandpa);
