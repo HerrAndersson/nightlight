@@ -1,5 +1,6 @@
 #pragma once
 #include "yse.hpp"
+#include "Character.h"
 
 class Sounds
 {
@@ -19,6 +20,6 @@ public:
 
 	Sounds();
 	~Sounds();
-	void Update();
+	void Update(Character* player);
 };
 

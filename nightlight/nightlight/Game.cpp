@@ -83,7 +83,7 @@ bool Game::Update()
 		if (sounds->menuMusic.isPlaying())
 			sounds->menuMusic.pause();
 
-	sounds->Update();
+	sounds->Update(character);
 
 	return result;
 }

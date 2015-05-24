@@ -7,11 +7,14 @@ Sounds::Sounds()
 
 	menuMusic.create("Assets/Sounds/menuMusic.ogg");
 	menuMusic.setLooping(true);
+	menuMusic.setRelative(true);
 
 	gameMusic.create("Assets/Sounds/gameMusic.ogg");
 	//gameMusic.setLooping(true);
 
 	walk.create("Assets/Sounds/walk.ogg");
+	walk.setRelative(true);
+
 	hit.create("Assets/Sounds/hit.ogg");
 	doorOpen.create("Assets/Sounds/doorOpen.ogg");
 	leverFailed.create("Assets/Sounds/leverFailed.ogg");
@@ -28,9 +31,10 @@ Sounds::~Sounds()
 	YSE::System().close();
 }
 
-void Sounds::Update()
+void Sounds::Update(Character* player)
 {
-
+	XMFLOAT3 playerPos = player->GetPosition();
+	YSE::Listener().setPosition(YSE::Vec(playerPos.x, playerPos.y, playerPos.z));
 
 	YSE::System().update();
 }
