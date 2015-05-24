@@ -33,7 +33,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	grandpa->SetUpAnimation(Assets->GetRenderObject(28), 1);
 	grandpa->SetUpAnimation(Assets->GetRenderObject(29), 1);
 
-	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character, *grandpa);
+	levelStates.menuLevel = levelParser->LoadLevel(0, enemies, *character, *grandpa, sounds);
 	levelStates.currentLevel = levelStates.menuLevel;
 	levelStates.currentLevelNr = levelStates.menuLevel->GetLevelNr();
 	levelStates.levelParser = levelParser;

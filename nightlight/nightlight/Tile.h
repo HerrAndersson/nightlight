@@ -58,7 +58,7 @@ public:
 
 	std::vector<GameObject*>* getAllGameObjects(){ return &gameObjects; }
 	void AddGameObjectManually(GameObject* gameObject);
-	void createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData);
+	void createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData, Sounds* sounds);
 
 	//For ai
 	XMINT2 GetTileCoord()				{ return tileCoord; };

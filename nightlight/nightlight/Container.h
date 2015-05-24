@@ -11,9 +11,10 @@ private:
 	Lever* activatesLever = nullptr;
 	Door* activatesDoor = nullptr;
 	bool isActivated = false;
+	Sounds* sounds;
 
 public:
-	Container(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName);
+	Container(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, std::string activatesName, Sounds* sounds);
 	~Container();
 
 	std::string getActivatesName() const { return activatesName; }

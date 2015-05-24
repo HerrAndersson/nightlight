@@ -41,7 +41,7 @@ void bindActuators(vector<T*> gameObjects, vector<Door*> doors, vector<Lever*> l
 	}
 }
 
-Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Character &character, Character &grandpa)
+Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Character &character, Character &grandpa, Sounds* sounds)
 {
 	//TODO: Handle button reading from menu level
 
@@ -136,7 +136,7 @@ Level* LevelParser::LoadLevel(int levelID, std::vector<Enemy*> &enemies, Charact
 					tile = new Tile();
 					level->setTile(tile, tileCoordX, tileCoordY);
 				}
-				tile->createGameObjectFromUnparsedData(assetManager, &gameObjectTypes, unparsedLine);
+				tile->createGameObjectFromUnparsedData(assetManager, &gameObjectTypes, unparsedLine, sounds);
 			}
 		}
 		catch (...)

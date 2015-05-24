@@ -49,7 +49,7 @@ private:
 	GameObject* selectedObject = nullptr;
 	Button* selectedButton = nullptr;
 
-	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa);
+	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa, Sounds* sounds);
 
 	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Sounds* sounds);
 	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies);

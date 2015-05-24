@@ -6,7 +6,7 @@ class Lever :
 	public GameObject {
 public:
 
-	Lever(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, bool isPowered, bool isActivated, std::string activationName, std::string activatesName);
+	Lever(int id, XMFLOAT3 position, float rotation, RenderObject* renderObject, int coordX, int coordY, bool isPowered, bool isActivated, std::string activationName, std::string activatesName, Sounds* sounds);
 	~Lever();
 
 	std::string getActivationName() const { return activationName; }
@@ -30,6 +30,6 @@ private:
 	std::string activatesName = "";
 	Lever* activatesLever = nullptr;
 	Door* activatesDoor = nullptr;
-
+	Sounds* sounds;
 };
 

@@ -27,7 +27,7 @@ bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObj
 			return false;
 	}
 
-	if (!ManageLevelStates(levelStates, character, enemies, spotLight, grandpa))
+	if (!ManageLevelStates(levelStates, character, enemies, spotLight, grandpa, sounds))
 		return false;
 
 	Input->Update();
@@ -184,12 +184,17 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 				currentLevel->getTile(selectedObject->GetTileCoord())->setMovableObject((MovableObject*)selectedObject);
 				movableObjectTilePos = movablePos;
 				character->PlayAnimation(2);
-
+			}
+			if (!sounds->moveBox.isPlaying()){
+				sounds->moveBox.play();
 			}
 		}
 	}
 	else {
 		sounds->walk.stop();
+		if (sounds->moveBox.isPlaying()){
+			sounds->moveBox.stop();
+		}
 	}
 		
 
@@ -205,6 +210,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 				movable = (MovableObject*)selectedObject;
 				moveObjectMode = !moveObjectMode;
 				character->PlayAnimation(2);
+				sounds->grabReleaseBox.play();
 			}
 			if (id == GameObject::GoTypes::LEVER) {
 				character->PlayAnimation(1);
@@ -294,12 +300,16 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 			character->PlayAnimation(3);
 			character->SetHitPoints(character->GetHitPoints() - 1);
 			if (character->GetHitPoints() <= 0){
+				sounds->dies.play();
 				character->GetRenderObject()->diffuseTexture = e->GetRenderObject()->diffuseTexture;//dead//todo
 				character->SetPrimaryAnimation(5); 
 				character->PlayAnimation(4);
 				spotlight->setAmbientColor(0.1f, 0.07f, 0.07f, 1.0f);
 				spotlight->setDiffuseColor(0, 0, 0, 0);
 				resetLevelTimer = 180;
+			}
+			else{
+				sounds->hit.play();
 			}
 			character->SetInvulTimer(180);
 		}
@@ -413,7 +423,7 @@ void GameLogic::SelectButton(Button* newSelectedButton)
 	}
 }
 
-bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa)
+bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa, Sounds* sounds)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	Level* menuLevel = levelStates.menuLevel;
@@ -508,12 +518,12 @@ bool GameLogic::ManageLevelStates(LevelStates &levelStates, Character* character
 			int debug = levelStates.currentLevelNr;
 			debug = levelStates.levelParser->GetLevelCount();
 			if (levelStates.currentLevelNr > levelStates.levelParser->GetLevelCount() - 1) {
-				loadedLevel = levelStates.levelParser->LoadLevel(1, enemies, *character, *grandpa);
+				loadedLevel = levelStates.levelParser->LoadLevel(1, enemies, *character, *grandpa, sounds);
 				levelStates.currentLevelNr = menuLevel->GetLevelNr();
 			}
 			else
 			{
-				loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character, *grandpa);
+				loadedLevel = levelStates.levelParser->LoadLevel(levelStates.currentLevelNr, enemies, *character, *grandpa, sounds);
 				currentLevel = loadedLevel;
 				character->SetTilePosition(currentLevel->getStartDoorCoord());
 			}

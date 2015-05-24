@@ -14,14 +14,35 @@ Sounds::Sounds()
 
 	walk.create("Assets/Sounds/walk.ogg");
 	walk.setRelative(true);
-
+	walk.setSpeed(1.3);
+	walk.setVolume(0.4);
+	
 	hit.create("Assets/Sounds/hit.ogg");
+	hit.setRelative(true);
+
 	doorOpen.create("Assets/Sounds/doorOpen.ogg");
+	doorOpen.setDoppler(false);
+	doorOpen.setVolume(0.7);
+
 	leverFailed.create("Assets/Sounds/leverFailed.ogg");
+	leverFailed.setRelative(true);
+	leverFailed.setVolume(0.4);
+
 	dies.create("Assets/Sounds/dies.ogg");
+	dies.setRelative(true);
+
 	endDoorOpen.create("Assets/Sounds/endDoorOpen.ogg");
+
 	moveBox.create("Assets/Sounds/moveBox.ogg");
+	moveBox.setRelative(true);
+	moveBox.setSpeed(2);
+	moveBox.setVolume(0.5);
+
 	grabReleaseBox.create("Assets/Sounds/grabReleaseBox.ogg");
+	grabReleaseBox.setRelative(true);
+	//grabReleaseBox.setSpeed(0.5);
+	grabReleaseBox.setVolume(0.5);
+
 	shadowContainerActivated.create("Assets/Sounds/shadowContainerActivated.ogg");
 }
 

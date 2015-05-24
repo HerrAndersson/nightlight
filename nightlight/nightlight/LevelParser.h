@@ -18,6 +18,6 @@ public:
 
 	bool isEnd = false;
 
-	Level* LoadLevel ( int levelID, std::vector<Enemy*> &enemies, Character &character, Character &grandpa );
+	Level* LoadLevel(int levelID, std::vector<Enemy*> &enemies, Character &character, Character &grandpa, Sounds* sounds);
 	int GetLevelCount(){ return levelNames.size(); }
 };

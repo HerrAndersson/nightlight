@@ -11,7 +11,7 @@ Tile::~Tile ( )
 
 }
 
-void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData)
+void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vector<std::string>* gameObjectTypes, std::vector<std::string> unparsedData, Sounds* sounds)
 {
 	int i = 0;
 	int renderObjectRef = std::stoi(unparsedData.at(i++));
@@ -53,7 +53,7 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		bool isOpen = std::stoi(unparsedData.at(i++)) == 1;
 		int doorType = std::stoi(unparsedData.at(i++));
 		std::string activationName = unparsedData.at(i++);
-		door = new Door(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, isOpen, doorType, activationName);
+		door = new Door(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, isOpen, doorType, activationName, sounds);
 		gameObjects.push_back(door);
 	}
 	else if (gameObjectType == "static") 
@@ -72,7 +72,7 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 		bool isActivated = std::stoi(unparsedData.at(i++)) == 1;
 		std::string activationName = unparsedData.at(i++);
 		std::string activates = unparsedData.at(i++);
-		lever = new Lever(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, isPowered, isActivated, activationName, activates);
+		lever = new Lever(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, isPowered, isActivated, activationName, activates, sounds);
 		gameObjects.push_back(lever);
 	}
 	else if (gameObjectType == "pressure") 
@@ -84,7 +84,7 @@ void Tile::createGameObjectFromUnparsedData(AssetManager* assetManager, std::vec
 	else if (gameObjectType == "container") 
 	{
 		std::string activates = unparsedData.at(i++);
-		shadowContainer = new Container(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates);
+		shadowContainer = new Container(gameObjectTypeRef, position, rotation, assetManager->GetRenderObject(renderObjectRef), tileCoordX, tileCoordY, activates, sounds);
 		gameObjects.push_back(shadowContainer);
 	}
 }
