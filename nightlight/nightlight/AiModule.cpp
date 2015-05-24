@@ -18,13 +18,18 @@ bool AiModule::HandleAI(Enemy* ai, Character* player, LightObject* spotlight)
 		bool inSight = InSight(level, ai->GetPosition(), player->GetPosition());
 		ai->SetFollowingPlayer(inSight);
 
-		if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level)) {
+		if (!ai->IsFollowingPlayer() && !ai->HasValidPath(level))
+		{
 			XMFLOAT3 p = ai->GetPosition();
 			XMINT2 goal = GenerateRandomPosition(ai);
+			//ai->SetPath(AStar(level, XMINT2((int)-p.x, (int)-p.z), goal));
 			ai->SetPath(AStarNoCorners(level, XMINT2((int)-p.x, (int)-p.z), goal));
-		} else if (ai->IsFollowingPlayer() /*&& player->GetMoved()*/) {
+		} 
+		else if (ai->IsFollowingPlayer()) 
+		{
 			Coord c1 = ai->GetTileCoord();
 			Coord c2 = player->GetTileCoord();
+			//ai->SetPath(AStar(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
 			ai->SetPath(AStarNoCorners(level, XMINT2(c1.x, c1.y), XMINT2(c2.x, c2.y)));
 		}
 	}

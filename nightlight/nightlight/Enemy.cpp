@@ -83,19 +83,21 @@ bool Enemy::Update(Level* level, LightObject* spotlight, bool inLight)
 
 			next = Coord(p.x, p.y);
 			direction = XMFLOAT3((-position.x - (next.x + (TILE_SIZE / 2))), 0.0f, -position.z - (next.y + (TILE_SIZE / 2)));
-			desiredRotation = -atan2(direction.z, direction.x) * 180 / XM_PI;
+			//desiredRotation = -atan2(direction.z, direction.x) * 180 / XM_PI;
+			rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
+			SetRotationDeg(rotation);
 		}
 
-		float difference = desiredRotation - rotation.y;
-		cout << difference << endl;
+		//float difference = desiredRotation - rotation.y;
+		//cout << difference << endl;
 
-		if (difference < 180)
-			rotation.y += difference / 10;
-		else
-			rotation.y -= difference / 10;
+		//if (difference < 180)
+		//	rotation.y += difference / 10;
+		//else
+		//	rotation.y -= difference / 10;
 
 
-		SetRotationDeg(rotation);
+		//SetRotationDeg(rotation);
 
 		SetPosition(nextPos);
 		moved = 1;
@@ -155,8 +157,9 @@ void Enemy::SetPath(vector<XMINT2> path)
 		end = Coord(path.at(0).x, path.at(0).y);
 		next = Coord(path.at(path.size() - 1).x, path.at(path.size() - 1).y);
 		direction = XMFLOAT3((-position.x - (next.x + (TILE_SIZE / 2))), 0.0f, -position.z - (next.y + (TILE_SIZE / 2)));
-		desiredRotation = -atan2(direction.z, direction.x) * 180 / XM_PI;
-		//rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
+		//desiredRotation = -atan2(direction.z, direction.x) * 180 / XM_PI;
+		rotation.y = -atan2(direction.z, direction.x) * 180 / XM_PI;
+		SetRotationDeg(rotation);
 	}
 }
 
