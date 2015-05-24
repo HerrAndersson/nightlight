@@ -44,7 +44,7 @@ XMFLOAT3 GameObject::GetPosition()
 
 void GameObject::SetRotationDeg(XMFLOAT3 rot)
 {
-	rotation = XMFLOAT3((int)rot.x % 360, (int)rot.y % 360, (int)rot.z % 360);
+	rotation = XMFLOAT3((float)((int)rot.x % 360), (float)((int)rot.y % 360), (float)((int)rot.z % 360));
 }
 
 XMFLOAT3 GameObject::GetRotationDeg()

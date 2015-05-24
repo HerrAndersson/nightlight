@@ -8,7 +8,11 @@
 
 using namespace DirectX;
 
-//Before rendering to shadow map, don't forget to activate FRONT-FACE culling in d3d manager
+//Before rendering to shadow map:
+
+//~ Activate FRONT-FACE culling
+//~ Set vertex buffer before the Draw/DrawIndexed call
+//~ Set topology
 
 class ShadowMap
 {
