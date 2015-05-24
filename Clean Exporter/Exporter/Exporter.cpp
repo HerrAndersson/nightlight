@@ -220,6 +220,9 @@ void Exporter::ProcessScene(const char *file_path)
 	scene_.lights.pointLights.clear();
 	scene_.animations.clear();
 	scene_.skeleton.clear();
+	for (int i = 0; i < scene_.sceneGraph.size(); i++)
+		scene_.sceneGraph[i].name.clear();
+	scene_.sceneGraph.clear();
 }
 
 //___________________________________________________________________________________________
@@ -1492,6 +1495,8 @@ void Exporter::ExportMeshes()
 	for (int i = 0; i < mainHeader.sceneGraph;i++)
 	{
 		outfile.write((const char*)&scene_.sceneGraph[i], 12);
+		outfile.write((const char*)&scene_.sceneGraph[i].type, 4);
+		outfile.write((const char*)&scene_.sceneGraph[i].mesh, 4);
 		outfile.write((const char*)&scene_.sceneGraph[i].transform, 64);
 		int namelength = scene_.sceneGraph[i].name.length();
 		outfile.write((const char*)&namelength, 4);
