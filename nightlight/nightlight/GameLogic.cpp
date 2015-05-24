@@ -13,11 +13,11 @@ GameLogic::~GameLogic()
 
 }
 
-bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Character* grandpa, YSE::sound &walkSound)
+bool GameLogic::Update(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Character* grandpa, Sounds* sounds)
 {
 	if (character->GetHitPoints() > 0)
 	{
-		if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies, walkSound))
+		if (!UpdatePlayer(levelStates, character, camera, spotLight, enemies, sounds))
 			return false;
 	}
 
@@ -56,7 +56,7 @@ bool GameLogic::UpdateAI(vector<Enemy*>& enemies, Character* player, LightObject
 	return true;
 }
 
-bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies, YSE::sound &walkSound)
+bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies, Sounds* sounds)
 {
 	Level* currentLevel = levelStates.currentLevel;
 	XMFLOAT2 oldP = Input->GetMousePos();
@@ -99,7 +99,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 
 	if (playerMoved)
 	{
-		walkSound.play();
+		sounds->walk.play();
 
 		Coord movableObjectOffset;
 		Coord nextMovableTileCoord = Coord();
@@ -189,7 +189,7 @@ bool GameLogic::UpdatePlayer(LevelStates& levelStates, Character* character, Cam
 		}
 	}
 	else {
-		walkSound.stop();
+		sounds->walk.stop();
 	}
 		
 

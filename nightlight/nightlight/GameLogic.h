@@ -9,7 +9,7 @@
 #include "Level.h"
 #include "AiModule.h"
 #include "LevelParser.h"
-#include "yse.hpp"
+#include "Sounds.h"
 
 struct LevelStates
 {
@@ -51,7 +51,7 @@ private:
 
 	bool ManageLevelStates(LevelStates & levelStates, Character* character, vector<Enemy*>& enemies, LightObject* spotLight, Character* grandpa);
 
-	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, YSE::sound &walkSound);
+	bool UpdatePlayer(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Sounds* sounds);
 	bool UpdateSpotLight(LevelStates& levelStates, Character* player, CameraObject* camera, LightObject* spotlight, vector<Enemy*>& enemies);
 	bool UpdateAI(vector<Enemy*>& enemies, Character* player, LightObject* spotlight);
 
@@ -61,7 +61,7 @@ public:
 	GameLogic(AiModule* AI, InputManager* Input);
 	~GameLogic();
 
-	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Character* grandpa, YSE::sound &walkSound);
+	bool Update(LevelStates& levelStates, Character* gameObject, CameraObject* camera, LightObject* spotLight, vector<Enemy*>& enemies, Character* grandpa, Sounds* sounds);
 
 	void SelectObject(GameObject* newSelectedObject);
 	void SelectButton(Button* newSelectedButton);
