@@ -13,6 +13,7 @@
 #include "GameObject.h"
 #include "cameraObject.h"
 #include "lightObject.h"
+#include "yse.hpp"
 
 using namespace DirectX;
 using std::vector;
@@ -20,6 +21,9 @@ using std::vector;
 class Game
 {
 private:
+
+	YSE::sound testSound;
+	YSE::sound walkSound;
 
 	int screenWidth, screenHeight;
 	const int shadowMapSize = 2048;

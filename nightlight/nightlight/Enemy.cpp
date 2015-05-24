@@ -87,7 +87,6 @@ bool Enemy::Update(Level* level, LightObject* spotlight, bool inLight)
 		}
 
 		float difference = desiredRotation - rotation.y;
-		cout << difference << endl;
 
 		if (difference < 180)
 			rotation.y += difference / 10;

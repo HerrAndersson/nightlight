@@ -1,0 +1,83 @@
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:03:52am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:04:27am
+
+=== end of YSE log ===
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:07:30am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:09:20am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:16:14am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:18:46am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:21:31am
+
+=== end of YSE log ===
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:24:57am
+
+=== end of YSE log ===
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:26:36am
+
+=== end of YSE log ===
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 1:27:19am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 2:25:30am
+
+(Error) File reader:  Unable to read E:\BTH\DV1475 Litet spel\Litet-Spel-Grupp-1\nightlight\nightlight\Assets\Sounds\sound.ogg
+=== end of YSE log ===
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 2:26:21am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 2:27:21am
+
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 2:28:37am
+
+=== end of YSE log ===
+
+**********************************************************
+=== start of YSE log ===
+Log started: 24 May 2015 2:37:06am
+
+=== end of YSE log ===

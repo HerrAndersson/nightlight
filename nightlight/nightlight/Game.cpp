@@ -42,6 +42,16 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	AI = new AiModule(levelStates.currentLevel);
 	Logic = new GameLogic(AI, Input);
 
+	YSE::System().init();
+
+	if (!testSound.create("Assets/Sounds/sound.ogg").isValid()) {
+		std::cout << "sound 'sound.ogg' not found" << std::endl;
+	}
+
+	if (!walkSound.create("Assets/Sounds/walk.ogg").isValid()) {
+		std::cout << "sound 'walk.ogg' not found" << std::endl;
+	}
+
 }
 
 Game::~Game()
@@ -61,19 +71,30 @@ Game::~Game()
 	delete spotLight;
 	delete character;
 	delete grandpa;
+
+	YSE::System().close();
 }
 
 bool Game::Update()
 {
 	bool result = true;
 	
-	result = Logic->Update(levelStates, character, camera, spotLight, enemies, grandpa);
+	result = Logic->Update(levelStates, character, camera, spotLight, enemies, grandpa, walkSound);
 	
 	if (!result){
 		Level* loadedLevel = levelStates.loadedLevel;
 		if (loadedLevel)
 			saveLoadManager.Save(saveFilePath, loadedLevel->GetLevelNr());
 	}
+
+	if (levelStates.currentLevel == levelStates.menuLevel) {
+		if (!testSound.isPlaying())
+			testSound.play();
+	} else
+		if (testSound.isPlaying())
+			testSound.pause();
+
+	YSE::System().update();
 
 	return result;
 }
