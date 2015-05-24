@@ -154,6 +154,8 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 	for (int i = 0; i < mainHeader.sceneGraph; i++)
 	{
 		infile.read((char*)&bin.sceneGraph[i], 12);
+		infile.read((char*)&bin.sceneGraph[i].type, 4);
+		infile.read((char*)&bin.sceneGraph[i].mesh, 4);
 		infile.read((char*)&bin.sceneGraph[i].transform, 64);
 		int namelength;
 		infile.read((char*)&namelength, 4);

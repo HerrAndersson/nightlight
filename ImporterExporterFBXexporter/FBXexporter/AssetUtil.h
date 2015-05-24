@@ -16,10 +16,10 @@ namespace assetUtility {
 
 	struct Node{
 		int parent;
-		XMMATRIX transform;
-		std::string name;
 		int type = 0;
 		int mesh;
+		XMMATRIX transform;
+		std::string name;
 	};
 
 	struct MeshHeader
