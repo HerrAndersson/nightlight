@@ -7,7 +7,7 @@ class Enemy : public GameObject
 {
 private:
 	
-	const float SPEED = 50.0F;
+	const float SPEED = 40.0F;
 
 	int enemyType;
 
