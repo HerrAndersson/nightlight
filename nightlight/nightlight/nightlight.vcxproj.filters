@@ -129,6 +129,9 @@
     <ClCompile Include="Button.cpp">
       <Filter>Game\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Sounds.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -235,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sounds.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

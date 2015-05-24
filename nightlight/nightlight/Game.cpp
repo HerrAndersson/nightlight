@@ -42,6 +42,7 @@ Game::Game(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight, bo
 	AI = new AiModule(levelStates.currentLevel);
 	Logic = new GameLogic(AI, Input);
 
+	sounds = new Sounds();
 }
 
 Game::~Game()
@@ -67,13 +68,22 @@ bool Game::Update()
 {
 	bool result = true;
 	
-	result = Logic->Update(levelStates, character, camera, spotLight, enemies, grandpa);
+	result = Logic->Update(levelStates, character, camera, spotLight, enemies, grandpa, sounds);
 	
 	if (!result){
 		Level* loadedLevel = levelStates.loadedLevel;
 		if (loadedLevel)
 			saveLoadManager.Save(saveFilePath, loadedLevel->GetLevelNr());
 	}
+
+	if (levelStates.currentLevel == levelStates.menuLevel) {
+		if (!sounds->menuMusic.isPlaying())
+			sounds->menuMusic.play();
+	} else
+		if (sounds->menuMusic.isPlaying())
+			sounds->menuMusic.pause();
+
+	sounds->Update();
 
 	return result;
 }

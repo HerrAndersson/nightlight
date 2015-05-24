@@ -13,6 +13,7 @@
 #include "GameObject.h"
 #include "cameraObject.h"
 #include "lightObject.h"
+#include "Sounds.h"
 
 using namespace DirectX;
 using std::vector;
@@ -42,6 +43,7 @@ private:
 	LevelParser*			levelParser;
 	SaveLoadManager			saveLoadManager;
 	InputManager*			Input;
+	Sounds*					sounds;
 
 	const bool debugDisableWallRendering = false;
 	const bool debugRenderEnemyPaths = false;
