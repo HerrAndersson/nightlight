@@ -23,7 +23,8 @@ int main(int argc, char** argv) {
 	(*(lSdkManager->GetIOSettings())).SetBoolProp(IMP_FBX_GLOBAL_SETTINGS, true);
 
 	// Create an importer.
-	FbxImporter* lImporter = FbxImporter::Create(lSdkManager, "");
+	FbxImporter* lImporterMaya = FbxImporter::Create(lSdkManager, "");
+	FbxImporter* lImporterBin = FbxImporter::Create(lSdkManager, "");
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
@@ -31,18 +32,18 @@ int main(int argc, char** argv) {
 	const char* lFilenameBin = "box2.fbx";
 
 	// Initialize the importer.
-	bool lImportStatusMaya = lImporter->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
+	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
 	
 	if (!lImportStatusMaya) {
 		printf("Call to FbxImporter::Initialize() failed.\n");
-		printf("Error returned: %s\n\n", lImporter->GetStatus().GetErrorString());
+		printf("Error returned: %s\n\n", lImporterMaya->GetStatus().GetErrorString());
 		exit(-1);
 	}
-	bool lImportStatusBin = lImporter->Initialize(lFilenameBin, -1, lSdkManager->GetIOSettings());
+	bool lImportStatusBin = lImporterBin->Initialize(lFilenameBin, -1, lSdkManager->GetIOSettings());
 
 	if (!lImportStatusBin) {
 		printf("Call to FbxImporter::Initialize() failed.\n");
-		printf("Error returned: %s\n\n", lImporter->GetStatus().GetErrorString());
+		printf("Error returned: %s\n\n", lImporterBin->GetStatus().GetErrorString());
 		exit(-1);
 	}
 
@@ -53,8 +54,8 @@ int main(int argc, char** argv) {
 	FbxScene* lSceneBin = FbxScene::Create(lSdkManager, "binScene");
 
 	// Import the contents of the file into the scene.
-	lImporter->Import(lSceneMaya);
-	lImporter->Import(lSceneBin);
+	lImporterMaya->Import(lSceneMaya);
+	lImporterBin->Import(lSceneBin);
 
 
 	
@@ -76,6 +77,7 @@ int main(int argc, char** argv) {
 	//maya file
 	int childcountMaya = lRootNodeMaya->GetChildCount();
 	int childcountBin = lRootNodeBin->GetChildCount();
+
 	for (int i = 0; i < childcountMaya; i++)
 	{
 		lNodeMaya = lRootNodeMaya->GetChild(i);
@@ -105,15 +107,22 @@ int main(int argc, char** argv) {
 		int controlCount = lMeshBin->GetControlPointsCount();
 		for (int j = 0; j < controlCount; j++)
 		{
-			fbxMaya.vtx.push_back(lMeshBin->GetControlPointAt(j));
+			fbxBin.vtx.push_back(lMeshBin->GetControlPointAt(j));
 		}
 
 	}
 	//getchar();
-
+	for (int j = 0; j < fbxMaya.vtx.size(); j++)
+	{
+		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+		{
+			return 0;
+		}
+	}
 
 	// The file has been imported; we can get rid of the importer.
-	lImporter->Destroy();
+	lImporterMaya->Destroy();
+	lImporterBin->Destroy();
 
 	return 0;
 }
