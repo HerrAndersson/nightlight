@@ -150,9 +150,17 @@ int main(int argc, char** argv) {
 				}
 			}
 		}
+	}
 
+	int lMaterialCount = lNodeBin->GetMaterialCount();
 
-		
+	if (lMaterialCount > 0)
+	{
+
+		for (int i = 0; i < lMaterialCount; i++)
+		{
+			FbxSurfaceMaterial* lMaterial = lNodeBin->GetMaterial(i);
+		}
 	}
 
 	//bin file
