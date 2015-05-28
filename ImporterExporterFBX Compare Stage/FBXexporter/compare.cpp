@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "Light1.fbx";
+	const char* lFilenameMaya = "box2bevel.fbx";
 	const char* lFilenameBin = "Light2.fbx";
 
 	// Initialize the importer.
@@ -140,29 +140,34 @@ int main(int argc, char** argv) {
 
 				//index array for holding the index referenced to uv data
 				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-				int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+			//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+			int lIndexCount = lUVElement->GetDirectArray().GetCount();
 
-				const int lPolyCount = lMeshMaya->GetPolygonCount();
-				for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
-				{
+			//const int lPolyCount = lMeshMaya->GetPolygonCount();
+			//for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
+			//{
 					// build the max index array that we need to pass into MakePoly
-					const int lPolySize = lMeshMaya->GetPolygonSize(lPolyIndex);
-					for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
-					{
+				//const int lPolySize = lMeshMaya->GetPolygonSize(lPolyIndex);
+				//for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
+				//{
 						FbxVector2 lUVValue;
 
 						//get the index of the current vertex in control points array
-						int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
+					//int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
 
 						//the UV index depends on the reference mode
-						int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+					//int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+					//int lUVIndex = lUVElement->GetDirectArray().GetAt(lPolyVertIndex);
 
-						lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
+					for (int count = 0; count < lIndexCount; count++)
+					{
+						lUVValue = lUVElement->GetDirectArray().GetAt(count);
 
 						fbxMaya.uv.push_back(lUVValue);
-
 					}
-				}
+
+				//}
+			//}
 			}
 		}
 	}
@@ -237,29 +242,20 @@ int main(int argc, char** argv) {
 
 				//index array for holding the index referenced to uv data
 				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-				int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+			//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+			int lIndexCount = lUVElement->GetDirectArray().GetCount();
 
-				const int lPolyCount = lMeshBin->GetPolygonCount();
-				for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
-				{
-					// build the max index array that we need to pass into MakePoly
-					const int lPolySize = lMeshBin->GetPolygonSize(lPolyIndex);
-					for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
-					{
-						FbxVector2 lUVValue;
 
-						//get the index of the current vertex in control points array
-						int lPolyVertIndex = lMeshBin->GetPolygonVertex(lPolyIndex, lVertIndex);
+			FbxVector2 lUVValue;
 
-						//the UV index depends on the reference mode
-						int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+			for (int count = 0; count < lIndexCount; count++)
+			{
+				lUVValue = lUVElement->GetDirectArray().GetAt(count);
 
-						lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
-
-						fbxBin.uv.push_back(lUVValue);
-
-					}
+				fbxBin.uv.push_back(lUVValue);
 				}
+
+				
 			}
 		}
 	}
