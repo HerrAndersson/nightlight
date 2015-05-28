@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "box1.fbx";
-	const char* lFilenameBin = "box1.fbx";
+	const char* lFilenameMaya = "Light1.fbx";
+	const char* lFilenameBin = "Light2.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -86,149 +86,179 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < childcountMaya; i++)
 	{
 		lNodeMaya = lRootNodeMaya->GetChild(i);
-		lMeshMaya = lNodeMaya->GetMesh();
 
-		int controlCount = lMeshMaya->GetControlPointsCount();
-		for (int j = 0; j < controlCount; j++)
+		if (lNodeMaya->GetMesh() == NULL)
 		{
-			fbxMaya.vtx.push_back(lMeshMaya->GetControlPointAt(j));
+			lLightMaya = (FbxLight*) lNodeMaya->GetNodeAttribute();
+
+			const char* lLightTypes[] = { "Point", "Directional", "Spot" };
+
+			fbxMaya.lLightType.push_back(lLightTypes[lLightMaya->LightType.Get()]);
+
+			fbxMaya.lLightColor.push_back(lLightMaya->Color.Get());
 		}
-
-		FbxGeometryElementNormal* lNormalElementMaya = lMeshMaya->GetElementNormal();
-		for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
+		else
 		{
-			int lNormalIndex = 0;
 
-			if (lNormalElementMaya->GetReferenceMode() == FbxGeometryElement::eDirect)
-				lNormalIndex = lVertexIndex;
-			if (lNormalElementMaya->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
-				lNormalIndex = lNormalElementMaya->GetIndexArray().GetAt(lVertexIndex);
+			lMeshMaya = lNodeMaya->GetMesh();
 
-			FbxVector4 lNormal = lNormalElementMaya->GetDirectArray().GetAt(lNormalIndex);
-			fbxMaya.norm.push_back(lNormal);
-		}
-
-		//iterating over uv sets
-		FbxStringList lUvSetNameList;
-		lMeshMaya->GetUVSetNames(lUvSetNameList);
-		for (int lUVsetIndex = 0; lUVsetIndex < lUvSetNameList.GetCount(); lUVsetIndex++)
-		{
-			//get the incexed uv set
-			const char* lUVSetName = lUvSetNameList.GetStringAt(lUVsetIndex);
-			const FbxGeometryElementUV* lUVElement = lMeshMaya->GetElementUV(lUVSetName);
-			
-			if (!lUVElement)
-				continue;
-
-			if (lUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex &&
-				lUVElement->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-				return 0;
-
-			//index array for holding the index referenced to uv data
-			bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-			int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-
-			const int lPolyCount = lMeshMaya->GetPolygonCount();
-			for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
+			int controlCount = lMeshMaya->GetControlPointsCount();
+			for (int j = 0; j < controlCount; j++)
 			{
-				// build the max index array that we need to pass into MakePoly
-				const int lPolySize = lMeshMaya->GetPolygonSize(lPolyIndex);
-				for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
+				fbxMaya.vtx.push_back(lMeshMaya->GetControlPointAt(j));
+			}
+
+			FbxGeometryElementNormal* lNormalElementMaya = lMeshMaya->GetElementNormal();
+			for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
+			{
+				int lNormalIndex = 0;
+
+				if (lNormalElementMaya->GetReferenceMode() == FbxGeometryElement::eDirect)
+					lNormalIndex = lVertexIndex;
+				if (lNormalElementMaya->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+					lNormalIndex = lNormalElementMaya->GetIndexArray().GetAt(lVertexIndex);
+
+				FbxVector4 lNormal = lNormalElementMaya->GetDirectArray().GetAt(lNormalIndex);
+				fbxMaya.norm.push_back(lNormal);
+			}
+
+			//iterating over uv sets
+			FbxStringList lUvSetNameList;
+			lMeshMaya->GetUVSetNames(lUvSetNameList);
+			for (int lUVsetIndex = 0; lUVsetIndex < lUvSetNameList.GetCount(); lUVsetIndex++)
+			{
+				//get the incexed uv set
+				const char* lUVSetName = lUvSetNameList.GetStringAt(lUVsetIndex);
+				const FbxGeometryElementUV* lUVElement = lMeshMaya->GetElementUV(lUVSetName);
+
+				if (!lUVElement)
+					continue;
+
+				if (lUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex &&
+					lUVElement->GetMappingMode() != FbxGeometryElement::eByControlPoint)
+					return 0;
+
+				//index array for holding the index referenced to uv data
+				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
+				int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+
+				const int lPolyCount = lMeshMaya->GetPolygonCount();
+				for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
 				{
-					FbxVector2 lUVValue;
+					// build the max index array that we need to pass into MakePoly
+					const int lPolySize = lMeshMaya->GetPolygonSize(lPolyIndex);
+					for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
+					{
+						FbxVector2 lUVValue;
 
-					//get the index of the current vertex in control points array
-					int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
+						//get the index of the current vertex in control points array
+						int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
 
-					//the UV index depends on the reference mode
-					int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+						//the UV index depends on the reference mode
+						int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
 
-					lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
+						lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
 
-					fbxMaya.uv.push_back(lUVValue);
+						fbxMaya.uv.push_back(lUVValue);
 
+					}
 				}
 			}
 		}
 	}
 
-	int lMaterialCount = lNodeBin->GetMaterialCount();
+	//int lMaterialCount = lNodeBin->GetMaterialCount();
 
-	if (lMaterialCount > 0)
-	{
+	//if (lMaterialCount > 0)
+	//{
 
-		for (int i = 0; i < lMaterialCount; i++)
-		{
-			FbxSurfaceMaterial* lMaterial = lNodeBin->GetMaterial(i);
-		}
-	}
+	//	for (int i = 0; i < lMaterialCount; i++)
+	//	{
+	//		FbxSurfaceMaterial* lMaterial = lNodeBin->GetMaterial(i);
+	//	}
+	//}
 
 	//bin file
 	for (int i = 0; i < childcountBin; i++)
 	{
 		lNodeBin = lRootNodeBin->GetChild(i);
-		lMeshBin = lNodeBin->GetMesh();
 
-		int controlCount = lMeshBin->GetControlPointsCount();
-		for (int j = 0; j < controlCount; j++)
+		if (lNodeBin->GetMesh() == NULL)
 		{
-			fbxBin.vtx.push_back(lMeshBin->GetControlPointAt(j));
+			lLightBin = (FbxLight*)lNodeBin->GetNodeAttribute();
+
+			const char* lLightTypes[] = { "Point", "Directional", "Spot" };
+
+			fbxBin.lLightType.push_back(lLightTypes[lLightBin->LightType.Get()]);
+
+			fbxBin.lLightColor.push_back(lLightBin->Color.Get());
 		}
-
-		FbxGeometryElementNormal* lNormalElementBin = lMeshBin->GetElementNormal();
-		for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
+		else
 		{
-			int lNormalIndex = 0;
 
-			if (lNormalElementBin->GetReferenceMode() == FbxGeometryElement::eDirect)
-				lNormalIndex = lVertexIndex;
-			if (lNormalElementBin->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
-				lNormalIndex = lNormalElementBin->GetIndexArray().GetAt(lVertexIndex);
+			lMeshBin = lNodeBin->GetMesh();
 
-			FbxVector4 lNormal = lNormalElementBin->GetDirectArray().GetAt(lNormalIndex);
-			fbxBin.norm.push_back(lNormal);
-		}
-
-
-		//iterating over uv sets
-		FbxStringList lUvSetNameList;
-		lMeshBin->GetUVSetNames(lUvSetNameList);
-		for (int lUVsetIndex = 0; lUVsetIndex < lUvSetNameList.GetCount(); lUVsetIndex++)
-		{
-			//get the incexed uv set
-			const char* lUVSetName = lUvSetNameList.GetStringAt(lUVsetIndex);
-			const FbxGeometryElementUV* lUVElement = lMeshBin->GetElementUV(lUVSetName);
-
-			if (!lUVElement)
-				continue;
-
-			if (lUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex &&
-				lUVElement->GetMappingMode() != FbxGeometryElement::eByControlPoint)
-				return 0;
-
-			//index array for holding the index referenced to uv data
-			bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-			int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-
-			const int lPolyCount = lMeshBin->GetPolygonCount();
-			for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
+			int controlCount = lMeshBin->GetControlPointsCount();
+			for (int j = 0; j < controlCount; j++)
 			{
-				// build the max index array that we need to pass into MakePoly
-				const int lPolySize = lMeshBin->GetPolygonSize(lPolyIndex);
-				for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
+				fbxBin.vtx.push_back(lMeshBin->GetControlPointAt(j));
+			}
+
+			FbxGeometryElementNormal* lNormalElementBin = lMeshBin->GetElementNormal();
+			for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
+			{
+				int lNormalIndex = 0;
+
+				if (lNormalElementBin->GetReferenceMode() == FbxGeometryElement::eDirect)
+					lNormalIndex = lVertexIndex;
+				if (lNormalElementBin->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+					lNormalIndex = lNormalElementBin->GetIndexArray().GetAt(lVertexIndex);
+
+				FbxVector4 lNormal = lNormalElementBin->GetDirectArray().GetAt(lNormalIndex);
+				fbxBin.norm.push_back(lNormal);
+			}
+
+
+			//iterating over uv sets
+			FbxStringList lUvSetNameList;
+			lMeshBin->GetUVSetNames(lUvSetNameList);
+			for (int lUVsetIndex = 0; lUVsetIndex < lUvSetNameList.GetCount(); lUVsetIndex++)
+			{
+				//get the incexed uv set
+				const char* lUVSetName = lUvSetNameList.GetStringAt(lUVsetIndex);
+				const FbxGeometryElementUV* lUVElement = lMeshBin->GetElementUV(lUVSetName);
+
+				if (!lUVElement)
+					continue;
+
+				if (lUVElement->GetMappingMode() != FbxGeometryElement::eByPolygonVertex &&
+					lUVElement->GetMappingMode() != FbxGeometryElement::eByControlPoint)
+					return 0;
+
+				//index array for holding the index referenced to uv data
+				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
+				int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+
+				const int lPolyCount = lMeshBin->GetPolygonCount();
+				for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
 				{
-					FbxVector2 lUVValue;
+					// build the max index array that we need to pass into MakePoly
+					const int lPolySize = lMeshBin->GetPolygonSize(lPolyIndex);
+					for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
+					{
+						FbxVector2 lUVValue;
 
-					//get the index of the current vertex in control points array
-					int lPolyVertIndex = lMeshBin->GetPolygonVertex(lPolyIndex, lVertIndex);
+						//get the index of the current vertex in control points array
+						int lPolyVertIndex = lMeshBin->GetPolygonVertex(lPolyIndex, lVertIndex);
 
-					//the UV index depends on the reference mode
-					int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+						//the UV index depends on the reference mode
+						int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
 
-					lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
+						lUVValue = lUVElement->GetDirectArray().GetAt(lUVIndex);
 
-					fbxBin.uv.push_back(lUVValue);
+						fbxBin.uv.push_back(lUVValue);
 
+					}
 				}
 			}
 		}
@@ -257,6 +287,17 @@ int main(int argc, char** argv) {
 			}
 		}
 	//}
+		for (int x = 0; x < fbxMaya.lLightType.size(); x++)
+		{
+			if (fbxMaya.lLightColor.at(x) != fbxBin.lLightColor.at(x))
+			{
+				return 0;
+			}
+			if (fbxMaya.lLightType.at(x) != fbxBin.lLightType.at(x))
+			{
+				return 0;
+			}
+		}
 
 	//#define DELTA 0.0000000000001
 	//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
