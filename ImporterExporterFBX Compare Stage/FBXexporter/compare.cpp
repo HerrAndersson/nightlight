@@ -1,6 +1,6 @@
 #include "fbxdata.h"
-#define DELTA 0.0000000000001
-#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
+//#define DELTA 0.0000000000001
+//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
 
 int main(int argc, char** argv) {
 
