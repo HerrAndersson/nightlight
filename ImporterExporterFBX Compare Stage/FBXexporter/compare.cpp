@@ -1,4 +1,6 @@
 #include "fbxdata.h"
+#define DELTA 0.0000000000001
+#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
 
 int main(int argc, char** argv) {
 
@@ -28,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "box2.fbx";
-	const char* lFilenameBin = "box1.fbx";
+	const char* lFilenameMaya = "box1.fbx";
+	const char* lFilenameBin = "box2.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -90,7 +92,7 @@ int main(int argc, char** argv) {
 			fbxMaya.vtx.push_back(lMeshMaya->GetControlPointAt(j));
 		}
 
-		FbxGeometryElementNormal* lNormalElementMaya = lMeshMaya->CreateElementNormal();
+		FbxGeometryElementNormal* lNormalElementMaya = lMeshMaya->GetElementNormal();
 		for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
 		{
 			int lNormalIndex = 0;
@@ -163,7 +165,7 @@ int main(int argc, char** argv) {
 			fbxBin.vtx.push_back(lMeshBin->GetControlPointAt(j));
 		}
 
-		FbxGeometryElementNormal* lNormalElementBin = lMeshBin->CreateElementNormal();
+		FbxGeometryElementNormal* lNormalElementBin = lMeshBin->GetElementNormal();
 		for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
 		{
 			int lNormalIndex = 0;
@@ -223,21 +225,31 @@ int main(int argc, char** argv) {
 	}
 	
 	//getchar();
-	for (int j = 0; j < fbxMaya.vtx.size(); j++)
+	if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
 	{
-		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+		return 0;
+	}
+	else
+	{
+		for (int j = 0; j < fbxMaya.vtx.size(); j++)
 		{
-			return 0;
-		}
-		if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
+			if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+			{
+				return 0;
+			}
+			if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
 		{
 			return 0;
 		}
 		if (fbxMaya.uv.at(j) != fbxBin.uv.at(j))
-		{
-			return 0;
+			{
+				return 0;
+			}
 		}
 	}
+
+	//#define DELTA 0.0000000000001
+	//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
 
 	// The file has been imported; we can get rid of the importer.
 	lImporterMaya->Destroy();
