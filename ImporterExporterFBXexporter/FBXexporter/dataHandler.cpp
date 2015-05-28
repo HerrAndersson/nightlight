@@ -27,7 +27,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, int i)
 	(*(lSdkManager->GetIOSettings())).SetBoolProp(EXP_FBX_EMBEDDED, lEmbedMedia);
 
 		std::vector<FbxMesh*> importedMeshes;
-		std::vector<FbxGeometryElementMaterial> importedMaterials;
+		std::vector<FbxGeometryElementMaterial*> importedMaterials;
 
 		//Save the filename as a string so we can use it when needed. 
 		string nameStr = binFileList.at(i);
@@ -340,7 +340,10 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, int i)
 		//lNode3->AddChild(lNode4);
 
 
-
+		importedMeshes.clear();
+		for (int x = 0; x < importedMaterials.size(); x++)
+			importedMaterials[x]->Destroy();
+		importedMaterials.clear();
 		lExporter->Export(lScene);
 
 		//Get rid of objects
