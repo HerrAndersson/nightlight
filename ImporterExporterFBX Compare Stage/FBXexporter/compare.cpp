@@ -1,6 +1,6 @@
 #include "fbxdata.h"
-//#define DELTA 0.0000000000001
-//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
+//#define DELTA 0.000001
+//#define EQUAL(A,B) (abs((A.X)-(B.X)) < DELTA && abs((A.Y)-(B.Y)) < DELTA && abs((A.Z)-(B.Z)) < DELTA && abs((A.W)-(B.W)) < DELTA) ? true:false
 
 int main(int argc, char** argv) {
 
@@ -30,12 +30,12 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "box2bevel.fbx";
-	const char* lFilenameBin = "Light1.fbx";
+	const char* lFilenameMaya = "Light1.fbx";
+	const char* lFilenameBin = "Light2.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
-	
+
 	if (!lImportStatusMaya) {
 		printf("Call to FbxImporter::Initialize() failed.\n");
 		printf("Error returned: %s\n\n", lImporterMaya->GetStatus().GetErrorString());
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	lImporterBin->Import(lSceneBin);
 
 
-	
+
 	FbxGeometryElementNormal* lNormalElement;
 
 	FbxVector4 norm2;
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 
 		if (lNodeMaya->GetMesh() == NULL)
 		{
-			lLightMaya = (FbxLight*) lNodeMaya->GetNodeAttribute();
+			lLightMaya = (FbxLight*)lNodeMaya->GetNodeAttribute();
 
 			FbxVector4 LightPosition = lLightMaya->GetNode()->LclTranslation;
 			fbxMaya.LightPos.push_back(LightPosition);
@@ -143,34 +143,34 @@ int main(int argc, char** argv) {
 
 				//index array for holding the index referenced to uv data
 				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-			//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-			int lIndexCount = lUVElement->GetDirectArray().GetCount();
+				//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+				int lIndexCount = lUVElement->GetDirectArray().GetCount();
 
-			//const int lPolyCount = lMeshMaya->GetPolygonCount();
-			//for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
-			//{
-					// build the max index array that we need to pass into MakePoly
+				//const int lPolyCount = lMeshMaya->GetPolygonCount();
+				//for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
+				//{
+				// build the max index array that we need to pass into MakePoly
 				//const int lPolySize = lMeshMaya->GetPolygonSize(lPolyIndex);
 				//for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
 				//{
-						FbxVector2 lUVValue;
+				FbxVector2 lUVValue;
 
-						//get the index of the current vertex in control points array
-					//int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
+				//get the index of the current vertex in control points array
+				//int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
 
-						//the UV index depends on the reference mode
-					//int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
-					//int lUVIndex = lUVElement->GetDirectArray().GetAt(lPolyVertIndex);
+				//the UV index depends on the reference mode
+				//int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+				//int lUVIndex = lUVElement->GetDirectArray().GetAt(lPolyVertIndex);
 
-					for (int count = 0; count < lIndexCount; count++)
-					{
-						lUVValue = lUVElement->GetDirectArray().GetAt(count);
+				for (int count = 0; count < lIndexCount; count++)
+				{
+					lUVValue = lUVElement->GetDirectArray().GetAt(count);
 
-						fbxMaya.uv.push_back(lUVValue);
-					}
+					fbxMaya.uv.push_back(lUVValue);
+				}
 
 				//}
-			//}
+				//}
 			}
 		}
 	}
@@ -248,24 +248,24 @@ int main(int argc, char** argv) {
 
 				//index array for holding the index referenced to uv data
 				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-			//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-			int lIndexCount = lUVElement->GetDirectArray().GetCount();
+				//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+				int lIndexCount = lUVElement->GetDirectArray().GetCount();
 
 
-			FbxVector2 lUVValue;
+				FbxVector2 lUVValue;
 
-			for (int count = 0; count < lIndexCount; count++)
-			{
-				lUVValue = lUVElement->GetDirectArray().GetAt(count);
+				for (int count = 0; count < lIndexCount; count++)
+				{
+					lUVValue = lUVElement->GetDirectArray().GetAt(count);
 
-				fbxBin.uv.push_back(lUVValue);
+					fbxBin.uv.push_back(lUVValue);
 				}
 
-				
+
 			}
 		}
 	}
-	
+
 	//getchar();
 	//if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
 	//{
@@ -273,40 +273,52 @@ int main(int argc, char** argv) {
 	//}
 	//else
 	//{
-		for (int j = 0; j < fbxMaya.vtx.size(); j++)
+
+	for (int j = 0; j < fbxMaya.vtx.size(); j++)
+	{
+		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
 		{
-			if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
-			{
-				return 0;
-			}
-			if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
+			return 0;
+		}
+		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+		{
+			return 0;
+		}
+		if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
 		{
 			return 0;
 		}
 		if (fbxMaya.uv.at(j) != fbxBin.uv.at(j))
-			{
-				return 0;
-			}
-		}
-	//}
-		for (int x = 0; x < fbxMaya.LightType.size(); x++)
 		{
-			if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
-			{
-				return 0;
-			}
-			if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
-			{
-				return 0;
-			}
-			if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
-			{
-				return 0;
-			}
+			return 0;
 		}
+	}
+	//}
 
-	//#define DELTA 0.0000000000001
-	//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
+	//if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
+	//{
+	//	return 0;
+	//}
+	//else
+	//{
+	for (int x = 0; x < fbxMaya.LightType.size(); x++)
+	{
+		if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
+		{
+			return 0;
+		}
+		if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
+		{
+			return 0;
+		}
+		if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
+		{
+			return 0;
+		}
+	}
+	//}
+
+		std::cout << "EVERYTHING IS AWESOME!" << std::endl;
 
 	// The file has been imported; we can get rid of the importer.
 	lImporterMaya->Destroy();
