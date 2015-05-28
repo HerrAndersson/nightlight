@@ -4,18 +4,18 @@ int main(int argc, char** argv) {
 
 	DataHandler dataHandler;
 	std::vector<std::string> binFileList;
-	std::vector<Model>modelList;
-	std::vector<MaterialData>materialData;
 	
 
 	//get all the bin files
 	dataHandler.getBinFilenamesInDirectory("../Bin/", binFileList);
 
-	//import all the data using our import functions from nightlight
-	dataHandler.importBinData(binFileList, modelList, materialData);
-
-	//export using FBX sdk
-	dataHandler.FBXexport(binFileList, modelList, materialData);
+	//import all the data using our import functions from
+	for (int i = 0; i < binFileList.size(); i++)
+	{
+		cout << "Loading " << binFileList.at(i).c_str() << endl;
+		dataHandler.objectData->LoadModel(binFileList[i]);
+		dataHandler.FBXexport(binFileList,i);
+	}
 
 	return 0;
 }

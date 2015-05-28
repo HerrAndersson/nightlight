@@ -12,12 +12,12 @@ public:
 	AssetManager();
 	~AssetManager();
 	RenderObject* GetRenderObject(int id);
-	void LoadModel(string file_path, Model& model, MaterialData& material);
+	void LoadModel(string file_path);
+	binData bin;
 private:
 
 	ID3D11Device* device;
 	vector<Model*> models;
-	binData bin;
 
 	vector<ID3D11ShaderResourceView*> textures;
 	vector<RenderObject*> renderObjects;

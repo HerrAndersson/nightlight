@@ -17,7 +17,7 @@ AssetManager::~AssetManager()
 	renderObjects.clear();
 };
 
-void AssetManager::LoadModel(string file_path, Model& model, MaterialData& material){
+void AssetManager::LoadModel(string file_path){
 	
 	bin.materialList.clear();
 	bin.modelList.clear();
@@ -83,7 +83,7 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 				infile.read((char*)inmat.diffuseTextureName.data(), matHeader.diffuseNameLength);
 			}
 
-			infile.read((char*)&material.specular, 16);
+			infile.read((char*)&inmat.specular, 16);
 			if (matHeader.specularNameLength)
 			{
 				inmat.specularTextureName.resize(matHeader.specularNameLength);
@@ -98,7 +98,7 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 			inmat.specularTextureName.clear();
 	}
 
-	model.pointLights.resize(mainHeader.pointLightSize);
+	bin.modelList[0].pointLights.resize(mainHeader.pointLightSize);
 
 	if (mainHeader.ambientLightSize)
 		infile.seekg(mainHeader.ambientLightSize*sizeof(AmbientLightStruct), ios::cur);
@@ -107,9 +107,9 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 	if (mainHeader.dirLightSize)
 		infile.seekg(mainHeader.dirLightSize* sizeof(DirectionalLightStruct), ios::cur);
 	if (mainHeader.pointLightSize)
-		infile.read((char*)model.pointLights.data(), mainHeader.pointLightSize* sizeof(PointLightStruct));
+		infile.read((char*)bin.modelList[0].pointLights.data(), mainHeader.pointLightSize* sizeof(PointLightStruct));
 	if (mainHeader.spotLightSize){
-		infile.read((char*)&model.spotLight, sizeof(SpotLightStruct));
+		infile.read((char*)&bin.modelList[0].spotLight, sizeof(SpotLightStruct));
 		infile.seekg(mainHeader.spotLightSize - 1 * sizeof(SpotLightStruct), ios::cur);
 	}
 
@@ -121,32 +121,32 @@ void AssetManager::LoadModel(string file_path, Model& model, MaterialData& mater
 	}
 	*/
 	if (mainHeader.blendShapeCount == 3)
-		model.hasBlendShapes = true;
+		bin.modelList[0].hasBlendShapes = true;
 
 	std::vector<BlendShape> blendShapes;
 	for (int i = 0; i < mainHeader.blendShapeCount; i++){
 		BlendShape blendShape;
 		infile.read((char*)&blendShape.MeshTarget, 4);
-		blendShape.points.resize(model.points.size() + model.purePoints.size());
+		blendShape.points.resize(bin.modelList[0].points.size() + bin.modelList[0].purePoints.size());
 		infile.read((char*)blendShape.points.data(), blendShape.points.size()*sizeof(XMFLOAT3));
-		blendShape.normals.resize(model.normals.size());
+		blendShape.normals.resize(bin.modelList[0].normals.size());
 		infile.read((char*)blendShape.normals.data(), blendShape.normals.size()*sizeof(XMFLOAT3));
 		blendShapes.push_back(blendShape);
 	}
 
-	model.skeleton.resize(mainHeader.boneCount);
+	bin.modelList[0].skeleton.resize(mainHeader.boneCount);
 
 	for (int i = 0; i < mainHeader.boneCount; i++){
-		infile.read((char*)&model.skeleton[i].parent, 4);
-		infile.read((char*)&model.skeleton[i].BindPose, 64);
-		infile.read((char*)&model.skeleton[i].invBindPose, 64);
+		infile.read((char*)&bin.modelList[0].skeleton[i].parent, 4);
+		infile.read((char*)&bin.modelList[0].skeleton[i].BindPose, 64);
+		infile.read((char*)&bin.modelList[0].skeleton[i].invBindPose, 64);
 
 		int frames;
 		infile.read((char*)&frames, 4);
 
-		model.skeleton[i].frames.resize(frames);
+		bin.modelList[0].skeleton[i].frames.resize(frames);
 
-		infile.read((char*)model.skeleton[i].frames.data(), sizeof(Keyframe)*frames);
+		infile.read((char*)bin.modelList[0].skeleton[i].frames.data(), sizeof(Keyframe)*frames);
 	}
 
 	bin.sceneGraph.resize(mainHeader.sceneGraph);
