@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
 	const char* lFilenameMaya = "box1.fbx";
-	const char* lFilenameBin = "box2.fbx";
+	const char* lFilenameBin = "box1.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -69,6 +69,8 @@ int main(int argc, char** argv) {
 	FbxNode *lRootNodeBin = lSceneBin->GetRootNode();
 	FbxNode *lNodeMaya, *lNodeBin;
 	FbxMesh *lMeshMaya, *lMeshBin;
+	FbxCamera *lCameraMaya, *lCameraBin;
+	FbxLight *lLightMaya, *lLightBin;
 
 	//Iterera över alla noder i fbx-filen
 	//Hitta alla meshes i denna nod
@@ -225,12 +227,12 @@ int main(int argc, char** argv) {
 	}
 	
 	//getchar();
-	if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
-	{
-		return 0;
-	}
-	else
-	{
+	//if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
+	//{
+	//	return 0;
+	//}
+	//else
+	//{
 		for (int j = 0; j < fbxMaya.vtx.size(); j++)
 		{
 			if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
@@ -246,7 +248,7 @@ int main(int argc, char** argv) {
 				return 0;
 			}
 		}
-	}
+	//}
 
 	//#define DELTA 0.0000000000001
 	//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
