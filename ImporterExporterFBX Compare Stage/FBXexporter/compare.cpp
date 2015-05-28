@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
 	const char* lFilenameMaya = "box2bevel.fbx";
-	const char* lFilenameBin = "Light2.fbx";
+	const char* lFilenameBin = "Light1.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -91,11 +91,14 @@ int main(int argc, char** argv) {
 		{
 			lLightMaya = (FbxLight*) lNodeMaya->GetNodeAttribute();
 
+			FbxVector4 LightPosition = lLightMaya->GetNode()->LclTranslation;
+			fbxMaya.LightPos.push_back(LightPosition);
+
 			const char* lLightTypes[] = { "Point", "Directional", "Spot" };
 
-			fbxMaya.lLightType.push_back(lLightTypes[lLightMaya->LightType.Get()]);
+			fbxMaya.LightType.push_back(lLightTypes[lLightMaya->LightType.Get()]);
 
-			fbxMaya.lLightColor.push_back(lLightMaya->Color.Get());
+			fbxMaya.LightColor.push_back(lLightMaya->Color.Get());
 		}
 		else
 		{
@@ -192,11 +195,14 @@ int main(int argc, char** argv) {
 		{
 			lLightBin = (FbxLight*)lNodeBin->GetNodeAttribute();
 
+			FbxVector4 LightPosition = lNodeBin->LclTranslation;
+			fbxBin.LightPos.push_back(LightPosition);
+
 			const char* lLightTypes[] = { "Point", "Directional", "Spot" };
 
-			fbxBin.lLightType.push_back(lLightTypes[lLightBin->LightType.Get()]);
+			fbxBin.LightType.push_back(lLightTypes[lLightBin->LightType.Get()]);
 
-			fbxBin.lLightColor.push_back(lLightBin->Color.Get());
+			fbxBin.LightColor.push_back(lLightBin->Color.Get());
 		}
 		else
 		{
@@ -283,13 +289,17 @@ int main(int argc, char** argv) {
 			}
 		}
 	//}
-		for (int x = 0; x < fbxMaya.lLightType.size(); x++)
+		for (int x = 0; x < fbxMaya.LightType.size(); x++)
 		{
-			if (fbxMaya.lLightColor.at(x) != fbxBin.lLightColor.at(x))
+			if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
 			{
 				return 0;
 			}
-			if (fbxMaya.lLightType.at(x) != fbxBin.lLightType.at(x))
+			if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
+			{
+				return 0;
+			}
+			if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
 			{
 				return 0;
 			}
