@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "box1.fbx";
-	const char* lFilenameBin = "box2.fbx";
+	const char* lFilenameMaya = "box2.fbx";
+	const char* lFilenameBin = "box1.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -78,6 +78,7 @@ int main(int argc, char** argv) {
 	int childcountMaya = lRootNodeMaya->GetChildCount();
 	int childcountBin = lRootNodeBin->GetChildCount();
 
+
 	for (int i = 0; i < childcountMaya; i++)
 	{
 		lNodeMaya = lRootNodeMaya->GetChild(i);
@@ -89,12 +90,19 @@ int main(int argc, char** argv) {
 			fbxMaya.vtx.push_back(lMeshMaya->GetControlPointAt(j));
 		}
 
-		
+		FbxGeometryElementNormal* lNormalElementMaya = lMeshMaya->CreateElementNormal();
+			for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
+			{
+				int lNormalIndex = 0;
 
+				if (lNormalElementMaya->GetReferenceMode() == FbxGeometryElement::eDirect)
+					lNormalIndex = lVertexIndex;
+				if (lNormalElementMaya->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+					lNormalIndex = lNormalElementMaya->GetIndexArray().GetAt(lVertexIndex);
 
-
-		//lNormalElement = lMesh->GetElementNormal();
-		//lMesh->GetNormals(lNormalElement);
+				FbxVector4 lNormal = lNormalElementMaya->GetDirectArray().GetAt(lNormalIndex);
+				fbxMaya.norm.push_back(lNormal);
+			}
 		
 	}
 
@@ -110,11 +118,29 @@ int main(int argc, char** argv) {
 			fbxBin.vtx.push_back(lMeshBin->GetControlPointAt(j));
 		}
 
+		FbxGeometryElementNormal* lNormalElementBin = lMeshBin->CreateElementNormal();
+		for (int lVertexIndex = 0; lVertexIndex < controlCount; lVertexIndex++)
+		{
+			int lNormalIndex = 0;
+
+			if (lNormalElementBin->GetReferenceMode() == FbxGeometryElement::eDirect)
+				lNormalIndex = lVertexIndex;
+			if (lNormalElementBin->GetReferenceMode() == FbxGeometryElement::eIndexToDirect)
+				lNormalIndex = lNormalElementBin->GetIndexArray().GetAt(lVertexIndex);
+
+			FbxVector4 lNormal = lNormalElementBin->GetDirectArray().GetAt(lNormalIndex);
+			fbxBin.norm.push_back(lNormal);
+		}
+
 	}
 	//getchar();
 	for (int j = 0; j < fbxMaya.vtx.size(); j++)
 	{
 		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+		{
+			return 0;
+		}
+		if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
 		{
 			return 0;
 		}
