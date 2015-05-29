@@ -248,7 +248,9 @@ int main(int argc, char** argv) {
 			if (lNodeMaya->GetCamera() != NULL)
 			{
 				double fovX = lCameraMaya->FieldOfViewX.Get();//horizontal fov
+				fbxMaya.fieldofviewX.push_back(fovX);
 				double fovY = lCameraMaya->FieldOfViewY.Get();//vertical fov
+				fbxMaya.fieldofviewY.push_back(fovY);
 
 				FbxDouble3 camUp = lCameraMaya->UpVector.Get();
 				fbxMaya.cameraUpVector.push_back(camUp);
@@ -411,7 +413,9 @@ int main(int argc, char** argv) {
 				if (lCameraBin != NULL)
 				{
 					double fovX = lCameraBin->FieldOfViewX.Get();//horizontal fov
+					fbxBin.fieldofviewX.push_back(fovX);
 					double fovY = lCameraBin->FieldOfViewY.Get();//vertical fov
+					fbxBin.fieldofviewY.push_back(fovY);
 
 					FbxDouble3 camUp = lCameraBin->UpVector.Get();
 					fbxBin.cameraUpVector.push_back(camUp);
@@ -425,95 +429,95 @@ int main(int argc, char** argv) {
 
 	//getchar();
 	//if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
-	//{
-	//	return 0;
-	//}
-	//else
-	//{
+//{
+//	return 0;
+//}
+//else
+//{
 
-	for (int j = 0; j < fbxMaya.vtx.size(); j++)
+for (int j = 0; j < fbxMaya.vtx.size(); j++)
+{
+	if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
 	{
-		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+		return 0;
+	}
+	if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+	{
+		return 0;
+	}
+	if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
+	{
+		return 0;
+	}
+	if (fbxMaya.uv.at(j) != fbxBin.uv.at(j))
+	{
+		return 0;
+	}
+}
+//}
+
+//if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
+//{
+//	return 0;
+//}
+//else
+//{
+for (int x = 0; x < fbxMaya.LightType.size(); x++)
+{
+	if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
+	{
+		return 0;
+	}
+	if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
+	{
+		return 0;
+	}
+	if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
+	{
+		return 0;
+	}
+}
+//}
+
+for (int q = 0; q < fbxMaya.ambient.size(); q++)
+{
+	if (fbxMaya.materialtype.at(q) != fbxBin.materialtype.at(q))
+	{
+		return 0;
+	}
+	if (fbxMaya.ambient.at(q) != fbxBin.ambient.at(q))
+	{
+		return 0;
+	}
+	if (fbxMaya.diffuse.at(q) != fbxBin.diffuse.at(q))
+	{
+		return 0;
+	}
+	if (fbxMaya.emissive.at(q) != fbxBin.emissive.at(q))
+	{
+		return 0;
+	}
+	if (fbxMaya.transparency.at(q) != fbxBin.transparency.at(q))
+	{
+		return 0;
+	}
+	if (fbxMaya.materialtype.at(q) == "Phong")
+	{
+		if (fbxMaya.specular.at(q) != fbxBin.specular.at(q))
 		{
 			return 0;
 		}
-		if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+		if (fbxMaya.shininess.at(q) != fbxBin.shininess.at(q))
 		{
 			return 0;
 		}
-		if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
-		{
-			return 0;
-		}
-		if (fbxMaya.uv.at(j) != fbxBin.uv.at(j))
+		if (fbxMaya.reflectionfactor.at(q) != fbxBin.reflectionfactor.at(q))
 		{
 			return 0;
 		}
 	}
-	//}
 
-	//if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
-	//{
-	//	return 0;
-	//}
-	//else
-	//{
-	for (int x = 0; x < fbxMaya.LightType.size(); x++)
-	{
-		if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
-		{
-			return 0;
-		}
-		if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
-		{
-			return 0;
-		}
-		if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
-		{
-			return 0;
-		}
-	}
-	//}
-
-	for (int q = 0; q < fbxMaya.ambient.size(); q++)
-	{
-		if (fbxMaya.materialtype.at(q) != fbxBin.materialtype.at(q))
-		{
-			return 0;
-		}
-		if (fbxMaya.ambient.at(q) != fbxBin.ambient.at(q))
-		{
-			return 0;
-		}
-		if (fbxMaya.diffuse.at(q) != fbxBin.diffuse.at(q))
-		{
-			return 0;
-		}
-		if (fbxMaya.emissive.at(q) != fbxBin.emissive.at(q))
-		{
-			return 0;
-		}
-		if (fbxMaya.transparency.at(q) != fbxBin.transparency.at(q))
-		{
-			return 0;
-		}
-		if (fbxMaya.materialtype.at(q) == "Phong")
-		{
-			if (fbxMaya.specular.at(q) != fbxBin.specular.at(q))
-			{
-				return 0;
-			}
-			if (fbxMaya.shininess.at(q) != fbxBin.shininess.at(q))
-			{
-				return 0;
-			}
-			if (fbxMaya.reflectionfactor.at(q) != fbxBin.reflectionfactor.at(q))
-			{
-				return 0;
-			}
-		}
-		
-	}
+}
 	for (int q = 0; q < fbxMaya.cameraPosition.size(); q++)
 	{
 		if (fbxMaya.cameraPosition.at(q) != fbxBin.cameraPosition.at(q))
@@ -521,6 +525,14 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 		if (fbxMaya.cameraUpVector.at(q) != fbxBin.cameraUpVector.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.fieldofviewX.at(q) != fbxBin.fieldofviewX.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.fieldofviewY.at(q) != fbxBin.fieldofviewY.at(q))
 		{
 			return 0;
 		}

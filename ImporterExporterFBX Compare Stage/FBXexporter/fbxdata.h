@@ -26,4 +26,6 @@ public:
 
 	std::vector<FbxDouble3> cameraUpVector;
 	std::vector<FbxDouble3> cameraPosition;
+	std::vector<FbxDouble> fieldofviewX;
+	std::vector<FbxDouble> fieldofviewY;
 };
