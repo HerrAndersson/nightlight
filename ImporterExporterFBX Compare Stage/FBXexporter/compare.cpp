@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "Light1.fbx";
-	const char* lFilenameBin = "Light2.fbx";
+	const char* lFilenameMaya = "box2bevel.fbx";
+	const char* lFilenameBin = "box2bevel.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -172,6 +172,79 @@ int main(int argc, char** argv) {
 				//}
 				//}
 			}
+
+			//material maya
+			int materialCount = lNodeMaya->GetMaterialCount();
+		
+			if (materialCount > 0)
+			{
+				FbxPropertyT<FbxDouble3> double3;
+				FbxPropertyT<FbxDouble> double1;
+				FbxColor theColor;
+
+				for (int q = 0; q < materialCount; q++)
+				{
+					FbxSurfaceMaterial *lMaterial = lNodeMaya->GetMaterial(q);
+
+					if (lMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+					{
+						//found phong
+						fbxMaya.materialtype.push_back("Phong");
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Ambient;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.ambient.push_back(theColor);
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Diffuse;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.diffuse.push_back(theColor);
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Specular;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.specular.push_back(theColor);
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Emissive;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.emissive.push_back(theColor);
+
+						double1 = ((FbxSurfacePhong*)lMaterial)->TransparencyFactor;
+						fbxMaya.transparency.push_back(1.0 - double1.Get());
+
+						double1 = ((FbxSurfacePhong*)lMaterial)->Shininess;
+						fbxMaya.shininess.push_back(double1.Get());
+
+						double1 = ((FbxSurfacePhong*)lMaterial)->ReflectionFactor;
+						fbxMaya.reflectionfactor.push_back(double1.Get());
+
+						
+
+					}
+					else if (lMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId))
+					{
+						//found lambert
+						fbxMaya.materialtype.push_back("Lambert");
+
+						double3 = ((FbxSurfaceLambert*)lMaterial)->Ambient;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.ambient.push_back(theColor);
+
+						double3 = ((FbxSurfaceLambert*)lMaterial)->Diffuse;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.diffuse.push_back(theColor);
+
+						double3 = ((FbxSurfaceLambert*)lMaterial)->Emissive;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.emissive.push_back(theColor);
+
+						double1 = ((FbxSurfaceLambert*)lMaterial)->TransparencyFactor;
+						fbxMaya.transparency.push_back(1.0-double1.Get());
+
+					}
+
+				}
+			}
+
+
 		}
 	}
 
@@ -261,6 +334,79 @@ int main(int argc, char** argv) {
 					fbxBin.uv.push_back(lUVValue);
 				}
 
+				//material maya
+				int materialCount = lNodeBin->GetMaterialCount();
+
+				if (materialCount > 0)
+				{
+					FbxPropertyT<FbxDouble3> double3;
+					FbxPropertyT<FbxDouble> double1;
+					FbxColor theColor;
+
+					for (int q = 0; q < materialCount; q++)
+					{
+						FbxSurfaceMaterial *lMaterial = lNodeBin->GetMaterial(q);
+
+						if (lMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+						{
+							//found phong
+							fbxBin.materialtype.push_back("Phong");
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Ambient;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.ambient.push_back(theColor);
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Diffuse;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.diffuse.push_back(theColor);
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Specular;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.specular.push_back(theColor);
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Emissive;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.emissive.push_back(theColor);
+
+							double1 = ((FbxSurfacePhong*)lMaterial)->TransparencyFactor;
+							fbxBin.transparency.push_back(1.0 - double1.Get());
+
+							double1 = ((FbxSurfacePhong*)lMaterial)->Shininess;
+							fbxBin.shininess.push_back(double1.Get());
+
+							double1 = ((FbxSurfacePhong*)lMaterial)->ReflectionFactor;
+							fbxBin.reflectionfactor.push_back(double1.Get());
+
+
+
+						}
+						else if (lMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId))
+						{
+							//found lambert
+							fbxBin.materialtype.push_back("Lambert");
+
+							double3 = ((FbxSurfaceLambert*)lMaterial)->Ambient;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.ambient.push_back(theColor);
+
+							double3 = ((FbxSurfaceLambert*)lMaterial)->Diffuse;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.diffuse.push_back(theColor);
+
+							double3 = ((FbxSurfaceLambert*)lMaterial)->Emissive;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.emissive.push_back(theColor);
+
+							double1 = ((FbxSurfaceLambert*)lMaterial)->TransparencyFactor;
+							fbxBin.transparency.push_back(1.0 - double1.Get());
+
+						}
+						else
+						{
+							return 0;
+						}
+					}
+				}
 
 			}
 		}
@@ -317,6 +463,46 @@ int main(int argc, char** argv) {
 		}
 	}
 	//}
+
+	for (int q = 0; q < fbxMaya.ambient.size(); q++)
+	{
+		if (fbxMaya.materialtype.at(q) != fbxBin.materialtype.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.ambient.at(q) != fbxBin.ambient.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.diffuse.at(q) != fbxBin.diffuse.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.emissive.at(q) != fbxBin.emissive.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.transparency.at(q) != fbxBin.transparency.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.materialtype.at(q) == "Blinn" || fbxBin.materialtype.at(q) == "Blinn")
+		{
+			if (fbxMaya.specular.at(q) != fbxBin.specular.at(q))
+			{
+				return 0;
+			}
+			if (fbxMaya.shininess.at(q) != fbxBin.shininess.at(q))
+			{
+				return 0;
+			}
+			if (fbxMaya.reflectionfactor.at(q) != fbxBin.reflectionfactor.at(q))
+			{
+				return 0;
+			}
+		}
+		
+	}
 
 		std::cout << "EVERYTHING IS AWESOME!" << std::endl;
 
