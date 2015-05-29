@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "box2bevel.fbx";
-	const char* lFilenameBin = "box2bevel.fbx";
+	const char* lFilenameMaya = "camerainhere.fbx";
+	const char* lFilenameBin = "camerainhere.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -243,21 +243,23 @@ int main(int argc, char** argv) {
 
 				}
 			}
+		
+			lCameraMaya = lNodeMaya->GetCamera();
+			if (lNodeMaya->GetCamera() != NULL)
+			{
+				double fovX = lCameraMaya->FieldOfViewX.Get();//horizontal fov
+				double fovY = lCameraMaya->FieldOfViewY.Get();//vertical fov
 
+				FbxDouble3 camUp = lCameraMaya->UpVector.Get();
+				fbxMaya.cameraUpVector.push_back(camUp);
+				FbxDouble3 camPos = lCameraMaya->Position.Get();
+				fbxMaya.cameraPosition.push_back(camPos);
+
+			}
 
 		}
 	}
 
-	//int lMaterialCount = lNodeBin->GetMaterialCount();
-
-	//if (lMaterialCount > 0)
-	//{
-
-	//	for (int i = 0; i < lMaterialCount; i++)
-	//	{
-	//		FbxSurfaceMaterial* lMaterial = lNodeBin->GetMaterial(i);
-	//	}
-	//}
 
 	//bin file
 	for (int i = 0; i < childcountBin; i++)
@@ -401,13 +403,22 @@ int main(int argc, char** argv) {
 							fbxBin.transparency.push_back(1.0 - double1.Get());
 
 						}
-						else
-						{
-							return 0;
-						}
+
 					}
 				}
 
+				lCameraBin = lNodeBin->GetCamera();
+				if (lCameraBin != NULL)
+				{
+					double fovX = lCameraBin->FieldOfViewX.Get();//horizontal fov
+					double fovY = lCameraBin->FieldOfViewY.Get();//vertical fov
+
+					FbxDouble3 camUp = lCameraBin->UpVector.Get();
+					fbxBin.cameraUpVector.push_back(camUp);
+					FbxDouble3 camPos = lCameraBin->Position.Get();
+					fbxBin.cameraPosition.push_back(camPos);
+
+				}
 			}
 		}
 	}
@@ -486,7 +497,7 @@ int main(int argc, char** argv) {
 		{
 			return 0;
 		}
-		if (fbxMaya.materialtype.at(q) == "Blinn" || fbxBin.materialtype.at(q) == "Blinn")
+		if (fbxMaya.materialtype.at(q) == "Phong")
 		{
 			if (fbxMaya.specular.at(q) != fbxBin.specular.at(q))
 			{
@@ -502,6 +513,17 @@ int main(int argc, char** argv) {
 			}
 		}
 		
+	}
+	for (int q = 0; q < fbxMaya.cameraPosition.size(); q++)
+	{
+		if (fbxMaya.cameraPosition.at(q) != fbxBin.cameraPosition.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.cameraUpVector.at(q) != fbxBin.cameraUpVector.at(q))
+		{
+			return 0;
+		}
 	}
 
 		std::cout << "EVERYTHING IS AWESOME!" << std::endl;

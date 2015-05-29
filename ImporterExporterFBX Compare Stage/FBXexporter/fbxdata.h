@@ -23,4 +23,7 @@ public:
 	std::vector<FbxDouble> shininess;
 	std::vector<FbxDouble> transparency;
 	std::vector<FbxDouble> reflectionfactor;
+
+	std::vector<FbxDouble3> cameraUpVector;
+	std::vector<FbxDouble3> cameraPosition;
 };
