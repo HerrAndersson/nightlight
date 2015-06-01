@@ -294,14 +294,19 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, int i)
 			lNode->SetNodeAttribute(importedMeshes[sceneGraph->at(x).mesh]);
 			lNode->SetShadingMode(FbxNode::eTextureShading);
 		}
-
 		//				if (lNode)
 		//					lNode->AddMaterial(importedMaterials[0]);
 		// Add the mesh node to the root node in the scene.
 		if (sceneGraph->at(x).parent == -1)
 			lRootNode->AddChild(lNode);
+		else
+			lScene->GetNode(sceneGraph->at(x).parent+1)->AddChild(lNode);
 		//else other parent
 
+		cout << lScene->GetNodeCount() << endl;
+		for (int d = 0; d < lScene->GetNodeCount(); d++){
+			cout << lScene->GetNode(d)->GetName() << endl;
+		}
 
 	}
 	/*

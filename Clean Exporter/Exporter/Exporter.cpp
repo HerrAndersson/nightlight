@@ -924,6 +924,14 @@ void Exporter::createSceneGraph(MFnDagNode& path, int parentIndex)
 	output.name = path.fullPathName().asChar();
 	splitStringToVector(output.name, pathparts, "|");
 	output.name = pathparts[pathparts.size() - 1];
+	if (!strcmp(output.name.c_str(), "persp"))
+		return;
+	else if (!strcmp(output.name.c_str(), "top"))
+		return;
+	else if (!strcmp(output.name.c_str(), "side"))
+		return;
+	else if (!strcmp(output.name.c_str(), "front"))
+		return;
 	output.parent = parentIndex;
 	output.transform = path.transformationMatrix().matrix;
 
