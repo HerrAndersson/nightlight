@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "camerainhere.fbx";
-	const char* lFilenameBin = "camerainhere.fbx";
+	const char* lFilenameMaya = "container.fbx";
+	const char* lFilenameBin = "ContainerMaya.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -88,22 +88,21 @@ int main(int argc, char** argv) {
 	{
 		lNodeMaya = lRootNodeMaya->GetChild(i);
 
-		if (lNodeMaya->GetMesh() == NULL)
+		if (lNodeMaya->GetLight() != NULL)
 		{
 			lLightMaya = (FbxLight*)lNodeMaya->GetNodeAttribute();
-
+			
 			FbxVector4 LightPosition = lLightMaya->GetNode()->LclTranslation;
 			fbxMaya.LightPos.push_back(LightPosition);
-
+			
 			const char* lLightTypes[] = { "Point", "Directional", "Spot" };
-
+			
 			fbxMaya.LightType.push_back(lLightTypes[lLightMaya->LightType.Get()]);
-
+			
 			fbxMaya.LightColor.push_back(lLightMaya->Color.Get());
 		}
-		else
+		else if (lNodeMaya->GetMesh() != NULL)
 		{
-
 			lMeshMaya = lNodeMaya->GetMesh();
 
 			int controlCount = lMeshMaya->GetControlPointsCount();
@@ -245,8 +244,8 @@ int main(int argc, char** argv) {
 				}
 			}
 		
-			lCameraMaya = lNodeMaya->GetCamera();
-			if (lNodeMaya->GetCamera() != NULL)
+			lCameraMaya = lRootNodeMaya->GetCamera();
+			if (lRootNodeMaya->GetCamera() != NULL)
 			{
 				double fovX = lCameraMaya->FieldOfViewX.Get();//horizontal fov
 				fbxMaya.fieldofviewX.push_back(fovX);
@@ -269,7 +268,7 @@ int main(int argc, char** argv) {
 	{
 		lNodeBin = lRootNodeBin->GetChild(i);
 
-		if (lNodeBin->GetMesh() == NULL)
+		if (lNodeBin->GetLight() != NULL)
 		{
 			lLightBin = (FbxLight*)lNodeBin->GetNodeAttribute();
 
@@ -282,7 +281,7 @@ int main(int argc, char** argv) {
 
 			fbxBin.LightColor.push_back(lLightBin->Color.Get());
 		}
-		else
+		else if (lNodeBin->GetMesh() != NULL)
 		{
 
 			lMeshBin = lNodeBin->GetMesh();
@@ -338,6 +337,8 @@ int main(int argc, char** argv) {
 
 					fbxBin.uv.push_back(lUVValue);
 				}
+
+
 
 				//material maya
 				int materialCount = lNodeBin->GetMaterialCount();
@@ -410,8 +411,8 @@ int main(int argc, char** argv) {
 					}
 				}
 
-				lCameraBin = lNodeBin->GetCamera();
-				if (lCameraBin != NULL)
+				lCameraBin = lRootNodeBin->GetCamera();
+				if (lRootNodeBin->GetCamera() != NULL)
 				{
 					double fovX = lCameraBin->FieldOfViewX.Get();//horizontal fov
 					fbxBin.fieldofviewX.push_back(fovX);
@@ -440,21 +441,27 @@ int main(int argc, char** argv) {
 	int correctNormCount = 0;
 	int correctUVCount = 0;
 
-for (int j = 0; j < fbxMaya.vtx.size(); j++)
-{
-	if (EQUAL(fbxMaya.vtx.at(j), fbxBin.vtx.at(j)))
+	for (int j = 0; j < fbxMaya.vtx.size(); j++)
 	{
-		correctVtxCount++;
+		if (EQUAL(fbxMaya.vtx.at(j), fbxBin.vtx.at(j)))
+		{
+			correctVtxCount++;
+		}
 	}
-	if (EQUAL(fbxMaya.norm.at(j), fbxBin.norm.at(j)))
+	for (int j = 0; j < fbxMaya.norm.size(); j++)
 	{
-		correctNormCount++;
+		if (EQUAL(fbxMaya.norm.at(j), fbxBin.norm.at(j)))
+		{
+			correctNormCount++;
+		}
 	}
-	if (EQUAL(fbxMaya.uv.at(j), fbxBin.uv.at(j)))
+	for (int j = 0; j < fbxMaya.uv.size(); j++)
 	{
+		if (EQUAL(fbxMaya.uv.at(j), fbxBin.uv.at(j)))
+		{
 		correctUVCount++;
+		}
 	}
-}
 
 std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
 std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
@@ -464,87 +471,134 @@ std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << 
 
 //}
 
-//if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
-//{
-//	return 0;
-//}
-//else
-//{
+int lightPosCount = 0;
+int lightColourCount = 0;
+int lightTypeCount = 0;
+
+if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
+{
+	return 0;
+}
+else
+{
+
 for (int x = 0; x < fbxMaya.LightType.size(); x++)
 {
 	if (EQUAL(fbxMaya.LightPos.at(x),fbxBin.LightPos.at(x)))
 	{
-		return 0;
+		lightPosCount++;
 	}
 	if (EQUAL(fbxMaya.LightColor.at(x), fbxBin.LightColor.at(x)))
 	{
-		return 0;
+		lightColourCount++;
 	}
 	if (EQUAL(fbxMaya.LightType.at(x), fbxBin.LightType.at(x)))
 	{
-		return 0;
+		lightTypeCount++;
 	}
 }
-//}
+}
+std::cout << "Correct light positions: " << lightPosCount << " of " << fbxMaya.LightPos.size() << std::endl;
+std::cout << "Correct light colours: " << lightColourCount << " of " << fbxMaya.LightColor.size() << std::endl;
+std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl;
+
+int materialtypeCount =0;
+int ambientCount =0;
+int diffuseCount=0;
+int emissiveCount = 0;
+int transparencyCount = 0;
+int specularCount = 0;
+int shinyCount = 0;
+int reflectionCount = 0;
+
+
 
 for (int q = 0; q < fbxMaya.ambient.size(); q++)
 {
 	if (EQUAL(fbxMaya.materialtype.at(q),fbxBin.materialtype.at(q)))
 	{
-		return 0;
+		materialtypeCount++;
 	}
 	if (EQUAL(fbxMaya.ambient.at(q), fbxBin.ambient.at(q)))
 	{
-		return 0;
+		ambientCount++;
 	}
 	if (EQUAL(fbxMaya.diffuse.at(q), fbxBin.diffuse.at(q)))
 	{
-		return 0;
+		diffuseCount++;
 	}
 	if (EQUAL(fbxMaya.emissive.at(q), fbxBin.emissive.at(q)))
 	{
-		return 0;
+		emissiveCount++;
 	}
-	if (fbxMaya.transparency.at(q) != fbxBin.transparency.at(q))
+	if (fbxMaya.transparency.at(q) == fbxBin.transparency.at(q))
 	{
-		return 0;
+		transparencyCount++;
 	}
 	if (fbxMaya.materialtype.at(q) == "Phong")
 	{
 		if (EQUAL(fbxMaya.specular.at(q),fbxBin.specular.at(q)))
 		{
-			return 0;
+			specularCount++;
 		}
-		if (fbxMaya.shininess.at(q) != fbxBin.shininess.at(q))
+		if (fbxMaya.shininess.at(q) == fbxBin.shininess.at(q))
 		{
-			return 0;
+			shinyCount++;
 		}
-		if (fbxMaya.reflectionfactor.at(q) != fbxBin.reflectionfactor.at(q))
+		if (fbxMaya.reflectionfactor.at(q) == fbxBin.reflectionfactor.at(q))
 		{
-			return 0;
+			reflectionCount++;
 		}
 	}
 
 }
+
+std::cout << "Correct material types: " << materialtypeCount << " of " << fbxMaya.materialtype.size() << std::endl;
+std::cout << "Correct ambients: " << ambientCount << " of " << fbxMaya.ambient.size() << std::endl;
+std::cout << "Correct diffuses: " << diffuseCount << " of " << fbxMaya.diffuse.size() << std::endl;
+std::cout << "Correct emissives: " << emissiveCount << " of " << fbxMaya.emissive.size() << std::endl;
+std::cout << "Correct transparencies: " << transparencyCount << " of " << fbxMaya.transparency.size() << std::endl;
+std::cout << "Correct speculars: " << specularCount << " of " << fbxMaya.specular.size() << std::endl;
+std::cout << "Correct shininess: " << shinyCount << " of " << fbxMaya.shininess.size() << std::endl;
+std::cout << "Correct reflections: " << reflectionCount << " of " << fbxMaya.reflectionfactor.size() << std::endl;
+
+
+int cameraPosCount = 0;
+int cameraUpCount = 0;
+int fovXcount = 0;
+int fovYcount = 0;
+
 	for (int q = 0; q < fbxMaya.cameraPosition.size(); q++)
 	{
 		if (EQUAL(fbxMaya.cameraPosition.at(q), fbxBin.cameraPosition.at(q)))
 		{
-			return 0;
+			cameraPosCount++;
 		}
 		if (EQUAL(fbxMaya.cameraUpVector.at(q), fbxBin.cameraUpVector.at(q)))
 		{
-			return 0;
+			cameraUpCount++;
 		}
-		if (fbxMaya.fieldofviewX.at(q) != fbxBin.fieldofviewX.at(q))
+		if (fbxMaya.fieldofviewX.at(q) == fbxBin.fieldofviewX.at(q))
 		{
-			return 0;
+			fovXcount++;
 		}
-		if (fbxMaya.fieldofviewY.at(q) != fbxBin.fieldofviewY.at(q))
+		if (fbxMaya.fieldofviewY.at(q) == fbxBin.fieldofviewY.at(q))
 		{
-			return 0;
+			fovYcount++;
 		}
 	}
+
+
+	std::cout << "Correct light positions: " << lightPosCount << " of " << fbxMaya.LightPos.size() << std::endl;
+	std::cout << "Correct light colours: " << lightColourCount << " of " << fbxMaya.LightColor.size() << std::endl;
+	std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl;
+
+	std::cout << "Correct camera positions: " << cameraPosCount << " of " << fbxMaya.cameraPosition.size() << std::endl;
+	std::cout << "Correct up vector: " << cameraUpCount << " of " << fbxMaya.cameraUpVector.size() << std::endl;
+	std::cout << "Correct fov in x: " << fovXcount << " of " << fbxMaya.fieldofviewX.size() << std::endl;
+	std::cout << "Correct fov in y: " << fovYcount << " of " << fbxMaya.fieldofviewY.size() << std::endl;
+
+
 
 		std::cout << "EVERYTHING IS AWESOME!" << std::endl;
 
