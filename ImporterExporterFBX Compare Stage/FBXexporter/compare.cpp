@@ -477,7 +477,7 @@ int lightTypeCount = 0;
 
 if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
 {
-	return 0;
+	std::cout<<"Light not correct." << std::endl;
 }
 else
 {
@@ -535,7 +535,7 @@ for (int q = 0; q < fbxMaya.ambient.size(); q++)
 	{
 		transparencyCount++;
 	}
-	if (fbxMaya.materialtype.at(q) == "Phong")
+	if (fbxMaya.materialtype.at(q) == "Phong" && fbxBin.materialtype.at(q) == "Phong")
 	{
 		if (EQUAL(fbxMaya.specular.at(q),fbxBin.specular.at(q)))
 		{
