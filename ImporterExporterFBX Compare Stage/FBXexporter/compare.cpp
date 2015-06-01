@@ -1,6 +1,6 @@
 #include "fbxdata.h"
-//#define DELTA 0.000001
-//#define EQUAL(A,B) (abs((A.X)-(B.X)) < DELTA && abs((A.Y)-(B.Y)) < DELTA && abs((A.Z)-(B.Z)) < DELTA && abs((A.W)-(B.W)) < DELTA) ? true:false
+#define DELTA 0.000001
+#define EQUAL(A,B) (abs((A[0])-(B[0])) < DELTA && abs((A[1])-(B[1])) < DELTA && abs((A[2])-(B[2])) < DELTA && abs((A[3])-(B[3])) < DELTA) ? true:false
 
 int main(int argc, char** argv) {
 
@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
 	FbxGeometryElementNormal* lNormalElement;
 
 	FbxVector4 norm2;
+	
 	// Add the mesh node to the root node in the scene.
 	FbxNode *lRootNodeMaya = lSceneMaya->GetRootNode();
 	FbxNode *lRootNodeBin = lSceneBin->GetRootNode();
@@ -435,25 +436,32 @@ int main(int argc, char** argv) {
 //else
 //{
 
+	int correctVtxCount = 0;
+	int correctNormCount = 0;
+	int correctUVCount = 0;
+
 for (int j = 0; j < fbxMaya.vtx.size(); j++)
 {
-	if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+	if (EQUAL(fbxMaya.vtx.at(j), fbxBin.vtx.at(j)))
 	{
-		return 0;
+		correctVtxCount++;
 	}
-	if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
+	if (EQUAL(fbxMaya.norm.at(j), fbxBin.norm.at(j)))
 	{
-		return 0;
+		correctNormCount++;
 	}
-	if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
+	if (EQUAL(fbxMaya.uv.at(j), fbxBin.uv.at(j)))
 	{
-		return 0;
-	}
-	if (fbxMaya.uv.at(j) != fbxBin.uv.at(j))
-	{
-		return 0;
+		correctUVCount++;
 	}
 }
+
+std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
+std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
+std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl;
+
+
+
 //}
 
 //if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
@@ -464,15 +472,15 @@ for (int j = 0; j < fbxMaya.vtx.size(); j++)
 //{
 for (int x = 0; x < fbxMaya.LightType.size(); x++)
 {
-	if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
+	if (EQUAL(fbxMaya.LightPos.at(x),fbxBin.LightPos.at(x)))
 	{
 		return 0;
 	}
-	if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
+	if (EQUAL(fbxMaya.LightColor.at(x), fbxBin.LightColor.at(x)))
 	{
 		return 0;
 	}
-	if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
+	if (EQUAL(fbxMaya.LightType.at(x), fbxBin.LightType.at(x)))
 	{
 		return 0;
 	}
@@ -481,19 +489,19 @@ for (int x = 0; x < fbxMaya.LightType.size(); x++)
 
 for (int q = 0; q < fbxMaya.ambient.size(); q++)
 {
-	if (fbxMaya.materialtype.at(q) != fbxBin.materialtype.at(q))
+	if (EQUAL(fbxMaya.materialtype.at(q),fbxBin.materialtype.at(q)))
 	{
 		return 0;
 	}
-	if (fbxMaya.ambient.at(q) != fbxBin.ambient.at(q))
+	if (EQUAL(fbxMaya.ambient.at(q), fbxBin.ambient.at(q)))
 	{
 		return 0;
 	}
-	if (fbxMaya.diffuse.at(q) != fbxBin.diffuse.at(q))
+	if (EQUAL(fbxMaya.diffuse.at(q), fbxBin.diffuse.at(q)))
 	{
 		return 0;
 	}
-	if (fbxMaya.emissive.at(q) != fbxBin.emissive.at(q))
+	if (EQUAL(fbxMaya.emissive.at(q), fbxBin.emissive.at(q)))
 	{
 		return 0;
 	}
@@ -503,7 +511,7 @@ for (int q = 0; q < fbxMaya.ambient.size(); q++)
 	}
 	if (fbxMaya.materialtype.at(q) == "Phong")
 	{
-		if (fbxMaya.specular.at(q) != fbxBin.specular.at(q))
+		if (EQUAL(fbxMaya.specular.at(q),fbxBin.specular.at(q)))
 		{
 			return 0;
 		}
@@ -520,11 +528,11 @@ for (int q = 0; q < fbxMaya.ambient.size(); q++)
 }
 	for (int q = 0; q < fbxMaya.cameraPosition.size(); q++)
 	{
-		if (fbxMaya.cameraPosition.at(q) != fbxBin.cameraPosition.at(q))
+		if (EQUAL(fbxMaya.cameraPosition.at(q), fbxBin.cameraPosition.at(q)))
 		{
 			return 0;
 		}
-		if (fbxMaya.cameraUpVector.at(q) != fbxBin.cameraUpVector.at(q))
+		if (EQUAL(fbxMaya.cameraUpVector.at(q), fbxBin.cameraUpVector.at(q)))
 		{
 			return 0;
 		}
