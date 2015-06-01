@@ -276,7 +276,8 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, int i)
 		//Create the node containing the mesh
 		FbxNode* lNode = FbxNode::Create(lScene, sceneGraph->at(x).name.c_str());
 		XMVECTOR transform[3];
-		XMMatrixDecompose(&transform[0], &transform[1], &transform[2], sceneGraph->at(x).transform);
+		XMMATRIX nodematrix = sceneGraph->at(x).transform;
+		XMMatrixDecompose(&transform[0], &transform[1], &transform[2], nodematrix);
 		XMFLOAT3 translation, rotation, scale;
 
 		XMStoreFloat3(&scale, transform[0]);
