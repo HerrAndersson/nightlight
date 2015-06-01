@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
 	const char* lFilenameMaya = "container.fbx";
-	const char* lFilenameBin = "container.fbx";
+	const char* lFilenameBin = "ContainerMaya.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -471,16 +471,16 @@ std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << 
 
 //}
 
-//if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
-//{
-//	return 0;
-//}
-//else
-//{
-
 int lightPosCount = 0;
 int lightColourCount = 0;
 int lightTypeCount = 0;
+
+if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
+{
+	return 0;
+}
+else
+{
 
 for (int x = 0; x < fbxMaya.LightType.size(); x++)
 {
@@ -497,7 +497,7 @@ for (int x = 0; x < fbxMaya.LightType.size(); x++)
 		lightTypeCount++;
 	}
 }
-//}
+}
 std::cout << "Correct light positions: " << lightPosCount << " of " << fbxMaya.LightPos.size() << std::endl;
 std::cout << "Correct light colours: " << lightColourCount << " of " << fbxMaya.LightColor.size() << std::endl;
 std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl;
