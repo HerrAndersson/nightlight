@@ -413,7 +413,7 @@ int main(int argc, char** argv) {
 				}
 
 				lCameraBin = lRootNodeBin->GetCamera();
-				if (lRootNodeBin != NULL)
+				if (lRootNodeBin->GetCamera() != NULL)
 				{
 					double fovX = lCameraBin->FieldOfViewX.Get();//horizontal fov
 					fbxBin.fieldofviewX.push_back(fovX);
