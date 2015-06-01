@@ -433,6 +433,7 @@ int main(int argc, char** argv) {
 	int correctUVCount = 0;
 
 	//getchar();
+
 	//if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
 	//{
 	//	std::cout<<"Mesh not entirely correct." << std::endl;
@@ -460,15 +461,11 @@ int main(int argc, char** argv) {
 			correctUVCount++;
 		}
 	}
+	//}
 
 	std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
 	std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
 	std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl << std::endl;;
-
-
-
-
-	//}
 
 	int lightPosCount = 0;
 	int lightColourCount = 0;
