@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "Light1.fbx";
-	const char* lFilenameBin = "Light1.fbx";
+	const char* lFilenameMaya = "container.fbx";
+	const char* lFilenameBin = "container.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -101,9 +101,8 @@ int main(int argc, char** argv) {
 			
 			fbxMaya.LightColor.push_back(lLightMaya->Color.Get());
 		}
-		else
+		else if (lNodeMaya->GetMesh() != NULL)
 		{
-
 			lMeshMaya = lNodeMaya->GetMesh();
 
 			int controlCount = lMeshMaya->GetControlPointsCount();
@@ -269,7 +268,7 @@ int main(int argc, char** argv) {
 	{
 		lNodeBin = lRootNodeBin->GetChild(i);
 
-		if (lNodeBin->GetMesh() == NULL)
+		if (lNodeBin->GetLight() != NULL)
 		{
 			lLightBin = (FbxLight*)lNodeBin->GetNodeAttribute();
 
@@ -282,7 +281,7 @@ int main(int argc, char** argv) {
 
 			fbxBin.LightColor.push_back(lLightBin->Color.Get());
 		}
-		else
+		else if (lNodeBin->GetMesh() != NULL)
 		{
 
 			lMeshBin = lNodeBin->GetMesh();
