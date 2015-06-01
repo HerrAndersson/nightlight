@@ -465,7 +465,8 @@ int main(int argc, char** argv) {
 
 std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
 std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
-std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl;
+std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl << std::endl;;
+
 
 
 
@@ -477,7 +478,7 @@ int lightTypeCount = 0;
 
 if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
 {
-	std::cout<<"Light not correct." << std::endl;
+	std::cout<<"Light not entirely correct." << std::endl;
 }
 else
 {
@@ -500,7 +501,7 @@ for (int x = 0; x < fbxMaya.LightType.size(); x++)
 }
 std::cout << "Correct light positions: " << lightPosCount << " of " << fbxMaya.LightPos.size() << std::endl;
 std::cout << "Correct light colours: " << lightColourCount << " of " << fbxMaya.LightColor.size() << std::endl;
-std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl;
+std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl << std::endl;;
 
 int materialtypeCount =0;
 int ambientCount =0;
@@ -560,7 +561,7 @@ std::cout << "Correct emissives: " << emissiveCount << " of " << fbxMaya.emissiv
 std::cout << "Correct transparencies: " << transparencyCount << " of " << fbxMaya.transparency.size() << std::endl;
 std::cout << "Correct speculars: " << specularCount << " of " << fbxMaya.specular.size() << std::endl;
 std::cout << "Correct shininess: " << shinyCount << " of " << fbxMaya.shininess.size() << std::endl;
-std::cout << "Correct reflections: " << reflectionCount << " of " << fbxMaya.reflectionfactor.size() << std::endl;
+std::cout << "Correct reflections: " << reflectionCount << " of " << fbxMaya.reflectionfactor.size() << std::endl << std::endl;;
 
 
 int cameraPosCount = 0;
@@ -591,12 +592,12 @@ int fovYcount = 0;
 
 	std::cout << "Correct light positions: " << lightPosCount << " of " << fbxMaya.LightPos.size() << std::endl;
 	std::cout << "Correct light colours: " << lightColourCount << " of " << fbxMaya.LightColor.size() << std::endl;
-	std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl;
+	std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl << std::endl;;
 
 	std::cout << "Correct camera positions: " << cameraPosCount << " of " << fbxMaya.cameraPosition.size() << std::endl;
 	std::cout << "Correct up vector: " << cameraUpCount << " of " << fbxMaya.cameraUpVector.size() << std::endl;
 	std::cout << "Correct fov in x: " << fovXcount << " of " << fbxMaya.fieldofviewX.size() << std::endl;
-	std::cout << "Correct fov in y: " << fovYcount << " of " << fbxMaya.fieldofviewY.size() << std::endl;
+	std::cout << "Correct fov in y: " << fovYcount << " of " << fbxMaya.fieldofviewY.size() << std::endl << std::endl;;
 
 
 
