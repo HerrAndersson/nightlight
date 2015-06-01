@@ -1,6 +1,6 @@
 #include "fbxdata.h"
-//#define DELTA 0.0000000000001
-//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
+#define DELTA 0.000001
+#define EQUAL(A,B) (abs((A[0])-(B[0])) < DELTA && abs((A[1])-(B[1])) < DELTA && abs((A[2])-(B[2])) < DELTA && abs((A[3])-(B[3])) < DELTA) ? true:false
 
 int main(int argc, char** argv) {
 
@@ -30,12 +30,12 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "box2bevel.fbx";
-	const char* lFilenameBin = "Light1.fbx";
+	const char* lFilenameMaya = "camerainhere.fbx";
+	const char* lFilenameBin = "camerainhere.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
-	
+
 	if (!lImportStatusMaya) {
 		printf("Call to FbxImporter::Initialize() failed.\n");
 		printf("Error returned: %s\n\n", lImporterMaya->GetStatus().GetErrorString());
@@ -60,10 +60,11 @@ int main(int argc, char** argv) {
 	lImporterBin->Import(lSceneBin);
 
 
-	
+
 	FbxGeometryElementNormal* lNormalElement;
 
 	FbxVector4 norm2;
+	
 	// Add the mesh node to the root node in the scene.
 	FbxNode *lRootNodeMaya = lSceneMaya->GetRootNode();
 	FbxNode *lRootNodeBin = lSceneBin->GetRootNode();
@@ -89,7 +90,7 @@ int main(int argc, char** argv) {
 
 		if (lNodeMaya->GetMesh() == NULL)
 		{
-			lLightMaya = (FbxLight*) lNodeMaya->GetNodeAttribute();
+			lLightMaya = (FbxLight*)lNodeMaya->GetNodeAttribute();
 
 			FbxVector4 LightPosition = lLightMaya->GetNode()->LclTranslation;
 			fbxMaya.LightPos.push_back(LightPosition);
@@ -143,48 +144,125 @@ int main(int argc, char** argv) {
 
 				//index array for holding the index referenced to uv data
 				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-			//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-			int lIndexCount = lUVElement->GetDirectArray().GetCount();
+				//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+				int lIndexCount = lUVElement->GetDirectArray().GetCount();
 
-			//const int lPolyCount = lMeshMaya->GetPolygonCount();
-			//for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
-			//{
-					// build the max index array that we need to pass into MakePoly
+				//const int lPolyCount = lMeshMaya->GetPolygonCount();
+				//for (int lPolyIndex = 0; lPolyIndex < lPolyCount; ++lPolyIndex)
+				//{
+				// build the max index array that we need to pass into MakePoly
 				//const int lPolySize = lMeshMaya->GetPolygonSize(lPolyIndex);
 				//for (int lVertIndex = 0; lVertIndex < lPolySize; ++lVertIndex)
 				//{
-						FbxVector2 lUVValue;
+				FbxVector2 lUVValue;
 
-						//get the index of the current vertex in control points array
-					//int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
+				//get the index of the current vertex in control points array
+				//int lPolyVertIndex = lMeshMaya->GetPolygonVertex(lPolyIndex, lVertIndex);
 
-						//the UV index depends on the reference mode
-					//int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
-					//int lUVIndex = lUVElement->GetDirectArray().GetAt(lPolyVertIndex);
+				//the UV index depends on the reference mode
+				//int lUVIndex = lUseIndex ? lUVElement->GetIndexArray().GetAt(lPolyVertIndex) : lPolyVertIndex;
+				//int lUVIndex = lUVElement->GetDirectArray().GetAt(lPolyVertIndex);
 
-					for (int count = 0; count < lIndexCount; count++)
-					{
-						lUVValue = lUVElement->GetDirectArray().GetAt(count);
+				for (int count = 0; count < lIndexCount; count++)
+				{
+					lUVValue = lUVElement->GetDirectArray().GetAt(count);
 
-						fbxMaya.uv.push_back(lUVValue);
-					}
+					fbxMaya.uv.push_back(lUVValue);
+				}
 
 				//}
-			//}
+				//}
 			}
+
+			//material maya
+			int materialCount = lNodeMaya->GetMaterialCount();
+		
+			if (materialCount > 0)
+			{
+				FbxPropertyT<FbxDouble3> double3;
+				FbxPropertyT<FbxDouble> double1;
+				FbxColor theColor;
+
+				for (int q = 0; q < materialCount; q++)
+				{
+					FbxSurfaceMaterial *lMaterial = lNodeMaya->GetMaterial(q);
+
+					if (lMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+					{
+						//found phong
+						fbxMaya.materialtype.push_back("Phong");
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Ambient;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.ambient.push_back(theColor);
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Diffuse;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.diffuse.push_back(theColor);
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Specular;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.specular.push_back(theColor);
+
+						double3 = ((FbxSurfacePhong*)lMaterial)->Emissive;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.emissive.push_back(theColor);
+
+						double1 = ((FbxSurfacePhong*)lMaterial)->TransparencyFactor;
+						fbxMaya.transparency.push_back(1.0 - double1.Get());
+
+						double1 = ((FbxSurfacePhong*)lMaterial)->Shininess;
+						fbxMaya.shininess.push_back(double1.Get());
+
+						double1 = ((FbxSurfacePhong*)lMaterial)->ReflectionFactor;
+						fbxMaya.reflectionfactor.push_back(double1.Get());
+
+						
+
+					}
+					else if (lMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId))
+					{
+						//found lambert
+						fbxMaya.materialtype.push_back("Lambert");
+
+						double3 = ((FbxSurfaceLambert*)lMaterial)->Ambient;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.ambient.push_back(theColor);
+
+						double3 = ((FbxSurfaceLambert*)lMaterial)->Diffuse;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.diffuse.push_back(theColor);
+
+						double3 = ((FbxSurfaceLambert*)lMaterial)->Emissive;
+						theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+						fbxMaya.emissive.push_back(theColor);
+
+						double1 = ((FbxSurfaceLambert*)lMaterial)->TransparencyFactor;
+						fbxMaya.transparency.push_back(1.0-double1.Get());
+
+					}
+
+				}
+			}
+		
+			lCameraMaya = lNodeMaya->GetCamera();
+			if (lNodeMaya->GetCamera() != NULL)
+			{
+				double fovX = lCameraMaya->FieldOfViewX.Get();//horizontal fov
+				fbxMaya.fieldofviewX.push_back(fovX);
+				double fovY = lCameraMaya->FieldOfViewY.Get();//vertical fov
+				fbxMaya.fieldofviewY.push_back(fovY);
+
+				FbxDouble3 camUp = lCameraMaya->UpVector.Get();
+				fbxMaya.cameraUpVector.push_back(camUp);
+				FbxDouble3 camPos = lCameraMaya->Position.Get();
+				fbxMaya.cameraPosition.push_back(camPos);
+
+			}
+
 		}
 	}
 
-	//int lMaterialCount = lNodeBin->GetMaterialCount();
-
-	//if (lMaterialCount > 0)
-	//{
-
-	//	for (int i = 0; i < lMaterialCount; i++)
-	//	{
-	//		FbxSurfaceMaterial* lMaterial = lNodeBin->GetMaterial(i);
-	//	}
-	//}
 
 	//bin file
 	for (int i = 0; i < childcountBin; i++)
@@ -248,65 +326,227 @@ int main(int argc, char** argv) {
 
 				//index array for holding the index referenced to uv data
 				bool lUseIndex = lUVElement->GetReferenceMode() != FbxGeometryElement::eDirect;
-			//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
-			int lIndexCount = lUVElement->GetDirectArray().GetCount();
+				//int lIndexCount = (lUseIndex) ? lUVElement->GetIndexArray().GetCount() : 0;
+				int lIndexCount = lUVElement->GetDirectArray().GetCount();
 
 
-			FbxVector2 lUVValue;
+				FbxVector2 lUVValue;
 
-			for (int count = 0; count < lIndexCount; count++)
-			{
-				lUVValue = lUVElement->GetDirectArray().GetAt(count);
+				for (int count = 0; count < lIndexCount; count++)
+				{
+					lUVValue = lUVElement->GetDirectArray().GetAt(count);
 
-				fbxBin.uv.push_back(lUVValue);
+					fbxBin.uv.push_back(lUVValue);
 				}
 
-				
+				//material maya
+				int materialCount = lNodeBin->GetMaterialCount();
+
+				if (materialCount > 0)
+				{
+					FbxPropertyT<FbxDouble3> double3;
+					FbxPropertyT<FbxDouble> double1;
+					FbxColor theColor;
+
+					for (int q = 0; q < materialCount; q++)
+					{
+						FbxSurfaceMaterial *lMaterial = lNodeBin->GetMaterial(q);
+
+						if (lMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+						{
+							//found phong
+							fbxBin.materialtype.push_back("Phong");
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Ambient;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.ambient.push_back(theColor);
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Diffuse;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.diffuse.push_back(theColor);
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Specular;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.specular.push_back(theColor);
+
+							double3 = ((FbxSurfacePhong*)lMaterial)->Emissive;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.emissive.push_back(theColor);
+
+							double1 = ((FbxSurfacePhong*)lMaterial)->TransparencyFactor;
+							fbxBin.transparency.push_back(1.0 - double1.Get());
+
+							double1 = ((FbxSurfacePhong*)lMaterial)->Shininess;
+							fbxBin.shininess.push_back(double1.Get());
+
+							double1 = ((FbxSurfacePhong*)lMaterial)->ReflectionFactor;
+							fbxBin.reflectionfactor.push_back(double1.Get());
+
+
+
+						}
+						else if (lMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId))
+						{
+							//found lambert
+							fbxBin.materialtype.push_back("Lambert");
+
+							double3 = ((FbxSurfaceLambert*)lMaterial)->Ambient;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.ambient.push_back(theColor);
+
+							double3 = ((FbxSurfaceLambert*)lMaterial)->Diffuse;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.diffuse.push_back(theColor);
+
+							double3 = ((FbxSurfaceLambert*)lMaterial)->Emissive;
+							theColor.Set(double3.Get()[0], double3.Get()[1], double3.Get()[2]);
+							fbxBin.emissive.push_back(theColor);
+
+							double1 = ((FbxSurfaceLambert*)lMaterial)->TransparencyFactor;
+							fbxBin.transparency.push_back(1.0 - double1.Get());
+
+						}
+
+					}
+				}
+
+				lCameraBin = lNodeBin->GetCamera();
+				if (lCameraBin != NULL)
+				{
+					double fovX = lCameraBin->FieldOfViewX.Get();//horizontal fov
+					fbxBin.fieldofviewX.push_back(fovX);
+					double fovY = lCameraBin->FieldOfViewY.Get();//vertical fov
+					fbxBin.fieldofviewY.push_back(fovY);
+
+					FbxDouble3 camUp = lCameraBin->UpVector.Get();
+					fbxBin.cameraUpVector.push_back(camUp);
+					FbxDouble3 camPos = lCameraBin->Position.Get();
+					fbxBin.cameraPosition.push_back(camPos);
+
+				}
 			}
 		}
 	}
-	
+
 	//getchar();
 	//if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
-	//{
-	//	return 0;
-	//}
-	//else
-	//{
-		for (int j = 0; j < fbxMaya.vtx.size(); j++)
-		{
-			if (fbxMaya.vtx.at(j) != fbxBin.vtx.at(j))
-			{
-				return 0;
-			}
-			if (fbxMaya.norm.at(j) != fbxBin.norm.at(j))
+//{
+//	return 0;
+//}
+//else
+//{
+
+	int correctVtxCount = 0;
+	int correctNormCount = 0;
+	int correctUVCount = 0;
+
+for (int j = 0; j < fbxMaya.vtx.size(); j++)
+{
+	if (EQUAL(fbxMaya.vtx.at(j), fbxBin.vtx.at(j)))
+	{
+		correctVtxCount++;
+	}
+	if (EQUAL(fbxMaya.norm.at(j), fbxBin.norm.at(j)))
+	{
+		correctNormCount++;
+	}
+	if (EQUAL(fbxMaya.uv.at(j), fbxBin.uv.at(j)))
+	{
+		correctUVCount++;
+	}
+}
+
+std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
+std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
+std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl;
+
+
+
+//}
+
+//if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
+//{
+//	return 0;
+//}
+//else
+//{
+for (int x = 0; x < fbxMaya.LightType.size(); x++)
+{
+	if (EQUAL(fbxMaya.LightPos.at(x),fbxBin.LightPos.at(x)))
+	{
+		return 0;
+	}
+	if (EQUAL(fbxMaya.LightColor.at(x), fbxBin.LightColor.at(x)))
+	{
+		return 0;
+	}
+	if (EQUAL(fbxMaya.LightType.at(x), fbxBin.LightType.at(x)))
+	{
+		return 0;
+	}
+}
+//}
+
+for (int q = 0; q < fbxMaya.ambient.size(); q++)
+{
+	if (EQUAL(fbxMaya.materialtype.at(q),fbxBin.materialtype.at(q)))
+	{
+		return 0;
+	}
+	if (EQUAL(fbxMaya.ambient.at(q), fbxBin.ambient.at(q)))
+	{
+		return 0;
+	}
+	if (EQUAL(fbxMaya.diffuse.at(q), fbxBin.diffuse.at(q)))
+	{
+		return 0;
+	}
+	if (EQUAL(fbxMaya.emissive.at(q), fbxBin.emissive.at(q)))
+	{
+		return 0;
+	}
+	if (fbxMaya.transparency.at(q) != fbxBin.transparency.at(q))
+	{
+		return 0;
+	}
+	if (fbxMaya.materialtype.at(q) == "Phong")
+	{
+		if (EQUAL(fbxMaya.specular.at(q),fbxBin.specular.at(q)))
 		{
 			return 0;
 		}
-		if (fbxMaya.uv.at(j) != fbxBin.uv.at(j))
-			{
-				return 0;
-			}
-		}
-	//}
-		for (int x = 0; x < fbxMaya.LightType.size(); x++)
+		if (fbxMaya.shininess.at(q) != fbxBin.shininess.at(q))
 		{
-			if (fbxMaya.LightPos.at(x) != fbxBin.LightPos.at(x))
-			{
-				return 0;
-			}
-			if (fbxMaya.LightColor.at(x) != fbxBin.LightColor.at(x))
-			{
-				return 0;
-			}
-			if (fbxMaya.LightType.at(x) != fbxBin.LightType.at(x))
-			{
-				return 0;
-			}
+			return 0;
 		}
+		if (fbxMaya.reflectionfactor.at(q) != fbxBin.reflectionfactor.at(q))
+		{
+			return 0;
+		}
+	}
 
-	//#define DELTA 0.0000000000001
-	//#define EQUAL(A,B) (abs((A)-(B)) < DELTA) ? true:false
+}
+	for (int q = 0; q < fbxMaya.cameraPosition.size(); q++)
+	{
+		if (EQUAL(fbxMaya.cameraPosition.at(q), fbxBin.cameraPosition.at(q)))
+		{
+			return 0;
+		}
+		if (EQUAL(fbxMaya.cameraUpVector.at(q), fbxBin.cameraUpVector.at(q)))
+		{
+			return 0;
+		}
+		if (fbxMaya.fieldofviewX.at(q) != fbxBin.fieldofviewX.at(q))
+		{
+			return 0;
+		}
+		if (fbxMaya.fieldofviewY.at(q) != fbxBin.fieldofviewY.at(q))
+		{
+			return 0;
+		}
+	}
+
+		std::cout << "EVERYTHING IS AWESOME!" << std::endl;
 
 	// The file has been imported; we can get rid of the importer.
 	lImporterMaya->Destroy();
