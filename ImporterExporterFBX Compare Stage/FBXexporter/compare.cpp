@@ -435,7 +435,7 @@ int main(int argc, char** argv) {
 	//getchar();
 	//if (fbxMaya.vtx.size() > fbxBin.vtx.size() || fbxMaya.vtx.size() < fbxBin.vtx.size())
 	//{
-	//	std::cout<<"Mesh not correct." << std::endl;
+	//	std::cout<<"Mesh not entirely correct." << std::endl;
 	//}
 	//else
 	//{
@@ -463,7 +463,7 @@ int main(int argc, char** argv) {
 
 	std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
 	std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
-std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl << std::endl;;
+	std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << std::endl << std::endl;;
 
 
 
@@ -476,7 +476,7 @@ std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << 
 
 	if (fbxMaya.LightPos.size() > fbxBin.LightPos.size() || fbxMaya.LightPos.size() < fbxBin.LightPos.size())
 	{
-	std::cout<<"Light not entirely correct." << std::endl;
+		std::cout << "Light not entirely correct." << std::endl;
 	}
 	else
 	{
@@ -499,7 +499,7 @@ std::cout << "Correct UV: " << correctUVCount << " of " << fbxMaya.uv.size() << 
 	}
 	std::cout << "Correct light positions: " << lightPosCount << " of " << fbxMaya.LightPos.size() << std::endl;
 	std::cout << "Correct light colours: " << lightColourCount << " of " << fbxMaya.LightColor.size() << std::endl;
-std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl << std::endl;;
+	std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.LightType.size() << std::endl << std::endl;;
 
 	int materialtypeCount = 0;
 	int ambientCount = 0;
@@ -513,7 +513,7 @@ std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.Light
 
 	//if (fbxMaya.ambient.size() > fbxBin.ambient.size() || fbxMaya.ambient.size() < fbxBin.ambient.size())
 	//{
-	//	std::cout << "Material not correct." << std::endl;
+	//	std::cout << "Material not entirely correct." << std::endl;
 	//}
 	//else
 	//{
@@ -565,7 +565,7 @@ std::cout << "Correct light type: " << lightTypeCount << " of " << fbxMaya.Light
 	std::cout << "Correct transparencies: " << transparencyCount << " of " << fbxMaya.transparency.size() << std::endl;
 	std::cout << "Correct speculars: " << specularCount << " of " << fbxMaya.specular.size() << std::endl;
 	std::cout << "Correct shininess: " << shinyCount << " of " << fbxMaya.shininess.size() << std::endl;
-std::cout << "Correct reflections: " << reflectionCount << " of " << fbxMaya.reflectionfactor.size() << std::endl << std::endl;;
+	std::cout << "Correct reflections: " << reflectionCount << " of " << fbxMaya.reflectionfactor.size() << std::endl << std::endl;;
 
 
 	int cameraPosCount = 0;
@@ -611,7 +611,7 @@ std::cout << "Correct reflections: " << reflectionCount << " of " << fbxMaya.ref
 
 
 
-		std::cout << "EVERYTHING IS AWESOME!" << std::endl;
+	std::cout << "EVERYTHING IS AWESOME!" << std::endl;
 
 	// The file has been imported; we can get rid of the importer.
 	lImporterMaya->Destroy();
