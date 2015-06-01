@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < binFileList.size(); i++)
 	{
 		cout << "Loading " << binFileList.at(i).c_str() << endl;
-		dataHandler.objectData->LoadModel(binFileList[i]);
+		dataHandler.objectData->LoadModel("../Bin/"+binFileList[i]);
 		dataHandler.FBXexport(binFileList,i);
 	}
 
