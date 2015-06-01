@@ -339,6 +339,8 @@ int main(int argc, char** argv) {
 					fbxBin.uv.push_back(lUVValue);
 				}
 
+
+
 				//material maya
 				int materialCount = lNodeBin->GetMaterialCount();
 
@@ -440,21 +442,27 @@ int main(int argc, char** argv) {
 	int correctNormCount = 0;
 	int correctUVCount = 0;
 
-for (int j = 0; j < fbxMaya.vtx.size(); j++)
-{
-	if (EQUAL(fbxMaya.vtx.at(j), fbxBin.vtx.at(j)))
+	for (int j = 0; j < fbxMaya.vtx.size(); j++)
 	{
-		correctVtxCount++;
+		if (EQUAL(fbxMaya.vtx.at(j), fbxBin.vtx.at(j)))
+		{
+			correctVtxCount++;
+		}
 	}
-	if (EQUAL(fbxMaya.norm.at(j), fbxBin.norm.at(j)))
+	for (int j = 0; j < fbxMaya.norm.size(); j++)
 	{
-		correctNormCount++;
+		if (EQUAL(fbxMaya.norm.at(j), fbxBin.norm.at(j)))
+		{
+			correctNormCount++;
+		}
 	}
-	if (EQUAL(fbxMaya.uv.at(j), fbxBin.uv.at(j)))
+	for (int j = 0; j < fbxMaya.uv.size(); j++)
 	{
+		if (EQUAL(fbxMaya.uv.at(j), fbxBin.uv.at(j)))
+		{
 		correctUVCount++;
+		}
 	}
-}
 
 std::cout << "Correct vtx: " << correctVtxCount << " of " << fbxMaya.vtx.size() << std::endl;
 std::cout << "Correct normals: " << correctNormCount << " of " << fbxMaya.norm.size() << std::endl;
