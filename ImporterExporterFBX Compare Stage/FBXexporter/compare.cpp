@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "cameramesh.fbx";
-	const char* lFilenameBin = "cameramesh.fbx";
+	const char* lFilenameMaya = "Light1.fbx";
+	const char* lFilenameBin = "Light1.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 	{
 		lNodeMaya = lRootNodeMaya->GetChild(i);
 
-		if (lNodeMaya->GetMesh() == NULL)
+		if (lNodeMaya->GetLight() != NULL)
 		{
 			lLightMaya = (FbxLight*)lNodeMaya->GetNodeAttribute();
 			
