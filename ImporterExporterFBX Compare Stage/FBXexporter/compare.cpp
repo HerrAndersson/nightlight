@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "GoldenCubephong.fbx";
-	const char* lFilenameBin = "BinCubephong.fbx";
+	const char* lFilenameMaya = "GoldenCube.fbx";
+	const char* lFilenameBin = "BinCube.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -240,11 +240,12 @@ int main(int argc, char** argv) {
 						fbxMaya.transparency.push_back(1.0 - double1.Get());
 
 					}
-					else
-					{
-						fbxMaya.materialtype.push_back("None");
-					}
+				
 				}
+			}
+			else
+			{
+				fbxMaya.materialtype.push_back("None");
 			}
 
 			lCameraMaya = lRootNodeMaya->GetCamera();
@@ -410,12 +411,13 @@ int main(int argc, char** argv) {
 							fbxBin.transparency.push_back(1.0 - double1.Get());
 
 						}
-						else
-						{
-							fbxBin.materialtype.push_back("None");
-						}
+					
 
 					}
+				}
+				else
+				{
+					fbxBin.materialtype.push_back("None");
 				}
 
 				lCameraBin = lRootNodeBin->GetCamera();
