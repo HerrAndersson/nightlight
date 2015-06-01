@@ -148,7 +148,7 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, int i)
 //		FbxDouble3 lBlack(0.0, 0.0, 0.0);
 //		FbxDouble3 lRed(0.0, 0.0, 0.0);
 //		FbxDouble3 lSpec(materialList->at(x).specular.x, materialList->at(x).specular.y, materialList->at(x).specular.z);
-//		FbxDouble3 lColor;
+//		FbxDouble3 lColor(materialList->at(x).diffuse.x, materialList->at(x).diffuse.y, materialList->at(x).diffuse.z);
 //		FbxSurfacePhong *lMaterial = FbxSurfacePhong::Create(lScene, lMaterialName.Buffer());
 //
 //		//Generate primary and secondary colors.
@@ -160,9 +160,9 @@ int DataHandler::FBXexport(std::vector<std::string>& binFileList, int i)
 //		lMaterial->TransparencyFactor.Set(0.0);
 //		lMaterial->ShadingModel.Set(lShadingName);
 //		lMaterial->Shininess.Set(0.5);
-//
-//
-//
+
+
+
 //		FbxFileTexture* lTexture = FbxFileTexture::Create(lScene, "Diffuse Texture");
 //		string textFileName = "../Textures/" + nameStr + ".png";
 //		// convert to char*
