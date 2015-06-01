@@ -979,7 +979,7 @@ bool Exporter::ExtractMeshData(MFnMesh &mesh, UINT index)
 
 	MFloatVectorArray normals;
 
-	MSpace::Space world_space = MSpace::kWorld;
+	MSpace::Space world_space = MSpace::kTransform;
 
 	// DAG-path
 	mesh_data.mesh_path = mesh.dagPath();

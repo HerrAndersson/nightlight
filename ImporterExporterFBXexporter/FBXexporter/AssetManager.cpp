@@ -159,6 +159,7 @@ void AssetManager::LoadModel(string file_path){
 		infile.read((char*)&bin.sceneGraph[i].transform, 64);
 		int namelength;
 		infile.read((char*)&namelength, 4);
+		bin.sceneGraph[i].name.resize(namelength);
 		infile.read((char*)bin.sceneGraph[i].name.data(), namelength);
 	}
 
