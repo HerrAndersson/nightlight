@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "camerainhere.fbx";
-	const char* lFilenameBin = "camerainhere.fbx";
+	const char* lFilenameMaya = "cameramesh.fbx";
+	const char* lFilenameBin = "cameramesh.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -91,14 +91,14 @@ int main(int argc, char** argv) {
 		if (lNodeMaya->GetMesh() == NULL)
 		{
 			lLightMaya = (FbxLight*)lNodeMaya->GetNodeAttribute();
-
+			
 			FbxVector4 LightPosition = lLightMaya->GetNode()->LclTranslation;
 			fbxMaya.LightPos.push_back(LightPosition);
-
+			
 			const char* lLightTypes[] = { "Point", "Directional", "Spot" };
-
+			
 			fbxMaya.LightType.push_back(lLightTypes[lLightMaya->LightType.Get()]);
-
+			
 			fbxMaya.LightColor.push_back(lLightMaya->Color.Get());
 		}
 		else
@@ -245,8 +245,8 @@ int main(int argc, char** argv) {
 				}
 			}
 		
-			lCameraMaya = lNodeMaya->GetCamera();
-			if (lNodeMaya->GetCamera() != NULL)
+			lCameraMaya = lRootNodeMaya->GetCamera();
+			if (lRootNodeMaya->GetCamera() != NULL)
 			{
 				double fovX = lCameraMaya->FieldOfViewX.Get();//horizontal fov
 				fbxMaya.fieldofviewX.push_back(fovX);
@@ -412,8 +412,8 @@ int main(int argc, char** argv) {
 					}
 				}
 
-				lCameraBin = lNodeBin->GetCamera();
-				if (lCameraBin != NULL)
+				lCameraBin = lRootNodeBin->GetCamera();
+				if (lRootNodeBin != NULL)
 				{
 					double fovX = lCameraBin->FieldOfViewX.Get();//horizontal fov
 					fbxBin.fieldofviewX.push_back(fovX);
