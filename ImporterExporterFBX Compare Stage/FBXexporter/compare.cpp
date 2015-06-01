@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
 	// Declare the path and filename of the file containing the scene.
 	// In this case, we are assuming the file is in the same directory as the executable.
-	const char* lFilenameMaya = "container.fbx";
-	const char* lFilenameBin = "ContainerMaya.fbx";
+	const char* lFilenameMaya = "GoldenCubephong.fbx";
+	const char* lFilenameBin = "BinCubephong.fbx";
 
 	// Initialize the importer.
 	bool lImportStatusMaya = lImporterMaya->Initialize(lFilenameMaya, -1, lSdkManager->GetIOSettings());
@@ -240,7 +240,10 @@ int main(int argc, char** argv) {
 						fbxMaya.transparency.push_back(1.0 - double1.Get());
 
 					}
-
+					else
+					{
+						fbxMaya.materialtype.push_back("None");
+					}
 				}
 			}
 
@@ -407,6 +410,10 @@ int main(int argc, char** argv) {
 							fbxBin.transparency.push_back(1.0 - double1.Get());
 
 						}
+						else
+						{
+							fbxBin.materialtype.push_back("None");
+						}
 
 					}
 				}
@@ -516,39 +523,43 @@ int main(int argc, char** argv) {
 	//{
 	for (int q = 0; q < fbxMaya.ambient.size(); q++)
 	{
-		if (EQUAL(fbxMaya.materialtype.at(q), fbxBin.materialtype.at(q)))
+		if (fbxMaya.materialtype.at(q) == fbxBin.materialtype.at(q))
 		{
-			materialtypeCount++;
-		}
-		if (EQUAL(fbxMaya.ambient.at(q), fbxBin.ambient.at(q)))
-		{
-			ambientCount++;
-		}
-		if (EQUAL(fbxMaya.diffuse.at(q), fbxBin.diffuse.at(q)))
-		{
-			diffuseCount++;
-		}
-		if (EQUAL(fbxMaya.emissive.at(q), fbxBin.emissive.at(q)))
-		{
-			emissiveCount++;
-		}
-		if (fbxMaya.transparency.at(q) == fbxBin.transparency.at(q))
-		{
-			transparencyCount++;
-		}
-		if (fbxMaya.materialtype.at(q) == "Phong" && fbxBin.materialtype.at(q) == "Phong")
-		{
-			if (EQUAL(fbxMaya.specular.at(q), fbxBin.specular.at(q)))
+
+			if (EQUAL(fbxMaya.materialtype.at(q), fbxBin.materialtype.at(q)))
 			{
-				specularCount++;
+				materialtypeCount++;
 			}
-			if (fbxMaya.shininess.at(q) == fbxBin.shininess.at(q))
+			if (EQUAL(fbxMaya.ambient.at(q), fbxBin.ambient.at(q)))
 			{
-				shinyCount++;
+				ambientCount++;
 			}
-			if (fbxMaya.reflectionfactor.at(q) == fbxBin.reflectionfactor.at(q))
+			if (EQUAL(fbxMaya.diffuse.at(q), fbxBin.diffuse.at(q)))
 			{
-				reflectionCount++;
+				diffuseCount++;
+			}
+			if (EQUAL(fbxMaya.emissive.at(q), fbxBin.emissive.at(q)))
+			{
+				emissiveCount++;
+			}
+			if (fbxMaya.transparency.at(q) == fbxBin.transparency.at(q))
+			{
+				transparencyCount++;
+			}
+			if (fbxMaya.materialtype.at(q) == "Phong" && fbxBin.materialtype.at(q) == "Phong")
+			{
+				if (EQUAL(fbxMaya.specular.at(q), fbxBin.specular.at(q)))
+				{
+					specularCount++;
+				}
+				if (fbxMaya.shininess.at(q) == fbxBin.shininess.at(q))
+				{
+					shinyCount++;
+				}
+				if (fbxMaya.reflectionfactor.at(q) == fbxBin.reflectionfactor.at(q))
+				{
+					reflectionCount++;
+				}
 			}
 		}
 
